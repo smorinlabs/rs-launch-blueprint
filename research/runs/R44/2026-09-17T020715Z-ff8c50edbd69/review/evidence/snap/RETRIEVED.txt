@@ -1,0 +1,4 @@
+R44 evidence snapshots — first retrieval
+date-utc: 2026-09-17
+image: mcr.microsoft.com/devcontainers/rust tag 2.1.1-trixie
+rust-feature ref: feature_rust_1.6.0

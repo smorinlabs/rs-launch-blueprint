@@ -1,0 +1,11 @@
+# GitHub issue search (total_count = open ISSUES, excludes PRs) — retrieved 2026-09-09
+=== $ gh api "search/issues?q=repo:dtolnay/thiserror+is:issue+is:open" --jq .total_count
+27
+=== $ gh api "search/issues?q=repo:dtolnay/anyhow+is:issue+is:open" --jq .total_count
+37
+=== $ gh api "search/issues?q=repo:vorner/signal-hook+is:issue+is:open" --jq .total_count
+22
+=== $ gh api "search/issues?q=repo:Detegr/rust-ctrlc+is:issue+is:open" --jq .total_count
+11
+=== $ gh api "search/issues?q=repo:mikaelmello/inquire+is:issue+is:open" --jq .total_count
+59

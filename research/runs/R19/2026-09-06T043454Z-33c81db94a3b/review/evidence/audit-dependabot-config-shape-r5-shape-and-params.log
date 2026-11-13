@@ -1,0 +1,20 @@
+retrieved 2026-09-15T08:15:39Z
+YAML parses and carries exactly the two stated ecosystems
+-e:1:in `block in <main>': undefined local variable or method `_1' for main:Object (NameError)
+	from -e:1:in `map'
+	from -e:1:in `<main>'
+Fixed assumes lines equal PARAMETERS.md values
+assumes msrv-policy exact exit 1
+assumes rust-edition exact exit 1
+assumes target-os-matrix exact exit 1
+assumes license exact exit 1
+py pinned source has the selected github-actions wildcard group
+-e:1:in `block in <main>': undefined local variable or method `_1' for main:Object (NameError)
+	from -e:1:in `each'
+	from -e:1:in `find'
+	from -e:1:in `<main>'
+Decision records py wildcard source and labels cadence carried
+py-source-description exit 0
+cadence-carried-label exit 0
+Owner Q7.B direction applied: license gate is inapplicable to this bundle
+no-dependency-graph assertion exit 0

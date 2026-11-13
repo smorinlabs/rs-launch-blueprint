@@ -1,0 +1,217 @@
+# R77 revision 4 self-check — 2026-09-27T19:40:57Z
+# decision sha256 at this run: a3c2dc6ca904b80f8e565f9ad0999cb3a0ab3f78f5d0f9e8d53c1b9d97765b55
+
+## H — identities
+PASS revision-3 snapshot is untouched (5985ee47d5c714fdc317d5b8a8c58aff9c01b3f552834de8ac0b9c5282bb92fd)
+PASS raw/muse.md is the collected Muse report (a2e9a208f6e8bb269ac396ea1f1bff605cb549c403ce676539cbb61dc2123426)
+PASS raw/muse.md line count (204)
+PASS raw/opus.md (a81c6372fe084f805fa4058c68e60af7064b354de69a2a0da0360b9c2a0ac533)
+PASS the registered Opus copy (a81c6372fe084f805fa4058c68e60af7064b354de69a2a0da0360b9c2a0ac533)
+PASS the live prompt (48610c1abe76d1c54c3ca0f7584f6c656e2a6471fc24b7bd6ed8f801182172c4)
+PASS inputs/prompt.md is byte-identical to the live prompt (48610c1abe76d1c54c3ca0f7584f6c656e2a6471fc24b7bd6ed8f801182172c4)
+
+## D — decision shape
+PASS H2 sections, in order (## Decision|## Parameters|## Empirical check|## Engines)
+FAIL H1 names revision 4 (line 1)
+     line 1 of /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md does not contain: — decision (revision 4)
+PASS one Principles and implementation subsection
+PASS a re-verify line
+PASS no unfilled placeholder
+PASS no unfilled placeholder
+
+## R — revision-4 repairs, per finding
+### fable F1 — both engines, the migration, the disagreements
+PASS F1 lists the Muse report
+PASS F1 gives the Muse sha256 in full
+PASS F1 records the migration event
+PASS F1 has the disagreements subsection
+PASS F1 adjudicates | 1 | Recommendation |
+PASS F1 adjudicates | 2 | Fitness gate 2 |
+PASS F1 adjudicates | 3 | Maintenance labels
+PASS F1 adjudicates | 4 | Error shape |
+PASS F1 adjudicates | 5 | Placement |
+PASS F1 adjudicates | 6 | Figures |
+PASS F1 adjudicates | 7 | Loader shape |
+PASS F1 adjudicates | 8 | Prefix derivation |
+PASS F1 adjudicates | 9 | Tests |
+PASS F1 adjudicates | 10 | Gate 1 |
+PASS F1 the 'codex — absent' bullet is gone
+PASS F1 the old required_engines quotation is gone
+PASS F1 'synthesized from a single engine' is gone
+PASS F1 'no inter-engine disagreements' is gone
+PASS F1 'neither engine had' is gone
+PASS F1 the REST-standard sentence is restated
+### fable F2 — no floor on R74's membership
+PASS F2 'at least four members' occurs once, as a quotation of revision 3 (1)
+PASS F2 that one occurrence is the quotation
+PASS F2 'is still twelve' is gone
+PASS F2 no floor is set
+PASS F2 the field count is restated
+PASS F2 AC14 points at R74's published membership
+PASS F2 the re-verify line points at R74's publication
+### fable F3 — the readiness pause has an owner
+PASS F3 subsection
+PASS F3 the variable is named
+PASS F3 default 0
+PASS F3 the budget rule
+PASS F3 R80 cited at 314–318
+PASS F3 R80 cited at 750–752
+PASS F3 'R80 decides the split' occurs once, as a quotation of revision 3 (1)
+PASS F3 that one occurrence is the quotation
+PASS F3 the old re-verify clause is gone
+PASS F3 AC15
+### fable F4 — the start of main
+PASS F4 handshake stated
+PASS F4 telemetry reads no variable
+PASS F4 AC16
+PASS F4 re-verify names AC16
+### fable F5 — stale self-descriptions
+PASS F5 revision 2 labelled by commit
+PASS F5 the '(this file)' label on revision 2 is gone
+PASS F5 only revision 5 is called 'this file' (1)
+PASS F5 the one 'this file' label is revision 5's
+PASS F5 R80 is not called published
+PASS F5 R80 described as landed
+PASS F5 the rest-conformance bullet is qualified
+### fable F6 and claude 4 — config 0.15.26
+PASS F6 gate-2 cell records both versions
+PASS F6 re-verify says 1.88.0
+PASS F6 the old 1.85.0 trigger text is gone
+PASS F6 a new 0.15.x release is a trigger
+PASS F6 0.15.26 measured row
+### claude 1 — P6 superseded
+PASS c1 probes-r4.sh unsets the variable
+PASS c1 probes-r4.sh passes an explicit target dir
+PASS c1 probes-r4.sh has the negative control
+PASS c1 the decision cites the rerun log
+PASS c1 the P6 caveat is in Empirical check
+### claude 2 — declarations-only census
+PASS c2 ov-allocation-r4.sh searches DECISION.md only
+PASS c2 ov-allocation-r4.sh matches headings only
+PASS c2 the OV section cites the r4 log
+### claude 3 — the reproducibility rule
+PASS c3 'Exactly three kinds of line vary' is gone
+PASS c3 'Nothing else differs.' is gone
+PASS c3 the rule lists tree-census counts
+PASS c3 the rule lists toolchain lines
+PASS c3 the rule lists two-way rolling counters
+PASS c3 the rest-conformance-r2.sh table cell says exit 1 at 90/1/0
+### claude 5 — Figment pushed_at
+PASS c5 the new pushed_at is recorded
+PASS c5 the commits snapshot is cited
+PASS c5 zero default-branch commits since 2024-09-14 (0)
+PASS c5 a new figment release is a trigger
+
+## P — carried evidence, byte-identical
+PASS carried figures.sh (d70b89cdd15898078182f696540bd992be7d17c9ba7262441bc4395d29dd25a6)
+PASS carried figures.log (493ba961663fbf19d28432610d38ff168558239e074026d02ced7bf28a58f086)
+PASS carried sources.sh (a63bb281280bc3d530f7aacf24e3825994f94c2f980db4df7c0041cb9fe05f34)
+PASS carried sources.log (455841ce2b0d76cf94d46a5563d3a50a9144e454bf4f5218235ee32c1b3f3923)
+PASS carried probes.sh (4af088a3945a2ba47ab7f60ef71f0714fd4075b9f01cfe81606edd45d1b62747)
+PASS carried probes.log (fe848ea72828e4220f7030caca562c48517f16207565d9b05c6edf2a58672ae7)
+PASS carried fetch-snapshots.sh (9c26e9ea96b101e88398b60baf3b709bc3b3e0aae28bfd8d9b77c4442e51c642)
+PASS carried fetch-snapshots.log (8eae6a9c2af53ec40384968efed1ed40b16e5d7c7523240336fd7e25c84f5226)
+PASS carried rerun-diff.log (d6b4d0fee8b741eb8850d00c38810ddf832d0c161f6f0d0cc4530e36dd96028a)
+PASS carried archive-rerun.log (b341895ab9f790914d3475f70a34b4aa7aae0c07eaea39100a3f3b7e7ad15d1a)
+PASS carried rest-conformance-r2.sh (1db52d4d926f026987bc3970c6301fcb01ac1aeeb966ba3d4e7b2e08133beafa)
+PASS carried rest-conformance-r2.log (a7c3370352af8b148c023161078c45026fae921531485f74d1c56025c8b25739)
+PASS carried rerun-diff-r2.log (1ea5e4b24aba3ff7624ea1727de78558d5d1b5c9c4be7aae08906d559c832aee)
+PASS carried archive-rerun-r2.log (8715c9b5bf715c1c242bea7d30a5e4443b30f6ab3079d81ac62772d0d20d5b92)
+PASS carried ov-allocation-r3.sh (0a5f166384053afbfd53d828ce2f4d5a64112692af7d1e057ec55e5d311dcc69)
+PASS carried ov-allocation-r3.log (afda05844debadfc6b96e80aa34a9ebde0f6f7ae1e37e1338e6bb3612aef49b1)
+PASS carried rerun-diff-r3.log (937a39d1ff8cf01495c267e0a73eff21724618d7c274e2e82cbd353e6271b1b1)
+PASS carried archive-rerun-r3.log (9b90b7314d5a1f3bc6bd0a5820d1ecd675913ead3449c512e391201a5ab66e03)
+PASS snapshots/ holds 37 files (37)
+PASS snapshots/ content (sha256 over the sorted per-file sha256 list) (7f2eeb92765aab81fcbf640e85eb4a4a90ece92f83b4533da5d40c03dbcebbb3)
+
+## M — the Muse report and the REST standard
+PASS raw/muse.md occurrences of REST (0)
+PASS positive control: the same search finds REST in this decision (25)
+PASS raw/muse.md occurrences of R8.1 (0)
+PASS positive control: the same search finds R8.1 in this decision (27)
+PASS raw/muse.md occurrences of R9.1 (0)
+PASS positive control: the same search finds R9.1 in this decision (8)
+PASS raw/muse.md occurrences of R11.2 (0)
+PASS positive control: the same search finds R11.2 in this decision (9)
+PASS muse cites the executed config Display string (line 53)
+PASS muse's app-name constant (line 65)
+PASS muse's runtime prefix derivation (line 68)
+PASS muse's loader sets the separator (line 71)
+PASS muse's trailing-underscore observation (line 77)
+PASS muse's reuse premium is conditional on R53 (line 112)
+PASS muse places settings in the library crate (line 113)
+PASS muse rates figment stable-quiet on 1/10, 185 days (line 88)
+PASS muse's envy window was partly unretrievable (line 89)
+PASS muse's lenient gate-2 reading (line 94)
+PASS muse excludes nothing by gate (line 102)
+PASS muse's recommendation (line 121)
+PASS muse verified 0.15.26 / 1.88.0 (line 125)
+PASS muse's runner-up (line 129)
+
+## I — policy inputs (uncommitted when revision 4 was written)
+PASS live prompt engine line (line 24)
+PASS frozen prompt engine line (line 24)
+PASS the prompt's at-risk rubric (line 61)
+PASS research/EXECUTION.json engine_overrides.R77 (muse,opus)
+PASS research/EXECUTION.json items.R77.engines (muse,opus)
+PASS research/runs/R77/2026-09-17T034011Z-5884fd6b6366/inputs/EXECUTION.json engine_overrides.R77 (muse,opus)
+PASS research/runs/R77/2026-09-17T034011Z-5884fd6b6366/inputs/EXECUTION.json items.R77.engines (muse,opus)
+PASS RUNBOOK lines 69-75 list R77 in the Muse substitution set
+PASS RUNBOOK lines 69-75 name Q17.A
+PASS ledger records the Muse collection (line 1173)
+PASS ledger records Q17.A (line 1215)
+PASS manifest required_engines (muse,opus)
+PASS manifest migration event (codex>muse|codex,opus|muse bulk substitution (owner decision Q5.A 2026-09-21))
+PASS operations/muse.json (the stated gap: not yet registered) (submitting|muse-spark)
+
+## C — coupled and cited decisions, at the revisions read
+PASS R74 revision 2 (working tree) as read (68e19cf3d99567dce2b6864ac968d652f1ae93d116c5f43e187fac82fbb6e246)
+PASS R74 member 1 (line 511)
+PASS R74 member 2 (line 512)
+PASS R74 member 3 (line 513)
+PASS R74 cites OV-17 (line 515)
+PASS R74 hands R77 three fields (line 560)
+PASS R58 revision 1 (working tree) as read (d06a6961d5b4f583182ea3d90de3b6222c3a9bbf955144e6c896339657ba5ed9)
+PASS R58 claims the serve binary's first statement (line 1405)
+PASS R80 revision 3 at its landed commit 53b13f45 (184d2b1714f8eb26a7b4df43b6020feb280662e85fcf3668a7fb0938d0d230c8)
+PASS R80 revision 3 title (line 1)
+PASS R80: inert at zero (line 313)
+PASS R80: no owner today (line 314)
+PASS R80: a requirement, not a fact (line 318)
+PASS R80: hand-off heading (line 750)
+PASS R80: if R77 declines (line 752)
+PASS R80 withdraws its raw sentence (line 1197)
+PASS R80 declares OV-05 (line 639)
+DRIFT R80 live file has moved past 53b13f45 (a re-verify trigger)
+PASS R53 recommends serde and no validation crate (line 67)
+PASS R53: no dedicated validation crate (line 68)
+PASS R53: no dependency added (line 81)
+PASS R54 rejects a layer-merging engine (line 303)
+PASS R57's TOOL_NAME (line 254)
+PASS owner withdrew the lenient gate-2 reading (line 460)
+
+## L — revision-4 logs, and the figures the decision quotes from them
+PASS drift-r4.log totals (PASS=32 FAIL=0 SKIP=0 TOTAL=32)
+PASS probes-r4.log totals (PASS=37 FAIL=0 SKIP=0 TOTAL=37)
+PASS ov-allocation-r4.log totals (PASS=10 FAIL=0 SKIP=0 TOTAL=10)
+PASS probes-rerun-r4.log totals (PASS=6 FAIL=0 SKIP=0 TOTAL=6)
+PASS probes-rerun-r4.log run 1 (as written) (  | PASS=31 FAIL=3 SKIP=0 TOTAL=34)
+PASS probes-rerun-r4.log run 2 (variable removed) (  | PASS=34 FAIL=0 SKIP=0 TOTAL=34)
+PASS the decision states ov-allocation-r3.sh's live-tree totals as logged
+PASS ov-allocation-r3-rerun-r4.log fails exactly the census and the three revision-3 text checks (FAIL a third item claims OV-04:|FAIL H1 is the date-first revision-3 title|FAIL the revision history names all three revisions|FAIL the substance of revision 2 is declared unmoved)
+PASS ov-allocation-r3-rerun-r4.log: group C's 90/1/0 rerun still passes
+PASS fetch-snapshots-r4.log wrote 27 files (27)
+PASS snapshots-r4/ holds those 27 files (27)
+PASS probes-r4: config 0.15.26 measured at 11 packages, 369248 B
+PASS probes-r4: the deltas the decision quotes
+PASS probes-r4: P7.2
+PASS probes-r4: 3 set, 8 read under Muse's loader
+PASS probes-r4: P3r4.1 verbatim string
+PASS drift-r4: config 0.15.26 / 1.88.0
+PASS drift-r4: Figment pushed_at 2026-09-27
+PASS drift-r4: Figment zero commits
+PASS drift-r4: serde-env open issues 0
+PASS drift-r4: config-rs stars 3214
+PASS ov-allocation-r4: this decision is the only OV-04 declarer
+
+PASS=184 FAIL=1 SKIP=0 TOTAL=185

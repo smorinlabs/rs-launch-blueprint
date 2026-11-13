@@ -1,0 +1,5 @@
+Wrote `raw/codex.md`  
+SHA-256: `2ba03f11963052802359bd8775e75ea73432d9fe847b2383577bc106e462897b`  
+H3 fields: 15  
+`BASELINE-REVIEW: F204` emitted.  
+Unverified: R18 bot inventory and any `claude-code-review` comment syntax.

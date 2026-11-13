@@ -1,0 +1,212 @@
+# Ecosystem authorities — retrieved 2026-09-09
+
+## 1. rust-lang/rust tracking issues on the SIGPIPE/broken-pipe language fix
+$ gh api repos/rust-lang/rust/issues/97889 --jq '{number,title,state,labels:[.labels[].name],created_at,updated_at}'
+{"created_at":"2022-06-08T17:57:12Z","labels":["C-tracking-issue","T-libs","S-tracking-needs-summary","S-tracking-needs-deep-research","S-tracking-needs-documentation"],"number":97889,"state":"open","title":"Tracking Issue for `unix_sigpipe`","updated_at":"2026-08-12T20:01:54Z"}
+$ gh api repos/rust-lang/rust/issues/62569 --jq '{number,title,state,labels:[.labels[].name],created_at,updated_at}'
+{"created_at":"2019-07-10T19:56:27Z","labels":["A-runtime","T-lang","A-maybe-future-edition","T-libs","I-lang-radar"],"number":62569,"state":"open","title":"Should Rust still ignore SIGPIPE by default?","updated_at":"2026-08-12T21:16:20Z"}
+
+## 2. Cargo SemVer reference — adding a variant to a public exhaustive enum
+$ curl https://raw.githubusercontent.com/rust-lang/cargo/master/src/doc/src/reference/semver.md | grep -n -B4 -A18 'enum-variant-new'
+
+## 3. Rust CLI Working Group book — exit codes and signals pages
+$ curl -w '%{http_code}' https://raw.githubusercontent.com/rust-cli/book/master/src/in-depth/exit-code.md -> HTTP 200
+# Exit codes
+
+A program doesn't always succeed.
+And when an error occurs,
+you should make sure to emit the necessary information correctly.
+In addition to
+[telling the user about errors](human-communication.html),
+on most systems,
+when a process exits,
+it also emits an exit code
+(an integer between 0 and 255 is compatible with most platforms).
+You should try to emit the correct code
+for your program's state.
+For example,
+in the ideal case when your program succeeds,
+it should exit with `0`.
+
+When an error occurs, it gets a bit more complicated, though.
+In the wild,
+many tools exit with `1` when a common failure occurs.
+Currently, Rust sets an exit code of `101` when the process panicked.
+Beyond that, people have done many things in their programs.
+
+So, what to do?
+The BSD ecosystem has collected a common definition for their exit codes
+(you can find them [here][`sysexits.h`]).
+The Rust library [`exitcode`] provides these same codes,
+ready to be used in your application.
+Please see its API documentation for the possible values to use.
+
+After you add the `exitcode` dependency to your `Cargo.toml`,
+you can use it like this:
+
+```rust,ignore
+fn main() {
+    // ...actual work...
+    match result {
+        Ok(_) => {
+            println!("Done!");
+            std::process::exit(exitcode::OK);
+        }
+        Err(CustomError::CantReadConfig(e)) => {
+            eprintln!("Error: {}", e);
+            std::process::exit(exitcode::CONFIG);
+        }
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            std::process::exit(exitcode::DATAERR);
+        }
+    }
+}
+```
+
+
+[`exitcode`]: https://crates.io/crates/exitcode
+[`sysexits.h`]: https://www.freebsd.org/cgi/man.cgi?query=sysexits&apropos=0&sektion=0&manpath=FreeBSD+11.2-stable&arch=default&format=html
+...
+$ curl -w '%{http_code}' https://raw.githubusercontent.com/rust-cli/book/master/src/in-depth/signals.md -> HTTP 200
+# Signal handling
+
+Processes
+like command line applications
+need to react to signals sent by the operating system.
+The most common example is probably <kbd>Ctrl</kbd>+<kbd>C</kbd>,
+the signal that typically tells a process to terminate.
+To handle signals in Rust programs
+you need to consider how you can receive these signals
+as well as how you can react to them.
+
+<aside>
+
+**Note:**
+If your applications does not need to gracefully shutdown,
+the default handling is fine
+(i.e. exit immediately
+and let the OS cleanup resources like open file handles).
+In that case:
+No need to do what this chapter tells you!
+
+However,
+for applications that need to clean up after themselves,
+this chapter is very relevant!
+For example,
+if your application needs to
+properly close network connections
+(saying "good bye" to the processes at the other end),
+remove temporary files,
+or reset system settings,
+read on.
+
+</aside>
+
+## Differences between operating systems
+
+On Unix systems
+(like Linux, macOS, and FreeBSD)
+a process can receive [signals].
+It can either react to them
+in a default (OS-provided) way,
+catch the signal and handle them in a program-defined way,
+or ignore the signal entirely.
+
+[signals]: https://manpages.ubuntu.com/manpages/bionic/en/man7/signal.7.html
+
+Windows does not have signals.
+You can use [Console Handlers]
+to define callbacks that get executed when an event occurs.
+There is also [structured exception handling]
+which handles all the various types of system exceptions such as division by zero, invalid access exceptions, stack overflow, and so on
+
+[Console Handlers]: https://docs.microsoft.com/en-us/windows/console/console-control-handlers
+[structured exception handling]: https://docs.microsoft.com/en-us/windows/desktop/debug/structured-exception-handling
+
+## First off: Handling Ctrl+C
+
+The [ctrlc] crate does just what the name suggests:
+It allows you to react to the user pressing <kbd>Ctrl</kbd>+<kbd>C</kbd>,
+in a cross-platform way.
+...
+
+## 2b. Cargo SemVer reference — enum variant rules (retry with correct anchor)
+$ grep -n -i -B3 -A16 'Adding new enum variants' src/doc/src/reference/semver.md
+
+$ grep -n -B2 -A10 'non_exhaustive' src/doc/src/reference/semver.md | head -40
+
+## 2c. Cargo SemVer reference (rendered book) — https://doc.rust-lang.org/cargo/reference/semver.html
+$ curl https://doc.rust-lang.org/cargo/reference/semver.html | sed -e 's/<[^>]*>//g' | grep -n -A14 'Major: adding new enum variants'
+254:Major: adding new enum variants (without non_exhaustive)
+255-Major: adding new fields to an enum variant
+256-
+257-
+258-Traits
+259-
+260-Major: adding a non-defaulted trait item
+261-Major: any change to trait item signatures
+262-Possibly-breaking: adding a defaulted trait item
+263-Major: adding a trait item that makes the trait non-object safe
+264-Major: adding a type parameter without a default
+265-Minor: adding a defaulted trait type parameter
+266-
+267-
+268-Implementations
+269-
+270-Possibly-breaking change: adding any inherent items
+--
+1170:Major: adding new enum variants (without non_exhaustive)
+1171-It is a breaking change to add a new enum variant if the enum does not use the
+1172-#[non_exhaustive] attribute.
+1173-// MAJOR CHANGE
+1174-
+1175-///////////////////////////////////////////////////////////
+1176-// Before
+1177-pub enum E {
+1178-    Variant1,
+1179-}
+1180-
+1181-///////////////////////////////////////////////////////////
+
+$ ... | grep -n -B3 -A10 'non_exhaustive'  (mitigation)
+252-Enums
+253-
+254:Major: adding new enum variants (without non_exhaustive)
+255-Major: adding new fields to an enum variant
+256-
+257-
+258-Traits
+259-
+260-Major: adding a non-defaulted trait item
+261-Major: any change to trait item signatures
+262-Possibly-breaking: adding a defaulted trait item
+--
+294-
+295-Major: switching from no_std support to requiring std
+296:Major: adding non_exhaustive to an existing enum, variant, or struct with no private fields
+297-
+298-
+299-
+300-
+301-Tooling and environment compatibility
+302-
+303-Possibly-breaking: changing the minimum version of Rust required
+304-Possibly-breaking: changing the platform and environment requirements
+--
+410-Some examples of changes that are not a breaking change are (assuming no other rules in this guide are violated):
+411-
+412:Adding, removing, reordering, or changing fields of a default representation struct, union, or enum in such a way that the change follows the other rules in this guide (for example, using non_exhaustive to allow those changes, or changes to private fields that are already private).
+413-See struct-add-private-field-when-public, struct-add-public-field-when-no-private, struct-private-fields-with-private, enum-fields-new.
+414:Adding variants to a default representation enum, if the enum uses non_exhaustive.
+415-This may change the alignment or size of the enumeration, but those are not well-defined.
+416-See enum-variant-new.
+417:Adding, removing, reordering, or changing private fields of a repr(C) struct, union, or enum, following the other rules in this guide (for example, using non_exhaustive, or adding private fields when other private fields already exist).
+418-See repr-c-private-change.
+419:Adding variants to a repr(C) enum, if the enum uses non_exhaustive.
+420-See repr-c-enum-variant-new.
+421-Adding repr(C) to a default representation struct, union, or enum.
+422-See repr-c-add.
+423-Adding repr(&lt;int&gt;) primitive representation to an enum.
+424-See repr-int-enum-add.
+425-Adding repr(transparent) to a default representation struct or enum.

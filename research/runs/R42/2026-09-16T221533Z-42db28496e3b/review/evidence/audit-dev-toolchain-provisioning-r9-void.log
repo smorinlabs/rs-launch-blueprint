@@ -1,0 +1,79 @@
+# R42 revision 9 auditor: synthetic VOID-path probe
+Both leg paths are a temporary script which emits HTTP 429 and exits 1. The real third leg must mark every demo VOID and finish with exit 2, never PASSED.
+
+--- A. Both legs pass CLEAN, twice, and the reruns obey the stated rerun rule
+leg1 clean run 1 exit 1
+ASSERT-FAIL leg1-clean-1 exit 1
+leg1 clean run 2 exit 1
+ASSERT-FAIL leg1-clean-2 exit 1
+leg2 clean run 1 exit 1
+ASSERT-FAIL leg2-clean-1 exit 1
+leg2 clean run 2 exit 1
+ASSERT-FAIL leg2-clean-2 exit 1
+# leg 1: two clean runs in one scratch may differ ONLY in 'INFO Done in' timings
+leg1 clean diff:
+leg1 differing lines that are not timings: 0
+ASSERT-OK   leg1-rerun-rule (only 'INFO Done in' lines differ)
+# leg 2: two clean runs in one scratch must be byte-identical
+leg2 clean diff lines: 0
+ASSERT-OK   leg2-rerun-rule (byte-identical)
+
+--- B0. Why the tree control's perturbation is tag v1.21.0 and not the adjacent v1.22.0
+v1.22.0 crates/bin/src/args.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/gh_crate_meta.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/quickinstall.rs -> same
+v1.22.0 crates/binstalk/src/ops/resolve/resolution.rs -> same
+v1.22.0 SIGNING.md -> same
+v1.22.0 crates/binstalk-registry/src/common.rs -> same
+v1.22.0 crates/binstalk-downloader/src/download.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/signing.rs -> same
+files byte-identical at v1.22.0 and v1.23.0: 8 of 8
+ASSERT-OK   v1.22.0-content-identical (so the control need not, and does not, separate those two tags)
+v1.21.0 crates/bin/src/args.rs sha256 2e77dce1e9848bcfba5b921870d9917b49c7f4132cac5e07763c8495010f0788
+ASSERT-OK   v1.21.0-content-differs (a tree the control must reject)
+
+--- B. Leg 2's controls, each shown failing when its input is perturbed
+PERTURB=tree -> exit 1
+VOID leg2/tree — the run hit a transport limit; not counted
+PERTURB=dvcount -> exit 1
+VOID leg2/dvcount — the run hit a transport limit; not counted
+PERTURB=dupsite -> exit 1
+VOID leg2/dupsite — the run hit a transport limit; not counted
+PERTURB=poscntl -> exit 1
+VOID leg2/poscntl — the run hit a transport limit; not counted
+PERTURB=blake3 -> exit 1
+VOID leg2/blake3 — the run hit a transport limit; not counted
+PERTURB=sweep -> exit 1
+VOID leg2/sweep — the run hit a transport limit; not counted
+
+--- C. Leg 2 still passes clean after the tree-editing perturbations were restored
+leg2 clean run 3 exit 1
+ASSERT-FAIL leg2-clean-3 exit 1
+leg2 post-restore diff lines: 0
+ASSERT-OK   leg2-restore-identical
+
+--- D. Leg 1's controls, each shown failing when its input is perturbed
+PERTURB=sha -> exit 1
+VOID leg1/sha — the run hit a transport limit; not counted
+PERTURB=signing -> exit 1
+VOID leg1/signing — the run hit a transport limit; not counted
+PERTURB=p7a -> exit 1
+VOID leg1/p7a — the run hit a transport limit; not counted
+PERTURB=p7b -> exit 1
+VOID leg1/p7b — the run hit a transport limit; not counted
+PERTURB=p7c -> exit 1
+VOID leg1/p7c — the run hit a transport limit; not counted
+PERTURB=p7d -> exit 1
+VOID leg1/p7d — the run hit a transport limit; not counted
+PERTURB=cargohome -> exit 1
+VOID leg1/cargohome — the run hit a transport limit; not counted
+
+--- E. Leg 1 still passes clean after every perturbation
+leg1 clean run 3 exit 1
+ASSERT-FAIL leg1-clean-3 exit 1
+
+--- Control summary
+controls demonstrated: 13 (7 in leg 1, 6 in leg 2)
+assertions passed: 5  failed: 6  void: 13  total: 11
+CONTROLS RESULT: INCOMPLETE (13 void run(s))
+void_probe_exit=2

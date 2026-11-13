@@ -1,0 +1,270 @@
+
+
+========== 0. Toolchain and host (recorded because a resolution is toolchain-dependent) ==========
+Run started (UTC): 2026-09-17T05:21:35Z
+rustc  : rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo  : cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host   : Darwin 25.4.0 arm64
+macOS  : 26.4
+spike  : /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r62-spike.BC0OGw (removed on exit)
+
+NOTE: `cargo tree --target x86_64-unknown-linux-gnu` resolves the Linux leg from the lockfile
+without a Linux toolchain or a Linux host. It proves what WOULD be linked
+on ubuntu-latest; it does not compile or run anything for that target.
+
+
+========== 1. The spike package (its entire source) ==========
+--- Cargo.toml ---
+[package]
+name = "r62-arboard-spike"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+arboard = { version = "3.6.1", default-features = false, features = ["wayland-data-control"] }
+--- src/main.rs ---
+fn main() { let _ = std::mem::size_of::<arboard::Clipboard>(); }
+--- (that is all of it) ---
+
+
+========== 2. cargo generate-lockfile ==========
+    Updating crates.io index
+     Locking 70 packages to latest Rust 1.98.0 compatible versions
+[S01 PASS] cargo generate-lockfile exit status = 0
+  [/usr/bin/grep -cF] count=1 needle=Locking file=lock.txt
+[S02 PASS] cargo reported a lock resolution = 1
+
+
+========== 3. macOS leg — cargo tree -e normal --target aarch64-apple-darwin ==========
+r62-arboard-spike v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r62-spike.BC0OGw/spike)
+└── arboard v3.6.1
+    ├── objc2 v0.6.4
+    │   └── objc2-encode v4.1.0
+    ├── objc2-app-kit v0.3.2
+    │   ├── bitflags v2.13.2
+    │   ├── objc2 v0.6.4 (*)
+    │   ├── objc2-core-graphics v0.3.2
+    │   │   ├── bitflags v2.13.2
+    │   │   ├── objc2 v0.6.4 (*)
+    │   │   └── objc2-core-foundation v0.3.2
+    │   │       ├── bitflags v2.13.2
+    │   │       └── objc2 v0.6.4 (*)
+    │   └── objc2-foundation v0.3.2
+    │       ├── bitflags v2.13.2
+    │       ├── objc2 v0.6.4 (*)
+    │       └── objc2-core-foundation v0.3.2 (*)
+    └── objc2-foundation v0.3.2 (*)
+[S03 PASS] cargo tree (macOS leg) exit status = 0
+  [/usr/bin/grep -cF] count=1 needle=arboard v3.6.1 file=mac.txt
+[S04 PASS] arboard 3.6.1 in the macOS normal tree = 1
+  [/usr/bin/grep -cF] count=1 needle=objc2-app-kit v file=mac.txt
+[S05 PASS] objc2-app-kit (NSPasteboard) is the macOS backend — no external binary = 1
+  [/usr/bin/grep -cF] count=0 needle=image v file=mac.txt
+[S06 PASS] the image crate is ABSENT — default-features = false did its job = 0
+  [/usr/bin/grep -cF] count=0 needle=x11rb v file=mac.txt
+[S07 PASS] no X11 dependency on the macOS leg = 0
+  [/usr/bin/grep -cF] count=0 needle=wl-clipboard-rs v file=mac.txt
+[S08 PASS] no Wayland dependency on the macOS leg = 0
+macOS-leg distinct normal packages (including the spike itself): 9
+
+
+========== 4. Linux leg — cargo tree -e normal --target x86_64-unknown-linux-gnu ==========
+r62-arboard-spike v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r62-spike.BC0OGw/spike)
+└── arboard v3.6.1
+    ├── log v0.4.34
+    ├── parking_lot v0.12.5
+    │   ├── lock_api v0.4.14
+    │   │   └── scopeguard v1.2.0
+    │   └── parking_lot_core v0.9.12
+    │       ├── cfg-if v1.0.5
+    │       ├── libc v0.2.189
+    │       └── smallvec v1.16.1
+    ├── percent-encoding v2.3.2
+    ├── wl-clipboard-rs v0.9.3
+    │   ├── libc v0.2.189
+    │   ├── log v0.4.34
+    │   ├── os_pipe v1.2.3
+    │   │   └── libc v0.2.189
+    │   ├── rustix v1.1.5
+    │   │   ├── bitflags v2.13.2
+    │   │   └── linux-raw-sys v0.12.1
+    │   ├── thiserror v2.0.20
+    │   │   └── thiserror-impl v2.0.20 (proc-macro)
+    │   │       ├── proc-macro2 v1.0.107
+    │   │       │   └── unicode-ident v1.0.25
+    │   │       ├── quote v1.0.47
+    │   │       │   └── proc-macro2 v1.0.107 (*)
+    │   │       └── syn v3.0.6
+    │   │           ├── proc-macro2 v1.0.107 (*)
+    │   │           ├── quote v1.0.47 (*)
+    │   │           └── unicode-ident v1.0.25
+    │   ├── tree_magic_mini v3.2.2
+    │   │   ├── memchr v2.8.3
+    │   │   ├── nom v8.0.0
+    │   │   │   └── memchr v2.8.3
+    │   │   └── petgraph v0.8.3
+    │   │       ├── fixedbitset v0.5.7
+    │   │       ├── hashbrown v0.15.5
+    │   │       │   └── foldhash v0.1.5
+    │   │       └── indexmap v2.14.2
+    │   │           ├── equivalent v1.0.2
+    │   │           └── hashbrown v0.17.1
+    │   ├── wayland-backend v0.3.17
+    │   │   ├── downcast-rs v1.2.1
+    │   │   ├── rustix v1.1.5 (*)
+    │   │   ├── smallvec v1.16.1
+    │   │   └── wayland-sys v0.31.11
+    │   ├── wayland-client v0.31.15
+    │   │   ├── bitflags v2.13.2
+    │   │   ├── rustix v1.1.5 (*)
+    │   │   ├── wayland-backend v0.3.17 (*)
+    │   │   └── wayland-scanner v0.31.11 (proc-macro)
+    │   │       ├── proc-macro2 v1.0.107 (*)
+    │   │       ├── quick-xml v0.41.0
+    │   │       │   └── memchr v2.8.3
+    │   │       └── quote v1.0.47 (*)
+    │   ├── wayland-protocols v0.32.13
+    │   │   ├── bitflags v2.13.2
+    │   │   ├── wayland-backend v0.3.17 (*)
+    │   │   ├── wayland-client v0.31.15 (*)
+    │   │   └── wayland-scanner v0.31.11 (proc-macro) (*)
+    │   └── wayland-protocols-wlr v0.3.12
+    │       ├── bitflags v2.13.2
+    │       ├── wayland-backend v0.3.17 (*)
+    │       ├── wayland-client v0.31.15 (*)
+    │       ├── wayland-protocols v0.32.13 (*)
+    │       └── wayland-scanner v0.31.11 (proc-macro) (*)
+    └── x11rb v0.13.2
+        ├── gethostname v1.1.0
+        │   └── rustix v1.1.5 (*)
+        ├── rustix v1.1.5 (*)
+        └── x11rb-protocol v0.13.2
+[S09 PASS] cargo tree (Linux leg) exit status = 0
+  [/usr/bin/grep -cF] count=1 needle=arboard v3.6.1 file=linux.txt
+[S10 PASS] arboard 3.6.1 in the Linux normal tree = 1
+[S11 PASS] x11rb occurrences on the Linux leg (the unconditional X11 backend) = 1 (>= 1)
+[S12 PASS] wl-clipboard-rs occurrences on the Linux leg (the opt-in Wayland backend) = 1 (>= 1)
+  [/usr/bin/grep -cF] count=0 needle=image v file=linux.txt
+[S13 PASS] the image crate is ABSENT on the Linux leg too = 0
+Linux-leg distinct normal packages (including the spike itself): 43
+COST OF wayland-data-control, measured here: the Linux leg is 43 packages
+against the macOS leg's 9. That difference is the qualitative
+compile-time and binary-size answer fitness gate 6 asks for, stated as a
+package count on this resolution rather than as an adjective.
+
+
+========== 5. Duplicate-resolution control (R67 ran the same control on its own set) ==========
+--- macOS leg ---
+warning: nothing to print.
+
+To find dependencies that require specific target platforms, try to use option `--target all` first, and then narrow your search scope accordingly.
+--- Linux leg ---
+hashbrown v0.15.5
+└── petgraph v0.8.3
+    └── tree_magic_mini v3.2.2
+        └── wl-clipboard-rs v0.9.3
+            └── arboard v3.6.1
+                └── r62-arboard-spike v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r62-spike.BC0OGw/spike)
+
+hashbrown v0.17.1
+└── indexmap v2.14.2
+    └── petgraph v0.8.3 (*)
+  [/usr/bin/grep -cF] count=0 needle= v file=dup-mac.txt
+[S14 PASS] duplicate package lines on the macOS leg (cargo prints only a 'nothing to print' warning) = 0
+[S15 PASS] hashbrown lines in the Linux duplicate report = 2 (>= 1)
+
+FINDING: the Linux leg resolves TWO hashbrown versions, reached through
+wl-clipboard-rs -> tree_magic_mini -> petgraph on one side and petgraph ->
+indexmap on the other. R67 recorded a zero-duplicate resolution for its own
+dependency set; that control does NOT hold on the Linux leg once
+wayland-data-control is enabled. It is a cost to record, not a gate
+failure: no fitness gate forbids duplicate resolutions.
+
+
+========== 6. Declared rust-version floors, per leg (cargo metadata, version-sorted) ==========
+[S16 PASS] cargo metadata exit status = 0
+--- mac leg, every declared rust-version ---
+1.56.0 bitflags
+1.71 objc2
+1.71 objc2-app-kit
+1.71 objc2-core-foundation
+1.71 objc2-core-graphics
+1.71 objc2-encode
+1.71 objc2-foundation
+1.71.0 arboard
+highest declared rust-version on the mac leg: 1.71.0 arboard
+--- linux leg, every declared rust-version ---
+1.6 equivalent
+1.32 cfg-if
+1.51 percent-encoding
+1.56 fixedbitset
+1.56.0 bitflags
+1.60 foldhash
+1.61 memchr
+1.63 linux-raw-sys
+1.63 os_pipe
+1.64 petgraph
+1.64 x11rb
+1.64 x11rb-protocol
+1.65 libc
+1.65 rustix
+1.65.0 hashbrown
+1.65.0 nom
+1.71 gethostname
+1.71 parking_lot
+1.71 proc-macro2
+1.71 quote
+1.71 syn
+1.71 thiserror
+1.71 thiserror-impl
+1.71 unicode-ident
+1.71 wayland-backend
+1.71 wayland-client
+1.71 wayland-protocols-wlr
+1.71 wayland-scanner
+1.71 wayland-sys
+1.71.0 arboard
+1.71.0 lock_api
+1.71.0 log
+1.71.0 parking_lot_core
+1.79 quick-xml
+1.85 indexmap
+1.85 tree_magic_mini
+1.85.0 hashbrown
+1.86 wayland-protocols
+highest declared rust-version on the linux leg: 1.86 wayland-protocols
+[S17 PASS] highest declared rust-version, macOS leg = 1.71.0
+[S18 PASS] highest declared rust-version, Linux leg = 1.86
+
+CORRECTION TO raw/opus.md: it states "Highest declared rust-version in the
+resolved-as-recommended set is 1.71.0". That holds for the macOS leg only.
+On the Linux leg the wayland-data-control subtree raises it to 1.86
+(wayland-protocols). Both sit far below the 1.96 floor R67 computed from
+the stable channel, so the msrv-policy verdict is unchanged; the FIGURE is
+what was wrong, not the conclusion.
+
+
+========== 7. cargo check on this host (macOS leg only — the only leg with a toolchain) ==========
+[S19 PASS] cargo check exit status — arboard 3.6.1 at these features type-checks under edition 2024 on this host = 0
+  [/usr/bin/grep -cF] count=0 needle=error[ file=check.txt
+[S20 PASS] rustc error codes in the check output = 0
+  [/usr/bin/grep -cF] count=0 needle=warning: unused file=check.txt
+[S21 PASS] unused-dependency warnings = 0
+
+
+========== 8. Summary ==========
+assertions run : 21
+failures       : 0
+
+NOT established by this script:
+  - that the Linux leg COMPILES. No Linux toolchain or host is available
+    here; section 4 is a lockfile resolution, not a build. ubuntu-latest
+    in P03 CI is what settles it.
+  - any runtime clipboard behaviour, on any platform. Nothing was run.
+  - `cargo audit`, which needs cargo-audit installed; R67 established the
+    paired-control method and this run used the RustSec HTTP endpoints
+    instead (verify.sh section 3).
+
+The spike directory /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r62-spike.BC0OGw is removed on exit.
+exit status = failures = 0

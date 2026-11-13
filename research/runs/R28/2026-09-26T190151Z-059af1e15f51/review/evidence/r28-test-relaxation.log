@@ -1,0 +1,75 @@
+== toolchain on PATH
+CARGO_HOME=/tmp/cargo-s9-R28
+/opt/homebrew/bin/cargo
+/opt/homebrew/bin/cargo-clippy
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+clippy 0.1.98
+== scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r28-test-relax.OuCGgd (outside any repository)
+
+== T1 unwrap and dbg! in a #[cfg(test)] module and unwrap in a #[test] fn pass under clippy.toml allow-*-in-tests
+$ cargo clippy --workspace --all-targets --locked -- -D warnings
+PASS T1 — exit 0
+
+== T2 negative control: the same code fails once clippy.toml is removed
+error: used `unwrap()` on a `Result` value
+  --> crates/core/src/lib.rs:15:27
+error: the `dbg!` macro is intended as a debugging tool
+  --> crates/core/src/lib.rs:16:9
+error: could not compile `r28-core` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: used `unwrap()` on a `Result` value
+ --> crates/core/tests/integration.rs:3:33
+PASS T2 — unwrap_used and dbg_macro fire without the config keys (exit 101)
+
+== T3 unwrap in a non-test helper fn of an integration-test crate still fails
+error: used `unwrap()` on a `Result` value
+ --> crates/core/tests/integration.rs:2:5
+error: could not compile `r28-core` (test "integration") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+PASS T3 — helper unwrap fires at tests/integration.rs:2 (exit 101)
+
+== T4 a reasoned crate-level allow as the first line relaxes that crate
+PASS T4 — exit 0
+
+== T5 the same allow without a reason fails (allow_attributes_without_reason)
+#![allow(clippy::unwrap_used)]
+error: `allow` attribute without specifying a reason
+ --> crates/core/tests/integration.rs:1:1
+error: could not compile `r28-core` (test "integration") due to 1 previous error
+PASS T5 — exit 101
+
+== T6 #[cfg(test)] on the helper also relaxes it
+PASS T6 — exit 0
+
+== T7 #![expect] where the lint no longer fires is an error (unfulfilled expectation)
+error: this lint expectation is unfulfilled
+ --> crates/core/tests/integration.rs:1:11
+error: could not compile `r28-core` (test "integration") due to 1 previous error
+PASS T7 — exit 101
+
+== T8 the raw/muse.md:423 bare blanket allow on a test module fails under the recommended table
+error: `allow` attribute without specifying a reason
+  --> crates/core/src/lib.rs:10:1
+error: could not compile `r28-core` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+PASS T8 — exit 101
+
+== T9 control: a correctness lint (approx_constant, deny by default) fires in a test module
+error: approximate value of `f64::consts::PI` found
+  --> crates/core/src/lib.rs:15:18
+error: could not compile `r28-core` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+PASS T9 — approx_constant is an error inside the test module (exit 101)
+
+== T10 the raw/muse.md:423 blanket allow (given a reason) silences that correctness lint too
+10:#[allow(clippy::all, clippy::pedantic, reason = "raw/muse.md:423 shape")]
+PASS T10 — the gate passes with the 3.14 literal in place (exit 0): the blanket allow hides correctness lints
+
+== T11 cargo test on the restored fixture
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+PASS T11 — exit 0
+
+== summary: 0 failing case(s)

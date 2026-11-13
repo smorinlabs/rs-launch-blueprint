@@ -1,0 +1,148 @@
+# R49 empirical audit rerun — build-target-declaration — revision 1
+retrieved: 2026-09-10T23:58:00Z
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R49/2026-09-05T155504Z-2107cffb3ecf
+actor: audit-codex-2026-09-05T155504Z-2107cffb3ecf-r1
+model: gpt-5.6-terra
+
+## Invocation record
+
+No saved executable check script exists under this run directory. The decision records
+individual read-only commands and cites seven pre-existing evidence logs. I reran the
+source checks with `curl`, `gh api`, `git show`, and installed Cargo help; no `cargo
+package`, `cargo publish`, or registry write command was invoked. The run directory has
+no `*.sh`, `*.py`, or `*.zsh` files at depth 4.
+
+The requested Linux invocation was callable, but its named `ubuntu` VM was stopped and
+could not start from this sandbox: `limactl start ubuntu` failed with `unlinkat
+/Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted`. The Cargo
+documentation probes therefore ran on macOS only, using the named Cargo 1.98.0 toolchain.
+
+## Toolchain and source checks
+
+argv groups (all read-only):
+
+```
+rustc --version
+cargo --version
+curl -fsSL https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/manifest.md
+curl -fsSL https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/cargo-targets.md
+curl -fsSL https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/build-cache.md
+curl -fsSL https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/commands/cargo-package.md
+curl -fsSL https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/commands/cargo-install.md
+curl -fsSL https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/cargo/ops/cargo_package/vcs.rs
+curl -fsSL https://raw.githubusercontent.com/axodotdev/cargo-dist/v0.23.0/book/src/workspaces/structure.md
+curl -fsSL https://raw.githubusercontent.com/axodotdev/cargo-dist/v0.32.0/book/src/workspaces/structure.md
+curl -fsSL https://raw.githubusercontent.com/axodotdev/cargo-dist/v0.32.0/book/src/reference/config.md
+cargo package --help
+cargo install --help
+```
+
+exit status: 0 for the Cargo and `cargo-dist` source groups and installed-help probes.
+
+```
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+```
+
+Cargo 1.98 `build-cache.md` says final artifacts are in the workspace-root
+`target` directory by default; `CARGO_TARGET_DIR`, `build.target-dir`, and
+`--target-dir` relocate it. It lists `target/debug/` for dev, `target/release/`
+for release, user-profile directories, and `target/<triple>/{debug,release}/`
+when `--target` is used.
+
+Cargo 1.98 `cargo-targets.md` says a package can have one library; its default
+path is `src/lib.rs` and its default name replaces dashes with underscores. It
+also says a `src/main.rs` binary defaults to the package name, that `[[bin]]`
+customizes binary settings, and that setting `autobins = false` disables binary
+auto-discovery. This supports the owned value's one explicitly declared library
+and binary, including the binary auto-discovery policy.
+
+Cargo 1.98 `manifest.md` says the `build` field defaults to `build.rs`, and
+`build = false` disables automatic build-script detection. Therefore the
+recommendation's present-state `no build.rs` claim is valid, but it is not an
+automatic future-file guard; the decision correctly declines `build = false` as
+a policy choice.
+
+Cargo 1.98 `manifest.md` says, when neither field is set, Cargo includes all
+files from the package root except documented exclusions. For a Git repository,
+those exclusions include files ignored by the repository or global gitignore;
+they are not a tracked-files-only rule. It also says `include` bypasses those
+gitignore rules, `include` overrides `exclude`, and the fields are mutually
+exclusive. This supports the explicit allow-list and the corrected F218 default.
+
+Cargo 1.98 `vcs.rs` makes a dirty Git package fail without `--allow-dirty` and
+configures its walk with `emit_untracked(EmissionMode::Matching)`. The decision's
+narrowed statement about an untracked non-ignored file being guarded by the
+dirty-tree refusal is supported. `cargo package --help` also lists
+`--allow-dirty`.
+
+Cargo 1.98 `cargo-package.md` documents a verification rebuild from the emitted
+crate, `--list`, and `--no-verify`. `cargo-install.md` says `--bins` installs all
+binaries by default; installed help exposes `--bins` and `--bin` consistently.
+
+## Package-scope qualification finding
+
+Cargo's manifest reference says `Cargo.toml`, a minimized `Cargo.lock`, and a
+`license-file` are always included for the manifest's `include`/`exclude`
+selection. However, the same 1.98 command reference documents:
+
+```
+--exclude-lockfile    Don't include the lock file when packaging.
+```
+
+The owned parameter at `review/DECISION.md:312` says `Cargo.lock` is included
+"regardless." That is wider than the evidence: the statement must be limited to
+manifest `include`/`exclude` semantics or name the `--exclude-lockfile` override.
+
+## cargo-dist remeasurement
+
+At both v0.23.0 and v0.32.0, `book/src/workspaces/structure.md` says the
+`Cargo.toml` `[workspace.metadata.dist]` location is "deprecated in 0.23.0".
+At v0.32.0, `book/src/reference/config.md` still says references to `[dist]` in
+`dist-workspace.toml` and `dist.toml` may refer to `[workspace.metadata.dist]`
+or `[package.metadata.dist]` in `Cargo.toml`. The decision's wording — deprecated
+but still supported at 0.32.0, so a second file is direction of travel rather
+than a present requirement — matches both sources.
+
+## Practice tally remeasurement
+
+The nine default-branch manifests named by the decision were re-read through the
+GitHub contents API. `exclude`: ripgrep, bat, just, mdBook, wasmtime-cli,
+fd-find, atuin. `include`: helix-term and typos-cli, where the member uses
+`include.workspace = true` and the crate-ci/typos workspace root sets `include`.
+
+```
+tally: exclude=7 include=2 neither=0 total=9
+```
+
+Every sentence referring to this split says the selected allow-list goes against
+the practice majority and records medium confidence. No sentence claims that
+allow-lists are the majority.
+
+## Parameter comparison
+
+The four `assumes` values were extracted from `review/DECISION.md` and compared
+byte-for-byte with `docs/port/PARAMETERS.md`:
+
+```
+msrv-policy       stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+rust-edition      2024
+target-os-matrix  ubuntu-latest, macos-latest
+license           MIT OR Apache-2.0
+result: exact match
+```
+
+## Saved-log attribution
+
+`review/evidence/cargo-docs-1.98.log` emits checks A through H, including the
+package default, target auto-discovery, target directory, package verification,
+install selection, installed help, and dirty-tree source check claimed by the
+decision. The distinct logs cited for `cargo-dist` configuration, practice
+manifests, source pins, registry figures, responsiveness, and toolchain also
+exist and contain their named result. There is no persisted script to rerun;
+the cited logs are command-output artifacts, not a script-produced combined log.
+
+The direct current crates.io re-query received HTTP 403 before returning data.
+That prevents a fresh registry-number comparison only; the decision's dated
+registry evidence remains available in `review/evidence/registry-figures.log`
+and does not affect the package-scope finding.

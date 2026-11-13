@@ -1,0 +1,5 @@
+[Audit report](review/audit-codex.md): `584769a9bfc4391fa09ea5f61571bddd4638ed5c6cf090e25193084f91b11050`
+Verdict: approve; unresolved findings: none.
+Rerun: exit 0; byte-identical diff exit 0. [Evidence log](review/evidence/audit-r85-r1.log)
+Verified all requested conditional-width, Dynamic-bypass, disabled-test, R66-dependency, reproducibility, parameter, and no-performance-figure claims.
+Linux rerun was blocked because the sandbox could not start the stopped Lima VM.

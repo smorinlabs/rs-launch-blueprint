@@ -1,0 +1,19 @@
+{
+  "crate": "systemfd",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/systemfd",
+    "versions": "https://crates.io/api/v1/crates/systemfd/versions"
+  },
+  "recent_downloads": 2020,
+  "downloads": 66065,
+  "repository": "https://github.com/mitsuhiko/systemfd",
+  "versions_total": 9,
+  "newest_non_yanked": {
+    "num": "0.4.6",
+    "created_at": "2025-01-19T15:52:19.451606Z",
+    "yanked": false,
+    "rust_version": "1.64.0",
+    "license": "Apache-2.0"
+  }
+}

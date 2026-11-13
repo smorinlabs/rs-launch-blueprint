@@ -1,0 +1,71 @@
+cargo-commitlint comparison run, date (UTC): 2026-09-09T06:08:56Z
+binary: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical/cargo-commitlint-compare/tools/bin/cargo-commitlint (cargo-commitlint 2.1.0); size:  4344608 bytes; os: Darwin 25.4.0 arm64
+length semantics source: src/validator.rs in the published 2.1.0 crate counts line.chars() whole-line for header/body/footer; no URL exemption and no soft-line rule
+01   expected=0      observed=0    PASS   conforming message
+       | ⧗   input: feat(cli): add --json output flag
+       | ✔  found 0 problems, 0 warnings
+02   expected=1      observed=1    PASS   type not in the enum
+       | ⧗   input: wibble(cli): add --json output flag
+       | ✖   type must be one of [build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test] [error] [type-enum]
+       | 
+       | ✖  found 1 problems, 0 warnings
+03   expected=1      observed=1    PASS   71-col subject (whole header counted, as commitlint and committed do)
+       | ⧗   input: feat(cli): add a subject line that is clearly longer than fifty columns
+       | ✖   header must not be longer than 50 characters, current length is 71 [error] [header-max-length]
+       | 
+       | ✖  found 1 problems, 0 warnings
+04   expected=1      observed=1    PASS   83-col body line with spaces
+       | ⧗   input: feat(cli): add --json output flag
+       | ✖   body line 1 must not be longer than 72 characters (found 83) [error] [body-max-line-length]
+       | 
+       | ✖  found 1 problems, 0 warnings
+05   expected=1      observed=1    PASS   bare 116-col URL body line: REJECTED at 72 with no URL exemption (its trailer regex commit.rs:105 classes the https: line as a footer, so footer-max-line-length fires); committed and commitlint both accept (DIVERGENCE)
+       | ⧗   input: docs: link the permalink for the hook analysis
+       | ✖   footer line must not be longer than 72 characters [error] [footer-max-line-length]
+       | 
+       | ✖  found 1 problems, 0 warnings
+06   expected=1      observed=1    PASS   subject ends with a period
+       | ⧗   input: feat(cli): add --json output flag.
+       | ✖   header must not end with '.' [error] [header-full-stop]
+       | ✖   subject may not end with '.' [error] [subject-full-stop]
+       | 
+       | ✖  found 2 problems, 0 warnings
+07   expected=1      observed=1    PASS   107-col Claude-Session trailer containing a URL: REJECTED at footer-max-line-length 72 (committed and commitlint accept) (DIVERGENCE)
+       | ⧗   input: ci: pin the commit-lint action by sha
+       | ✖   footer line must not be longer than 72 characters [error] [footer-max-line-length]
+       | 
+       | ✖  found 1 problems, 0 warnings
+08   expected=1      observed=1    PASS   96-col footer line with spaces: rejected (agreement)
+       | ⧗   input: fix(web): reject malformed pagination cursors
+       | ✖   footer line must not be longer than 72 characters [error] [footer-max-line-length]
+       | 
+       | ✖  found 1 problems, 0 warnings
+09   expected=record observed=0    RECORD capitalised subject: its conventional preset is subject-case always [lower-case, sentence-case], not config-conventional's never [sentence-case, ...]
+       | ⧗   input: feat(cli): Add a capitalised subject
+       | ✔  found 0 problems, 0 warnings
+10   expected=record observed=0    RECORD identifier-leading subject 'docs: P01 port research tree (phases 1-5)'
+       | ⧗   input: docs: P01 port research tree (phases 1-5)
+       | ✔  found 0 problems, 0 warnings
+11   expected=record observed=0    RECORD 'fixup! ...': skipped whole-message by defaultIgnores (config.rs:412-434 skips messages starting with fixup!, squash!, WIP, wip, Merge , Revert , or equal to Initial commit)
+17   expected=record observed=1    RECORD 100-col space-free NON-URL line: whole-line count
+       | ⧗   input: feat(cli): add --json output flag
+       | ✖   body line 1 must not be longer than 72 characters (found 100) [error] [body-max-line-length]
+       | 
+       | ✖  found 1 problems, 0 warnings
+19   expected=1      observed=1    PASS   dependabot-style message: rejected on the hook path (agreement)
+       | ⧗   input: build(deps): bump serde_json from 1.0.140 to 1.0.145 in the cargo group
+       | ✖   header must not be longer than 50 characters, current length is 71 [error] [header-max-length]
+       | ✖   body line 1 must not be longer than 72 characters (found 103) [error] [body-max-line-length]
+       | 
+       | ✖  found 2 problems, 0 warnings
+20   expected=record observed=0    RECORD default merge message: skipped whole-message by defaultIgnores (as commitlint does; committed rejects)
+21   expected=1      observed=1    PASS   66-col header whose description alone is 41 cols: whole header counted (agreement with committed case 21)
+       | ⧗   input: refactor(observability): rename the tracing subscriber init helper
+       | ✖   header must not be longer than 50 characters, current length is 66 [error] [header-max-length]
+       | 
+       | ✖  found 1 problems, 0 warnings
+--- missing-binary posture: the crate's own installed hook template (src/hook.rs:197-198) ends with 'Warning: cargo-commitlint not found. Skipping commit message validation.' then 'exit 0' (fail-open); a direct hook-manager command instead gets the shell's 127:
+       | env: cargo-commitlint: No such file or directory
+       | exit=127
+summary: PASS=10 FAIL=0 RECORD=5
+RESULT: PASS

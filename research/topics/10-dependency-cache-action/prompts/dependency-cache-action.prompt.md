@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): which tool provisions the Rust toolchain itself in CI (`dtolnay/rust-toolchain` or an alternative) and which package manager/toolchain-provisioner the template's local dev environment uses are R42's decision (`dev-toolchain-provisioning`, owns `package-manager-invocation`) — this item is scoped to the CI dependency-cache mechanism alone, assumed to sit alongside whatever toolchain-install step R42's answer (or the template's existing toolchain-setup step) produces. `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
 - Prior decisions of the TypeScript port that explain the current shape: D-022(3) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — "setup-node cache:npm is the unanimous org precedent (agent2linear, contributors-please) and simpler than hand-rolled actions/cache." ts reused its language-setup action's built-in cache rather than adding a separate caching action; the Rust ecosystem's lack of an equivalent built-in is exactly the gap this item must resolve without a same-shape source-repo precedent to copy.
 
+### Baseline review (2026-09-04)
+- F035 (pattern row, `COMMON → REUSE`) is restated: the principle is that dependency fetches and Cargo build artifacts are cached across CI runs; "integrated into the language-setup step" was the py/ts mechanism. F035 is a lead for this item's F036 decision, which already compares setup-integrated caching with an explicit cache action; no scope changes (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which tool provisions the Rust toolchain itself in CI, and the local dev-toolchain provisioner (rustup, mise, flox); R42 (`dev-toolchain-provisioning`) owns `package-manager-invocation` — this item assumes a toolchain-install step exists and decides only how its outputs get cached.
 - Whether each CI check is its own job or a shared-job step, and how path-filtered skip-gating is applied; R11 (`ci-workflow-job-structure`) owns `ci-job-structure` — the caching mechanism this item picks must work regardless of R11's job topology.
@@ -18,6 +21,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R10
 - owns:
 - consumes:
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R42 (`dev-toolchain-provisioning`) owns `package-manager-invocation`, the toolchain-install step this item's cache action wraps; this item does not need R42's value to decide which cache action to use, only to know a toolchain-install step precedes it.
 
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
@@ -59,6 +66,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

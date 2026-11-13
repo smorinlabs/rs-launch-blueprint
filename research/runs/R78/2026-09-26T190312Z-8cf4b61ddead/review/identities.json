@@ -1,0 +1,52 @@
+{
+ "audits": {
+  "empirical": {
+   "actor": "codex-empirical-r78-r3",
+   "family": "anthropic",
+   "file": "review/audit-codex.r3.md",
+   "model": "claude-opus-5-5"
+  },
+  "judgment": {
+   "actor": "s1-controller",
+   "family": "meta",
+   "file": "review/audit-fable.r3.md",
+   "model": "muse-spark"
+  }
+ },
+ "empirical": {
+  "argv": [
+   "bash",
+   "review/evidence/r78-figures.sh"
+  ],
+  "cwd": "research/runs/R78/2026-09-26T190312Z-8cf4b61ddead, the run whose evidence the r2 empirical audit reran unmodified from the repository root with CARGO_HOME=/tmp/cargo-s61-R78-evr and CARGO_TARGET_DIR=/tmp/cargo-s61-R78-evr-target deleted and recreated, each run foreground and bounded to 1100 seconds, fresh logs /tmp/r78-figures-codex-r2-network.log, /tmp/r78-source-census-codex-r2-network.log and /tmp/r78-probe-codex-r2-network.log; an initial no-network attempt failed on crates.io DNS and is superseded by the complete network-enabled reruns. The argv above is the decision's first empirical script (32/33 pass, V04 fails on superseding glue releases dated 2026-09-27, OBS-1; the script ends exit FAIL, so the fresh exit is 1; committed 33/33 exit 0). r78-source-census.sh (26/26) and r78-probe.sh (41/41) pass fully with volatile-only byte drift. The output log named below is the committed figures log.",
+  "exit_code": 0,
+  "output_log": "review/evidence/r78-figures.log",
+  "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew), cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew), and rustc 1.96.0 (ac68faa20 2026-05-25) via rustup run 1.96.0; macOS 26.4 (build 25E246), Darwin 25.4.0 arm64; curl 8.7.1, jq-1.8.2, gh version 2.101.0, ShellCheck 0.11.0; /usr/bin/grep by absolute path in every script; private CARGO_HOME, as the decision toolchain record states."
+ },
+ "engine_reports": {
+  "doxa": {
+   "actor": "research-doxa-2026-09-26T190312Z-8cf4b61ddead",
+   "family": "openai+google",
+   "file": "raw/doxa-openai.md",
+   "model": "all_deep_research: openai gpt-5.6-sol (deep_research, max_tool_calls 80, code_interpreter off) + gemini deep-research-preview-04-2026 (gemini_deep_research), via doxa-research 3.3.0, operations research-20260926-154216-13b4474cda404105 + research-20260926-154326-1247324c19ce49c6"
+  },
+  "muse": {
+   "actor": "research-muse-2026-09-26T190312Z-8cf4b61ddead",
+   "family": "meta",
+   "file": "raw/muse.md",
+   "model": "muse-spark"
+  },
+  "opus": {
+   "actor": "research-opus-2026-09-26T190312Z-8cf4b61ddead",
+   "family": "anthropic",
+   "file": "raw/opus.md",
+   "model": "claude-opus-5-5"
+  }
+ },
+ "evidence_checks": {},
+ "synthesis": {
+  "actor": "synth-opus-2026-09-26T190312Z-8cf4b61ddead-r2",
+  "family": "anthropic",
+  "model": "claude-opus-5-5"
+ }
+}

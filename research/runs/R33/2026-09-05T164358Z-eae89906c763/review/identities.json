@@ -1,0 +1,43 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T164358Z-eae89906c763",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T164358Z-eae89906c763",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T164358Z-eae89906c763-r2",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T164358Z-eae89906c763-r2",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T164358Z-eae89906c763-r2",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": ["bash", "r33-checks.sh"],
+    "cwd": "research/runs/R33/2026-09-05T164358Z-eae89906c763/review/empirical",
+    "toolchain": "curl, gh and git on macOS 26.4 arm64 (Darwin 25.4.0) with pipefail and per-command status capture, one hundred and eighty-six content assertions and a failure counter as the exit status, reading the registry, each candidate's published manifest and both source repositories through their recorded pins. No crate, workspace, lockfile or test suite was created and no tool was installed.",
+    "output_log": "review/evidence/audit-property-and-snapshot-testing-r2.log",
+    "exit_code": 0
+  }
+}

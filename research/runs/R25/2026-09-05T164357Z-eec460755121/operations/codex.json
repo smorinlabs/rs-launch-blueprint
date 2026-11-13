@@ -1,0 +1,16 @@
+{
+  "actor": "research-codex-2026-09-05T164357Z-eec460755121",
+  "actual_model": "gpt-5.6-terra",
+  "actual_provider": "codex-cli-0.153.2",
+  "at": "2026-09-05T16:43:57Z",
+  "collected_at": "2026-09-05T16:54:24Z",
+  "model": "gpt-5.6-terra",
+  "operation_id": "01a07275-51f6-7442-8e7a-5dec51605a44",
+  "provider": "codex",
+  "raw": "research/runs/R25/2026-09-05T164357Z-eec460755121/raw/codex-0b0371758b9ce467fe6e702bfb2ffe220734515a05fa7477350bdd5df9b4201b.md",
+  "raw_sha256": "0b0371758b9ce467fe6e702bfb2ffe220734515a05fa7477350bdd5df9b4201b",
+  "reason": "",
+  "request_id": "8ca925be5fad4f01a0bb096a7df4b734",
+  "returned_at": "2026-09-05T16:54:24Z",
+  "state": "succeeded"
+}

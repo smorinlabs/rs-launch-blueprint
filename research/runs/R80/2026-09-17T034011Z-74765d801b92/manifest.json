@@ -1,0 +1,187 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T03:40:11Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T03:40:11Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+      "at": "2026-09-18T22:21:07Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+        "at": "2026-09-18T22:21:07Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "c00fff68d6cb4a559a1603ea42299a39",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+      "at": "2026-09-18T22:26:40Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-18T22:21:07Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T034011Z-74765d801b92:dd3bdeae9566ae10",
+        "provider": "opus",
+        "request_id": "c00fff68d6cb4a559a1603ea42299a39",
+        "returned_at": "2026-09-18T22:26:40Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+      "at": "2026-09-18T22:26:40Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-18T22:21:07Z",
+        "collected_at": "2026-09-18T22:26:40Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T034011Z-74765d801b92:dd3bdeae9566ae10",
+        "provider": "opus",
+        "raw": "research/runs/R80/2026-09-17T034011Z-74765d801b92/raw/opus-dd3bdeae9566ae10ea300c1c2e6727264075523cb2ccce1e95eea9eccc06a0fb.md",
+        "raw_sha256": "dd3bdeae9566ae10ea300c1c2e6727264075523cb2ccce1e95eea9eccc06a0fb",
+        "reason": "",
+        "request_id": "c00fff68d6cb4a559a1603ea42299a39",
+        "returned_at": "2026-09-18T22:26:40Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-21T23:06:21Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+          "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "3207de3d01fee09e00f2be8bf5baf5dcf8b9c66f08515a76017773387b63ce87",
+          "registry": "6b6887f96798af3588743b8727854606534eebfbbb5dc3062549638e6ebe91cb"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus"
+        ],
+        "previous_tier": "focused",
+        "reason": "muse bulk substitution (owner decision Q5.A 2026-09-21)",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-17T034011Z-74765d801b92",
+      "at": "2026-09-21T23:06:57Z",
+      "operation": {
+        "actor": "research-muse-2026-09-17T034011Z-74765d801b92",
+        "at": "2026-09-21T23:06:57Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "9d63b9c66e354800a931ac35871f647d",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-09-28T03:12:17Z",
+      "migration": {
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+          "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+          "policy": "ed5042be86ee5cec4bba6c7fa330dc731addb026a67cca087b75ca7bc37bea6c",
+          "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "7596eda60c773ba29cba5ae8866e1ff9d97ffe31a552069f6c8fcd6a033222cb",
+          "registry": "e82053f11aed9fa4ae16f9a2026452670b43def56e36bea9bb9b808bb3c2102e"
+        },
+        "reason": "Q23 R80 pack: prompt couplings declared (consumes R49:build-tool-output-shape, R01:http-transport-injection-seam, R69:web-extra-surface \u2014 the 3 non-fixed params rev6 assumes); S1 identities written (makers per ops/DECISION: muse-spark, claude-opus-5, synth claude-opus-5-5); re-frozen, DECISION bytes unchanged"
+      },
+      "state": "partial"
+    },
+    {
+      "at": "2026-09-28T03:12:44Z",
+      "publication": {
+        "acceptance_sha256": "aba7a3aabc95ba9a9adf77f28d81e8025bfa51dbdf2566db7154b68f07a49e39",
+        "decision_sha256": "4b63412a4dc1df4c2e31caa51fa20ca509c8e8cd430595f72b94de0843d4c204",
+        "transaction": "0a29b28d6c5c46138f1a3e4f73ffa392"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+    "parameters_semantic": "367d474cfba5931569d80974864f39cd6e009e7117a8b91d06d8eec6b2337370",
+    "parameters_semantic_file": "e51a99921119fca0bae246d53dceaef6c5c7e1fdba5b6e526181d8476c4c07a2",
+    "policy": "fd746cb86e545023aed589b9d0c4db7125673a62849181ac898db56a5fa3545c",
+    "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
+    "prerequisites": "55f022b26e90aa6baa7dc2874f995b050d592b357af0e1583a32192d53d6adc2",
+    "prompt": "584f099495ce31852dc7f29617c8dcc42e33b26450a5846464f23c011d3912d2",
+    "registry": "ac3ad781de24b06b956b696a8d89234d36e5adaa67c04442c4d9902008c581bb"
+  },
+  "item": "R80",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "muse": {
+      "actor": "research-muse-2026-09-17T034011Z-74765d801b92",
+      "at": "2026-09-21T23:06:57Z",
+      "model": "muse-spark",
+      "provider": "muse",
+      "request_id": "9d63b9c66e354800a931ac35871f647d",
+      "state": "submitting"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+      "actual_model": "claude-opus-5",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-18T22:21:07Z",
+      "collected_at": "2026-09-18T22:26:40Z",
+      "model": "claude-opus-5",
+      "operation_id": "agent:research-opus-2026-09-17T034011Z-74765d801b92:dd3bdeae9566ae10",
+      "provider": "opus",
+      "raw": "research/runs/R80/2026-09-17T034011Z-74765d801b92/raw/opus-dd3bdeae9566ae10ea300c1c2e6727264075523cb2ccce1e95eea9eccc06a0fb.md",
+      "raw_sha256": "dd3bdeae9566ae10ea300c1c2e6727264075523cb2ccce1e95eea9eccc06a0fb",
+      "reason": "",
+      "request_id": "c00fff68d6cb4a559a1603ea42299a39",
+      "returned_at": "2026-09-18T22:26:40Z",
+      "state": "succeeded"
+    }
+  },
+  "prompt_source": "research/topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md",
+  "publication": {
+    "acceptance_sha256": "aba7a3aabc95ba9a9adf77f28d81e8025bfa51dbdf2566db7154b68f07a49e39",
+    "decision_sha256": "4b63412a4dc1df4c2e31caa51fa20ca509c8e8cd430595f72b94de0843d4c204",
+    "transaction": "0a29b28d6c5c46138f1a3e4f73ffa392"
+  },
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "muse",
+    "opus"
+  ],
+  "run_id": "2026-09-17T034011Z-74765d801b92",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "focused",
+  "updated_at": "2026-09-28T03:12:44Z"
+}

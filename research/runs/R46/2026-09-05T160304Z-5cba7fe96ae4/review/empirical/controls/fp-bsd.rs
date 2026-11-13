@@ -1,0 +1,2 @@
+// BSD sockets wrapper
+//! docs

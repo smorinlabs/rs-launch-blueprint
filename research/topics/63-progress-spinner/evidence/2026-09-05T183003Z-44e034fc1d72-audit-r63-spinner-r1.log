@@ -1,0 +1,458 @@
+
+===== 0. TOOLCHAIN AND HOST =====
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+os: macOS 26.4 (arm64)
+date: 2026-09-11T01:34:00Z
+current stable channel version: curl: (56) Failure writing output to destination, passed 16357 returned 0
+version = "1.98.1 (48a229cea 2026-09-01)"
+
+===== 1. INHERITED CONTRACT AT THE ts PIN (gate predicate) =====
+--- ts:src/commands/projects.ts lines 120-140 @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+         1	    token,
+         2	    fetchImpl: deps.fetchImpl,
+         3	    baseUrl: deps.env[API_URL_ENV_VAR],
+         4	  });
+         5	
+         6	  // Spinner on stderr, gated on stderr TTY-ness and CI (D-016(5)); when
+         7	  // suppressed the fetch is silent and piped stdout stays clean.
+         8	  const ci = deps.env['CI'];
+         9	  const spinnerEnabled = deps.stderrIsTTY && (ci === undefined || ci === '');
+        10	  const spinner = spinnerEnabled ? deps.spinner('Fetching projects...') : undefined;
+        11	  let projects: Project[];
+        12	  try {
+        13	    projects = await client.getProjects({ workspaceName: workspace, limit });
+        14	  } finally {
+        15	    spinner?.stop();
+        16	  }
+        17	
+        18	  // Benign empty result -> notice + exit 0 (projects.py:364-366; notice
+        19	  // moved from stdout to stderr per D-018(4)).
+        20	  if (projects.length === 0) {
+        21	    deps.stderr(`${colors.warn('No projects found.')}\n`);
+--- ts:src/lib/adapters.ts lines 25-72 @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00 (SpinnerFactory + D-033 guard)
+         1	/** Clipboard seam (pyperclip.copy parity). */
+         2	export type ClipboardWriter = (text: string) => Promise<void>;
+         3	
+         4	/** Started spinner handle. */
+         5	export interface SpinnerHandle {
+         6	  stop: () => void;
+         7	}
+         8	
+         9	/** Spinner seam: create AND start a spinner (rich.Progress parity). The
+        10	 * caller owns the TTY/CI gating; factories are only invoked when the
+        11	 * spinner should actually render. */
+        12	export type SpinnerFactory = (text: string) => SpinnerHandle;
+        13	
+        14	/** Real prompt: @inquirer/prompts checkbox rendered on stderr
+        15	 * (cli-standards R8.2; D-016(6)). Dynamically imported so
+        16	 * non-interactive runs never load the prompt stack. */
+        17	export const realPrompter: Prompter = async (message, choices) => {
+        18	  const { checkbox } = await import('@inquirer/prompts');
+        19	  return checkbox<Project>({ message, choices }, { output: process.stderr });
+        20	};
+        21	
+        22	/** Real clipboard: clipboardy behind a dynamic import (D-016(7)). On
+        23	 * headless Linux/CI there is no display server and this rejects; the
+        24	 * projects command catches and degrades with a clear stderr error. */
+        25	export const realClipboard: ClipboardWriter = async (text) => {
+        26	  const { default: clipboard } = await import('clipboardy');
+        27	  await clipboard.write(text);
+        28	};
+        29	
+        30	/** Real spinner: yocto-spinner on stderr (its default; D-016(5)). */
+        31	export const realSpinner: SpinnerFactory = (text) => {
+        32	  // Flood guard (D-033): yocto-spinner's line-clear loop divides the
+        33	  // rendered length by the stream width, so a TTY reporting 0 columns
+        34	  // (some pseudo-terminals/serial consoles) makes Math.ceil(len/0) =
+        35	  // Infinity and floods stderr with clear sequences. Treat a width-less
+        36	  // or nonsensical width as non-TTY and skip the spinner entirely.
+        37	  const columns = process.stderr.columns;
+        38	  if (!Number.isFinite(columns) || columns <= 0) {
+        39	    return { stop: () => undefined };
+        40	  }
+        41	  const spinner = yoctoSpinner({ text, stream: process.stderr }).start();
+        42	  return {
+        43	    stop: () => {
+        44	      spinner.stop();
+        45	    },
+        46	  };
+        47	};
+--- ts:package.json spinner dependency @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+45:    "yocto-spinner": "^1.2.2",
+--- ts:docs/port/TS_PORT_DECISIONS.md D-016(5) / D-033 lines @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+165:  5. [Replace Python-specific tool with TypeScript equivalent] Spinner/progress during network fetch (rich.Progress replacement) → yocto-spinner on stderr (its default), additionally gated on process.stderr.isTTY and CI env
+174:  5. Stderr-by-default satisfies cli-standards R7.1 (progress=diagnostics) and fixes the source wart where progress text polluted stdout; chosen over ora to avoid a chalk+picocolors double color stack. [https://github.com/sindresorhus/yocto-spinner (stderr default, 1.2.1 2026-07-06); https://github.com/sindresorhus/ora (stderr default but chalk dep)]
+356:- Decision: (1) styleText, wrapped in src/lib/colors.ts. Supersedes D-016(3); D-016's yocto-spinner rationale re-grounded on zero-dep consistency rather than avoiding a picocolors double-stack; T06's runtime-dep list drops to 5.
+398:- Decision: (1) Exit 130 on prompt interrupt/stdin-close, clean message, no leaked library internals — a deliberate, documented deviation from the source's swallow-to-0. Same rework also: implements D-018(4)'s outstanding machine-mode error envelope ({"error":{code,message}} single JSON object on stderr when --format json) and a --json alias for --format json; records parity rows for the added 30s request timeout and the positive---limit tightening; guards the spinner against 0-column TTYs.
+
+===== 2. py PIN — IS THERE ANY PROGRESS INDICATOR? =====
+--- git grep over *.py *.toml @ b08bccfb55d05f15e46a83b52c5660b1881d19f5
+exit=1 (1 = no matches)
+--- py:pyproject.toml rich dependency @ b08bccfb55d05f15e46a83b52c5660b1881d19f5
+48:  "rich>=13.0.0",
+
+===== 3. is_ci PREDICATE AT A PINNED VERSION =====
+newest unyanked: 1.2.0 2024-02-04T02:57:53.234697Z license: ISC rust_version: None
+--- is_ci-1.2.0/src/lib.rs (published artifact, not a branch)
+     1	use std::sync::atomic::{AtomicBool, Ordering};
+     2	use std::sync::Once;
+     3	
+     4	static INIT: Once = Once::new();
+     5	static IS_CI: AtomicBool = AtomicBool::new(false);
+     6	
+     7	/// Returns true if the current environment is found to probably be a CI
+     8	/// environment or service. That's it, that's all it does.
+     9	#[deprecated(since = "1.1.0", note = "Use `cached` or `uncached` instead")]
+    10	pub fn is_ci() -> bool {
+    11	    uncached()
+    12	}
+    13	
+    14	/// Returns true if the current environment is found to probably be a CI
+    15	/// environment or service, and caches the result for future calls. If you
+    16	/// expect the environment to change, use [uncached].
+    17	pub fn cached() -> bool {
+    18	    INIT.call_once(|| IS_CI.store(uncached(), Ordering::Relaxed));
+    19	    IS_CI.load(Ordering::Relaxed)
+    20	}
+    21	
+    22	/// Returns true if the current environment is found to probably be a CI
+    23	/// environment or service. If you expect to call this multiple times without
+    24	/// the environment changing, use [cached].
+    25	pub fn uncached() -> bool {
+    26	    let ci_var = std::env::var("CI");
+    27	    ci_var == Ok("true".into())
+    28	        || ci_var == Ok("1".into())
+    29	        || ci_var == Ok("woodpecker".into())
+    30	        || check("CI_NAME")
+    31	        || check("GITHUB_ACTION")
+    32	        || check("GITLAB_CI")
+    33	        || check("NETLIFY")
+    34	        || check("TRAVIS")
+    35	        || matches!(std::env::var("NODE"), Ok(node) if node.ends_with("//heroku/node/bin/node"))
+    36	        || check("CODEBUILD_SRC_DIR")
+    37	        || check("BUILDER_OUTPUT")
+    38	        || check("GITLAB_DEPLOYMENT")
+    39	        || check("NOW_GITHUB_DEPLOYMENT")
+    40	        || check("NOW_BUILDER")
+    41	        || check("BITBUCKET_DEPLOYMENT")
+    42	        || check("GERRIT_PROJECT")
+    43	        || check("SYSTEM_TEAMFOUNDATIONCOLLECTIONURI")
+    44	        || check("BITRISE_IO")
+    45	        || check("BUDDY_WORKSPACE_ID")
+    46	        || check("BUILDKITE")
+    47	        || check("CIRRUS_CI")
+    48	        || check("APPVEYOR")
+    49	        || check("CIRCLECI")
+    50	        || check("SEMAPHORE")
+    51	        || check("DRONE")
+    52	        || check("DSARI")
+    53	        || check("TDDIUM")
+    54	        || check("STRIDER")
+    55	        || check("TASKCLUSTER_ROOT_URL")
+    56	        || check("JENKINS_URL")
+    57	        || check("bamboo.buildKey")
+    58	        || check("GO_PIPELINE_NAME")
+    59	        || check("HUDSON_URL")
+    60	        || check("WERCKER")
+    61	        || check("MAGNUM")
+    62	        || check("NEVERCODE")
+    63	        || check("RENDER")
+    64	        || check("SAIL_CI")
+    65	        || check("SHIPPABLE")
+    66	}
+    67	
+    68	fn check(name: &str) -> bool {
+    69	    std::env::var(name).is_ok()
+    70	}
+
+===== 4. indicatif 0.18.6 — PUBLISHED ARTIFACT (license, MSRV, edition, stderr default) =====
+--- indicatif-0.18.6/Cargo.toml [package] head
+# THIS FILE IS AUTOMATICALLY GENERATED BY CARGO
+#
+# When uploading crates to the registry Cargo will automatically
+# "normalize" Cargo.toml files for maximal compatibility
+# with all versions of Cargo and also rewrite `path` dependencies
+# to registry (e.g., crates.io) dependencies.
+#
+# If you are reading this file be aware that the original Cargo.toml
+# will likely look very different (and much more reasonable).
+# See Cargo.toml.orig for the original contents.
+
+[package]
+edition = "2021"
+rust-version = "1.85"
+name = "indicatif"
+version = "0.18.6"
+build = false
+exclude = ["screenshots/*"]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
+description = "A progress bar and cli reporting library for Rust"
+documentation = "https://docs.rs/indicatif"
+readme = "README.md"
+keywords = [
+    "cli",
+    "progress",
+    "pb",
+    "colors",
+    "progressbar",
+]
+categories = ["command-line-interface"]
+license = "MIT"
+repository = "https://github.com/console-rs/indicatif"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = [
+--- default features
+45:[features]
+46-default = [
+47-    "unicode-width",
+48-    "wasmbind",
+49-]
+50-futures = ["dep:futures-core"]
+51-improved_unicode = [
+--- optional async deps
+48-    "wasmbind",
+49-]
+50:futures = ["dep:futures-core"]
+51-improved_unicode = [
+52-    "unicode-segmentation",
+53-    "unicode-width",
+54-]
+--
+125-
+126-[[example]]
+127:name = "tokio"
+128:path = "examples/tokio.rs"
+129-
+130-[[example]]
+131-name = "yarnish"
+132-path = "examples/yarnish.rs"
+--
+148-default-features = false
+149-
+150:[dependencies.futures-core]
+151-version = "0.3"
+152-optional = true
+153-default-features = false
+154-
+--
+156-version = "1.12.0"
+157-
+158:[dependencies.rayon]
+159-version = "1.1"
+160-optional = true
+161-
+162:[dependencies.tokio]
+163-version = "1"
+164-features = ["io-util"]
+165-optional = true
+166-
+--
+199-version = "0.10"
+200-
+201:[dev-dependencies.tokio]
+--- ProgressBar::new_spinner draw target
+144-        self
+145-    }
+146-
+147-    /// Creates a new spinner
+148-    ///
+149-    /// This spinner by default draws directly to stderr. This adds the default spinner style to it.
+150:    pub fn new_spinner() -> Self {
+151-        let rv = Self::with_draw_target(None, ProgressDrawTarget::stderr());
+152-        rv.set_style(ProgressStyle::default_spinner());
+153-        rv
+154-    }
+155-
+156-    /// Overrides the stored style
+157-    ///
+158-    /// This does not redraw the bar. Call [`ProgressBar::tick()`] to force it.
+--- ProgressDrawTarget::stderr / hidden / term
+37-    pub fn stdout() -> Self {
+38-        Self::term(Term::buffered_stdout(), 20)
+39-    }
+40-
+41-    /// Draw to a buffered stderr terminal at a max of 20 times a second.
+42-    ///
+43-    /// This is the default draw target for progress bars.  For more
+44-    /// information see [`ProgressDrawTarget::term`].
+45:    pub fn stderr() -> Self {
+46-        Self::term(Term::buffered_stderr(), 20)
+47-    }
+48-
+49-    /// Draw to a buffered stdout terminal at a max of `refresh_rate` times a second.
+50-    ///
+51-    /// For more information see [`ProgressDrawTarget::term`].
+52-    pub fn stdout_with_hz(refresh_rate: u8) -> Self {
+53-        Self::term(Term::buffered_stdout(), refresh_rate)
+54-    }
+55-
+122-
+123-    /// A hidden draw target.
+124-    ///
+125-    /// This forces a progress bar to be not rendered at all.
+126:    pub fn hidden() -> Self {
+127-        Self {
+128-            kind: TargetKind::Hidden,
+129-        }
+130-    }
+131-
+132-    /// Returns true if the draw target is hidden.
+73-    /// hidden.  This is done so that piping to a file will not produce
+74-    /// useless escape codes in that file.
+75-    ///
+76-    /// Progress bars will also be hidden if `TERM` is unset/`dumb`.
+77-    ///
+78-    /// Will panic if `refresh_rate` is `0`.
+79:    pub fn term(term: Term, refresh_rate: u8) -> Self {
+80-        if !term.is_term() || is_dumb() {
+81-            return Self::hidden();
+82-        }
+83-        Self {
+84-            kind: TargetKind::Term {
+85-                term,
+86-                last_line_count: VisualLines::default(),
+87-                rate_limiter: RateLimiter::new(refresh_rate),
+--- in_memory feature / InMemoryTerm
+55:in_memory = ["vt100"]
+14:pub struct InMemoryTerm {
+32:    pub fn contents(&self) -> String {
+57:    pub fn contents_formatted(&self) -> Vec<u8> {
+105:impl TermLike for InMemoryTerm {
+--- zero-width handling inside indicatif (codex claim: regression test at width 0)
+--- unsafe count in indicatif src
+no file contains 'unsafe'
+
+===== 5. console 0.16.6 — ZERO-COLUMN FALLBACK (source read, NOT an executed pty test) =====
+18:pub(crate) const DEFAULT_WIDTH: u16 = 80;
+47-        Err(io::Error::last_os_error())
+48-    } else {
+49-        Ok(())
+50-    }
+51-}
+52-
+53:pub(crate) fn terminal_size(out: &Term) -> Option<(u16, u16)> {
+54-    if !is_a_terminal(out) {
+55-        return None;
+56-    }
+57-    let winsize = unsafe {
+58-        let mut winsize: libc::winsize = mem::zeroed();
+59-
+60-        // FIXME: ".into()" used as a temporary fix for a libc bug
+61-        // https://github.com/rust-lang/libc/pull/704
+62-        #[allow(clippy::useless_conversion)]
+63-        libc::ioctl(out.as_raw_fd(), libc::TIOCGWINSZ.into(), &mut winsize);
+64-        winsize
+65-    };
+412-    }
+413-
+414-    /// Return the terminal size in rows and columns or gets sensible defaults.
+415-    #[inline]
+416:    pub fn size(&self) -> (u16, u16) {
+417-        self.size_checked().unwrap_or((24, DEFAULT_WIDTH))
+418-    }
+419-
+420-    /// Return the terminal size in rows and columns.
+421-    ///
+422-    /// If the size cannot be reliably determined `None` is returned.
+423-    #[inline]
+424-    pub fn size_checked(&self) -> Option<(u16, u16)> {
+13:edition = "2021"
+14:rust-version = "1.71"
+42:license = "MIT"
+
+===== 6. indicatif CI MATRIX AT TAG 0.18.6 =====
+17:        os: [ubuntu-latest, macos-latest, windows-latest]
+18:        rust: [stable]
+22:          - os: ubuntu-latest
+23:            rust: stable
+25:          - os: ubuntu-latest
+26:            rust: stable
+28:          - os: ubuntu-latest
+29:            rust: beta
+31:          - os: ubuntu-latest
+32:            rust: stable
+43:          toolchain: ${{ matrix.rust }}
+67:          toolchain: "1.85"
+76:          toolchain: stable
+
+===== 7. REGISTRY FIGURES (crates.io), retrieved now =====
+indicatif              recent_downloads=47240250     downloads=214713688    max_stable=0.18.6
+console                recent_downloads=79547424     downloads=343832148    max_stable=0.16.6
+spinners               recent_downloads=660878       downloads=7130500      max_stable=4.2.0
+spinoff                recent_downloads=101007       downloads=738021       max_stable=0.8.0
+cliclack               recent_downloads=1033217      downloads=3349704      max_stable=0.5.6
+spinach                recent_downloads=1537         downloads=46021        max_stable=3.2.0
+throbber-widgets-tui   recent_downloads=203909       downloads=887236       max_stable=0.11.1
+is_ci                  recent_downloads=11870639     downloads=53349550     max_stable=1.2.0
+ci_info                recent_downloads=760676       downloads=6349930      max_stable=0.14.15
+prodash                recent_downloads=12722158     downloads=53497837     max_stable=31.0.0
+--- newest unyanked version + rust_version per candidate
+indicatif              num=0.18.6   created_at=2026-07-01T13:45:24.733589Z license=MIT                    rust_version=1.85
+spinners               num=4.2.0    created_at=2026-03-04T08:55:22.292054Z license=MIT                    rust_version=None
+spinoff                num=0.8.0    created_at=2023-08-04T13:07:51.375358Z license=MIT                    rust_version=None
+cliclack               num=0.5.6    created_at=2026-08-10T16:50:04.124778Z license=MIT                    rust_version=None
+spinach                num=3.2.0    created_at=2025-12-05T08:47:39.950565Z license=MIT                    rust_version=None
+prodash                num=31.0.0   created_at=2026-01-08T09:34:00.679547Z license=MIT                    rust_version=1.74
+
+===== 8. GITHUB REPO FIGURES + OPEN ISSUES (mandated total_count, not open_issues_count) =====
+console-rs/indicatif stars=5212 archived=false pushed_at=2026-09-10T15:39:00Z open_issues_count(incl PRs)=94
+fadeevab/cliclack stars=366 archived=false pushed_at=2026-08-10T16:49:59Z open_issues_count(incl PRs)=10
+FGRibreau/spinners stars=602 archived=false pushed_at=2026-05-02T20:47:14Z open_issues_count(incl PRs)=10
+ad4mx/spinoff stars=576 archived=false pushed_at=2025-01-16T13:44:39Z open_issues_count(incl PRs)=2
+GitoxideLabs/prodash stars=399 archived=false pushed_at=2026-09-01T18:32:49Z open_issues_count(incl PRs)=4
+zkat/is_ci stars=15 archived=false pushed_at=2024-02-04T02:57:58Z open_issues_count(incl PRs)=1
+console-rs/indicatif open issues (search total_count) = 79
+
+===== 9. RUSTSEC PAGES + 404-MEANS-CLEAN CONTROL =====
+indicatif            404
+console              404
+unicode-width        404
+portable-atomic      404
+unit-prefix          404
+libc                 404
+is_ci                404
+ci_info              404
+spinners             404
+spinoff              404
+cliclack             404
+--- control: crates known to have advisories must return 200 with RUSTSEC- content
+time                 200  RUSTSEC- mentions=4
+openssl              200  RUSTSEC- mentions=20
+atty                 200  RUSTSEC- mentions=4
+
+===== 10. EXCLUDED-CANDIDATE CLAIMS AT PUBLISHED VERSIONS =====
+--- spinoff 0.8.0: default stream (opus claim: stdout)
+spinoff 0.8.0 Cargo.toml: NO rust-version key
+--- spinners 4.2.0: EPIPE panic claim + default stream + rust-version
+119:                stream.write(&frame, &message, start_time, stop_time).expect("IO Error");
+232:        self.stream.stop(Some(&msg), None).expect("IO Error");
+250:        self.stream.stop(Some(&msg), Some(symbol)).expect("IO Error");
+src/spinners-4.2.0/src/utils/stream.rs:16:    #[default]
+spinners 4.2.0 Cargo.toml: NO rust-version key
+52:[dependencies.lazy_static]
+55:[dependencies.maplit]
+58:[dependencies.strum]
+--- cliclack: rust_version across recent versions + CI presence
+0.5.6 rust_version= None license= MIT
+0.5.5 rust_version= None license= MIT
+0.5.4 rust_version= None license= MIT
+0.5.3 rust_version= None license= MIT
+.gitignore, Cargo.toml, LICENSE, README.md, examples, media, src
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}gh: Not Found (HTTP 404)
+
+===== 11. MSRV ARITHMETIC CHECK =====
+policy floor = stable minus 2 minor versions; recommended tree maxima:
+indicatif          newest=0.18.6 rust_version=1.85 license=MIT
+console            newest=0.16.6 rust_version=1.71 license=MIT
+unicode-width      newest=0.2.2 rust_version=1.66 license=MIT OR Apache-2.0
+portable-atomic    newest=1.15.0 rust_version=1.34 license=Apache-2.0 OR MIT
+unit-prefix        newest=0.5.2 rust_version=1.31.0 license=MIT
+
+===== DONE =====

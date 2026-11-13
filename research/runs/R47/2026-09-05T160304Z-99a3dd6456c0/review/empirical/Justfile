@@ -1,0 +1,35 @@
+# R47 contributors-recipe-mode — reference recipe (fixture copy).
+#
+# Steady state: render CONTRIBUTORS.md from the committed .contributors.jsonl
+# ledger — the same projection step the CI action performs after its own
+# discovery/merge (contributors-please-action `mode: pull-request`).
+# First run: no ledger yet, so bootstrap it with `init --non-interactive`
+# (GitHub + git-history discovery), then commit the result.
+#
+# The runner spelling and version pin below are the `package-manager-invocation`
+# parameter owned by R42; the fixture pins the exact version so the evidence is
+# reproducible. Override on the command line to prove the body is runner-agnostic:
+#   just --set contributors_runner "bun x contributors-please@1.4.3" contributors-update
+
+contributors_runner := "npx --yes contributors-please@1.4.3"
+contributors_owner := "smorinlabs"
+repo_name := "rs-launch-blueprint"
+contributors_config := ".contributors.yml"
+contributors_state := ".contributors.jsonl"
+
+alias contributors := contributors-update
+
+# Render CONTRIBUTORS.md from the committed ledger; bootstrap the ledger on first run
+contributors-update:
+    #!/usr/bin/env sh
+    set -eu
+    if test -f "{{contributors_state}}"; then
+        {{contributors_runner}} render --config-file "{{contributors_config}}"
+    else
+        # GITHUB_SERVER_URL is the action's own fallback (input -> env -> github.com);
+        # unset locally means no flag, i.e. https://github.com.
+        {{contributors_runner}} init --non-interactive \
+            --owner "{{contributors_owner}}" --repo "{{repo_name}}" \
+            --config-file "{{contributors_config}}" \
+            ${GITHUB_SERVER_URL:+--github-server-url "$GITHUB_SERVER_URL"}
+    fi

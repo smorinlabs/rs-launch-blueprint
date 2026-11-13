@@ -1,0 +1,43 @@
+=== C0. negative control: prove this harness can fail ===
+--- the next FAIL line is deliberate ---
+FAIL  C0 control (expected to FAIL)
+      wanted: ABSENT-SUBSTRING
+      got: present text
+PASS  C0 harness detected the mismatch
+--- control accounted for; counters reset ---
+=== C1. every snapshot re-derived from the source MANIFEST.txt names ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  cli-design-standard-1.4.14.md (refetched)
+PASS  C1 cli-design-standard-1.4.14.md equals the bytes at its pinned URL
+7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889  clap_builder-4.6.6.crate (tarball)
+PASS  C1 clap_builder-4.6.6.crate matches the checksum crates.io records
+ec8854cb291bb4f666de87470c99459db312ba9addd0864cedf83e52225cd8fc  clap_builder-4.6.6-src-builder-command.rs.txt (extracted)
+PASS  C1 clap_builder-4.6.6-src-builder-command.rs.txt equals clap_builder-4.6.6/src/builder/command.rs inside that tarball
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  clap_derive-4.6.4.crate (tarball)
+PASS  C1 clap_derive-4.6.4.crate matches the checksum crates.io records
+382ef691d65bdc867eaa5465a408374ffda528e96824cebeff88de7f9d40e2eb  clap_derive-4.6.4-src-item.rs.txt (extracted)
+PASS  C1 clap_derive-4.6.4-src-item.rs.txt equals clap_derive-4.6.4/src/item.rs inside that tarball
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  clap_derive-4.6.4.crate (tarball)
+PASS  C1 clap_derive-4.6.4.crate matches the checksum crates.io records
+29783c4d7b9499315679711bea94476da6fef2c73f6a1b1f6c808e71330fbb02  clap_derive-4.6.4-src-attr.rs.txt (extracted)
+PASS  C1 clap_derive-4.6.4-src-attr.rs.txt equals clap_derive-4.6.4/src/attr.rs inside that tarball
+ef0cbb123ce38f67b3e776f427c2d8bb0cebe0c8efa00d4a5a0530e341312a91  py-b08bccfb-cli-commands-projects.py.txt (refetched)
+PASS  C1 py-b08bccfb-cli-commands-projects.py.txt equals the bytes at its pinned URL
+e6fc59ac8c8ebb66d4d9c87fffe3e1931bb81693e26f498b510940c9add76a01  py-b08bccfb-cli-commands-__init__.py.txt (refetched)
+PASS  C1 py-b08bccfb-cli-commands-__init__.py.txt equals the bytes at its pinned URL
+anonymous fetch of src/router.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+UNVERIFIABLE-HERE  ts-cb1cbcb2-src-router.ts.txt — private origin; the committed snapshot is the evidence of record
+anonymous fetch of src/commands/projects.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+UNVERIFIABLE-HERE  ts-cb1cbcb2-src-commands-projects.ts.txt — private origin; the committed snapshot is the evidence of record
+d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  r60-decision-r1.md (from git history)
+PASS  C1 r60-decision-r1.md equals the git object MANIFEST.txt names
+18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c  r60-decision-r2.md (from git history)
+PASS  C1 r60-decision-r2.md equals the git object MANIFEST.txt names
+=== C2. the pin is still the newest published commit for the standard ===
+newest published commit touching cli-design-standard.md: fb30a591c267a7ec1130ba4cda679eaee494b9d7
+PASS  C2a the newest commit for that path is still the pinned one
+
+CHECKS RUN: 14   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2
+NOTE: UNVERIFIABLE-HERE entries have no public remote by design; each one's privacy was itself checked above.
+RESULT: no snapshot contradicts its recorded source

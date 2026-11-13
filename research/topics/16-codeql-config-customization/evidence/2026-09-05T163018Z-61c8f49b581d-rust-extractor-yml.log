@@ -1,0 +1,30 @@
+# rust/codeql-extractor.yml (known path inside bundle codeql-bundle-v2.26.4) — 2026-09-09T07:21:10Z
+$ grep -n -A4 -E '^(build_modes|file_types|name|version)' empirical/tools/codeql/rust/codeql-extractor.yml
+1:name: "rust"
+2-display_name: "Rust"
+3:version: 0.1.0
+4-column_kind: "utf8"
+5-legacy_qltest_extraction: true
+6:build_modes:
+7-  - none
+8-default_queries:
+9-  - codeql/rust-queries
+10-github_api_languages:
+--
+14:file_types:
+15-  - name: rust
+16-    display_name: Rust files
+17-    extensions:
+18-      - .rs
+exit=0
+
+$ grep -n -B1 -A6 'cargo_cfg_overrides' empirical/tools/codeql/rust/codeql-extractor.yml
+54-    type: array
+55:  cargo_cfg_overrides:
+56-    title: Cargo cfg overrides
+57-    description: >
+58-      Comma-separated list of cfg settings to enable, or disable if prefixed with `-`.
+59-      Can be repeated.
+60-    type: array
+61-  logging:
+exit=0

@@ -1,0 +1,12 @@
+   Compiling absence_probe v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.ZRjJ1FMwEK/absence_probe)
+error[E0277]: the `?` operator can only be used on `Result`s, not `Option`s, in a function that returns `Result`
+ --> tests/question_mark_on_option.rs:5:13
+  |
+3 | fn get_project<P: ProjectsPort>(port: &P, id: &str) -> Result<Project, DomainError> {
+  | ----------------------------------------------------------------------------------- this function returns a `Result`
+4 |     let found = port.get(id)?;
+5 |     Ok(found?)
+  |             ^ use `.ok_or(...)?` to provide an error compatible with `Result<absence_probe::Project, absence_probe::DomainError>`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `absence_probe` (test "question_mark_on_option") due to 1 previous error

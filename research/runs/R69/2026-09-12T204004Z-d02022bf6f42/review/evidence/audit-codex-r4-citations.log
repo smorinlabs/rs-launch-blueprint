@@ -1,0 +1,33 @@
+citation spot checks, live endpoints retrieved 2026-09-15
+
+[crates.io axum metadata]
+curl: (56) The requested URL returned error: 403
+
+[crates.io axum 0.8.9 version]
+curl: (56) The requested URL returned error: 403
+
+[GitHub axum repository]
+full_name=tokio-rs/axum archived=false pushed_at=2026-09-15T07:20:31Z stars=27145
+
+[RustSec axum package]
+curl: (56) The requested URL returned error: 404
+
+[axum 0.8.9 CI workflow]
+16:    runs-on: ubuntu-24.04
+31:    runs-on: ubuntu-24.04
+48:    runs-on: ubuntu-24.04
+66:    runs-on: ubuntu-24.04
+85:    runs-on: ubuntu-24.04
+123:    runs-on: ubuntu-24.04
+135:    runs-on: ubuntu-24.04
+151:    runs-on: ubuntu-24.04
+177:    runs-on: ubuntu-24.04
+195:    runs-on: ubuntu-24.04
+
+[cargo-audit 0.22.1 published artifact sources]
+curl: (56) The requested URL returned error: 403
+tar: cargo-audit-0.22.1/src/auditor.rs: Not found in archive
+tar: Error exit delayed from previous errors.
+
+[Cargo feature documentation]
+Features

@@ -1,0 +1,349 @@
+
+===== PHASE A — preconditions, anchors and the allowed-position map =====
+Darwin arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+git version 2.50.1 (Apple Git-155)
+review/empirical/conventional-commits-linter-eval/evaluate.sh            sha256 7609f1c017cb192835e0612736e7bc59c1e2ed0e645f22dc7514bb31f92fe697
+review/evidence/conventional_commits_linter-0.17.1-evaluation.log        sha256 d5520f9d1bd2c8825e616b7993e6d542160945edc846d0c43376e1c2ed0bd57f
+review/evidence/conventional_commits_linter-0.17.1-evaluation.r6.log     sha256 89f2a14a1cb74e6c3669775795e3925c9ed933998b06cd3181229dd2196ee094
+cited log: 153 lines; 55 PASS rows
+PASS pre/cited-line-count (153)
+PASS pre/cited-pass-rows (55)
+PASS pre/cited-fail-rows (0)
+PASS pre/cited-summary (summary: PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3)
+PASS pre/class-T-allowed-positions (1)
+PASS pre/class-H-allowed-positions (1)
+PASS pre/class-S-allowed-positions (1)
+PASS pre/class-I-lines-in-cited (4)
+PASS pre/figures-anchor (1)
+PASS pre/cited-has-no-absolute-path (0)
+PASS pre/r6-log-had-one-absolute-path (1)
+PASS pre/r6-absolute-path-was-the-C23-diagnostic (1)
+PASS pre/check-has-pipefail (1)
+PASS pre/compare-has-pipefail (1)
+review/evidence/rev6-evaluate.sh                                         sha256 cf9ffcb2b84383c2fc797a86539612e3aaeff22753384f68d04cc2204eb501fa (14374 bytes)
+PASS pre/carried-r6-evaluate-sha256 (cf9ffcb2b84383c2fc797a86539612e3aaeff22753384f68d04cc2204eb501fa)
+PASS pre/carried-r6-evaluate-bytes (14374)
+PASS pre/no-personal-email-in-carried-r6-evaluate (0)
+PASS pre/no-personal-email-in-check (0)
+PASS pre/check-user-agent-names-the-repository (1)
+PASS pre/cited-against-itself/pass-rows (55)
+PASS pre/cited-against-itself/fail-rows (0)
+PASS pre/cited-against-itself/summary-line (summary: PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3)
+PASS pre/cited-against-itself/result-line (1)
+PASS pre/cited-against-itself/no-absolute-path (0)
+--- pre/cited-vs-itself
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+classified=0 unclassified=0 violations=0 classes=
+PASS pre/cited-vs-itself/unclassified (0)
+PASS pre/cited-vs-itself/violations (0)
+
+===== PHASE B — three reruns of the archived check, three fresh locations =====
+run 1: fresh COLD copy (no provisioned tools/), invoked with the working directory set to /
+PASS run1/exit (0)
+run 2: fresh WARM copy seeded with run 1's binaries, longer path, invoked from the run directory
+PASS run2/exit (0)
+run 3: fresh WARM copy, longer path still, invoked from inside its own copy
+PASS run3/exit (0)
+PASS run1/pass-rows (55)
+PASS run1/fail-rows (0)
+PASS run1/summary-line (summary: PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3)
+PASS run1/result-line (1)
+PASS run1/no-absolute-path (0)
+PASS run2/pass-rows (55)
+PASS run2/fail-rows (0)
+PASS run2/summary-line (summary: PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3)
+PASS run2/result-line (1)
+PASS run2/no-absolute-path (0)
+PASS run3/pass-rows (55)
+PASS run3/fail-rows (0)
+PASS run3/summary-line (summary: PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3)
+PASS run3/result-line (1)
+PASS run3/no-absolute-path (0)
+
+===== PHASE C — classify every differing line =====
+--- cited-vs-run1-cold-cwd-slash
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=1
+F-figures-block A=6 B=6 identical=no
+classified=1 unclassified=0 violations=0 classes=F-figures-block,T-timestamp
+PASS cited-vs-run1-cold-cwd-slash/unclassified (0)
+PASS cited-vs-run1-cold-cwd-slash/violations (0)
+--- cited-vs-run2-warm-longpath
+I-provisioning-preamble A=4@3,4,5,6 B=0
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=1
+F-figures-block A=6 B=6 identical=no
+classified=1 unclassified=0 violations=0 classes=F-figures-block,I-provisioning-preamble,T-timestamp
+PASS cited-vs-run2-warm-longpath/unclassified (0)
+PASS cited-vs-run2-warm-longpath/violations (0)
+--- cited-vs-run3-warm-longerpath
+I-provisioning-preamble A=4@3,4,5,6 B=0
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=1
+F-figures-block A=6 B=6 identical=no
+classified=1 unclassified=0 violations=0 classes=F-figures-block,I-provisioning-preamble,T-timestamp
+PASS cited-vs-run3-warm-longerpath/unclassified (0)
+PASS cited-vs-run3-warm-longerpath/violations (0)
+--- run1-vs-run2
+I-provisioning-preamble A=4@3,4,5,6 B=0
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=1
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=0 classes=I-provisioning-preamble,T-timestamp
+PASS run1-vs-run2/unclassified (0)
+PASS run1-vs-run2/violations (0)
+--- run2-vs-run3
+I-provisioning-preamble A=0 B=0
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=1
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=0 classes=T-timestamp
+PASS run2-vs-run3/unclassified (0)
+PASS run2-vs-run3/violations (0)
+
+===== PHASE D — which classes were actually observed =====
+F-figures-block
+I-provisioning-preamble
+T-timestamp
+PASS coverage/T-timestamp-observed (1)
+PASS coverage/I-provisioning-preamble-observed (1)
+Classes T and I were observed live. Class F was observed only if a live
+counter moved inside this script's few-minute window; its identity across
+these runs is a property of the window, not a guarantee, which is why the
+rule compares that block rather than asserting it. Classes H and S cannot
+be observed here — every run above is the same host and the same toolchain,
+so both lines come out identical — and are exercised by the synthetic
+in-position control of PHASE H2 instead.
+run2 vs run3: two WARM runs minutes apart at different paths. The only
+differences either carries are class T and, if a counter moved, class F.
+
+===== PHASE E — the revision-6 defect and its cause, from committed files =====
+The revision-6 evaluate.sh is read from the CARRIED evidence artifact
+review/evidence/rev6-evaluate.sh, by a path resolved from this script's own location and never
+from git, so these assertions execute identically in the repository and in
+a clean 'git archive HEAD' extraction. It handed the control an ABSOLUTE
+path; revision 7 invokes it from inside the work directory with a bare
+relative name:
+PASS r6/carried-copy-readable (0)
+PASS r6/carried-copy-is-the-evaluation-script (1)
+revision 6:
+  118:"$CTL" --config "$CTLCFG" --commit-file "$WORK/upper-bad.txt" > "$WORK/wibble.txt" 2>&1
+revision 7:
+  125:( cd "$WORK" && "$CTL" --config "$CTLCFG" --commit-file upper-bad.txt ) > "$WORK/wibble.txt" 2>&1
+PASS r6/used-the-absolute-path (1)
+SKIP r6/carried-copy-is-the-committed-blob (no git object database here (a clean git archive HEAD extraction); the carried copy was checked by sha256 in pre/carried-r6-evaluate-sha256)
+PASS r7/uses-a-relative-name-from-inside-the-work-directory (1)
+PASS r7/absolute-form-is-gone (0)
+
+The mechanism, driven directly: the same message file placed at two
+different absolute locations, read by the same control binary, under the
+revision-6 invocation form and then under the revision-7 form.
+PASS mech/control-binary-present (1)
+revision-6 form, location one: <scratch>/loc-one/upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+revision-6 form, location two: <scratch>/loc-two-is-a-much-longer-directory-name/upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+revision-7 form, location one: upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+revision-7 form, location two: upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+PASS mech/old-form-differs-across-locations (differs)
+PASS mech/new-form-identical-across-locations (same)
+PASS mech/new-form-quotes-no-absolute-path (0)
+PASS mech/new-form-text-is-the-bare-file-name (1)
+and the exit status the check asserts is unchanged by the change of form:
+old-form exits: 1 1   new-form exits: 1 1
+PASS mech/exit-status-unchanged (1 1 1 1)
+
+===== PHASE F — negative control 1: an UNCLASSIFIED difference is rejected =====
+Mutate one asserted PASS row of run 1 — a line carrying no class shape —
+and the classifier must refuse to place it.
+PASS neg1/mutation-applied (1)
+--- neg1-unclassified-difference
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+UNCLASSIFIED head line 4: 'A2       expected=committed 1.1.11       observed=committed 1.1.11       PASS control binary reports the selected pin' -> 'A2       expected=committed 9.9.9        observed=committed 1.1.11       PASS control binary reports the selected pin'
+classified=0 unclassified=1 violations=0 classes=
+PASS neg1-unclassified-difference/unclassified (1)
+PASS neg1-unclassified-difference/violations (0)
+
+===== PHASE F2 — negative control 2: the revision-6 C23 line is rejected =====
+The control that matters. Put the revision-6 absolute-path diagnostic back
+into one copy of run 1 and the classifier must call it UNCLASSIFIED — this
+is the exact difference the revision-6 auditor found and revision 6's
+byte-for-byte sentence did not account for.
+PASS neg2/r6-line-recovered (1)
+PASS neg2/substitution-applied (1)
+--- neg2-revision-6-absolute-path-line
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+UNCLASSIFIED head line 82: '       | upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]' -> '       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical/conventional-commits-linter-eval/.work/upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]'
+classified=0 unclassified=1 violations=0 classes=
+PASS neg2-revision-6-absolute-path-line/unclassified (1)
+PASS neg2-revision-6-absolute-path-line/violations (0)
+
+===== PHASE F3 — negative control 3: a TAIL line-count change is rejected =====
+PASS neg3/one-line-shorter (1)
+--- neg3-tail-line-count-change
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+UNCLASSIFIED tail line-count: 3 vs 2
+classified=0 unclassified=1 violations=1 classes=
+PASS neg3-tail-line-count-change/unclassified (1)
+PASS neg3-tail-line-count-change/violations (1)
+
+===== PHASE F4 — negative control 4: a HEAD line-count change is rejected =====
+PASS neg4/one-head-line-removed (1)
+--- neg4-head-line-count-change
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+UNCLASSIFIED head line-count after peeling class I: 141 vs 140
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+classified=0 unclassified=1 violations=1 classes=
+PASS neg4-head-line-count-change/unclassified (1)
+PASS neg4-head-line-count-change/violations (1)
+
+===== PHASE G — negative control 5: class-shaped differences OUT OF POSITION =====
+A differing line of the right shape at a line number the rule does not
+allow is a VIOLATION, not an allowed difference. Pick an asserted row of
+the cited log that carries no class shape and make two copies differ there
+with class-T, class-H and class-S shapes in turn.
+chosen line 44 of the cited log: C01      expected=0                      observed=0                      PASS candidate on 01-valid.txt — conforming message accepted by both
+--- negG-class-T-out-of-position
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=40 OUTSIDE-ALLOWED-POSITIONS=40
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=1 classes=T-timestamp
+PASS negG-class-T-out-of-position/unclassified (0)
+PASS negG-class-T-out-of-position/violations (1)
+--- negG-class-H-out-of-position
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=40 OUTSIDE-ALLOWED-POSITIONS=40
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=1 classes=H-host-identity
+PASS negG-class-H-out-of-position/unclassified (0)
+PASS negG-class-H-out-of-position/violations (1)
+--- negG-class-S-out-of-position
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=40 OUTSIDE-ALLOWED-POSITIONS=40
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=1 classes=S-binary-size
+PASS negG-class-S-out-of-position/unclassified (0)
+PASS negG-class-S-out-of-position/violations (1)
+
+===== PHASE G2 — negative control 6: a class-I line OUT OF ITS WINDOW =====
+Class I is admitted only strictly between the host line and the A1 row.
+Insert a provisioning-shaped line after A1 instead.
+PASS negG2/lines-inserted (1)
+--- negG2-class-I-out-of-window
+I-provisioning-preamble A=5@3,4,5,6,8 B=5@3,4,5,6,8 OUTSIDE-ALLOWED-WINDOW A=8 B=8
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+classified=0 unclassified=0 violations=2 classes=I-provisioning-preamble
+PASS negG2-class-I-out-of-window/unclassified (0)
+PASS negG2-class-I-out-of-window/violations (2)
+
+===== PHASE H2 — positive control: the SAME shapes IN position are classified =====
+The mirror of PHASE G. At an allowed position each class must be
+classified with zero violations — otherwise PHASE G would only be showing
+that the classifier rejects everything. This is also where classes H and S
+are exercised at all, since one host cannot vary them.
+class T allowed position 1: conventional_commits_linter evaluation, date (UTC): 2026-09-13T08:43:55Z   [volatile line]
+--- negH2-class-T-in-position
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=1
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=0 classes=T-timestamp
+PASS negH2-class-T-in-position/unclassified (0)
+PASS negH2-class-T-in-position/violations (0)
+class H allowed position 2: host: Darwin 25.4.0 arm64; rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew); cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+--- negH2-class-H-in-position
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=2
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=0 classes=H-host-identity
+PASS negH2-class-H-in-position/unclassified (0)
+PASS negH2-class-H-in-position/violations (0)
+class S allowed position 9:          candidate size:  3016816 bytes   [volatile line]
+--- negH2-class-S-in-position
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=5
+T-timestamp lines=
+F-figures-block A=6 B=6 identical=yes
+classified=1 unclassified=0 violations=0 classes=S-binary-size
+PASS negH2-class-S-in-position/unclassified (0)
+PASS negH2-class-S-in-position/violations (0)
+
+===== PHASE H3 — positive control: class F may differ freely =====
+Two copies whose figures blocks differ in content AND in line count must
+classify cleanly, because no assertion reads that block.
+PASS negH3/figures-line-dropped (1)
+--- negH3-figures-block-differs
+I-provisioning-preamble A=4@3,4,5,6 B=4@3,4,5,6
+H-host-identity lines=
+S-binary-size lines=
+T-timestamp lines=
+F-figures-block A=6 B=5 identical=no
+classified=0 unclassified=0 violations=0 classes=F-figures-block
+PASS negH3-figures-block-differs/unclassified (0)
+PASS negH3-figures-block-differs/violations (0)
+
+===== PHASE I — the check itself can still fail =====
+A check that cannot fail is not evidence. Break ONE recorded expectation in
+a warm copy of the script — C23's expected exit status — and the check must
+exit 1 with a FAIL row and RESULT: FAIL.
+PASS negrun/mutation-applied (1)
+summary: PASS=54 FAIL=1 CONTRACT_VIOLATIONS=3
+RESULT: FAIL
+PASS negrun/exit (1)
+PASS negrun/fail-rows (1)
+PASS negrun/summary (summary: PASS=54 FAIL=1 CONTRACT_VIOLATIONS=3)
+PASS negrun/result-line (1)
+
+===== PHASE J — this comparator's own log carries no scratch path =====
+Asserted by the caller, not here: this script writes its log to a path the
+caller chooses. What it CAN assert is that nothing it printed above came
+out of $WORK unredacted, which is checked by the caller's grep of the log
+and, here, by re-checking every file this script printed from.
+PASS selflog/new-1.txt-is-scratch-path-free (0)
+PASS selflog/new-2.txt-is-scratch-path-free (0)
+
+===== DONE =====
+failed assertions: 0
+skipped assertions: 1
+skipped by name (each one is a skip, never a pass):
+  r6/carried-copy-is-the-committed-blob
+RESULT: PASS — every rerun conformed to the rule; every negative control was rejected.

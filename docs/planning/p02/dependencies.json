@@ -1,0 +1,3474 @@
+{
+  "source": {
+    "commit": "2f3569051af2c2089f60f6cad129bc6e55482c30",
+    "runbook_edge_rules": [
+      "registry consumes",
+      "keystone related-to-parameter-owner"
+    ]
+  },
+  "recorded": {
+    "node_count": 84,
+    "edge_count": 66,
+    "cycle_free": true,
+    "cycles": [],
+    "waves": {
+      "0": [
+        "R01",
+        "R04",
+        "R06",
+        "R07",
+        "R15",
+        "R16",
+        "R17",
+        "R18",
+        "R19",
+        "R20",
+        "R21",
+        "R23",
+        "R25",
+        "R26",
+        "R33",
+        "R34",
+        "R38",
+        "R41",
+        "R42",
+        "R43",
+        "R45",
+        "R46",
+        "R47",
+        "R49",
+        "R59",
+        "R60",
+        "R63",
+        "R64",
+        "R65",
+        "R66",
+        "R67",
+        "R81",
+        "R85"
+      ],
+      "1": [
+        "R02",
+        "R03",
+        "R05",
+        "R10",
+        "R22",
+        "R24",
+        "R44",
+        "R48",
+        "R50",
+        "R52",
+        "R53",
+        "R54",
+        "R55",
+        "R56",
+        "R57",
+        "R61",
+        "R62",
+        "R68",
+        "R69"
+      ],
+      "2": [
+        "R11",
+        "R51",
+        "R58",
+        "R70",
+        "R72",
+        "R73",
+        "R74",
+        "R75",
+        "R76",
+        "R77",
+        "R78",
+        "R79",
+        "R80",
+        "R83",
+        "R84"
+      ],
+      "3": [
+        "R08",
+        "R09",
+        "R12",
+        "R13",
+        "R14",
+        "R27",
+        "R28",
+        "R29",
+        "R30",
+        "R31",
+        "R32",
+        "R35",
+        "R37",
+        "R39",
+        "R40",
+        "R71",
+        "R82"
+      ]
+    },
+    "critical_depth_edges": 3,
+    "critical_paths": [
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R08"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R09"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R12"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R13"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R14"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R27"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R28"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R29"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R30"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R31"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R32"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R35"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R37"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R39"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R40"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R71"
+      ],
+      [
+        "R01",
+        "R69",
+        "R11",
+        "R82"
+      ]
+    ],
+    "nodes": {
+      "R01": {
+        "name": "Ports-and-adapters seam",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 6,
+        "unique_transitive_descendant_count": 37,
+        "level": 0,
+        "longest_path": [
+          "R01"
+        ],
+        "outgoing_edges": [
+          {
+            "to": "R02",
+            "rule": "keystone"
+          },
+          {
+            "to": "R03",
+            "rule": "keystone"
+          },
+          {
+            "to": "R05",
+            "rule": "keystone"
+          },
+          {
+            "to": "R32",
+            "rule": "registry"
+          },
+          {
+            "to": "R48",
+            "rule": "registry"
+          },
+          {
+            "to": "R69",
+            "rule": "registry"
+          }
+        ]
+      },
+      "R02": {
+        "name": "Crate-boundary enforcement",
+        "kind": "bundle",
+        "prerequisites": [
+          "R01"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R01",
+          "R02"
+        ],
+        "outgoing_edges": []
+      },
+      "R03": {
+        "name": "Port absence-vs-failure contract",
+        "kind": "pattern",
+        "prerequisites": [
+          "R01",
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R01",
+          "R03"
+        ],
+        "outgoing_edges": []
+      },
+      "R04": {
+        "name": "Public API surface enforcement",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R04"
+        ],
+        "outgoing_edges": []
+      },
+      "R05": {
+        "name": "Sync/async execution model",
+        "kind": "bundle",
+        "prerequisites": [
+          "R01"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R01",
+          "R05"
+        ],
+        "outgoing_edges": []
+      },
+      "R06": {
+        "name": "`unsafe` code policy",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R06"
+        ],
+        "outgoing_edges": []
+      },
+      "R07": {
+        "name": "Contributors-bot trigger cadence",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R07"
+        ],
+        "outgoing_edges": []
+      },
+      "R08": {
+        "name": "Workflow permission hardening",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R08"
+        ],
+        "outgoing_edges": []
+      },
+      "R09": {
+        "name": "Self-hosted runner indirection",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R09"
+        ],
+        "outgoing_edges": []
+      },
+      "R10": {
+        "name": "Dependency cache action",
+        "kind": "crate",
+        "prerequisites": [
+          "R42"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R42",
+          "R10"
+        ],
+        "outgoing_edges": []
+      },
+      "R11": {
+        "name": "CI workflow job structure",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 17,
+        "unique_transitive_descendant_count": 17,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11"
+        ],
+        "outgoing_edges": [
+          {
+            "to": "R08",
+            "rule": "keystone"
+          },
+          {
+            "to": "R09",
+            "rule": "keystone"
+          },
+          {
+            "to": "R12",
+            "rule": "registry"
+          },
+          {
+            "to": "R13",
+            "rule": "keystone"
+          },
+          {
+            "to": "R14",
+            "rule": "keystone"
+          },
+          {
+            "to": "R27",
+            "rule": "registry"
+          },
+          {
+            "to": "R28",
+            "rule": "registry"
+          },
+          {
+            "to": "R29",
+            "rule": "registry"
+          },
+          {
+            "to": "R30",
+            "rule": "registry"
+          },
+          {
+            "to": "R31",
+            "rule": "registry"
+          },
+          {
+            "to": "R32",
+            "rule": "registry"
+          },
+          {
+            "to": "R35",
+            "rule": "registry"
+          },
+          {
+            "to": "R37",
+            "rule": "registry"
+          },
+          {
+            "to": "R39",
+            "rule": "registry"
+          },
+          {
+            "to": "R40",
+            "rule": "registry"
+          },
+          {
+            "to": "R71",
+            "rule": "registry"
+          },
+          {
+            "to": "R82",
+            "rule": "registry"
+          }
+        ]
+      },
+      "R12": {
+        "name": "Aggregate required-status check",
+        "kind": "pattern",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R12"
+        ],
+        "outgoing_edges": []
+      },
+      "R13": {
+        "name": "Dependency vulnerability scanning",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R13"
+        ],
+        "outgoing_edges": []
+      },
+      "R14": {
+        "name": "Large-file guard strategy",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R14"
+        ],
+        "outgoing_edges": []
+      },
+      "R15": {
+        "name": "Template drift/receipt guard",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R15"
+        ],
+        "outgoing_edges": []
+      },
+      "R16": {
+        "name": "CodeQL config customization",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R16"
+        ],
+        "outgoing_edges": []
+      },
+      "R17": {
+        "name": "Secret-scanning CI workflow",
+        "kind": "crate",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R17"
+        ],
+        "outgoing_edges": []
+      },
+      "R18": {
+        "name": "AI-assisted review workflows",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R18"
+        ],
+        "outgoing_edges": []
+      },
+      "R19": {
+        "name": "Dependabot config shape",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R19"
+        ],
+        "outgoing_edges": []
+      },
+      "R20": {
+        "name": "Third-party GitHub Action pinning policy",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R20"
+        ],
+        "outgoing_edges": []
+      },
+      "R21": {
+        "name": "Contributors-bot credential source",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R21"
+        ],
+        "outgoing_edges": []
+      },
+      "R22": {
+        "name": "Runtime version accessor",
+        "kind": "pattern",
+        "prerequisites": [
+          "R49"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R49",
+          "R22"
+        ],
+        "outgoing_edges": []
+      },
+      "R23": {
+        "name": "Lockfile version sync in release commit",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R23"
+        ],
+        "outgoing_edges": []
+      },
+      "R24": {
+        "name": "Changelog section type mapping",
+        "kind": "pattern",
+        "prerequisites": [
+          "R38"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R38",
+          "R24"
+        ],
+        "outgoing_edges": []
+      },
+      "R25": {
+        "name": "Pre-1.0 semver bump strategy",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R25"
+        ],
+        "outgoing_edges": []
+      },
+      "R26": {
+        "name": "Packed-artifact content guard",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R26"
+        ],
+        "outgoing_edges": []
+      },
+      "R27": {
+        "name": "Formatter config surface",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11",
+          "R42"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R27"
+        ],
+        "outgoing_edges": []
+      },
+      "R28": {
+        "name": "Linter and editor tooling",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11",
+          "R42"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R28"
+        ],
+        "outgoing_edges": []
+      },
+      "R29": {
+        "name": "Non-code file formatting",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11",
+          "R42"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R29"
+        ],
+        "outgoing_edges": []
+      },
+      "R30": {
+        "name": "Type-check gate",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R30"
+        ],
+        "outgoing_edges": []
+      },
+      "R31": {
+        "name": "Standalone security analyzer",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R31"
+        ],
+        "outgoing_edges": []
+      },
+      "R32": {
+        "name": "Test harness and execution behavior",
+        "kind": "bundle",
+        "prerequisites": [
+          "R01",
+          "R11",
+          "R42",
+          "R49",
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R32"
+        ],
+        "outgoing_edges": []
+      },
+      "R33": {
+        "name": "Property-based and snapshot testing",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R33"
+        ],
+        "outgoing_edges": []
+      },
+      "R34": {
+        "name": "Scheduled freshness lanes",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R34"
+        ],
+        "outgoing_edges": []
+      },
+      "R35": {
+        "name": "Coverage tooling",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R35"
+        ],
+        "outgoing_edges": []
+      },
+      "R37": {
+        "name": "Hook manager distribution and wiring",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11",
+          "R38",
+          "R42",
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R37"
+        ],
+        "outgoing_edges": []
+      },
+      "R38": {
+        "name": "Commit-message linter",
+        "kind": "crate",
+        "prerequisites": [],
+        "direct_descendant_count": 2,
+        "unique_transitive_descendant_count": 2,
+        "level": 0,
+        "longest_path": [
+          "R38"
+        ],
+        "outgoing_edges": [
+          {
+            "to": "R24",
+            "rule": "registry"
+          },
+          {
+            "to": "R37",
+            "rule": "keystone"
+          }
+        ]
+      },
+      "R39": {
+        "name": "Secret-scanning hooks",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R39"
+        ],
+        "outgoing_edges": []
+      },
+      "R40": {
+        "name": "Auxiliary hygiene hooks",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11",
+          "R42"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R40"
+        ],
+        "outgoing_edges": []
+      },
+      "R41": {
+        "name": "Lockfile-freshness check hook",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R41"
+        ],
+        "outgoing_edges": []
+      },
+      "R42": {
+        "name": "Dev-toolchain provisioning",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 8,
+        "unique_transitive_descendant_count": 8,
+        "level": 0,
+        "longest_path": [
+          "R42"
+        ],
+        "outgoing_edges": [
+          {
+            "to": "R10",
+            "rule": "keystone"
+          },
+          {
+            "to": "R27",
+            "rule": "registry"
+          },
+          {
+            "to": "R28",
+            "rule": "registry"
+          },
+          {
+            "to": "R29",
+            "rule": "registry"
+          },
+          {
+            "to": "R32",
+            "rule": "registry"
+          },
+          {
+            "to": "R37",
+            "rule": "registry"
+          },
+          {
+            "to": "R40",
+            "rule": "registry"
+          },
+          {
+            "to": "R44",
+            "rule": "keystone"
+          }
+        ]
+      },
+      "R43": {
+        "name": "AI-assistant repo furniture",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R43"
+        ],
+        "outgoing_edges": []
+      },
+      "R44": {
+        "name": "Devcontainer environment",
+        "kind": "pattern",
+        "prerequisites": [
+          "R42"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R42",
+          "R44"
+        ],
+        "outgoing_edges": []
+      },
+      "R45": {
+        "name": "PR-comment bot re-review trigger block",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R45"
+        ],
+        "outgoing_edges": []
+      },
+      "R46": {
+        "name": "Per-file embedded license header",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R46"
+        ],
+        "outgoing_edges": []
+      },
+      "R47": {
+        "name": "Contributors-recipe mode",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R47"
+        ],
+        "outgoing_edges": []
+      },
+      "R48": {
+        "name": "Mocking crates",
+        "kind": "bundle",
+        "prerequisites": [
+          "R01"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R01",
+          "R48"
+        ],
+        "outgoing_edges": []
+      },
+      "R49": {
+        "name": "Build-target declaration",
+        "kind": "crate",
+        "prerequisites": [],
+        "direct_descendant_count": 4,
+        "unique_transitive_descendant_count": 4,
+        "level": 0,
+        "longest_path": [
+          "R49"
+        ],
+        "outgoing_edges": [
+          {
+            "to": "R22",
+            "rule": "registry"
+          },
+          {
+            "to": "R32",
+            "rule": "registry"
+          },
+          {
+            "to": "R50",
+            "rule": "keystone"
+          },
+          {
+            "to": "R68",
+            "rule": "registry"
+          }
+        ]
+      },
+      "R50": {
+        "name": "Install smoke test",
+        "kind": "bundle",
+        "prerequisites": [
+          "R49"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R49",
+          "R50"
+        ],
+        "outgoing_edges": []
+      },
+      "R51": {
+        "name": "Container image",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R51"
+        ],
+        "outgoing_edges": []
+      },
+      "R52": {
+        "name": "TOML crate",
+        "kind": "bundle",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R52"
+        ],
+        "outgoing_edges": []
+      },
+      "R53": {
+        "name": "Config schema validation",
+        "kind": "crate",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R53"
+        ],
+        "outgoing_edges": []
+      },
+      "R54": {
+        "name": "Config discovery tiers",
+        "kind": "bundle",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R54"
+        ],
+        "outgoing_edges": []
+      },
+      "R55": {
+        "name": "Config error tolerance",
+        "kind": "bundle",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R55"
+        ],
+        "outgoing_edges": []
+      },
+      "R56": {
+        "name": "Config secret policy",
+        "kind": "bundle",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R56"
+        ],
+        "outgoing_edges": []
+      },
+      "R57": {
+        "name": "XDG directory set",
+        "kind": "pattern",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R57"
+        ],
+        "outgoing_edges": []
+      },
+      "R58": {
+        "name": "Logging pipeline architecture",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R58"
+        ],
+        "outgoing_edges": []
+      },
+      "R59": {
+        "name": "File log sink",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R59"
+        ],
+        "outgoing_edges": []
+      },
+      "R60": {
+        "name": "CLI parsing framework",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R60"
+        ],
+        "outgoing_edges": []
+      },
+      "R61": {
+        "name": "Interactive prompts",
+        "kind": "bundle",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R61"
+        ],
+        "outgoing_edges": []
+      },
+      "R62": {
+        "name": "Clipboard integration",
+        "kind": "bundle",
+        "prerequisites": [
+          "R67"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R67",
+          "R62"
+        ],
+        "outgoing_edges": []
+      },
+      "R63": {
+        "name": "Progress spinner",
+        "kind": "crate",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R63"
+        ],
+        "outgoing_edges": []
+      },
+      "R64": {
+        "name": "Pager integration",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R64"
+        ],
+        "outgoing_edges": []
+      },
+      "R65": {
+        "name": "Color enablement chain",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R65"
+        ],
+        "outgoing_edges": []
+      },
+      "R66": {
+        "name": "Output format surface",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R66"
+        ],
+        "outgoing_edges": []
+      },
+      "R67": {
+        "name": "Error and exit-code contract",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 10,
+        "unique_transitive_descendant_count": 10,
+        "level": 0,
+        "longest_path": [
+          "R67"
+        ],
+        "outgoing_edges": [
+          {
+            "to": "R03",
+            "rule": "registry"
+          },
+          {
+            "to": "R52",
+            "rule": "registry"
+          },
+          {
+            "to": "R53",
+            "rule": "registry"
+          },
+          {
+            "to": "R54",
+            "rule": "registry"
+          },
+          {
+            "to": "R55",
+            "rule": "registry"
+          },
+          {
+            "to": "R56",
+            "rule": "registry"
+          },
+          {
+            "to": "R57",
+            "rule": "keystone"
+          },
+          {
+            "to": "R61",
+            "rule": "keystone"
+          },
+          {
+            "to": "R62",
+            "rule": "keystone"
+          },
+          {
+            "to": "R70",
+            "rule": "registry"
+          }
+        ]
+      },
+      "R68": {
+        "name": "Release binary artifacts",
+        "kind": "crate",
+        "prerequisites": [
+          "R49"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 1,
+        "longest_path": [
+          "R49",
+          "R68"
+        ],
+        "outgoing_edges": []
+      },
+      "R69": {
+        "name": "Web framework stack",
+        "kind": "bundle",
+        "prerequisites": [
+          "R01"
+        ],
+        "direct_descendant_count": 19,
+        "unique_transitive_descendant_count": 32,
+        "level": 1,
+        "longest_path": [
+          "R01",
+          "R69"
+        ],
+        "outgoing_edges": [
+          {
+            "to": "R11",
+            "rule": "registry"
+          },
+          {
+            "to": "R32",
+            "rule": "registry"
+          },
+          {
+            "to": "R37",
+            "rule": "registry"
+          },
+          {
+            "to": "R51",
+            "rule": "registry"
+          },
+          {
+            "to": "R58",
+            "rule": "registry"
+          },
+          {
+            "to": "R70",
+            "rule": "keystone"
+          },
+          {
+            "to": "R71",
+            "rule": "registry"
+          },
+          {
+            "to": "R72",
+            "rule": "keystone"
+          },
+          {
+            "to": "R73",
+            "rule": "keystone"
+          },
+          {
+            "to": "R74",
+            "rule": "keystone"
+          },
+          {
+            "to": "R75",
+            "rule": "keystone"
+          },
+          {
+            "to": "R76",
+            "rule": "keystone"
+          },
+          {
+            "to": "R77",
+            "rule": "keystone"
+          },
+          {
+            "to": "R78",
+            "rule": "keystone"
+          },
+          {
+            "to": "R79",
+            "rule": "keystone"
+          },
+          {
+            "to": "R80",
+            "rule": "keystone"
+          },
+          {
+            "to": "R82",
+            "rule": "registry"
+          },
+          {
+            "to": "R83",
+            "rule": "registry"
+          },
+          {
+            "to": "R84",
+            "rule": "registry"
+          }
+        ]
+      },
+      "R70": {
+        "name": "HTTP problem envelope",
+        "kind": "bundle",
+        "prerequisites": [
+          "R67",
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R70"
+        ],
+        "outgoing_edges": []
+      },
+      "R71": {
+        "name": "OpenAPI generation pipeline",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11",
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R71"
+        ],
+        "outgoing_edges": []
+      },
+      "R72": {
+        "name": "API pagination",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R72"
+        ],
+        "outgoing_edges": []
+      },
+      "R73": {
+        "name": "Idempotency middleware",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R73"
+        ],
+        "outgoing_edges": []
+      },
+      "R74": {
+        "name": "Rate-limiting middleware",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R74"
+        ],
+        "outgoing_edges": []
+      },
+      "R75": {
+        "name": "HTTP middleware stack",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R75"
+        ],
+        "outgoing_edges": []
+      },
+      "R76": {
+        "name": "CORS middleware",
+        "kind": "crate",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R76"
+        ],
+        "outgoing_edges": []
+      },
+      "R77": {
+        "name": "Web env settings",
+        "kind": "crate",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R77"
+        ],
+        "outgoing_edges": []
+      },
+      "R78": {
+        "name": "OpenTelemetry integration",
+        "kind": "crate",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R78"
+        ],
+        "outgoing_edges": []
+      },
+      "R79": {
+        "name": "Prometheus metrics",
+        "kind": "crate",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R79"
+        ],
+        "outgoing_edges": []
+      },
+      "R80": {
+        "name": "Health probe endpoints",
+        "kind": "bundle",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R80"
+        ],
+        "outgoing_edges": []
+      },
+      "R81": {
+        "name": "Docs delivery model",
+        "kind": "bundle",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R81"
+        ],
+        "outgoing_edges": []
+      },
+      "R82": {
+        "name": "Docs correctness gate",
+        "kind": "bundle",
+        "prerequisites": [
+          "R11",
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 3,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R11",
+          "R82"
+        ],
+        "outgoing_edges": []
+      },
+      "R83": {
+        "name": "OpenAPI contract fuzzing",
+        "kind": "crate",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R83"
+        ],
+        "outgoing_edges": []
+      },
+      "R84": {
+        "name": "OpenAPI typed client generation",
+        "kind": "crate",
+        "prerequisites": [
+          "R69"
+        ],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 2,
+        "longest_path": [
+          "R01",
+          "R69",
+          "R84"
+        ],
+        "outgoing_edges": []
+      },
+      "R85": {
+        "name": "Rich terminal row niceties",
+        "kind": "pattern",
+        "prerequisites": [],
+        "direct_descendant_count": 0,
+        "unique_transitive_descendant_count": 0,
+        "level": 0,
+        "longest_path": [
+          "R85"
+        ],
+        "outgoing_edges": []
+      }
+    }
+  },
+  "proposed_r58_amendment": {
+    "status": "proposal; not recorded in prompts, PARAMETERS.md, or RUNBOOK.md",
+    "new_parameter": {
+      "owner": "R58",
+      "name": "logging-pipeline-contract",
+      "value_shape": "selected tracing/logging stack; initialization and extension interface; event-field/redaction contract; CLI/web profile boundary; optional OTel feature boundary"
+    },
+    "new_consumes": {
+      "R59": [
+        "R58: logging-pipeline-contract"
+      ],
+      "R75": [
+        "R58: logging-pipeline-contract"
+      ],
+      "R78": [
+        "R58: logging-pipeline-contract"
+      ]
+    },
+    "simulation": {
+      "node_count": 84,
+      "edge_count": 69,
+      "cycle_free": true,
+      "cycles": [],
+      "waves": {
+        "0": [
+          "R01",
+          "R04",
+          "R06",
+          "R07",
+          "R15",
+          "R16",
+          "R17",
+          "R18",
+          "R19",
+          "R20",
+          "R21",
+          "R23",
+          "R25",
+          "R26",
+          "R33",
+          "R34",
+          "R38",
+          "R41",
+          "R42",
+          "R43",
+          "R45",
+          "R46",
+          "R47",
+          "R49",
+          "R60",
+          "R63",
+          "R64",
+          "R65",
+          "R66",
+          "R67",
+          "R81",
+          "R85"
+        ],
+        "1": [
+          "R02",
+          "R03",
+          "R05",
+          "R10",
+          "R22",
+          "R24",
+          "R44",
+          "R48",
+          "R50",
+          "R52",
+          "R53",
+          "R54",
+          "R55",
+          "R56",
+          "R57",
+          "R61",
+          "R62",
+          "R68",
+          "R69"
+        ],
+        "2": [
+          "R11",
+          "R51",
+          "R58",
+          "R70",
+          "R72",
+          "R73",
+          "R74",
+          "R76",
+          "R77",
+          "R79",
+          "R80",
+          "R83",
+          "R84"
+        ],
+        "3": [
+          "R08",
+          "R09",
+          "R12",
+          "R13",
+          "R14",
+          "R27",
+          "R28",
+          "R29",
+          "R30",
+          "R31",
+          "R32",
+          "R35",
+          "R37",
+          "R39",
+          "R40",
+          "R59",
+          "R71",
+          "R75",
+          "R78",
+          "R82"
+        ]
+      },
+      "critical_depth_edges": 3,
+      "critical_paths": [
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R08"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R09"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R12"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R13"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R14"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R27"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R28"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R29"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R30"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R31"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R32"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R35"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R37"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R39"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R40"
+        ],
+        [
+          "R01",
+          "R69",
+          "R58",
+          "R59"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R71"
+        ],
+        [
+          "R01",
+          "R69",
+          "R58",
+          "R75"
+        ],
+        [
+          "R01",
+          "R69",
+          "R58",
+          "R78"
+        ],
+        [
+          "R01",
+          "R69",
+          "R11",
+          "R82"
+        ]
+      ],
+      "nodes": {
+        "R01": {
+          "name": "Ports-and-adapters seam",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 6,
+          "unique_transitive_descendant_count": 38,
+          "level": 0,
+          "longest_path": [
+            "R01"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R02",
+              "rule": "keystone"
+            },
+            {
+              "to": "R03",
+              "rule": "keystone"
+            },
+            {
+              "to": "R05",
+              "rule": "keystone"
+            },
+            {
+              "to": "R32",
+              "rule": "registry"
+            },
+            {
+              "to": "R48",
+              "rule": "registry"
+            },
+            {
+              "to": "R69",
+              "rule": "registry"
+            }
+          ]
+        },
+        "R02": {
+          "name": "Crate-boundary enforcement",
+          "kind": "bundle",
+          "prerequisites": [
+            "R01"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R01",
+            "R02"
+          ],
+          "outgoing_edges": []
+        },
+        "R03": {
+          "name": "Port absence-vs-failure contract",
+          "kind": "pattern",
+          "prerequisites": [
+            "R01",
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R01",
+            "R03"
+          ],
+          "outgoing_edges": []
+        },
+        "R04": {
+          "name": "Public API surface enforcement",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R04"
+          ],
+          "outgoing_edges": []
+        },
+        "R05": {
+          "name": "Sync/async execution model",
+          "kind": "bundle",
+          "prerequisites": [
+            "R01"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R01",
+            "R05"
+          ],
+          "outgoing_edges": []
+        },
+        "R06": {
+          "name": "`unsafe` code policy",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R06"
+          ],
+          "outgoing_edges": []
+        },
+        "R07": {
+          "name": "Contributors-bot trigger cadence",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R07"
+          ],
+          "outgoing_edges": []
+        },
+        "R08": {
+          "name": "Workflow permission hardening",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R08"
+          ],
+          "outgoing_edges": []
+        },
+        "R09": {
+          "name": "Self-hosted runner indirection",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R09"
+          ],
+          "outgoing_edges": []
+        },
+        "R10": {
+          "name": "Dependency cache action",
+          "kind": "crate",
+          "prerequisites": [
+            "R42"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R42",
+            "R10"
+          ],
+          "outgoing_edges": []
+        },
+        "R11": {
+          "name": "CI workflow job structure",
+          "kind": "bundle",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 17,
+          "unique_transitive_descendant_count": 17,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R08",
+              "rule": "keystone"
+            },
+            {
+              "to": "R09",
+              "rule": "keystone"
+            },
+            {
+              "to": "R12",
+              "rule": "registry"
+            },
+            {
+              "to": "R13",
+              "rule": "keystone"
+            },
+            {
+              "to": "R14",
+              "rule": "keystone"
+            },
+            {
+              "to": "R27",
+              "rule": "registry"
+            },
+            {
+              "to": "R28",
+              "rule": "registry"
+            },
+            {
+              "to": "R29",
+              "rule": "registry"
+            },
+            {
+              "to": "R30",
+              "rule": "registry"
+            },
+            {
+              "to": "R31",
+              "rule": "registry"
+            },
+            {
+              "to": "R32",
+              "rule": "registry"
+            },
+            {
+              "to": "R35",
+              "rule": "registry"
+            },
+            {
+              "to": "R37",
+              "rule": "registry"
+            },
+            {
+              "to": "R39",
+              "rule": "registry"
+            },
+            {
+              "to": "R40",
+              "rule": "registry"
+            },
+            {
+              "to": "R71",
+              "rule": "registry"
+            },
+            {
+              "to": "R82",
+              "rule": "registry"
+            }
+          ]
+        },
+        "R12": {
+          "name": "Aggregate required-status check",
+          "kind": "pattern",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R12"
+          ],
+          "outgoing_edges": []
+        },
+        "R13": {
+          "name": "Dependency vulnerability scanning",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R13"
+          ],
+          "outgoing_edges": []
+        },
+        "R14": {
+          "name": "Large-file guard strategy",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R14"
+          ],
+          "outgoing_edges": []
+        },
+        "R15": {
+          "name": "Template drift/receipt guard",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R15"
+          ],
+          "outgoing_edges": []
+        },
+        "R16": {
+          "name": "CodeQL config customization",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R16"
+          ],
+          "outgoing_edges": []
+        },
+        "R17": {
+          "name": "Secret-scanning CI workflow",
+          "kind": "crate",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R17"
+          ],
+          "outgoing_edges": []
+        },
+        "R18": {
+          "name": "AI-assisted review workflows",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R18"
+          ],
+          "outgoing_edges": []
+        },
+        "R19": {
+          "name": "Dependabot config shape",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R19"
+          ],
+          "outgoing_edges": []
+        },
+        "R20": {
+          "name": "Third-party GitHub Action pinning policy",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R20"
+          ],
+          "outgoing_edges": []
+        },
+        "R21": {
+          "name": "Contributors-bot credential source",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R21"
+          ],
+          "outgoing_edges": []
+        },
+        "R22": {
+          "name": "Runtime version accessor",
+          "kind": "pattern",
+          "prerequisites": [
+            "R49"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R49",
+            "R22"
+          ],
+          "outgoing_edges": []
+        },
+        "R23": {
+          "name": "Lockfile version sync in release commit",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R23"
+          ],
+          "outgoing_edges": []
+        },
+        "R24": {
+          "name": "Changelog section type mapping",
+          "kind": "pattern",
+          "prerequisites": [
+            "R38"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R38",
+            "R24"
+          ],
+          "outgoing_edges": []
+        },
+        "R25": {
+          "name": "Pre-1.0 semver bump strategy",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R25"
+          ],
+          "outgoing_edges": []
+        },
+        "R26": {
+          "name": "Packed-artifact content guard",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R26"
+          ],
+          "outgoing_edges": []
+        },
+        "R27": {
+          "name": "Formatter config surface",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11",
+            "R42"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R27"
+          ],
+          "outgoing_edges": []
+        },
+        "R28": {
+          "name": "Linter and editor tooling",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11",
+            "R42"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R28"
+          ],
+          "outgoing_edges": []
+        },
+        "R29": {
+          "name": "Non-code file formatting",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11",
+            "R42"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R29"
+          ],
+          "outgoing_edges": []
+        },
+        "R30": {
+          "name": "Type-check gate",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R30"
+          ],
+          "outgoing_edges": []
+        },
+        "R31": {
+          "name": "Standalone security analyzer",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R31"
+          ],
+          "outgoing_edges": []
+        },
+        "R32": {
+          "name": "Test harness and execution behavior",
+          "kind": "bundle",
+          "prerequisites": [
+            "R01",
+            "R11",
+            "R42",
+            "R49",
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R32"
+          ],
+          "outgoing_edges": []
+        },
+        "R33": {
+          "name": "Property-based and snapshot testing",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R33"
+          ],
+          "outgoing_edges": []
+        },
+        "R34": {
+          "name": "Scheduled freshness lanes",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R34"
+          ],
+          "outgoing_edges": []
+        },
+        "R35": {
+          "name": "Coverage tooling",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R35"
+          ],
+          "outgoing_edges": []
+        },
+        "R37": {
+          "name": "Hook manager distribution and wiring",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11",
+            "R38",
+            "R42",
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R37"
+          ],
+          "outgoing_edges": []
+        },
+        "R38": {
+          "name": "Commit-message linter",
+          "kind": "crate",
+          "prerequisites": [],
+          "direct_descendant_count": 2,
+          "unique_transitive_descendant_count": 2,
+          "level": 0,
+          "longest_path": [
+            "R38"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R24",
+              "rule": "registry"
+            },
+            {
+              "to": "R37",
+              "rule": "keystone"
+            }
+          ]
+        },
+        "R39": {
+          "name": "Secret-scanning hooks",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R39"
+          ],
+          "outgoing_edges": []
+        },
+        "R40": {
+          "name": "Auxiliary hygiene hooks",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11",
+            "R42"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R40"
+          ],
+          "outgoing_edges": []
+        },
+        "R41": {
+          "name": "Lockfile-freshness check hook",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R41"
+          ],
+          "outgoing_edges": []
+        },
+        "R42": {
+          "name": "Dev-toolchain provisioning",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 8,
+          "unique_transitive_descendant_count": 8,
+          "level": 0,
+          "longest_path": [
+            "R42"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R10",
+              "rule": "keystone"
+            },
+            {
+              "to": "R27",
+              "rule": "registry"
+            },
+            {
+              "to": "R28",
+              "rule": "registry"
+            },
+            {
+              "to": "R29",
+              "rule": "registry"
+            },
+            {
+              "to": "R32",
+              "rule": "registry"
+            },
+            {
+              "to": "R37",
+              "rule": "registry"
+            },
+            {
+              "to": "R40",
+              "rule": "registry"
+            },
+            {
+              "to": "R44",
+              "rule": "keystone"
+            }
+          ]
+        },
+        "R43": {
+          "name": "AI-assistant repo furniture",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R43"
+          ],
+          "outgoing_edges": []
+        },
+        "R44": {
+          "name": "Devcontainer environment",
+          "kind": "pattern",
+          "prerequisites": [
+            "R42"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R42",
+            "R44"
+          ],
+          "outgoing_edges": []
+        },
+        "R45": {
+          "name": "PR-comment bot re-review trigger block",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R45"
+          ],
+          "outgoing_edges": []
+        },
+        "R46": {
+          "name": "Per-file embedded license header",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R46"
+          ],
+          "outgoing_edges": []
+        },
+        "R47": {
+          "name": "Contributors-recipe mode",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R47"
+          ],
+          "outgoing_edges": []
+        },
+        "R48": {
+          "name": "Mocking crates",
+          "kind": "bundle",
+          "prerequisites": [
+            "R01"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R01",
+            "R48"
+          ],
+          "outgoing_edges": []
+        },
+        "R49": {
+          "name": "Build-target declaration",
+          "kind": "crate",
+          "prerequisites": [],
+          "direct_descendant_count": 4,
+          "unique_transitive_descendant_count": 4,
+          "level": 0,
+          "longest_path": [
+            "R49"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R22",
+              "rule": "registry"
+            },
+            {
+              "to": "R32",
+              "rule": "registry"
+            },
+            {
+              "to": "R50",
+              "rule": "keystone"
+            },
+            {
+              "to": "R68",
+              "rule": "registry"
+            }
+          ]
+        },
+        "R50": {
+          "name": "Install smoke test",
+          "kind": "bundle",
+          "prerequisites": [
+            "R49"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R49",
+            "R50"
+          ],
+          "outgoing_edges": []
+        },
+        "R51": {
+          "name": "Container image",
+          "kind": "bundle",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R51"
+          ],
+          "outgoing_edges": []
+        },
+        "R52": {
+          "name": "TOML crate",
+          "kind": "bundle",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R52"
+          ],
+          "outgoing_edges": []
+        },
+        "R53": {
+          "name": "Config schema validation",
+          "kind": "crate",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R53"
+          ],
+          "outgoing_edges": []
+        },
+        "R54": {
+          "name": "Config discovery tiers",
+          "kind": "bundle",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R54"
+          ],
+          "outgoing_edges": []
+        },
+        "R55": {
+          "name": "Config error tolerance",
+          "kind": "bundle",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R55"
+          ],
+          "outgoing_edges": []
+        },
+        "R56": {
+          "name": "Config secret policy",
+          "kind": "bundle",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R56"
+          ],
+          "outgoing_edges": []
+        },
+        "R57": {
+          "name": "XDG directory set",
+          "kind": "pattern",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R57"
+          ],
+          "outgoing_edges": []
+        },
+        "R58": {
+          "name": "Logging pipeline architecture",
+          "kind": "bundle",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 3,
+          "unique_transitive_descendant_count": 3,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R58"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R59",
+              "rule": "proposed-registry"
+            },
+            {
+              "to": "R75",
+              "rule": "proposed-registry"
+            },
+            {
+              "to": "R78",
+              "rule": "proposed-registry"
+            }
+          ]
+        },
+        "R59": {
+          "name": "File log sink",
+          "kind": "bundle",
+          "prerequisites": [
+            "R58"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R58",
+            "R59"
+          ],
+          "outgoing_edges": []
+        },
+        "R60": {
+          "name": "CLI parsing framework",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R60"
+          ],
+          "outgoing_edges": []
+        },
+        "R61": {
+          "name": "Interactive prompts",
+          "kind": "bundle",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R61"
+          ],
+          "outgoing_edges": []
+        },
+        "R62": {
+          "name": "Clipboard integration",
+          "kind": "bundle",
+          "prerequisites": [
+            "R67"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R67",
+            "R62"
+          ],
+          "outgoing_edges": []
+        },
+        "R63": {
+          "name": "Progress spinner",
+          "kind": "crate",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R63"
+          ],
+          "outgoing_edges": []
+        },
+        "R64": {
+          "name": "Pager integration",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R64"
+          ],
+          "outgoing_edges": []
+        },
+        "R65": {
+          "name": "Color enablement chain",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R65"
+          ],
+          "outgoing_edges": []
+        },
+        "R66": {
+          "name": "Output format surface",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R66"
+          ],
+          "outgoing_edges": []
+        },
+        "R67": {
+          "name": "Error and exit-code contract",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 10,
+          "unique_transitive_descendant_count": 10,
+          "level": 0,
+          "longest_path": [
+            "R67"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R03",
+              "rule": "registry"
+            },
+            {
+              "to": "R52",
+              "rule": "registry"
+            },
+            {
+              "to": "R53",
+              "rule": "registry"
+            },
+            {
+              "to": "R54",
+              "rule": "registry"
+            },
+            {
+              "to": "R55",
+              "rule": "registry"
+            },
+            {
+              "to": "R56",
+              "rule": "registry"
+            },
+            {
+              "to": "R57",
+              "rule": "keystone"
+            },
+            {
+              "to": "R61",
+              "rule": "keystone"
+            },
+            {
+              "to": "R62",
+              "rule": "keystone"
+            },
+            {
+              "to": "R70",
+              "rule": "registry"
+            }
+          ]
+        },
+        "R68": {
+          "name": "Release binary artifacts",
+          "kind": "crate",
+          "prerequisites": [
+            "R49"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 1,
+          "longest_path": [
+            "R49",
+            "R68"
+          ],
+          "outgoing_edges": []
+        },
+        "R69": {
+          "name": "Web framework stack",
+          "kind": "bundle",
+          "prerequisites": [
+            "R01"
+          ],
+          "direct_descendant_count": 19,
+          "unique_transitive_descendant_count": 33,
+          "level": 1,
+          "longest_path": [
+            "R01",
+            "R69"
+          ],
+          "outgoing_edges": [
+            {
+              "to": "R11",
+              "rule": "registry"
+            },
+            {
+              "to": "R32",
+              "rule": "registry"
+            },
+            {
+              "to": "R37",
+              "rule": "registry"
+            },
+            {
+              "to": "R51",
+              "rule": "registry"
+            },
+            {
+              "to": "R58",
+              "rule": "registry"
+            },
+            {
+              "to": "R70",
+              "rule": "keystone"
+            },
+            {
+              "to": "R71",
+              "rule": "registry"
+            },
+            {
+              "to": "R72",
+              "rule": "keystone"
+            },
+            {
+              "to": "R73",
+              "rule": "keystone"
+            },
+            {
+              "to": "R74",
+              "rule": "keystone"
+            },
+            {
+              "to": "R75",
+              "rule": "keystone"
+            },
+            {
+              "to": "R76",
+              "rule": "keystone"
+            },
+            {
+              "to": "R77",
+              "rule": "keystone"
+            },
+            {
+              "to": "R78",
+              "rule": "keystone"
+            },
+            {
+              "to": "R79",
+              "rule": "keystone"
+            },
+            {
+              "to": "R80",
+              "rule": "keystone"
+            },
+            {
+              "to": "R82",
+              "rule": "registry"
+            },
+            {
+              "to": "R83",
+              "rule": "registry"
+            },
+            {
+              "to": "R84",
+              "rule": "registry"
+            }
+          ]
+        },
+        "R70": {
+          "name": "HTTP problem envelope",
+          "kind": "bundle",
+          "prerequisites": [
+            "R67",
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R70"
+          ],
+          "outgoing_edges": []
+        },
+        "R71": {
+          "name": "OpenAPI generation pipeline",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11",
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R71"
+          ],
+          "outgoing_edges": []
+        },
+        "R72": {
+          "name": "API pagination",
+          "kind": "bundle",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R72"
+          ],
+          "outgoing_edges": []
+        },
+        "R73": {
+          "name": "Idempotency middleware",
+          "kind": "bundle",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R73"
+          ],
+          "outgoing_edges": []
+        },
+        "R74": {
+          "name": "Rate-limiting middleware",
+          "kind": "bundle",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R74"
+          ],
+          "outgoing_edges": []
+        },
+        "R75": {
+          "name": "HTTP middleware stack",
+          "kind": "bundle",
+          "prerequisites": [
+            "R58",
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R58",
+            "R75"
+          ],
+          "outgoing_edges": []
+        },
+        "R76": {
+          "name": "CORS middleware",
+          "kind": "crate",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R76"
+          ],
+          "outgoing_edges": []
+        },
+        "R77": {
+          "name": "Web env settings",
+          "kind": "crate",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R77"
+          ],
+          "outgoing_edges": []
+        },
+        "R78": {
+          "name": "OpenTelemetry integration",
+          "kind": "crate",
+          "prerequisites": [
+            "R58",
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R58",
+            "R78"
+          ],
+          "outgoing_edges": []
+        },
+        "R79": {
+          "name": "Prometheus metrics",
+          "kind": "crate",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R79"
+          ],
+          "outgoing_edges": []
+        },
+        "R80": {
+          "name": "Health probe endpoints",
+          "kind": "bundle",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R80"
+          ],
+          "outgoing_edges": []
+        },
+        "R81": {
+          "name": "Docs delivery model",
+          "kind": "bundle",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R81"
+          ],
+          "outgoing_edges": []
+        },
+        "R82": {
+          "name": "Docs correctness gate",
+          "kind": "bundle",
+          "prerequisites": [
+            "R11",
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 3,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R11",
+            "R82"
+          ],
+          "outgoing_edges": []
+        },
+        "R83": {
+          "name": "OpenAPI contract fuzzing",
+          "kind": "crate",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R83"
+          ],
+          "outgoing_edges": []
+        },
+        "R84": {
+          "name": "OpenAPI typed client generation",
+          "kind": "crate",
+          "prerequisites": [
+            "R69"
+          ],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 2,
+          "longest_path": [
+            "R01",
+            "R69",
+            "R84"
+          ],
+          "outgoing_edges": []
+        },
+        "R85": {
+          "name": "Rich terminal row niceties",
+          "kind": "pattern",
+          "prerequisites": [],
+          "direct_descendant_count": 0,
+          "unique_transitive_descendant_count": 0,
+          "level": 0,
+          "longest_path": [
+            "R85"
+          ],
+          "outgoing_edges": []
+        }
+      }
+    }
+  }
+}

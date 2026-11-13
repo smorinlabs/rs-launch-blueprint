@@ -1,0 +1,19 @@
+date-utc: 2026-09-17T15:45:20Z
+decision: research/runs/R56/2026-09-17T033528Z-785d25a9d608/review/DECISION.md
+decision sha256: 77cba891689bf5b6c804b29eeadb59a553e81ef6ab8c5af9f429ef1dfe29a123
+PASS PA1 assumes-line-count — 5
+PASS PA2 assumes-byte-identical-to-registry — diff against lines regenerated from docs/port/PARAMETERS.md is empty
+PASS PA3 no-owns-line — 0
+PASS PA4 h2-set — Decision, Parameters, Empirical check, Engines — in order, with no Supersedes
+PASS PA5 principles-h3 — 1
+PASS PA6 title — 1
+PASS PA7 one-re-verify-line — 1
+PASS PA8.1 sensitive-pattern-absent — no file under review/ contains it, excluding this script, which names the patterns it searches for (binary /usr/bin/grep)
+PASS PA8.2 sensitive-pattern-absent — no file under review/ contains it, excluding this script, which names the patterns it searches for (binary /usr/bin/grep)
+PASS PA8.3 sensitive-pattern-absent — no file under review/ contains it, excluding this script, which names the patterns it searches for (binary /usr/bin/grep)
+PASS PA8.4 sensitive-pattern-absent — no file under review/ contains it, excluding this script, which names the patterns it searches for (binary /usr/bin/grep)
+PASS PA8.5 sensitive-pattern-absent — no file under review/ contains it, excluding this script, which names the patterns it searches for (binary /usr/bin/grep)
+PASS PA9 fixture-absent-from-every-log — 0
+PASS PA10 fixture-only-in-the-three-expected-files — DECISION.md evidence/check-probe.sh evidence/probe/src/main.rs 
+PASS PA11 no-leaks — 0
+CHECK_FAILURES=0

@@ -1,0 +1,44 @@
+host: Darwin 25.4.0 arm64; dprint 0.57.4; python3 3.14.7; 1.7.12; lefthook 2.1.14; just 1.57.0; cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+plugins (built by r29-provision.sh):
+  json.wasm: OK
+  markdown.wasm: OK
+  toml.wasm: OK
+  pretty_yaml.wasm: OK
+PASS D0 — host is dprint 0.57.4
+    built/published bytes: json 643865/636736; markdown 743253/761907; toml 514607/510627; pretty_yaml 594430/576981
+PASS D0b — every built module is within 3.1% of the published plugin.wasm size (worst 0.0302)
+PASS D1 — dprint output-file-paths = exactly the 13 covered files
+PASS D2 — CHANGELOG.md, .release-please-manifest.json, Cargo.lock and target/ are not covered
+PASS D2b — target/ stays excluded with --no-gitignore (the **/target entry itself, not .gitignore)
+PASS D3 — dprint check on the authored tree reports unformatted files (exit 20)
+    authored files dprint check lists: .github/dependabot.yml .github/workflows/ci.yml .vscode/extensions.json .vscode/settings.json Cargo.toml docs/guide.md README.md release-please-config.json rust-toolchain.toml rustfmt.toml yaml-cases/block-scalars.yml 
+PASS D4 — dprint fmt rewrites the authored tree (exit 0)
+PASS D4b — fmt changed exactly the 11 files check listed
+PASS D5 — parsed data of all 11 YAML/TOML/JSON(C) files is identical before and after fmt
+PASS D5b — Cargo.lock, target/ decoys, CHANGELOG.md and .release-please-manifest.json are byte-identical after fmt
+PASS D6 — dprint check on the formatted tree (exit 0)
+PASS D7 — second dprint fmt is a no-op (idempotent)
+    [package] order: name,version,edition,include,license,rust-version,description; [dependencies] order: anyhow,clap,serde
+PASS D8 — [package]: name, version first, description last, the rest sorted (Style Guide cargo.md:11-15)
+PASS D8b — [dependencies] version-sorted
+PASS D9 — cargo metadata --no-deps --offline accepts the rewritten manifest (exit 0)
+PASS D9b — manifest still declares package rs-launch-blueprint, rust-version 1.96, lib + bin rslbp
+PASS D10 — block scalars (#4 case, |+, |-, >) and the anchor block are byte-identical after fmt
+PASS D10b — block-scalar values keep their final line breaks and chomping; merge key and ${{ }} survive
+PASS D11 — actionlint accepts the formatted workflow (hygiene step = dprint check) (exit 0)
+PASS D12 — lefthook validate accepts the formatted lefthook.yml (exit 0)
+PASS D13 — README fenced json and toml blocks are formatted by the json and toml plugins
+PASS D13b — prose is not reflowed (textWrap maintain); ordered-list numbering kept
+PASS D14 — just check-files on the formatted tree (exit 0)
+PASS D15 — dprint check after one perturbation per family (exit 20)
+PASS D15b — check names exactly the 4 perturbed files: Cargo.toml docs/guide.md lefthook.yml release-please-config.json 
+PASS D15c — just check-files fails on the perturbed tree, propagating dprint's code (exit 20)
+PASS D16 — release-please's CHANGELOG.md bytes fail check when the exclusion is removed (exit 20)
+PASS D16b — the release-please manifest passes check even unexcluded (its exclusion is precautionary) (exit 0)
+PASS D17 — check given only an excluded file, without --allow-no-files (exit 14)
+PASS D17b — the same with --allow-no-files (exit 0)
+PASS D18 — cold cache: a wrong @sha256 on the json plugin is refused (exit 12)
+PASS D18b — refusal message names the invalid checksum
+PASS D18c — cold cache: the correct @sha256 is accepted (exit 0)
+PASS D18d — warm cache: the same wrong @sha256 is NOT re-verified (observed; CI's cacheless hygiene resolves cold every run) (exit 0)
+r29-dprint-stack: PASS=34 FAIL=0

@@ -1,0 +1,230 @@
+== toolchain and environment ==
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+uname: Darwin arm64
+date-utc: 2026-09-18T23:11:00Z
+scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//rslb-r79-probe.GWTEj0
+
+derived: stable = 1.98, msrv-policy floor (stable minus 2 minors) = 1.96
+PASS  floor derived from the live toolchain equals the probed MSRV (= 1.96)
+
+lock: reused snapshot locks/baseA-nodefault.lock
+lock: reused snapshot locks/baseA-default.lock
+== E2 : exporter default features, minimal base ==
+crates with default-features = false : 37
+crates with the exporter defaults on : 81
+added by the defaults               : 44
+-- crates the defaults add --
+    atomic-waker v1.1.2
+    aws-lc-rs v1.18.1
+    aws-lc-sys v0.45.0
+    bitflags v2.13.2
+    bytes v1.12.1
+    core-foundation v0.10.1
+    core-foundation-sys v0.8.7
+    fnv v1.0.7
+    futures-channel v0.3.34
+    futures-core v0.3.34
+    futures-sink v0.3.34
+    futures-task v0.3.34
+    futures-util v0.3.34
+    h2 v0.4.19
+    http v1.5.0
+    http-body v1.1.0
+    http-body-util v0.1.5
+    httparse v1.10.1
+    httpdate v1.0.3
+    hyper v1.11.1
+    hyper-rustls v0.27.9
+    hyper-util v0.1.20
+    ipnet v2.12.2
+    itoa v1.0.18
+    mio v1.2.3
+    pin-project-lite v0.2.17
+    probe-a-default v0.0.0
+    rustls v0.23.45
+    rustls-native-certs v0.8.4
+    rustls-pki-types v1.15.1
+    rustls-webpki v0.103.15
+    security-framework v3.7.0
+    security-framework-sys v2.17.0
+    socket2 v0.6.5
+    subtle v2.6.1
+    tokio v1.53.1
+    tokio-rustls v0.26.5
+    tokio-util v0.7.19
+    tower-service v0.3.3
+    tracing v0.1.44
+    tracing-core v0.1.36
+    try-lock v0.2.5
+    untrusted v0.9.0
+    want v0.3.1
+    zeroize v1.9.0
+
+PASS  E2 exporter defaults enlarge the graph (37 -> 81)
+PASS  E2 aws-lc-sys is pulled in by the exporter defaults
+PASS  E2 rustls is pulled in by the exporter defaults
+PASS  E2 hyper is pulled in by the exporter defaults
+PASS  E2 aws-lc-sys is absent with default-features = false
+PASS  E2 rustls is absent with default-features = false
+PASS  E2 no tokio edge with default-features = false
+
+== E1 : a Cargo feature named `metrics` beside an optional dependency named `metrics` ==
+lock: reused snapshot locks/baseB.lock
+PASS  E1 cargo check --features metrics compiled (dep:metrics suppresses the implicit feature)
+PASS  E1 the optional dependency metrics 0.24.6 resolved
+PASS  E1 the exporter 0.18.3 resolved
+
+== E3/E7 : dependency-graph and stripped-binary delta on R69's axum base ==
+crates, feature off : 51
+crates, feature on  : 79
+added by the feature: 28
+-- crates the metrics feature adds to crates/web --
+    base64 v0.22.1
+    cfg-if v1.0.5
+    crossbeam-epoch v0.9.21
+    crossbeam-utils v0.8.23
+    equivalent v1.0.2
+    evmap v11.0.0
+    foldhash v0.2.0
+    getrandom v0.3.4
+    hashbag v0.1.13
+    hashbrown v0.16.1
+    hashbrown v0.17.1
+    indexmap v2.14.2
+    left-right v0.11.8
+    metrics v0.24.6
+    metrics-exporter-prometheus v0.18.3
+    metrics-util v0.20.4
+    ppv-lite86 v0.2.21
+    quanta v0.12.6
+    rand v0.9.5
+    rand_chacha v0.9.0
+    rand_core v0.9.5
+    rand_xoshiro v0.7.0
+    rapidhash v4.5.1
+    rustversion v1.0.23
+    sketches-ddsketch v0.3.1
+    thiserror v2.0.20
+    thiserror-impl v2.0.20
+    zerocopy v0.8.57
+
+PASS  E3 tower-http does NOT join the runtime graph with metrics on
+PASS  E3 tower is already a runtime crate of the axum base (not added by metrics)
+PASS  E3 the facade is in the runtime graph with the feature on
+PASS  E7 the exporter is absent with the feature off
+PASS  E7 release build with the metrics feature off succeeded
+PASS  E3 release build with the metrics feature on succeeded
+stripped release binary, feature off : 1307968 B
+stripped release binary, feature on  : 1686016 B
+delta                                : 378048 B
+PASS  E3 the metrics feature enlarges the stripped binary (1307968 -> 1686016 B)
+
+== E6 : the in-process RED acceptance test ==
+PASS  E6 the acceptance test passed
+    running 1 test
+    PROBE distinct http_route label values = {"/v1/boom", "/v1/projects/{id}"}
+    SCRAPE-BEGIN
+    SCRAPE-END
+    test red_metrics_acceptance ... ok
+    
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+    
+-- canonical scrape (sorted; bucket occupancy and _sum redacted; see scrape-sample.txt for the verbatim capture) --
+    
+    
+    # HELP http_server_request_duration_seconds Duration of HTTP server requests.
+    # HELP http_server_unmatched_requests_total HTTP requests that matched no route template.
+    # TYPE http_server_request_duration_seconds histogram
+    # TYPE http_server_unmatched_requests_total counter
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="+Inf"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.005"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.01"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.025"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.05"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.075"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.25"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.75"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="10"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="2.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="7.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="+Inf"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.005"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.01"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.025"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.05"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.075"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.25"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.75"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="10"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="2.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="7.5"} <occupancy>
+    http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} 1
+    http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} 51
+    http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} <duration>
+    http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} <duration>
+    http_server_unmatched_requests_total 1
+PASS  E6 the named test reported ok
+PASS  E6 51 requests over 50 distinct ids produced exactly two route label values
+PASS  E6 exactly one test passed
+
+== E8 : promtool conformance parse of the exposition text the test produced ==
+scrape captured to evidence/scrape-sample.txt : 41 lines
+PASS  E8 captured a full scrape from the acceptance test (41 lines)
+    promtool, version 3.14.0 (branch: HEAD, revision: d7598b7141418fa35be2b5ec5d0fefb634199610)
+PASS  E8 promtool check metrics accepted the exposition text
+PASS  E8 promtool printed no error, invalid or parse complaint
+
+== E4 : the MSRV-aware lock at rust-version = 1.96 ==
+        Updating crates.io index
+         Locking 118 packages to latest Rust 1.96 compatible versions
+          Adding matchit v0.8.4 (available: v0.8.6)
+PASS  E4 cargo resolved with the MSRV-aware resolver at Rust 1.96
+packages locked under rust-version = 1.96 : 118
+-- highest declared rust-version in the resolved non-dev tree, --features metrics --
+        1.85.0     hashbrown 0.17.1
+        1.85       indexmap 2.14.2
+        1.80       axum 0.8.9
+        1.78       axum-core 0.5.6
+        1.71.1     metrics-util 0.20.4
+        1.71.1     metrics-exporter-prometheus 0.18.3
+    HIGHEST 1.85.0 hashbrown 0.17.1
+    UNDECLARED 12 packages declare no rust-version
+PASS  E4 highest declared rust-version in the resolved tree (1.85.0) is inside the 1.96 floor
+
+== E5 : cargo audit over the resolved lockfile ==
+cargo-audit-audit 0.22.1
+PASS  E5 cargo audit reported no vulnerable crates
+        Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+          Loaded 1251 security advisories (from /Users/stevemorin/.cargo/advisory-db)
+        Updating crates.io index
+        Scanning Cargo.lock for vulnerabilities (119 crate dependencies)
+PASS  E5 audit scanned the lockfile
+PASS  E5 the audit log reports no vulnerabilities
+PASS  E5 RUSTSEC-2021-0113 (metrics-util) does not apply to the resolved tree
+    resolved: metrics-util v0.20.4
+
+== runner-up footprint : axum-prometheus 0.10.1 on the same axum base ==
+lock: reused snapshot locks/baseC.lock
+crates, axum base + axum-prometheus : 82
+crates, axum base + recommended pair: 79
+-- crates axum-prometheus adds that the recommended pair does not --
+    axum-prometheus v0.10.1
+    bitflags v2.13.2
+    probe-runner-up v0.0.0
+    tower-http v0.7.1
+PASS  runner-up adds tower-http to the runtime graph
+PASS  runner-up carries the same exporter transitively
+PASS  runner-up graph is larger than the recommended pair (79 -> 82)
+
+== summary ==
+PASS=34 FAIL=0 SKIP=0 TOTAL=34

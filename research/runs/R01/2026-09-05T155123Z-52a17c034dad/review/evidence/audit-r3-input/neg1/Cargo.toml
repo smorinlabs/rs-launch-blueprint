@@ -1,0 +1,7 @@
+[package]
+name = "negcheck"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+seam_fixture = { path = "../seam_fixture" }

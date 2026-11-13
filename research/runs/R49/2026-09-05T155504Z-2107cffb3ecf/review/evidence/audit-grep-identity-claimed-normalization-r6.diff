@@ -1,0 +1,10 @@
+--- /private/tmp/r49-embedded-claimed-normalized.txt	2026-09-14 16:40:58
++++ /private/tmp/r49-absent-claimed-normalized.txt	2026-09-14 16:40:58
+@@ -27,7 +27,5 @@
+ ## where the two implementations genuinely disagree
+ [1/1] recursive search, /usr/bin/grep -> ignored/licence.md visible.md
+ ASSERT ok   recursive: /usr/bin/grep reads the ignore-listed file
+-ASSERT ok   recursive: the embedded ugrep omits the ignore-listed file
+-ASSERT ok   explicitly named files are read by both
+ 
+ RESULT: all assertions passed

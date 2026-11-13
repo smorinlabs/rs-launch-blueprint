@@ -1,0 +1,1499 @@
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 8, 2026-09-15)
+
+**What changed in revision 8, and what did not.** Two things, and the first one
+moves an owned-parameter value. **The owner ruled on the binary name.**
+`docs/port/OWNER-REVIEW.md`, section *"2026-09-15 — R49 binary name: `rslbp`
+(W0-R49n)"*, records it in full:
+
+> R49 revision 7 kept the template's command name equal to its crate name,
+> `rs-launch-blueprint`, and marked the choice owner-reviewable. The owner chose
+> a short command name: **`rslbp`** (the Opus engine's proposal). The crate and
+> distribution name stay `rs-launch-blueprint`; `cargo install rs-launch-blueprint`
+> installs the command `rslbp`. Consequences the decision itself recorded for a
+> divergent pair: the `[[bin]] name` row changes; R32 resolves the built binary
+> through `env!("CARGO_BIN_EXE_rslbp")`; R68 uploads `target/release/rslbp`; and if
+> R68 later adopts `cargo-binstall` metadata, the `bin-dir` template must
+> interpolate `{ bin }` rather than `{ name }`. Five of the nine cross-platform
+> CLIs R49 surveyed use a shorter command than their crate name. R49 revision 8
+> implements this ruling.
+
+The same file's Wave 0 acceptances table records that the owner **accepted**
+revision 7 at sha256 `319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d`
+(W0-R49 option A, 2026-09-15) and directed this change on top of it, so the
+acceptance **re-binds at revision 8** rather than being staled by the moved
+value. The recommendation itself does not move: declare every build target in
+`Cargo.toml` itself and add no build backend, bundler or build-orchestration
+crate. What moves is the `[[bin]]` `name` string inside the owned parameter
+`build-tool-output-shape`, from `rs-launch-blueprint` to `rslbp`, and every
+place in this decision that named the binary. The `[lib]` crate name stays
+`rs_launch_blueprint`; the package, crate and distribution name stays
+`rs-launch-blueprint`. The four `- assumes` lines are byte-identical.
+
+**Where the name was changed, enumerated mechanically rather than by reading.**
+Before editing, `/usr/bin/grep -n` was run over the revision-7 file for
+`rs-launch-blueprint`, `CARGO_BIN_EXE`, `target/release/`, `name =`, `match` and
+`diverge`, and the union of those hits was the work queue. The value now reads
+`rslbp` in: decision-table row 3 (`[[bin]] name`), decision-table row 6
+(distribution name vs. binary name, now **DIVERGE** by the ruling), the **F219**
+ledger-row sentence, the paragraph that argued the matching pair (rewritten and
+retitled *"Why the binary name is `rslbp`, what the research found, and what the
+owner decided"*), AC2, AC6, the `- owns build-tool-output-shape` line, the
+consuming-item clauses under `## Parameters`, the re-verify trigger list,
+Disagreement 3 in
+`## Engines`, and the `What P03 must validate` paragraph. Left deliberately
+unchanged, each for a stated reason: the repository name in the status paragraph
+and the working-directory path in `## Empirical check` (they name this planning
+repository, not the template's binary); the `[lib]` crate name
+`rs_launch_blueprint` in decision-table row 2 and in the owned parameter (the
+ruling does not touch it); py's `module-name = "py_launch_blueprint"` in the
+B1–B4 table and in check 5 (source evidence read at a pin); doxa/perplexity's
+proposed second binary `rs-launch-blueprint-web` in `## Engines` (a verbatim
+report of what that raw proposed); and every generic `CARGO_BIN_EXE_<name>` and
+quoted Cargo-reference string, which carry no project name at all.
+
+**The rename touches no executed check.** No `review/evidence/check-*.sh` script
+and none of the three cited script logs — `grep-identity.log`,
+`licence-enumeration.log`, `lockfile-inclusion-conditions.log` — contains the
+string `rs-launch-blueprint` in any form other than the repository path, so no
+assertion in this run was made about the binary name and nothing was re-run or
+regenerated. Two **auditor-produced** logs matched the same grep, both because
+they quote earlier decision text rather than because they assert anything about
+the name. `review/evidence/audit-provenance-r4.log:111` quotes the revision-4
+`- owns` line, which did carry the old command name.
+`review/evidence/audit-six-locations-r5.log:219` quotes the revision-5
+`## Engines` line for doxa/perplexity and matches only through
+`rs-launch-blueprint-web`, that raw's proposed second binary — the string this
+note already lists as deliberately kept — so it prints no old command name at
+all. **Neither is edited**: they are round-4 and round-5 audit artifacts and
+their quoted text was accurate for the revision each bound. What P03 re-runs is
+not those logs — they assert nothing about the name — but AC1, AC2 and AC6
+against the real template, where `rslbp` is the string `cargo metadata`,
+`target/release/` and `CARGO_BIN_EXE_` must carry.
+
+**The second thing: three clause repairs from the round-7 judgment audit.**
+`review/audit-fable.md` (actor
+`audit-fable-2026-09-05T155504Z-2107cffb3ecf-r7`, model `claude-opus-5`, family
+anthropic) **rejected** revision 7 on three findings, each quoted here by its
+label. Every line number inside these quotations is **revision-7 numbering**,
+that is, the blob at sha256
+`319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d`; revision 8
+inserts this note above them, so those numbers do not address the current file.
+
+> **F1 — `## Parameters` hands R22 a value the owned parameter does not contain,
+> and omits the one it does.** `review/DECISION.md:882-883` reads *"Consuming
+> items get concrete values from the owned parameter above. R22
+> (`runtime-version-accessor`) reads `env!("CARGO_PKG_VERSION")`"*. That macro
+> appears nowhere in the owned parameter at `:852`; it derives from the
+> `[package] version` field, which this item does not decide. … The decision
+> already states R22's consumption correctly elsewhere — `:560-562` … Remedy:
+> make `:882` say what `:560` says.
+
+**Repaired**, and the finding is correct. The clause under `## Parameters` now
+says what `:560` says — R22 reads the target directory layout and the target
+names — quotes R22's own prompt for the registered scope, and states explicitly
+that `env!("CARGO_PKG_VERSION")` derives from the `[package] version` field and
+is not decided here. The R32 and R68 clauses beside it were already drawn from
+the owned parameter and keep their shape, with the name updated to `rslbp`.
+
+> **F2 — the decision records no ranked runner-up, then refers to "the runner-up"
+> as though it had.** The phrase occurs exactly once, at `:842` … The four
+> architectural alternatives at `:710-731` are costed but never ranked … The
+> referent is not recoverable from the raws either, because they disagree about
+> it … This also leaves a real engine disagreement out of `## Engines` …
+> Remedy, either way and one clause long: name the runner-up and its winning
+> condition explicitly, or state that none is recorded because the field is a
+> dominant choice and restate the trigger without the phrase.
+
+**Repaired by the first remedy, both halves.** A ranked runner-up is now recorded
+where the alternatives are compared: **A4**, Cargo plus an orchestration layer
+(`dist`), winning under the condition the trigger already named — R68 resolving
+F214 to cross-compiled release binaries. The trigger sentence now names A4
+instead of saying "the runner-up". The paragraph also says *why* A4 rather than
+the majority's answer: A3 (the workspace split) is a **trigger owned by R02**,
+which the same sentence already routes separately, not an alternative this item
+is free to rank; and codex's automatic target discovery is the `autobins = false`
+sub-decision, not an architecture. And the three-way engine disagreement the
+audit named is now recorded as **Disagreement 6** in `## Engines`, with each
+raw's proposal and line reference.
+
+> **F3 — the agreement-level summary names two of the three levels its own table
+> assigns.** `:593` reads *"Agreement is required at the **capability and
+> policy** level, not at the level of sharing a backend library"*, but the B1–B4
+> table immediately below assigns B2 … the level **architectural pattern** …
+> Remedy, one clause: *"at the capability, architectural-pattern and policy
+> levels"*.
+
+**Repaired** exactly as the remedy states: the sentence now reads *"at the
+capability, architectural-pattern and policy levels"*, which is what the table
+beside it assigns.
+
+**One correction beyond the three findings.** Revision 7's status paragraph
+ended *"No owner acceptance is claimed or implied."* That sentence was true when
+it was written and is false now that this revision cites W0-R49 and W0-R49n, so
+it is replaced by a statement of what the owner actually accepted and directed,
+with the file and section named. This is the same defect class as F1 and F3 — a
+sentence contradicting the record beside it — and it is reported here rather
+than fixed quietly.
+
+**What revision 8 does not change.** The recommendation, the `include`
+allow-list and its three grounds, `autobins = false`, the MSRV treatment, the
+declined `build = false` and `default-run`, the six fitness-gate rows with gate 1
+`inapplicable` under the owner's 2026-09-12 ruling (Q7.B), the two carried
+`BASELINE-REVIEW:` lines, all four `- assumes` lines, every evidence script and
+every evidence log, every enumeration list, every figure in `## Empirical check`,
+and every historical quotation in the revision notes below. Nothing was re-run,
+because nothing this revision changes is something a check asserted.
+
+**What changed in revision 7, and what did not.** Revision 6 (sha256
+`9d135856d7e9e29c81f09b88f2662780dd3f11218cee6815fb396e3c593ffb2f`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r6`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding, quoted here in full:
+
+> **The universal equivalence sentence is broader than its evidence.**
+> `review/DECISION.md:32-36` says, “Both implementations return the same result
+> for every pattern this decision reports.” `check-grep-identity.sh:126-135`
+> compares only four patterns. The decision separately reports the widened SPDX
+> pattern at `review/DECISION.md:203-216`, and `check-licence-enumeration.sh:156-169`
+> tests that pattern only with `/usr/bin/grep`; `check-grep-identity.sh` has no
+> `PAT_ID_FULL` comparison. The four-table claim is proved, but the universal
+> sentence is not. Narrow the sentence to those four tested pattern/blob pairs,
+> or add content assertions that compare the widened pattern under embedded
+> ugrep before accepting the decision.
+
+Every line number inside that quotation is **revision-6 numbering**, that is, the
+blob at commit `93b3d5a`. Revision 7 inserts this note above them, so those
+numbers do not address the current file; the text they named is quoted or
+described below wherever it matters.
+
+**The finding is correct and the overstatement was mine.** Four comparisons do
+not prove a claim about "every pattern this decision reports", and the widened
+SPDX pattern was the reported pattern the comparison did not reach. The audit
+offered two remedies; **this revision does both**, so the sentence is true by
+construction rather than true because it was trimmed to fit.
+
+**The repair, first half — the script now compares the widened pattern.**
+`review/evidence/check-grep-identity.sh` gains `PAT_ID_FULL`, byte-identical to
+the pattern of that name in `check-licence-enumeration.sh:59`, and three new
+`compare` calls: the widened pattern on the revision-2 blob `2ac02e1`, the same
+on the revision-4 blob `ddbee6a` — the two blobs this decision reports that
+pattern for, in the revision-5 note's paragraph beginning *"What the corrected
+pattern finds that no revision-3 list carried"* — and the same against the
+seven-line negative-control fixture. Each runs under the same
+discipline as the four that were already there: the `/usr/bin/grep` result is
+asserted **unconditionally**, and the embedded ugrep result is compared against
+it only when that implementation is reachable, printing an explicit `SKIP` by
+name when it is not. A `SKIP` still cannot convert a failed `/usr/bin/grep`
+assertion into a pass, and this was re-demonstrated rather than asserted: with
+the asserted revision-2 widened list mutated by
+`sed 's/"53 182 338 342 363 364 582 605 606 607 608 609 610 611 616"/"53 182 338"/'`,
+the script prints `ASSERT FAIL revision-2, widened SPDX pattern (/usr/bin/grep)`
+and exits 1 **both** with the embedded ugrep reachable and with
+`CLAUDE_CODE_EXECPATH` unset and `HOME` pointed at an empty directory, where the
+same run prints 8 `SKIP` lines. The in-script negative control also still holds:
+the widened pattern matches the four real identifiers at fixture lines
+`4 5 6 7` and matches none of `OMIT`, `implementation`, `template`, under both
+implementations.
+
+**The repair, second half — the sentence now names its pairs.** The sentence in
+the revision-6 note that the audit quoted is replaced by a list of the exact
+seven pattern/blob pairs the script compares, with the widened SPDX pattern named
+among them and an explicit statement that nothing outside the list is claimed.
+The revision-6 table below carries three new rows for the same three pairs, and
+the two other places that restated the claim more broadly than the evidence are
+narrowed the same way and marked as such: the "under either implementation"
+sentence beneath that table, and the revision-6 bracketed correction's clause
+"Every list this revision reports is unchanged and holds under both". **Those two
+are corrections beyond the finding the audit named**, found by enumerating the
+document for the claim's subject rather than by re-reading it.
+
+**Counts, all re-measured by running the extended script, none adjusted on
+paper.** With the embedded ugrep reachable: **13** content assertions,
+`RESULT: all assertions passed`, exit status 0. With it absent: **11** content
+assertions and **8** `SKIP` lines, exit status 0. The regenerated log
+`review/evidence/grep-identity.log` was re-run against itself after being saved
+and reproduces byte-for-byte except the `retrieved:` UTC timestamp on line 1; the
+absent-implementation run matches it once `retrieved:`, the `second
+implementation:` block and every `[2/2]`-guarded line — including the two
+`ASSERT` lines that run only inside a `[2/2]` branch — are dropped, which is the
+comparison rule the script's own header states.
+
+**What revision 7 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate. Fitness gate 1 stays `inapplicable` under the owner's
+2026-09-12 ruling (Q7.B). Every `- owns` and `- assumes` line is byte-identical
+to revisions 2 through 6. `review/evidence/check-lockfile-inclusion.sh` (sha256
+`4ed6818fb64e912d45ab47cbb1e1f7eca43536bfca40f776572d75f1db586ac7`),
+`review/evidence/check-licence-enumeration.sh` and its log
+`review/evidence/licence-enumeration.log` are byte-identical and were not re-run
+or regenerated; the six fitness-gate rows, every enumeration list (40 / 5 / 10 /
+33 and the six revision-2 locations `582 605 606 608 609 611`), every figure in
+`## Empirical check`, and every historical quotation stand as written. No line
+list moves: the three new comparisons re-derive lists this decision already
+reported and found them identical.
+
+**What changed in revision 6, and what did not.** Revision 5 (sha256
+`71ef987941cc2e3c903a16eb242c7ee4b94ecf55497253a337b3ce6b27e65963`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r5`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding: *"decision falsely identifies PATH grep as
+ugrep 7.8.4"*. **The finding is correct and the false claim was mine.** The
+audit also caught that the claim contradicted my own cited log, which prints
+`grep(PATH): /usr/bin/grep`. Nothing the audit confirmed is disturbed here: the
+enumeration repair, the proved filter rule, the six newly disclosed licence
+locations and the audited provenance repair all stand, and gate 1 stays
+`inapplicable`.
+
+**What is actually true, and why both the audit and I saw what we saw.** The
+divergence is not between machines; it is between a command **typed at a shell**
+and a command **run inside a script**, and revision 5 described it with the wrong
+noun.
+
+| What is named | What it actually is |
+|---|---|
+| `/usr/bin/grep` — the PATH binary | `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` |
+| a bare `grep` typed in this Claude Code zsh session | a shell **function** from that session's shell snapshot, `~/.claude/shell-snapshots/snapshot-zsh-*.sh`, which runs an `ugrep 7.8.4` **embedded inside the `claude` executable**, adding `-G --ignore-files --hidden -I --exclude-dir=.git` and siblings |
+| a bare `grep` inside `bash <script>` | `/usr/bin/grep` — a bash script never sees the zsh function |
+| `ugrep` as a PATH command | does not exist; it is reachable only through that executable |
+
+`type -a grep` in the authoring session reports the function first and
+`/usr/bin/grep` second. The auditor's sandbox loads no snapshot, so there `grep`
+**is** `/usr/bin/grep`, which is exactly what the audit reported. So typing
+`grep` really did get me ugrep, and calling it "the PATH grep" was the error.
+
+**The corrected statement.** *In the authoring shell, a typed `grep` resolves to
+a shell function that routes to `ugrep 7.8.4` embedded in the `claude`
+executable; the PATH binary `/usr/bin/grep` is BSD grep 2.6.0-FreeBSD; a script
+run with `bash` gets the PATH binary in every environment. The two
+implementations were run against each other on exactly seven pattern/blob pairs,
+and returned the same result on all seven: the recorded revision-3 pattern on
+blob `2ac02e1`; the corrected word-bounded pattern on `2ac02e1`; the corrected
+word-bounded pattern on `ddbee6a`; `licen` on `ddbee6a`; the widened SPDX pattern
+on `2ac02e1`; the widened SPDX pattern on `ddbee6a`; and the widened SPDX pattern
+on the seven-line negative-control fixture. The last three pairs were added in
+revision 7, so the widened SPDX pattern this decision reports below is now among
+the compared pairs. Outside that list of seven no agreement is claimed — the
+implementations are known to diverge on a recursive search, which the same script
+demonstrates.* The fact is kept rather than deleted because anyone re-running
+this work needs it.
+
+**Both counts under both implementations.** Every list below is
+`/usr/bin/grep` output; the embedded ugrep was then run on the same blob with the
+same arguments and compared. Log `review/evidence/grep-identity.log`, script
+`review/evidence/check-grep-identity.sh`, exit status 0.
+
+| pattern, blob | `/usr/bin/grep` | embedded `ugrep 7.8.4` |
+|---|---|---|
+| recorded revision-3 pattern, `2ac02e1` | 40 lines | 40 lines, same list |
+| corrected word-bounded pattern, `2ac02e1` | 5 lines, `182 363 607 610 616` | same 5, same list |
+| corrected word-bounded pattern, `ddbee6a` | 10 lines, `12 29 70 92 298 489 733 736 745 794` | same 10, same list |
+| `licen`, `ddbee6a` | 33 lines | same 33, same list |
+| widened SPDX pattern, `2ac02e1` *(added in revision 7)* | 15 lines, `53 182 338 342 363 364 582 605 606 607 608 609 610 611 616` | same 15, same list |
+| widened SPDX pattern, `ddbee6a` *(added in revision 7)* | 21 lines, `12 29 70 92 102 156 298 464 468 489 490 708 731 732 733 734 735 736 737 745 794` | same 21, same list |
+| widened SPDX pattern, negative-control fixture *(added in revision 7)* | 4 lines, `4 5 6 7` | same 4, same list |
+
+**So revision 5's central claim survives the correction unchanged**: for each of
+the seven pattern/blob pairs in the table above, the printed list is the raw
+output of the stated command on the stated blob under either implementation. That
+is a statement about those seven pairs, not about every search this decision
+ever ran.
+
+**Which binary this item's scripts invoke, and why — the programme-wide
+judgement.** Both of this revision's scripts invoke `/usr/bin/grep` by absolute
+path, and each now asserts that binary's own `--version` string, so a reported
+count always names the program that produced it. That is the right default for
+every evidence script in this programme, for a reason stronger than tidiness: the
+two implementations are not interchangeable, and where they differ, the embedded
+one **silently returns fewer results**. `check-grep-identity.sh` demonstrates it
+rather than asserting it — on a throwaway directory holding a `.gitignore` that
+ignores `ignored/`, a **recursive** search finds both files under
+`/usr/bin/grep` and only `visible.md` under the embedded ugrep, because the
+snapshot's function passes `--ignore-files`. An enumeration that is supposed to
+be exhaustive, run recursively over a tree with ignore rules, would therefore be
+quietly incomplete — the precise defect this item has now been rejected for three
+times. Two limits on that finding, stated so it is not over-read. First,
+**explicitly named files, including a shell-expanded glob, are read by both**;
+the script asserts that too. Revision 3's failed census ran
+`grep -rn 'binstall' raw/*.md | head -30`, whose glob the shell expanded into
+explicit file arguments, so the ignore behaviour was **not** a second cause of
+that failure and is not claimed as one: `head -30` remains its sole cause.
+Second, a script invoked as `bash <script>` already gets `/usr/bin/grep`
+everywhere, so this is not a defect in existing scripts — it is a defect waiting
+for the first enumeration typed at a shell and then reported as complete.
+`review/evidence/check-lockfile-inclusion.sh`, which the round-3 through round-5
+audits each reran and reproduced, is therefore left **byte-identical**: its one
+recursive search runs under `bash` and so under `/usr/bin/grep`, and perturbing a
+reproduced artifact to fix a hazard it does not have would cost more than it
+buys. The recommendation for new scripts is the absolute path; the recommendation
+for agents is that no completeness claim rest on a search typed at a shell.
+
+**What revision 6 changes.** The title's revision number; one new paragraph, this
+one; and the revision-5 note's grep-identity sentence, **preserved and corrected
+in place** with a bracketed note, the method used for every earlier correction in
+this chain. Two evidence files change and one is new:
+`review/evidence/check-licence-enumeration.sh` now names and asserts the binary
+it invokes and drops a comparison that could not fail (a bare `grep` inside that
+bash script resolved to the same `/usr/bin/grep` it was being compared against);
+its log is regenerated, still 13 content assertions, exit status 0, and re-run
+after saving it reproduces byte-for-byte except the `retrieved:` timestamp.
+`review/evidence/check-grep-identity.sh` and
+`review/evidence/grep-identity.log` are new, 10 content assertions, exit status
+0. **That log is deliberately environment-dependent** and is the one artifact
+here not expected to reproduce byte-for-byte: where the embedded ugrep is absent
+— an auditor sandbox, CI, a `git archive` extraction — the `second
+implementation:` block shortens to one line and every `[2/2]` comparison prints
+`SKIP` instead of `SAME`, with no assertion silently converted into a pass. This
+was verified by re-running the script with `CLAUDE_CODE_EXECPATH` unset and
+`HOME` pointed at an empty directory: exit status 0, five `SKIP` lines, and the
+two logs identical once `retrieved:`, the `second implementation:` block and
+every `[2/2]`-guarded line are dropped. The script's header states that
+comparison rule. *[Superseded in revision 7 as to those two counts only, because
+revision 7 extends that script. It now makes **13** content assertions where the
+embedded ugrep is reachable and **11** where it is not, and the
+absent-implementation rerun prints **8** `SKIP` lines. Both figures were
+re-measured by running the extended script, not adjusted on paper; see the
+revision-7 note at the top of this decision. Nothing else in this paragraph
+changes: exit status is still 0 in both modes, and the comparison rule is
+unchanged.]*
+
+**What revision 6 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate. Fitness gate 1 stays `inapplicable` under the owner's
+2026-09-12 ruling (Q7.B). Every figure, line list and conclusion in the
+revision-5 note stands as written, now with the binary that produced it correctly
+named. Every `- owns` and `- assumes` line is byte-identical to revisions 2
+through 5. No other evidence script, log, figure or empirical check is altered.
+
+**What changed in revision 5, and what did not.** Revision 4 (sha256
+`7f088e512f1393896c043274a9f05f9ff65639433b23cd6b0e6b1b35b416fcc7`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r4`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding: *"recorded full licence-identifier
+enumeration is incomplete"*. **The finding is correct and the false claim was
+mine.** Revision 4 diagnosed a truncated search that had been read as a census
+and then, in the same paragraph, asserted that the chain's other enumeration
+greps returned their recorded line lists raw. For three of those four greps the
+assertion is true and the round-4 audit's own evidence confirms it
+(`review/evidence/audit-provenance-r4.log`, `ASSERT ok` on the `licen`, `gate 1`
+and `binstall` lists). For the fourth it is false.
+
+**The enumeration that was wrong, as a command and its raw output.** The
+revision-3 commit message (`7a08061`) records this command and records its result
+as the five lines `182 363 607 610 616`:
+
+```
+grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
+```
+
+Re-run untruncated against the revision-2 blob — `git show
+2ac02e1:research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/DECISION.md`,
+sha256 `1b5a6b99ecedb88f7358d16a4567aa9b56838a2102e9e4feda99d00bc787513f` — that
+command returns **40** lines, not five (the block below prints the matched line
+numbers only, space-separated and wrapped to the page width;
+`review/evidence/licence-enumeration.log` carries the same list unwrapped on one
+line, beside the raw match count):
+
+```
+8 29 30 32 36 37 61 90 94 110 132 150 162 167 182 191 197 204 231 243 264 273
+278 290 297 301 338 354 363 413 456 516 607 610 616 652 665 680 716 730
+```
+
+**The five recorded lines are therefore a filtered subset of that command's
+output, and this decision no longer presents them as the command's raw output.**
+Every list in this note is anchored to a named immutable git blob rather than to
+"this file", so re-running the stated command reproduces the stated list even
+after this revision is committed. The round-4 audit's prose gives the figure as
+41 while its own evidence log prints the same 40-entry list reproduced above, and
+re-running the command here returns 40; the difference is one of counting, not of
+content — the list is the same list.
+
+**The filter, stated as a rule and proved rather than asserted.** The rule
+applied — silently at the time, explicitly now — was: *keep a line only where a
+matched token is a licence identifier or a licence-policy term; drop it where the
+matched token is a substring of an ordinary English word.* It is checkable here
+because the pattern's noise has a single source. Of the 35 dropped lines, every
+one matched through the bare `mpl` alternative and through **no other
+alternative** — the tokens are tabulated line by line in
+`review/evidence/licence-enumeration.log` — and those `mpl` occurrences sit
+inside `template` (15), `implementation` (7), `example` (3), `implements` (2) and
+one each of `templates`, `sampling`, `implies`, `implied`, `implicitly`,
+`implication`, `implementations` and `autoexamples`. Exactly one dropped line,
+`:338`, does carry licence text — the `- owns build-tool-output-shape` line,
+whose `/LICENSE-MIT` and `/LICENSE-APACHE` allow-list entries are this
+repository's own licence files — and that line is in the `licen` grep's list,
+which revision 3 did record and did act on. Raw count 40, reported count 5, and
+the 35-line difference accounted for individually.
+
+**The corrected pattern, whose raw output needs no filtering.** Matching the same
+identifiers case-sensitively and as whole words (`-w`) removes the substring
+matches that made the recorded pattern noisy, so the printed list and the
+command's raw output are the same object. The claim being made is that the
+printed list **is** the raw output of the command below on the named blob — not
+that no ordinary word could ever match it, since `permissive` and `patent` are
+ordinary words; every line the pattern returns is therefore printed in the
+evidence log to be read rather than only counted:
+
+```
+grep -nwE 'copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent'
+```
+
+On the revision-2 blob its raw output is `182 363 607 610 616` — **exactly the
+five lines revision 3 acted on**, with nothing removed by hand. On the revision-4
+blob (`ddbee6a`, sha256
+`7f088e512f1393896c043274a9f05f9ff65639433b23cd6b0e6b1b35b416fcc7`) its raw
+output is `12 29 70 92 298 489 733 736 745 794`. A negative control in the script
+confirms it matches none of `OMIT`, `implementation`, `template`. **No licence
+location revision 3 or 4 acted on is missing from that list, and the
+licence-repair conclusions hold at each line it finds**: `:12` and `:298` carry
+the Opus raw's `GPL-3.0-only` ground inside the provenance repair the round-4
+audit confirmed; `:29`, `:70` and `:92` are revision-history prose; `:489` is the
+Rust API Guidelines' C-PERMISSIVE convention attached to this repository's own
+`LICENSE-MIT` + `LICENSE-APACHE` pair, which the ruling exempts; `:733` and
+`:736` are measured registry metadata in check 6; `:745` is that table's readout,
+which already states the `license` column is evaluated against no gate; `:794` is
+the `opus` `## Engines` entry the round-4 audit confirmed.
+
+**What the corrected pattern finds that no revision-3 list carried, and why it is
+left byte-identical.** Widening it to the permissive SPDX identifiers —
+`…|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0`, still `-w`, still case-sensitive —
+returns 15 lines on the revision-2 blob and 21 on the revision-4 blob. Six of the
+revision-2 lines (`582 605 606 608 609 611`; in revision-4 numbering `708 731 732
+734 735 737`) appear in **none** of revision 3's four recorded lists, because
+neither `licen` nor the noisy identifier pattern reaches them: they are check 6's
+registry rows for `cargo-dist`, `cargo-make`, `cross`, `cargo-zigbuild` and
+`cargo-packager`, and check 10's parenthetical record of `dist`'s licence at its
+pinned tag. Each was read. **None carries a licence-as-gate claim**: each is a
+permissive value transcribed from `review/evidence/registry-figures.log` or from
+the crates.io endpoint, and the status of that whole column is stated once, in
+this decision's own voice, in `## Empirical check` check 6 — *"it is evaluated
+against **no gate**"*. They are left byte-identical, recorded here rather than
+left silent.
+
+**Evidence, and the grep binary the lists came from.** `review/evidence/check-licence-enumeration.sh`
+is new with this revision; it extracts both blobs with `git show`, asserts their
+sha256 values, and makes 13 content assertions covering every figure above,
+exiting non-zero on any failure. Its log is
+`review/evidence/licence-enumeration.log`. `grep` on this machine's `PATH` is
+`ugrep 7.8.4`, not BSD or GNU grep, so the script runs every enumeration through
+`/usr/bin/grep` at an absolute path and separately asserts that the `PATH` grep
+returns the same count for the pattern at issue. *[Corrected in revision 6. The
+PATH binary is `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD`, not ugrep;
+`ugrep` is reachable on this machine only as an `ugrep 7.8.4` embedded in the
+`claude` executable, through a shell function defined in the session's shell
+snapshot, so it is what a **typed** `grep` runs and never what a `bash` script
+runs. The described second-count check was consequently `/usr/bin/grep` compared
+against itself — a check that could not fail — and revision 6 replaces it with a
+real two-implementation comparison in `review/evidence/check-grep-identity.sh`.
+Every list this revision reports is unchanged and holds under both. See the
+revision-6 note at the top of this decision.]* *[Narrowed in revision 7, which
+found "holds under both" broader than its evidence. What is compared under both
+implementations is the enumerated list of seven pattern/blob pairs in the
+revision-6 note's table at the top of this decision, which revision 7 extended —
+the four revision 6 compared, the widened SPDX pattern on each of the two blobs,
+and one negative-control fixture. `licen` on the revision-2 blob, the `-oiE` token
+extractions and the `-ciE` count inside `check-licence-enumeration.sh` are run
+under `/usr/bin/grep` only, and no two-implementation claim is made for them.]*
+The script was re-run after its
+log was saved and reproduces it byte-for-byte except the `retrieved:` UTC
+timestamp on line 1 (raw `diff` differs on that line alone; the same `diff` with
+that line removed exits 0).
+
+**What revision 5 changes.** Two locations, neither of them the recommendation,
+plus the title's revision number. Both false completeness sentences are
+**preserved and corrected in place** rather than rewritten away, which is the
+method revision 4 used for its own correction: the revision-4 note's claim that
+the other enumeration greps' "line lists are complete", and the revision-3 note's
+phrase "the full line list recorded in this revision's commit message".
+
+**What revision 5 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate. Fitness gate 1 stays `inapplicable` under the owner's
+2026-09-12 ruling (Q7.B), and this revision is a decision-history and
+search-method correction, **not** a reinstatement of that gate. Every repair the
+round-4 audit confirmed is untouched: the original false statement preserved at
+the revision-3 note, the two pre-ruling licence grounds recorded with scope
+retained as the surviving ground, the `## Engines` entry for `opus`, and check
+6's table and readout. `cargo-binstall` remains excluded on the scope ground
+alone. Every `- owns` and `- assumes` line is byte-identical to revisions 2, 3
+and 4. No existing evidence script, log, figure or empirical check is altered,
+and no existing empirical claim moves.
+
+**What changed in revision 4, and what did not.** Revision 3 (sha256
+`85eddc5806c820229f9ad84b82fdc5d9c8e8098c9562105707a6584011794770`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r3`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding: *"false claim that no raw report excluded
+`cargo-binstall` on a licence ground"*. **The finding is correct and the false
+claim was mine.** The canonical Opus raw report does state a licence ground:
+`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`
+reads *"**`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license
+`GPL-3.0-only` … which is not compatible with `MIT OR Apache-2.0` for anything
+linked"*. That same report then gives scope as an independent ground at
+`:359-362`: *"It is excluded here regardless because the
+`[package.metadata.binstall]` table it reads is an artifact-distribution decision
+that **R68 owns (F214)**, explicitly out of scope for this item."*
+
+**Why revision 3 got it wrong — the method, not just the sentence.** The search
+behind that claim was `grep -rn 'binstall' raw/*.md | head -30`. The glob was
+right and did match the Opus file; the `head -30` was not. The true count is
+**56** matches across six files, of which the canonical Opus report carries 14
+and its `raw/opus.md` alias another 14. The truncation cut the stream inside the
+Opus files, leaving visible only their lines 28 and 74 — a landscape-bin row and
+an adopter row, neither carrying licence content — which made a partial read look
+like a complete one. The figure "28" reported at the time was the truncated
+stream's length, not a census. The defect is general and is named here rather
+than quietly patched: **a truncated search result was treated as a complete
+search result.** The other searches in this revision chain were not truncated
+that way. The enumeration greps over `DECISION.md` (`licen`, `gate 1`, copyleft
+and licence identifiers, `binstall`) ran with no `head`; the only truncation
+applied to them shortened each matched line's displayed text without dropping any
+line from the list, so those line lists are complete and re-running them returns
+the same lists. *[Corrected in revision 5. That holds for three of the four
+greps — the `licen`, `gate 1` and `binstall` lists are their commands' raw
+output, which `review/evidence/audit-provenance-r4.log` independently confirms —
+but not for the fourth. `grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'`
+returns 40 lines on the revision-2 blob, not the five recorded, because its bare
+`mpl` alternative matches ordinary words — 35 occurrences across twelve of them
+on those 40 lines, commonest `template` (15) and `implementation` (7), tabulated
+in `review/evidence/licence-enumeration.log`; the recorded five are a filtered
+subset. See the
+revision-5 note at the top of this decision for the command, its raw output, the
+filter rule, and the corrected pattern whose raw output needs no filter.]*
+
+**What revision 4 changes.** Three locations, none of them the recommendation.
+(a) The false sentence in the revision-3 note below is corrected **in place**, so
+a reader of this decision's own history is not left holding it. (b) The
+`cargo-binstall` exclusion under `### Principles and implementation` now records
+both licence grounds that existed before the ruling — this decision's and the
+Opus raw's — and says which the ruling voids. (c) The `## Engines` entry for
+`opus` now records that report's `cargo-binstall` exclusion on both of its
+grounds, which revision 3 wrongly said needed no entry.
+
+**What revision 4 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate, a pick that is dominant because Cargo's manifest is
+the only candidate in the three-bin map that declares a build target at all.
+Fitness gate 1 stays `inapplicable` under the owner's 2026-09-12 ruling (Q7.B);
+this revision is a decision-history and provenance correction and is **not** a
+reinstatement of that gate. `cargo-binstall` remains excluded, on the scope
+ground alone — a ground the Opus raw itself called sufficient before any ruling
+existed, in the word *"regardless"*. Every `- owns` and `- assumes` line is
+byte-identical to revisions 2 and 3. No evidence script, log, figure or empirical
+check is altered, and this revision makes no new empirical claim; the audit's own
+rerun of `review/evidence/check-lockfile-inclusion.sh` reproduced against
+revision 3, and nothing that check exercises is touched here.
+
+**What changed in revision 3, and what did not.** Revision 2 (sha256
+`1b5a6b99ecedb88f7358d16a4567aa9b56838a2102e9e4feda99d00bc787513f`) was
+**approved** by `review/audit-codex.r2.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r2`, model `gpt-5.6-terra`) with no
+unresolved finding. It is revised here only because the owner ruled on 2026-09-12
+(Q4 as superseded by Q7.B) that licence compatibility is not checked for any tool
+or dependency this project uses, which strikes fitness gate 1 from every item's
+evaluation. **The recommendation does not move.** Nothing in the pick — declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate — rested on a licence fact: the pick is dominant
+because Cargo's manifest is the only candidate in the three-bin map that declares
+a build target at all. What moves is one piece of reasoning. A mechanical search
+for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
+the full line list recorded in this revision's commit message *[corrected in
+revision 5: of the four greps recorded there, the `licen`, `gate 1` and
+`binstall` lists are their commands' raw output, but the copyleft/licence-identifier
+list is a filtered subset of its command's 40-line output — see the revision-5
+note at the top]*; three locations
+carried a *licence-as-gate* claim and all three are edited — the gate-1 row under
+`### Principles and implementation`, the `cargo-binstall` exclusion in the same
+section, and the `## Empirical check` sentence that read gate exclusions off
+check 6's table. Gate 1 is recorded as `inapplicable` with the ruling as its
+reason and is **not** deleted, because this item's binding prompt still lists it
+and the prompt directs that an inapplicable metric be stated with its reason
+rather than omitted. The `cargo-binstall` exclusion **survives intact on its
+scope ground**, which revision 2 already stated as sufficient on its own ("out of
+scope regardless") and which sits in this decision's own voice in
+`### Principles and implementation`, not in any quoted provider report: the
+`[package.metadata.binstall]` table that crate reads belongs to R68 (F214), which
+this item's prompt places out of scope in those words. *[Sentence corrected in
+revision 4. This paragraph originally continued: "No raw report excluded
+`cargo-binstall` on a licence ground, so no engine position is disturbed and
+`## Engines` is unchanged." That was false. The canonical Opus raw does state a
+licence ground, at `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`,
+alongside an independent scope ground at `:359-362`; an engine position therefore
+was affected, and `## Engines` now records it. See the revision-4 note above for
+how the error was made.]* Every `- owns` and `- assumes` line is byte-identical
+to revision 2. Besides this paragraph itself, two presentational edits are the
+only other changes: the title's revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell in
+check 6's table, where the bold marked a gate failure that no longer exists — the
+measured value itself is unchanged, being a transcription of
+`review/evidence/registry-figures.log`. No evidence script, log or empirical
+check was altered, and this revision makes no new empirical claim; the one
+execution this revision performed was a rerunnability confirmation —
+`review/evidence/check-lockfile-inclusion.sh` was re-run from the run directory
+after the revision commit and its output matches
+`review/evidence/lockfile-inclusion-conditions.log` line-for-line except the
+`retrieved:` timestamp, which is the same variance revision 2's audit recorded. The
+repository's own `license` field, its `LICENSE-MIT` + `LICENSE-APACHE` pair and
+the `include` allow-list entries naming them are untouched: the ruling covers
+dependencies and tools, not this repository's own declared licence.
+
+**What changed in revision 2, and nothing else changed.** Revision 1 (sha256
+`b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) was rejected
+by `review/audit-codex.r1.md` (actor `audit-codex-2026-09-05T155504Z-2107cffb3ecf-r1`,
+model `gpt-5.6-terra`) on one unresolved finding: *"owned parameter overstates
+Cargo.lock inclusion as unconditional"*. This revision narrows that claim to the
+conditions the toolchain documents and implements. A search for every line
+mentioning `Cargo.lock`, a lockfile, or an unconditional-inclusion verb returned
+five carrying the claim, and all five are edited: the owned parameter value, the
+`## Decision` table row 5, acceptance criterion AC3, and checks A and 4. The
+revision adds check L, which establishes the conditions from `rust-lang/cargo` at
+the `rust-1.98.0` tag and from the installed `cargo 1.98.0`. Two further edits
+were made and are the only other changes to the document: this paragraph and the
+title's revision number, and one sentence of the `## Empirical check` preamble,
+which said no `cargo package` or `cargo publish` "was run" while checks 8 and L
+print those subcommands' `--help` — it now says no such invocation did any
+packaging or publishing work, which is what the checks support. Every finding the
+audit
+confirmed is carried unchanged: the re-measured `dist` responsiveness figures,
+the refinement that `[workspace.metadata.dist]` is deprecated but still
+supported so a second configuration file is a direction of travel rather than a
+present requirement, the narrowed F218 baseline-review line about the packaging
+default and the dirty-tree guard, and the recorded medium confidence on the
+allow-list choice against a 7:2 practice majority.
+
+## Decision
+
+**Status.** This decision is a **proposal to be validated in the implementation
+phase against the real template** (owner ruling, 2026-09-10). P02 is research
+only: `rs-launch-blueprint` contains no Rust source tree yet, P03 builds the
+template, and P03's CI is what proves these recommendations. What follows records
+what the research found, what this run verified against the toolchain and the
+registry, and what it could not verify; the unverified parts are listed under
+`## Engines` as what P03 must validate. A recommendation that does not survive
+implementation is **revised against this recorded research**, not researched
+again from scratch. **The owner has acted on this item.** `docs/port/OWNER-REVIEW.md`
+accepts revision 7 at sha256
+`319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d` (Wave 0
+acceptances table, W0-R49 option A, 2026-09-15) and, in the section
+*"2026-09-15 — R49 binary name: `rslbp` (W0-R49n)"*, directs the short binary
+name this revision implements; the acceptance re-binds at revision 8. An
+acceptance binds the recommendation and makes it P03's proposal; publication
+still waits on this item's two approving audits.
+
+**Recommendation — declare every build target in `Cargo.toml` itself; add no
+build backend, bundler, or build-orchestration crate.** Rust has no pluggable
+layer to substitute for py's PEP 517 backend or ts's bundler: Cargo is
+simultaneously the build system, the target declarer, the packager and the
+publisher, and its declaration surface is the manifest. The correct dependency
+value for this item is therefore **absent**, not a crate name and a version
+range.
+
+| # | What is declared | Decision | Settles |
+|---|---|---|---|
+| 1 | Build backend / bundler | **None.** No `[build-dependencies]` entry, no `build.rs`, no `cargo-make`, no `dist`, no `xtask`. Cargo's own manifest is the whole declaration surface. The compatibility contract is expressed as `edition = "2024"` plus `rust-version` in `[package]`, per the fixed `rust-edition` and `msrv-policy` parameters. | **F212** |
+| 2 | Library target | Exactly one, declared explicitly as `[lib]`, `path = "src/lib.rs"`, crate name `rs_launch_blueprint` (Cargo's default: the package name with dashes replaced by underscores). This is the crate downstream users depend on, and the crate R01's port trait and R67's `thiserror` error catalog live in. `doctest` is **not** set here — that value is R82's (`docs-correctness-gate`). | **F213** |
+| 3 | Binary target | Exactly one, declared explicitly as `[[bin]]`, `path = "src/main.rs"`, `name = "rslbp"` — **not** the package name, by the owner's ruling W0-R49n (`docs/port/OWNER-REVIEW.md`, section *"2026-09-15 — R49 binary name: `rslbp`"*). Plus `autobins = false`, so no `src/bin/*.rs` file can become a second published command without a manifest edit. `default-run` stays unset while there is one binary. | **F213**, **F216** |
+| 4 | Console-script / bin entry | The `[[bin]]` `name` field, and nothing else. Rust has no entry-point abstraction to declare: `cargo build` emits a native executable whose filename **is** `name`, with no wrapper script to generate and no shebang to preserve. This confirms F217 (`OMIT`) rather than adding to it. | **F216** |
+| 5 | Packaged-file scope | An explicit `[package] include` allow-list — `["/src", "/README.md", "/LICENSE-MIT", "/LICENSE-APACHE", "/CHANGELOG.md"]` — reviewed whenever a file that must ship is added. Not `exclude`; the two fields are mutually exclusive. `Cargo.toml` and any `license-file` are included by Cargo whatever `include` or `exclude` says. A minimized `Cargo.lock` is outside that selection too — `cargo package` adds it, generating one when none is on disk — but it is not unconditional: `cargo package --exclude-lockfile` omits it, and `cargo publish` has no such flag. Stated in full in `## Empirical check`, check L. | **F218** |
+| 6 | Distribution name vs. binary name | **They diverge, by the owner's ruling W0-R49n.** The crate and distribution name stays `rs-launch-blueprint`; the command is `rslbp`. `cargo install rs-launch-blueprint` installs the command `rslbp` — no `uvx --from` analogue and no `--bin` flag is needed in either direction, because `cargo install` installs a package's binaries whatever they are named (check 8). Divergence is idiomatic in Rust (5 of 9 surveyed manifests, check 7) and costs no install-time flag, so a fork that wants a different command changes one `name =` line. | **F219** |
+
+**Ledger rows settled** (the verdict strings remain the controller's to set, per
+`docs/port/README.md`): **F212** — substituted by the Cargo toolchain itself,
+with no crates.io dependency; **F213** — `[lib]` + one `[[bin]]`, the Rust
+analogue of ts's two-entry `entry: ['src/cli.ts', 'src/lib.ts']`; **F216** — the
+`[[bin]]` `name` field; **F218** — an explicit `include` allow-list; **F219** —
+divergence in the template as shipped: distribution name `rs-launch-blueprint`,
+command `rslbp`, by the owner's ruling W0-R49n rather than by a research finding
+(the research recommended a matching pair; see *"Why the binary name is `rslbp`"*
+below).
+
+**Coupling boundaries respected, and what is deliberately not decided here.**
+This item decides the manifest-level declaration of build targets and entry
+points. It does **not** decide which distributable artifact types ship beyond the
+`.crate` that `cargo publish` produces — **R68 owns F214** — and it does **not**
+decide how a built artifact is install-and-run smoke tested — **R50 owns
+F221/F222**. It also does not decide whether CI asserts the packaged file list;
+that is R26's (F039/F078). The `[[bin]]`/`[lib]` names fixed above are the input
+R68's release matrix and R32's built-binary test tier consume, and the target
+directory layout in `## Parameters` is the input R22's version accessor reads.
+
+**The optional web surface adds no target here.** F017 is already `ADOPT` in the
+ledger — *"Web service as an optional, separately installed capability … direct
+Cargo-optional-feature analogue of py's optional-dependencies extra; nothing to
+choose"* (`docs/port/COMMONALITY.md:23`) — so feature-gating is settled upstream
+of this item. What is **not** settled is whether that feature also brings a
+second executable, and **that is R69's** (`web-extra-surface`, unresolved). This
+decision declares one `[[bin]]` today and is shape-neutral either way: if R69
+chooses a separate server process, the manifest gains one `[[bin]]` block plus a
+`default-run` line and nothing else in this decision moves. One verified fact is
+handed to R69 and R32 as input rather than used to pre-empt R69: a `[[bin]]`
+carrying `required-features` is **skipped when those features are off**, and
+`CARGO_BIN_EXE_<name>` is then not set for integration tests (check 3 below), so
+a second feature-gated binary needs feature-aware test wiring.
+
+**Two BASELINE-REVIEW findings are carried through, not resolved.** Neither the
+ledger, the index, the prompt nor the registry has been edited by this decision.
+
+BASELINE-REVIEW: F212 — principle: the build backend/bundler is a *selectable third-party tool*, which is what makes R49 an item of kind `crate` in `research/CLAUDE.md` and makes the prompt's crate figure table (90-day downloads, last release, advisories, adopters) the required evidence — proposed change: reclassify R49's item kind from `crate` to `pattern`, or to an explicit `crate (first-party toolchain, zero added dependencies)` sub-kind, and record F212's substitute as "the Cargo toolchain, no crates.io dependency", so downstream items and the `check-research-tree.sh` gate do not expect a version range for a crate that does not exist — evidence: (a) the Cargo Book documents `[lib]`/`[[bin]]`/`include`/`exclude` as manifest fields of the toolchain itself, with no pluggable backend interface analogous to PEP 517 (`src/doc/src/reference/cargo-targets.md` and `src/doc/src/reference/manifest.md` at the `rust-1.98.0` tag of `rust-lang/cargo`, read 2026-09-10, log `evidence/cargo-docs-1.98.log`); (b) the ledger row already anticipates it — "Cargo is Rust's native build system with no separate backend/bundler crate needed" (`docs/port/COMMONALITY.md:216`); (c) every crate figure this prompt requires is `inapplicable` to the recommended answer, as recorded under `### Principles and implementation`; affected items: R49 (this item), and informationally R68 and R50, whose prompts describe R49 as declaring build targets — neither statement changes. Raised by `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md`; carried here unresolved, per the prompt's instruction to report a challenged baseline rather than change it.
+
+BASELINE-REVIEW: F218 — principle: the set of files that reaches the consumer is bounded by a declaration, not by whatever is in the working tree — proposed change: replace the row's parenthetical premise "(default: git-tracked files only)" with Cargo's actual default rule and with the explicit `include` allow-list this decision selects — evidence: the manifest reference at the `rust-1.98.0` tag states *"The default if neither field is specified is to include all files from the root of the package, except for the exclusions listed below"*, and the only listed exclusions are hidden dotfiles when the package is **not** in a git repository, gitignored files when it **is**, sub-packages, and a root `target` directory (`src/doc/src/reference/manifest.md:391-411` at that tag, read 2026-09-10, log `evidence/cargo-docs-1.98.log`). A file that is untracked but not gitignored therefore falls **inside** the default packaged set, which "git-tracked files only" says it does not. The practical exposure is narrower than that gap sounds, and this decision states it at that width: `cargo package` refuses a dirty working tree unless `--allow-dirty` is passed, and its dirty walk is configured with `emit_untracked(EmissionMode::Matching)`, so an untracked packaged source file makes the tree dirty and packaging stops (`src/cargo/ops/cargo_package/vcs.rs` at the same tag, checks A and H). What the dirty guard does **not** catch is a *committed* directory nobody meant to publish — `.github/`, `docs/`, `research/` — which under the default or under an `exclude` deny-list ships to every crates.io consumer. Affected items: R49 (this item, which sets the value) and R26 (`packed-artifact-content-guard`, F039/F078), which owns whether CI asserts the resulting file list. Raised by `raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md`; carried here unresolved.
+
+### Principles and implementation
+
+**The shared requirement, its source, and the level at which agreement is
+required.** F211 (`docs/port/COMMONALITY.md:215`, `COMMON → REUSE`) is the
+tool-free pattern: the project's build system turns source into a distributable
+package whose contents are declared, not incidental. F212 (line 216,
+`COMMON → SUBSTITUTE`, owned by this item) is the tool row under it. Read at
+their pins, the two source repos agree on four behaviors and differ on the
+mechanism of each. Agreement is required at the **capability,
+architectural-pattern and policy** levels — the three the B1–B4 table below
+assigns, B1 capability, B2 architectural pattern, B3 and B4 policy — and not at
+the level of sharing a backend library.
+
+| # | Behavior that must agree | py evidence (pin `b08bccfb`) | ts evidence (pin `cb1cbcb2`) | Level | Rust realization |
+|---|---|---|---|---|---|
+| B1 | One manifest declares every produced artifact; no second, out-of-band build description | `pyproject.toml:131-133` `[build-system] requires = ["uv_build>=0.5,<1.0"]`, `build-backend = "uv_build"`, plus `[tool.uv.build-backend]` at `:138-141` — one file | `package.json` **plus** `tsdown.config.ts` — two files, a known cost of the JS ecosystem | capability | `Cargo.toml` alone |
+| B2 | The consumable library and the executable are declared as separate, named outputs | `pyproject.toml:139` `module-name = "py_launch_blueprint"`, `:141` `module-root = "src"` — one package root, the whole package is one build unit | `tsdown.config.ts:9` `entry: ['src/cli.ts', 'src/lib.ts']` — two explicit entries | architectural pattern | `[lib]` + `[[bin]]` |
+| B3 | The executable's name is declared explicitly, independently of the distribution name | `pyproject.toml:120` `plbp = "py_launch_blueprint.cli.main:cli"` — a `module:function` callable reference | `package.json:17-19` `"bin": {"ts-projects": "dist/cli.js"}` — a built-file path | policy | the `[[bin]]` `name` field |
+| B4 | The file set that reaches the consumer is bounded by a declaration, not by the working tree | `:139`/`:141` bound wheel content implicitly through the package root | `package.json:20-22` `"files": ["dist"]` — an explicit allow-list | policy | `[package] include` |
+| — | **May vary** | allow-list vs deny-list; callable reference vs file path; one process or two | | — | |
+
+All four lines above were read through the programme pins with
+`git -C ~/c/py-launch-blueprint show b08bccfb…:<path>` and
+`git -C ~/c/ts-launch-blueprint show cb1cbcb2…:<path>`, never from a working
+tree (check 5; log `evidence/source-pins.log`).
+
+**Does the pattern remain appropriate in Rust? B1, B2 and B4 do, unchanged. B3
+survives but its mechanism collapses.** In py, `[project.scripts]` exists because
+a wheel contains no executable: the backend must generate a wrapper script from a
+callable reference at install time. In ts, `bin` exists because npm must symlink
+a built file and the shebang must survive bundling. In Rust neither indirection
+exists — the `[[bin]]` `name` field is the output filename, verified against the
+target reference: *"The `name` field specifies the name of the target, which
+corresponds to the filename of the artifact that will be generated"*, and *"For
+`src/main.rs`, the default binary name is the package name"* (check 2). That is
+why F217 (`OMIT`) is correct and why no third-party tool is needed to close the
+gap: there is no gap.
+
+**Landscape — the three-bin map, and why only one bin contains a candidate.**
+*Built-in / first-party toolchain:* Cargo's manifest target tables (`[lib]`,
+`[[bin]]`, `[[example]]`, `[[test]]`, `[[bench]]` with `name`, `path`,
+`required-features`, `doc`, `test`, `crate-type`), `[package]`
+`include`/`exclude`/`default-run`/`autobins`/`rust-version`, `cargo package` /
+`cargo publish`, `build.rs`, and Cargo features. *Established third-party tools
+that orchestrate around Cargo:* `dist` (crate `cargo-dist`), `cargo-make`,
+`cross`, `cargo-zigbuild`, `cargo-binstall`, `cbindgen`, `maturin`, `wasm-pack`,
+the `cargo-xtask` pattern. *Up-and-comer:* `cargo-packager`, `rules_rust` and
+Buck2 as whole-build-system replacements. **Only the first bin contains a
+candidate that declares a build target at all.** Every tool in the other two bins
+*reads* `[[bin]]`/`[lib]` to produce something else, which is why this is a
+dominant choice in the strict sense rather than a close comparison.
+
+**Every crate figure this prompt requires is `inapplicable` to the
+recommendation, and each is stated rather than omitted.** 90-day downloads,
+all-time downloads, last release, adopters-by-reverse-dependency and the RustSec
+page are all crates.io concepts; Cargo ships in the toolchain and is never listed
+under `[dependencies]`, so `crate.recent_downloads` and its siblings have no
+value to report, and `https://rustsec.org/packages/cargo.html` addresses a crate
+this template does not consume. Stars and repository state do exist for
+`rust-lang/cargo` (15,462 stars, `archived: false`, `pushed_at`
+2026-09-08T15:46:17Z, recorded by `raw/opus…`, 2026-09-10) and maintenance is
+`active` on the six-week stable train. This inapplicability is **by construction,
+not by omission** — it is the substance of the F212 baseline-review line above.
+
+**The six fitness gates, answered for the recommendation before any popularity
+figure was weighed.** (1) *License* — `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`.
+The row is stated rather than omitted because this item's binding prompt still lists
+the gate and directs that an inapplicable metric carry its reason. The underlying
+fact is unchanged and is kept here as a fact rather than as a gate verdict: this
+recommendation adds no dependency, so nothing enters the tree's license set at
+all. (2) *MSRV* — pass; Cargo is the toolchain,
+not a dependency, and has no `rust-version` to test against the policy. The
+manifest fields recommended here impose no floor above `edition = "2024"`, which
+requires Rust 1.85.0 or newer. (3) *RustSec and `unsafe`* — pass; declaring
+targets introduces no code, so the template's `unsafe` posture is entirely R06's
+to set. (4) *`ubuntu-latest, macos-latest`* — pass; `cargo build`, `cargo package`
+and `cargo publish --dry-run` are the same commands on both, with the single
+difference that a Windows binary carries `.exe` (noted, not required). (5)
+*Default features and async-runtime coupling* — `inapplicable`; manifest fields
+have neither. The template's own `[features]` table is a separate matter whose
+async coupling belongs to R69 and R05. (6) *Binary size and compile time* — zero
+added bytes and zero added compile time; the declaration is metadata. The one
+cost this item introduces is `cargo package`'s verification rebuild, documented
+as step 3, *"This will rebuild your package from scratch to ensure that it can be
+built from a pristine state"* (check 4) — one clean build, which is why it
+belongs in a release lane and not in the default check loop. **No latency,
+throughput, binary-size or compile-time figure is given anywhere in this
+decision**, because no Rust source exists in this repository to measure; that is
+recorded as an evidence gap, not filled with an invented number.
+
+**Candidates excluded, and on what.** `cargo-make` **fails gate 2**: its newest
+non-yanked release 0.37.24 (2025-01-18) declares **no `rust_version` at all**
+(check 6, re-measured this run), and the fixed policy requires a declared,
+CI-tested floor. `cargo-binstall` is **excluded by scope, and by scope alone**:
+the `[package.metadata.binstall]` table it reads is R68's (F214), which this
+item's own prompt places out of scope in those words — *"crates.io-only vs.
+`cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall`
+metadata; R68 (`release-binary-artifacts`) owns F214"* (`inputs/prompt.md`,
+`## Out of scope`). Gate 1 is `inapplicable` to it for the reason given above, so
+no licence ground is carried forward. **Two licence grounds existed before the
+ruling; the ruling voids both, and in each case the scope ground it does not
+touch was already stated as sufficient on its own.** The first was this
+decision's own: revisions 1 and 2 wrote *"fails gate 1 as a dependency"* with the
+registry value `GPL-3.0-only` immediately beside the clause *"out of scope
+regardless"* — that clause byte-identical in revision 1 (sha256
+`b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) and revision
+2 — and revision 3 removed the gate-1 half. The second was the Opus raw's, at
+`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`,
+which likewise paired it with an independent scope ground at `:359-362`: *"It is
+excluded here regardless because the `[package.metadata.binstall]` table it reads
+is an artifact-distribution decision that **R68 owns (F214)**, explicitly out of
+scope for this item."* That report is recorded as it stands and is not rewritten;
+what the ruling changes is that this decision no longer carries its gate-1 half
+forward. Its registry `license` value is still recorded in check 6 as measured
+metadata.
+`cross` **fails gate 4**: it runs the build inside Docker or Podman, which the
+GitHub-hosted macOS image does not ship (measured by `raw/opus…` against the
+`actions/runner-images` manifests, 2026-09-10). `cargo-zigbuild`, `cbindgen`,
+`maturin`, `wasm-pack`, `cargo-packager` and `rules_rust` are excluded **by
+scope, not by a gate**: they are cross-compilation linkers, other ecosystems'
+build backends, or release/desktop bundlers. One of those exclusions answers a
+prompt question directly: `cbindgen` is the closest thing Rust has to ts's
+`dts: true`, but it emits **C headers for an FFI surface**, whereas this template
+exposes a Rust library to Rust consumers whose type information already travels
+in the `.rlib` metadata and is rendered by `cargo doc`. **The `dts`-equivalent
+question has no candidate in Rust because it has no referent in Rust.**
+
+**Architectural alternatives compared before libraries.** *A1 — single package,
+one binary, web behind a Cargo feature.* Maintained reference implementation:
+**mdBook** (22,127 stars; `rust-lang/mdBook/Cargo.toml`, read 2026-09-10) — a
+CLI, a consumable library and an axum HTTP server in one package, the server
+gated by a `serve` feature and reached through an `mdbook serve` subcommand.
+*A2 — single package, two binaries, the second carrying `required-features`.*
+Legitimate and is what `required-features` exists for; its documented cost is the
+skip behavior verified in check 3. *A3 — workspace split into `-core`, `-cli`,
+`-server`.* Reference implementations: **atuin** (31,579 stars) and **typos**
+(4,125 stars, `default-members = ["crates/typos-cli"]`). Its cost here is that it
+pre-empts **R02** (`crate-boundary-enforcement`), which owns the workspace-shape
+question and is still open. *A4 — Cargo plus an orchestration layer* (`dist`,
+`cargo-xtask`). Its cost is a maintained third-party dependency for a decision
+(F214) that belongs to R68, and — for `dist` specifically — a pull toward a
+second configuration file, stated at the width check 10 supports: `dist`'s own
+book at v0.32.0 marks the in-`Cargo.toml` `[workspace.metadata.dist]` form
+*"(deprecated in 0.23.0)"* and initializes new Rust projects into
+`dist-workspace.toml`, while still reading the in-manifest form, so adopting
+`dist` today does not force a second file but is documented as moving away from
+the one-file declaration that behavior B1 names. **A1 is selected**, and the selection is shape-neutral: if R02 chooses
+a workspace, every field above moves to the member manifests unchanged, exactly
+as `typos` and `atuin` do it.
+
+**The ranked runner-up is A4, and its winning condition is stated rather than
+implied.** A4 — Cargo plus an orchestration layer, `dist` specifically — wins if
+**R68 resolves F214 to cross-compiled release binaries**, and the argument is the
+opus raw's rather than this decision's: *"if R68 resolves F214 to 'cross-compiled
+binaries attached to GitHub Releases, with generated installer scripts', then a
+second declaration surface becomes the place where the shipped output shape is
+actually described … and the alternative — hand-writing a release matrix that
+duplicates the target list — is worse. It does not win if R68 chooses
+crates.io-only distribution"*
+(`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:525-531`,
+retrieved 2026-09-10). What that raw records `dist` as giving up when it is
+declined — *"generated cross-platform installer scripts, a generated release
+workflow, and checksum and attestation plumbing"* (`:569-570`) — is the artifact
+set the condition names, and this decision reports it at that raw's width rather
+than measuring `dist`'s output itself, which this run did not do: check 10 read
+`dist`'s configuration-location documentation only. It is ranked
+second, and not first today, for the two costs above: a maintained third-party
+dependency taken on for a decision that is R68's to make, and the documented pull
+toward `dist-workspace.toml` as a second declaration file, which is what behavior
+B1 forbids. **Why A4 and not the alternative three of the five raws name.** A3,
+the workspace split, is not an alternative this item may rank at all: the
+workspace shape is **R02's** (`crate-boundary-enforcement`), and R02 resolving to
+a workspace is recorded below as its own re-verify trigger rather than as this
+item choosing second-best. Codex's proposal, Cargo's automatic target discovery,
+is not an architecture but the other side of the `autobins = false`
+sub-decision, argued on its own terms below. A4 is therefore the only one of the
+four costed alternatives this item could itself have chosen second. The
+three-way engine split on this question is recorded as Disagreement 6 in
+`## Engines`.
+
+**Why `include` rather than `exclude`, stated with the practice evidence that
+runs the other way.** An independent sweep of nine well-regarded manifests this
+run (check 7; log `evidence/practice-manifests.log`) measured **7 of 9 using
+`exclude`** — ripgrep, bat, just, mdBook, wasmtime-cli, fd-find, atuin — against
+**2 of 9 using `include`** — helix-term, and typos-cli through
+`include.workspace = true` inherited from the `crate-ci/typos` workspace root.
+That majority is real and this decision goes against it, so the reason has to
+carry the weight rather than the count. Three things decide it. First, **B4
+fidelity**: an allow-list is the literal expression of the shared behavior both
+sources encode, and ts's `files: ["dist"]` is an allow-list. Second, **the
+repository shapes differ**: the seven `exclude` users are applications whose
+packages carry large asset trees they prune (bat's syntaxes, atuin's vendored
+submodule, mdBook's guide, just's book); this template's shape is the opposite —
+a small source tree inside a repository carrying `.github/`, `docs/`,
+`research/`, a `justfile` and CI, none of which ships, and that non-shipping list
+will grow with every P03 addition while the shipping list will not. Third, a
+deny-list **fails open on exactly the direction that matters here**: under
+`exclude` (or under Cargo's default) a committed directory nobody thought to name
+is published to every crates.io consumer, which is the F218 finding above.
+**The failure mode this choice accepts, named plainly:** an allow-list fails
+closed on a fork's new directory — a fork that adds `assets/` and does not extend
+`include` ships a `.crate` without it. That failure is loud for anything the
+build needs, because `cargo package`'s step-3 verification rebuild fails if
+`include` omitted a compile-time input (check 4), and silent only for files read
+at *runtime*, of which a source-only template has none. One further verified
+property is recorded because it is a genuine footgun of the field chosen:
+*"If `include` is specified, gitignore rules of the repository and global git
+configuration are not applied"* (check A), so an `include` pattern that reaches
+into a gitignored path would ship it. The patterns recommended here (`/src`,
+`/README.md`, the two license files, `/CHANGELOG.md`) do not. **Confidence on
+this sub-decision is medium**, and it is cheap to reverse: it is one manifest
+field, and R26 (F039/F078) owns the CI guard that would catch a wrong value
+either way.
+
+**Why the binary name is `rslbp`, what the research found, and what the owner
+decided.** These are two different things and the decision records both. **What
+the research established, and it still stands:** the divergence py needs —
+`uvx --from py-launch-blueprint plbp`, annotated in py's own README at pin
+`b08bccfb` as needed *"because the distribution name differs from the
+console-script name"* (check 5) — **has no Rust analogue**: `cargo install`'s
+`--bins` option is documented *"Install all binaries. This is the default
+behavior"*, and the installed cargo 1.98.0 prints the same (check 8). So
+`cargo install <package>` installs the package's binaries whatever they are
+named, and `--bin` selects a *subset* rather than resolving a name divergence.
+**Divergence is therefore free in Rust and common** — 5 of the 9 manifests swept
+diverge (`ripgrep`/`rg`, `wasmtime-cli`/`wasmtime`, `typos-cli`/`typos`,
+`fd-find`/`fd`, `helix-term`/`hx`). **What this decision recommended through
+revision 7:** a matching pair, on a ground about templates rather than about
+Cargo — `rs-launch-blueprint` is a placeholder every fork replaces, the five
+divergent projects diverge because a short *product* name was already established
+or taken, and a matching pair is the value that needs **no owner naming call** to
+publish. `raw/opus…` proposed `rslbp` and Doxa's Gemini provider proposed
+`rsbp`; both labelled the string a naming proposal rather than a research
+finding, so neither was adopted, and the decision recorded the name as
+**owner-reviewable** instead. **What the owner ruled, and it binds:** on
+2026-09-15 the owner made that call and chose `rslbp`, the Opus proposal
+(`docs/port/OWNER-REVIEW.md`, section *"2026-09-15 — R49 binary name: `rslbp`
+(W0-R49n)"*). The crate and distribution name stays `rs-launch-blueprint`. The
+research ground the matching pair rested on is the one the ruling consumes — a
+naming call that was open is now made — and nothing the research measured argues
+against the chosen value: check 8 shows the divergence costs no install-time flag
+in either direction, and check 7 shows 5 of 9 surveyed projects already diverge.
+**The consequences this decision recorded for a divergent pair, now live:** the
+change itself is one `name =` line plus one README sentence — the README must say
+`cargo install rs-launch-blueprint` installs the command `rslbp`, because the two
+strings no longer teach each other — and **if R68 later adopts `cargo-binstall`
+metadata, the `bin-dir` template must interpolate `{ bin }` rather than
+`{ name }`**, since with a divergent pair `{ name }` would name the crate and
+miss the executable. R32's and R68's concrete strings move with the name and are
+recorded under `## Parameters`.
+
+**Why `autobins = false`, at the strength the evidence supports.** Cargo's own
+reference says *"Disabling automatic discovery should only be needed for
+specialized situations"* and illustrates it with a library that wants a module
+named `bin` (check 2). This template's specialized situation is different and is
+stated as a **policy choice rather than as documented advice**: an unreviewed
+`src/bin/*.rs` file would otherwise become a second *published, installed
+command*, which is precisely the artifact this item exists to declare, and
+`cargo install` installs all binaries by default (check 8). The same argument
+does **not** extend to `build = false`, which Doxa's OpenAI provider proposes: an
+accidental `build.rs` changes compile-time behavior but adds no shipped
+executable, so the manifest is not asked to carry metadata disabling a thing that
+does not exist. `default-run` is declined on the same ground — with one binary it
+is dead metadata, and it is added in the same commit as any second `[[bin]]`,
+never before.
+
+**Minimal realistic example.** One package. `src/lib.rs` is the library target's
+root and hosts the R01 port trait, the R67 error catalog, and — when R69 says so
+— a feature-gated `web` module. `src/main.rs` is the binary target's root:
+argument parsing, the composition root, and `fn main() -> ExitCode` per R67's
+resolved `error-taxonomy-exit-codes`, which already presumes this library/binary
+split (*"`thiserror` in the library crate, `anyhow` … in binary crates only"*).
+`Cargo.toml` carries `[package]` (with the crates.io metadata `cargo publish`
+requires), `include`, `[lib]`, one `[[bin]]`, and `[features]`. **This example was
+not built.** Building it is P03's job.
+
+**Observable acceptance criteria.** Each is machine-checkable against the
+finished template, and **none was executed here** — there is no Rust source tree
+to run them against, and this run did not create one.
+
+- AC1 — `cargo metadata --no-deps --format-version 1` reports exactly one target
+  of kind `lib` and exactly one of kind `bin`, and the bin's `name` equals the
+  value recorded in `build-tool-output-shape`.
+- AC2 — `cargo build --release` produces `target/release/rslbp`.
+- AC3 — `cargo package --list`, invoked with no `--exclude-lockfile` (check L —
+  that flag is the one thing that drops the lockfile, and neither this check nor
+  the release lane passes it), prints `Cargo.toml`, `Cargo.lock`, `src/**`,
+  `README.md` and the two license files, **and** prints no path under `.github/`,
+  `docs/` or `research/`. Written as two assertions because a positive-only check
+  passes trivially.
+- AC4 — `cargo publish --dry-run` exits 0, which runs the step-3 verification
+  build and so fails if `include` omitted anything the build needs.
+- AC5 — with the web feature off and on, the produced binary set is unchanged in
+  count, so R68's artifact list does not change shape with the feature flag.
+- AC6 — an integration test resolves the executable through
+  `env!("CARGO_BIN_EXE_rslbp")` with no non-default feature enabled.
+
+Where AC3 and AC4 are wired is **R26's and R11's**, not this item's; AC4 is a
+full clean rebuild and belongs in a release lane.
+
+**Re-verify triggers, any of which fires before the date below.** R69 resolves to
+a separate server process, which adds a second `[[bin]]` and a `default-run` line
+to the owned parameter; R02 resolves to a workspace, which moves these fields to
+member manifests under `[workspace.package]` inheritance; R68 resolves F214 to
+cross-compiled release binaries, which is the condition under which the ranked
+runner-up **A4** (Cargo plus a `dist` orchestration layer, ranked under
+*"Architectural alternatives compared before libraries"* above) wins and which
+requires re-checking whether `dist`'s `[workspace.metadata.dist]` deprecation has
+become a removal at the version R68 would adopt; or a Rust edition beyond 2024 is
+adopted, since edition changes have altered `Cargo.toml` semantics before. **One
+trigger has fired and is resolved: the owner ruled on the binary name.** On
+2026-09-15 the owner chose `rslbp` (`docs/port/OWNER-REVIEW.md`, section
+*"2026-09-15 — R49 binary name: `rslbp` (W0-R49n)"*); revision 8 implements it
+throughout, so the trigger is discharged rather than pending and is not carried
+forward in the list above.
+
+re-verify: 2027-03-10, or any earlier event listed immediately above
+
+## Parameters
+
+- owns build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rslbp, a different string from the package name rs-launch-blueprint, so cargo install rs-launch-blueprint installs the command rslbp and integration tests resolve it through CARGO_BIN_EXE_rslbp; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+- No `CONFLICT:` line. This item's `- consumes:` line in the prompt is empty, no raw report raised a conflict, and nothing in this recommendation requires a registered parameter value to change.
+
+**Format note.** The five lines above carry a value and nothing else — no
+backticks, no citation, no commentary — because the packaging validator reads
+everything after `= ` as the value and compares it byte-for-byte with
+`docs/port/PARAMETERS.md`, and the owned value is additionally written into that
+registry's table cell. Three earlier items in this programme each cost a full
+audit round to exactly that mistake. Everything those lines would otherwise have
+said is in prose here.
+
+**How each fixed parameter bears on this decision.** `rust-edition` is
+load-bearing rather than incidental: the 2024 edition implies `resolver = "3"`,
+Cargo's Rust-version-aware dependency resolver, which does more for the MSRV
+policy than any third-party tool in this category could, and it is the edition
+whose stabilization sets the floor at Rust 1.85.0 or newer. `msrv-policy` is
+declared by the `rust-version` field this item places in `[package]`; on this
+host today, with stable at `rustc 1.98.0`, "stable minus 2 minor versions"
+computes to **1.96** — stated as a computed value at a date, not baked into the
+owned parameter, because it moves every six weeks and the policy, not the number,
+is what is fixed. `license` becomes the `[package] license` field and, through
+the Rust API Guidelines' C-PERMISSIVE convention already recorded on F206, the
+root `LICENSE-MIT` + `LICENSE-APACHE` pair that the `include` allow-list names.
+`target-os-matrix` is satisfied because every command named in this decision is
+the same command on both runners.
+
+**Consuming items get concrete values from the owned parameter above.** R22
+(`runtime-version-accessor`) reads the **target directory layout and the target
+names** — library crate `rs_launch_blueprint`, binary `rslbp`, artifacts under
+`target/debug/` and `target/release/` — which is exactly what R22's own prompt
+registers as consumed from this item: *"The build tool's output-artifact naming
+and layout (what the binary/library targets are called, where `cargo build`
+places them); R49 (`build-target-declaration`) owns `build-tool-output-shape` —
+assume its answer as a consumed parameter, do not re-decide it here."*
+(`research/topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md:18`).
+R22's accessor macro `env!("CARGO_PKG_VERSION")` derives from the `[package]
+version` field, which this item does **not** decide and which the owned parameter
+does not carry; that choice is R22's own. This restates what
+`### Principles and implementation` already says — *"the target directory layout
+in `## Parameters` is the input R22's version accessor reads"* — and an earlier
+revision of this clause contradicted it. R32's built-binary tier resolves the
+executable through `env!("CARGO_BIN_EXE_rslbp")` rather than hardcoding a path or
+a profile; R68's release matrix uploads the filename `target/release/rslbp`.
+Both strings carry the owner's ruling W0-R49n and both are drawn from the owned
+parameter above.
+
+## Empirical check
+
+**Toolchain and host.** `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`;
+`cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`; rustup's active toolchain
+`stable-aarch64-apple-darwin`; `Darwin 25.4.0 arm64`, macOS 26.4 (25E246).
+Recorded 2026-09-10T15:24:28Z; log `review/evidence/toolchain.log`. **Every
+retrieval timestamp in this decision and in every evidence log is UTC.**
+
+**Working directory.** All checks ran read-only from the repository root
+`/Users/stevemorin/c/rs-launch-blueprint-p02-plan`, except the two `git show`
+reads in check 5, which address the pinned source repositories through
+`git -C ~/c/py-launch-blueprint` and `git -C ~/c/ts-launch-blueprint` and touch
+no working tree. **Nothing was scaffolded, built or published**: no `Cargo.toml`
+was written, no crate was created, and no `cargo build`, `cargo package` or
+`cargo publish` did any work — the only invocations of those subcommands were
+`--help` printings in checks 8 and L, and no dry run of any kind was
+performed. The checks read the toolchain's own documentation and
+source at the tag matching the installed toolchain, printed the installed
+`cargo`'s effective help, and queried the registry and the GitHub API.
+
+**Check 1 — the toolchain reference at the tag matching the installed cargo.**
+`gh api "repos/rust-lang/cargo/contents/src/doc/src/<page>?ref=rust-1.98.0"` for
+`reference/manifest.md`, `reference/cargo-targets.md`,
+`reference/environment-variables.md`, `reference/build-cache.md`,
+`commands/cargo-package.md` and `commands/cargo-install.md`. All six fetched;
+byte counts and SHA-256 digests recorded. Exit status 0.
+Log `review/evidence/cargo-docs-1.98.log`. **The source at a tag was read in
+preference to the published page** so that every quotation below is the text
+shipped with the installed `cargo 1.98.0` rather than whatever the live site
+serves; the published equivalents, all retrieved 2026-09-10, are
+<https://doc.rust-lang.org/cargo/reference/manifest.html>,
+<https://doc.rust-lang.org/cargo/reference/cargo-targets.html>,
+<https://doc.rust-lang.org/cargo/reference/environment-variables.html>,
+<https://doc.rust-lang.org/cargo/reference/build-cache.html>,
+<https://doc.rust-lang.org/cargo/commands/cargo-package.html> and
+<https://doc.rust-lang.org/cargo/commands/cargo-install.html>. The other
+documentation this decision relies on, carried over from the raw reports with
+their retrieval dates: the Rust Edition Guide's 2024 chapter for the
+`resolver = "3"` implication (<https://doc.rust-lang.org/edition-guide/print.html>,
+2026-09-10) and the Rust 1.85.0 release announcement for the edition's
+stabilization (<https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/>, 2026-09-10),
+both from `raw/opus…`; `dist`'s own book
+(<https://axodotdev.github.io/cargo-dist/book/workspaces/structure.html>,
+2026-09-10, `raw/opus…`), read here at the `v0.32.0` tag instead (check 10);
+`cargo-xtask`'s README, whose own words are *"not an officially recommended
+workflow"* (<https://raw.githubusercontent.com/matklad/cargo-xtask/master/README.md>,
+2026-09-10, `raw/opus…`); and the manifests of the nine surveyed projects at
+`https://github.com/<owner>/<repo>/blob/<default-branch>/Cargo.toml`, fetched
+through the contents API in check 7, 2026-09-10.
+
+**Check A (packaged-file default, the F218 finding).** `manifest.md:391-411` at
+that tag: *"The default if neither field is specified is to include all files
+from the root of the package, except for the exclusions listed below"*; the
+exclusions are hidden dotfiles when **not** in a git repository, gitignored files
+when in one, sub-packages, and a root `target` directory. Also verified there:
+*"If `include` is specified, gitignore rules of the repository and global git
+configuration are not applied"*; *"The options are mutually exclusive; setting
+`include` will override an `exclude`"*; and, under the heading *"The
+following files are always included"*, that `Cargo.toml` and any `license-file`
+are always included and that *"A minimized `Cargo.lock` is automatically
+included"* — a sentence that speaks only to `include`/`exclude` selection, and
+whose command-line limit is check L. **Observed outcome:** the
+ledger's "(default: git-tracked files only)" is not what the toolchain
+documents — an untracked, non-ignored file is inside the default set.
+
+**Check H (how far that gap actually reaches).**
+`src/cargo/ops/cargo_package/vcs.rs` at the same tag: `check_repo_state` bails
+with *"N files in the working directory contain changes that were not yet
+committed into git … pass the `--allow-dirty` flag"*, and its dirty walk is
+configured `emit_untracked(gix::dir::walk::EmissionMode::Matching)`.
+**Observed outcome:** the untracked-file path is guarded at package time by the
+dirty refusal; the unguarded path is a *committed* directory nobody excluded.
+Both statements appear in the F218 baseline-review line at exactly that width.
+
+**Check 2 — target names, paths and auto-discovery.** `cargo-targets.md` at the
+tag. **Observed:** *"The filename defaults to `src/lib.rs`, and the name of the
+library defaults to the name of the package, with any dashes replaced with
+underscores. A package can have only one library."*; *"For `src/main.rs`, the
+default binary name is the package name."*; *"The `name` field specifies the name
+of the target, which corresponds to the filename of the artifact that will be
+generated."*; and, on auto-discovery, *"Setting the keys `autolib`, `autobins`,
+`autoexamples`, `autotests`, or `autobenches` to `false` in the `[package]`
+section will disable auto-discovery"*, with the caveat *"Disabling automatic
+discovery should only be needed for specialized situations."*
+
+**Check 3 — the `required-features` skip, the fact handed to R69 and R32.**
+`cargo-targets.md`: *"The `required-features` field specifies which features the
+target needs in order to be built. If any of the required features are not
+enabled, the target will be skipped."* `environment-variables.md`:
+*"`CARGO_BIN_EXE_<name>` — The absolute path to a binary target's executable.
+This is only set when building an integration test or benchmark. … Binaries are
+automatically built when the test is built, unless the binary has required
+features that are not enabled."* **Observed outcome:** a second feature-gated
+binary disappears from the default test build; this is recorded as R69's and
+R32's input, not used to decide R69.
+
+**Check 4 — `cargo package`'s steps and its verification rebuild.**
+`cargo-package.md` at the tag, step 3: *"Extract the `.crate` file and build it to
+verify it can build. This will rebuild your package from scratch to ensure that
+it can be built from a pristine state. The `--no-verify` flag can be used to skip
+this step."* Also verified, in that page's step 2: *"`Cargo.lock` is always
+included. When missing, a new lock file will be generated unless the
+`--exclude-lockfile` flag is used."* — quoted with its second sentence, which is
+the condition; `--list` prints the file list without making a package; and
+`--allow-dirty` exists to override the dirty-tree refusal.
+
+**Check L — the conditions on lockfile inclusion, stated once in full here.**
+Script `review/evidence/check-lockfile-inclusion.sh`, log
+`review/evidence/lockfile-inclusion-conditions.log`, run from the repository
+root; 13 content assertions, `RESULT all assertions passed`, exit status 0. It
+reads documentation and source at the `rust-1.98.0` tag and prints the installed
+`cargo 1.98.0`'s own help; it scaffolds, builds and publishes nothing, and does
+no packaging or publishing work — the only `cargo package`/`cargo publish`
+invocations are `--help` printings, and no dry run was performed. **Observed:**
+
+1. *Automatic with respect to the manifest.* `reference/manifest.md` lists *"A
+   minimized `Cargo.lock` is automatically included"* under *"The following files
+   are always included"*, a list the page itself scopes to *"Regardless of
+   whether `exclude` or `include` is specified"*. So no `include` allow-list and
+   no `exclude` deny-list can drop it — which is the claim this decision needs,
+   since the allow-list is what it selects.
+2. *Not unconditional at the command line.* `commands/cargo-package.md` documents
+   `--exclude-lockfile` as *"Don't include the lock file when packaging"*, adding
+   *"This flag is not for general use."*; the installed cargo prints
+   `--exclude-lockfile         Don't include the lock file when packaging` in
+   `cargo package --help`, with no `-Z` gate, so the override is stable and
+   available in 1.98.0.
+3. *Where the condition lives in the source.*
+   `src/bin/cargo/commands/package.rs:89` sets
+   `include_lockfile: !args.flag("exclude-lockfile")`;
+   `src/cargo/ops/cargo_package/mod.rs:513` drops any on-disk `Cargo.lock` from
+   the source file list (`"Cargo.lock" => continue`) and `:559` re-adds it as a
+   generated archive entry only `if include_lockfile`.
+4. *An absent lockfile is generated, not omitted.* Same block, `:561`:
+   `let lockfile_path = lockfile_path.exists().then_some(lockfile_path);` — the
+   entry is added either way and `build_lock` produces the contents.
+5. *The publish path has no override.*
+   `src/cargo/ops/registry/publish.rs:171` constructs `PackageOpts` with
+   `include_lockfile: true` hardcoded, and the installed `cargo publish --help`
+   prints no line containing `exclude-lockfile` (0 matching lines, asserted as an
+   absence).
+6. *That override is the only one — checked exhaustively, not by sampling.* The
+   word "only" is an exhaustive claim, so the script downloads the whole tag
+   tarball (`gh api repos/rust-lang/cargo/tarball/rust-1.98.0`) and searches
+   every `.rs` file in it. `include_lockfile` appears in exactly three files —
+   `src/cargo/ops/cargo_package/mod.rs` (the `PackageOpts` field at `:85`, the
+   `build_ar_list` parameter at `:502`, and three reads at `:263`, `:281`,
+   `:492`), `src/bin/cargo/commands/package.rs` and
+   `src/cargo/ops/registry/publish.rs` — and it is *assigned* in exactly two
+   places, `commands/package.rs:89` and `ops/registry/publish.rs:171`, the two
+   quoted above. Both the file set and the assignment-site set are asserted as
+   exact string equality, so a fourth file or a third assignment fails the check.
+
+**Observed outcome:** the correct width is *automatic under manifest selection,
+generated when absent, and omitted only by `cargo package --exclude-lockfile`* —
+not "included regardless", which revision 1's owned value and four supporting
+lines asserted. The owned parameter now carries that qualification in full; the
+`## Decision` table row, AC3 and check 4 carry it by reference to this check.
+**Reproducibility:** the script was re-run against the cited log immediately
+before this sentence was written; the two outputs differ on exactly one line, the
+`retrieved:` timestamp in the header, every other byte identical. The two
+documentation pages are addressed by tag *and* by recorded SHA-256, so they
+cannot drift under a re-run without the digest assertion failing; the four source
+files and the tarball are addressed by tag and their digests or derived line
+lists are printed into the log, so drift would show as a log diff. **Three
+negative controls were run**, each on a copy of the script: an asserted
+documentation string altered, the expected assignment-site set altered, and the
+`cargo publish` absence assertion pointed at the one help text that does contain
+`--exclude-lockfile`. All three exited 1 with `ASSERT FAIL`, so this check can
+fail in both directions — a missing string and an unexpectedly present one.
+
+**Check D — where artifacts land.** `build-cache.md` at the tag: *"By default,
+both directories point to a directory named `target` in the root of your
+workspace"*, overridable by `CARGO_TARGET_DIR`, `build.target-dir` or
+`--target-dir`; `target/debug/` for `dev`, `target/release/` for `release`, a
+directory named for a user-defined profile, and a `target/<triple>/` level under
+`--target`. Note for P03: this release of the reference splits *final* build
+artifacts (the binary — in the target-dir) from *intermediate* ones (in a
+build-dir settable by `CARGO_BUILD_BUILD_DIR`); the owned parameter describes the
+final artifacts only.
+
+**Check 8 — the installed cargo's own effective configuration.**
+`cargo package --help` and `cargo install --help`, run against the installed
+cargo 1.98.0. **Observed:** `cargo install --help` prints
+`--bins  Install all binaries` and `--bin [<NAME>]  Install only the specified
+binary`, matching `cargo-install.md`'s *"Install all binaries. This is the default
+behavior."*; `cargo package --help` prints `-l, --list`, `--no-verify` and
+`--allow-dirty`. Exit status 0. Same log.
+
+**Check 9 — `raw/opus…`'s first self-correction, re-measured rather than
+inherited: `cargo-dist` issue responsiveness by login.** Commit authorship on
+`axodotdev/cargo-dist`'s default branch over the 100 most recent commits gives
+the commit-access logins `mistydemeo` (26) and `woodruffw` (6), beside
+`dependabot[bot]` (63). Measuring the first comment by either login across the
+same ten most recently opened issues, and excluding a comment by the issue's own
+author: **6 of 10 answered, 4 unanswered, median 0.190 days (4.6 hours)**. Every
+one of those maintainer comments carries `author_association: CONTRIBUTOR`, and a
+filter on `MEMBER`/`OWNER`/`COLLABORATOR` returns **0 comments on all six
+answered issues** — the artifact reproduced directly. With `archived: false`,
+`pushed_at` 2026-09-08, 297 open issues, a last non-yanked release 2026-05-22
+(3.6 months, below the rubric's six-month investigate trigger) and no RustSec
+record, **the rubric verdict is `active`, not `at-risk`**, confirming the
+withdrawal in the raw report. Exit status 0.
+Log `review/evidence/cargo-dist-responsiveness.log`.
+
+**Check 10 — `raw/opus…`'s second self-correction, read at the stated versions,
+and refined.** At the **v0.32.0** tag — the newest non-yanked crates.io release,
+2026-05-22, `MIT OR Apache-2.0`, `rust_version` 1.74 — `book/src/workspaces/
+structure.md` lists the workspace configuration file as `dist-workspace.toml` or
+*"(deprecated in 0.23.0) `Cargo.toml` (Rust users only, goes in
+`[workspace.metadata.dist]`)"*. The deprecation is therefore real and still
+current at the newest release. **It is not a removal, and this decision does not
+say it is:** `book/src/reference/config.md` at the same tag still reads
+configuration from *"Your language-specific project manifests like Cargo.toml"*
+and states that *"all references to the `[dist]` section in dist-workspace.toml
+and dist.toml may also refer to `[workspace.metadata.dist]` or
+`[package.metadata.dist]` in your Cargo.toml"*, and the 0.23.0 changelog entry
+says newly initialized Rust projects use the new format while *"Existing projects
+will be given the option to opt into the new format, but by default will keep
+their existing format for now."* Exit status 0.
+Log `review/evidence/cargo-dist-config-location.log`.
+
+**Check 6 — registry, advisory and license figures, re-measured this run**
+(`GET https://crates.io/api/v1/crates/<name>` for `crate.recent_downloads` and
+`crate.downloads`; `/versions` for the newest non-yanked `num`, `created_at`,
+`license` and `rust_version`; `https://rustsec.org/packages/<name>.html` for
+advisories). Retrieved 2026-09-10; log `review/evidence/registry-figures.log`.
+
+| crate | 90-day | all-time | newest non-yanked | created_at | license | rust_version | RustSec |
+|---|---|---|---|---|---|---|---|
+| `cargo-dist` | 19,922 | 175,385 | 0.32.0 | 2026-05-22 | MIT OR Apache-2.0 | 1.74 | HTTP 404 |
+| `cargo-make` | 248,798 | 3,672,469 | 0.37.24 | 2025-01-18 | Apache-2.0 | **absent** | HTTP 404 |
+| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | GPL-3.0-only | 1.79.0 | HTTP 404 |
+| `cross` | 307,766 | 6,269,217 | 0.2.5 | 2023-02-04 | MIT OR Apache-2.0 | absent | HTTP 404 |
+| `cargo-zigbuild` | 1,547,057 | 7,034,852 | 0.23.4 | 2026-09-02 | MIT | 1.88 | HTTP 404 |
+| `cbindgen` | 13,646,147 | 101,705,742 | 0.29.4 | 2026-06-09 | MPL-2.0 | 1.74 | HTTP 404 |
+| `cargo-packager` | 47,349 | 178,600 | 0.11.8 | 2025-11-27 | Apache-2.0 OR MIT | absent | HTTP 404 |
+
+An HTTP 404 on a RustSec package page means **no advisory record exists**, not
+that the query failed. **One** gate exclusion above rests on this table:
+`cargo-make`'s `rust_version` is absent. The `license` column is retained because
+it is what the endpoint returned and what `review/evidence/registry-figures.log`
+records, and it is evaluated against **no gate**: under the owner's 2026-09-12
+ruling (Q7.B), licence compatibility is not a fitness criterion for any
+dependency or tool. `cargo-binstall`'s `GPL-3.0-only` value therefore excludes
+nothing, and that crate's exclusion is by scope.
+
+**Check 7 — the packaged-file mechanism and the name-divergence rate in
+well-regarded manifests, measured independently of the raw reports.** Nine
+manifests fetched through `gh api repos/<o>/<r>/contents/<path>` on their default
+branches, 2026-09-10. **Observed:** `exclude` 7 of 9 (ripgrep 68,148 stars; bat
+60,399; just 35,726; mdBook 22,127; wasmtime-cli 18,616; fd-find 44,354; atuin
+31,579); `include` 2 of 9 (helix-term 46,164; typos-cli 4,125, through
+`include.workspace = true` inherited from the `crate-ci/typos` workspace root);
+Cargo's bare default 0 of 9. Explicit `[[bin]]` block: 7 of 9 (bat and atuin
+auto-discover). Explicit `[lib]` block: 2 of 9 (just and wasmtime-cli, both only
+to set `doctest = false`). Package name differs from bin name in 5 of 9:
+`ripgrep`/`rg`, `wasmtime-cli`/`wasmtime`, `typos-cli`/`typos`, `fd-find`/`fd`,
+`helix-term`/`hx`. **A correction recorded in the log rather than quietly fixed:**
+my first pass grepped only `crates/typos-cli/Cargo.toml`, found neither field,
+and would have contradicted `raw/opus…`'s "typos uses include"; reading the
+workspace root showed the allow-list is inherited, so the raw report was right
+and my first tally was wrong. Exit status 0.
+Log `review/evidence/practice-manifests.log`.
+
+**Check 5 — the py and ts precedent, read through the programme pins.**
+`git -C ~/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:<path>`
+and `git -C ~/c/ts-launch-blueprint show cb1cbcb2e88b898e8c081b0abbfabc1630079c00:<path>`.
+**Observed, each at the line the prompt cites:** py `pyproject.toml:120`
+`plbp = "py_launch_blueprint.cli.main:cli"`; `:131-133`
+`requires = ["uv_build>=0.5,<1.0"]` and `build-backend = "uv_build"`; `:139`
+`module-name = "py_launch_blueprint"`; `:141` `module-root = "src"`; py
+`README.md:45` `uvx --from py-launch-blueprint plbp` with the parenthetical
+*"(uvx needs `--from` because the distribution name differs from the
+console-script name)"*. ts `package.json:2` `"name": "ts-launch-blueprint"`;
+`:17-19` `"bin": {"ts-projects": "dist/cli.js"}`; `:20-22` `"files": ["dist"]`;
+`tsdown.config.ts` `entry: ['src/cli.ts', 'src/lib.ts']` with `dts: true`. Exit
+status 0. Log `review/evidence/source-pins.log`.
+
+**What these checks establish, and what they do not.** They establish that every
+manifest semantic this decision relies on is what the toolchain of the day
+actually documents and implements, that both of the raw report's self-corrections
+hold when re-measured from scratch (with the `dist` one refined from "deprecated"
+to "deprecated but still supported at 0.32.0"), that the two gate exclusions rest
+on current registry facts, and that the practice split on `include`/`exclude` runs
+7:2 *against* the field this decision selects. **They do not establish that the
+recommended manifest works**, because no manifest was written and no build was
+run. AC1–AC6 are the checks that would establish it and they are P03's to
+execute, as recorded under `## Engines`.
+
+## Engines
+
+- **codex** `raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md` (retrieved 2026-09-05) — Cargo-native, no backend crate; explicit `[lib]` + one `[[bin]]`; `autobins = false`; **`include` allow-list**; package and bin names **match**; no web `[[bin]]` now. Excludes `cargo-make` on the absent-`rust_version` gate and `cargo-dist` on scope. Raised the F218 baseline-review line carried above. Could not measure issue responsiveness — the unauthenticated GitHub core limit was exhausted — and said so rather than inventing a figure.
+- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10. Excluded `cargo-binstall` on **two** grounds: fitness gate 1 at `:353-356` (licence `GPL-3.0-only`, *"not compatible with `MIT OR Apache-2.0` for anything linked"*) and, independently, scope at `:359-362` (*"excluded here regardless"*, the `[package.metadata.binstall]` table being R68's F214). Under the owner's 2026-09-12 ruling (Q7.B) the gate-1 ground is void and is not carried forward; the scope ground is the one this decision adopts.
+- **doxa** `raw/doxa.normalized.md` — three providers regrouped under the template's fields; per-provider originals in `raw/doxa-openai.normalized.md`, `raw/doxa-perplexity.normalized.md`, `raw/doxa-gemini.normalized.md`; every repair recorded in `doxa/normalization.json`. All three reach Cargo-native with no backend crate and split on the sub-decisions below.
+  - **doxa/openai** (gpt-5.6-sol, retrieved 2026-09-09) — `include` allow-list; names match; `autobins = false`; **also** `build = false` and `default-run` set; proposes a concrete `rust-version = "1.96"`.
+  - **doxa/perplexity** (sonar-deep-research, retrieved 2026-09-09) — names match; **neither `include` nor `exclude`**, relying on Cargo's default and documenting that as deliberate; a **second `[[bin]]`** `rs-launch-blueprint-web` with `required-features = ["web-service"]` and CLI at `src/bin/cli.rs`.
+  - **doxa/gemini** (deep-research-preview-04-2026, retrieved 2026-09-09) — `include` allow-list, argued from 2024-edition design discussions about `.github` leaking into published crates; a **second `[[bin]]`** for the web service; names **diverge** (`rsbp`, likewise a naming proposal).
+
+**Disagreement 1 — is any build-orchestration crate warranted?** No engine says
+yes. Settled by the structure of the field rather than by a vote: the three-bin
+map has exactly one bin containing a candidate that declares a target, and checks
+2, 4 and A show Cargo's manifest already expresses every behavior B1–B4 — target
+naming and paths, the packaging steps, and the packaged-file bound respectively. **No
+residual uncertainty.**
+
+**Disagreement 2 — `include`, `exclude`, or Cargo's default?** Three engines say
+`include` (codex, doxa/openai, doxa/gemini), one says `exclude` (opus), one says
+neither (doxa/perplexity). Settled **against the practice majority** and for
+`include`, on the three reasons argued under `### Principles and implementation`;
+"neither" is eliminated outright by check A, because the default publishes
+`.github/`, `docs/` and `research/` to every consumer. **Residual uncertainty is
+real and is recorded as medium confidence**: check 7 measures 7 of 9 well-regarded
+manifests using `exclude`, and the counter-argument rests on a difference in
+repository shape rather than on a measurement. It is one manifest field to
+reverse, and R26 (F039/F078) owns the CI guard that catches a wrong value.
+
+**Disagreement 3 — does the binary name diverge from the package name?** Three
+say match (codex, doxa/openai, doxa/perplexity), two say diverge (opus `rslbp`,
+doxa/gemini `rsbp`). The research settled for **match**, on the ground that both
+divergent proposals label their string as a naming proposal rather than a
+research finding, that a value carrying an open owner call cannot be published to
+the registry, and that check 8 shows divergence costs no install-time flag in
+either direction, so a fork adopts it for one `name =` line — and it recorded the
+name as owner-reviewable. **The owner then made that call and the decision now
+carries it: `rslbp`, the Opus proposal** (`docs/port/OWNER-REVIEW.md`, section
+*"2026-09-15 — R49 binary name: `rslbp` (W0-R49n)"*), with the crate and
+distribution name unchanged. So the engine that measured divergence as the
+common practice is the one the value follows, while the majority's *ground* — a
+matching pair needs no naming call — is answered rather than overturned, the call
+having been made. **No residual uncertainty on the name**: check 8 shows the
+divergence costs no install-time flag, and check 7 shows 5 of 9 surveyed projects
+already diverge.
+
+**Disagreement 4 — does the web surface get a second `[[bin]]` now?** Two say yes
+(doxa/perplexity, doxa/gemini), three say no (codex, opus, doxa/openai). Settled
+for **no**, and on ownership rather than on preference: F017 is already `ADOPT`
+for the optional-feature shape, and R69 owns whether the feature also brings a
+second process. Check 3 supplies the verified cost of the two-binary form — a
+`required-features` binary is skipped when the features are off, and
+`CARGO_BIN_EXE_<name>` is then unset — and that fact is handed to R69 and R32
+rather than used to close R69's question. **Residual uncertainty is R69's, not
+this item's**, and this decision is written so that R69 resolving either way
+changes one manifest block and nothing else.
+
+**Disagreement 5 — `build = false` and `default-run`?** Only doxa/openai sets
+them. Declined, on the asymmetry argued above: an accidental `src/bin/*.rs`
+produces a shipped, installed command — this item's own subject — while an
+accidental `build.rs` does not, and `default-run` is dead metadata with one
+binary. **Low residual uncertainty**; both are one-line additions if a second
+binary or a build script ever appears.
+
+**Disagreement 6 — which alternative is the ranked runner-up?** The five raws
+name three different ones. Three name the **workspace split**: doxa/openai
+(`raw/doxa-openai.normalized.md:251`, *"Cargo workspace split"*),
+doxa/perplexity (`raw/doxa-perplexity.normalized.md:170-174`, winning *"where
+modularity or independent versioning is required"*) and doxa/gemini
+(`raw/doxa-gemini.normalized.md:92-96`, winning on a divergent MSRV or edition
+for the web surface). Opus names **`dist` 0.32.x as a manifest-level
+orchestration layer** (`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:521-525`).
+Codex names **Cargo automatic target discovery**
+(`raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md:79-82`,
+winning *"only if the implementation intentionally adopts Cargo's conventional …
+layout, forbids `src/bin/`, and accepts automatic discovery as the package
+boundary"*). Settled for **opus's answer, A4**, and not by vote — by ownership,
+which is the same ground Disagreement 4 is settled on. The majority's workspace
+split is **R02's** question, not this item's, so it is carried as a re-verify
+trigger rather than ranked here; codex's auto-discovery is the counter-position
+in the `autobins = false` sub-decision, not an architecture; A4 is the only one
+of the four costed alternatives this item is free to choose second, and its
+winning condition — R68 resolving F214 to cross-compiled release binaries — is
+recorded with it. **Residual uncertainty is low and is R68's:** if F214 resolves
+that way, check 10's `dist` deprecation reading is re-run at the version R68
+would adopt.
+
+**What P03 must validate, because this run could not.** AC1–AC6 in
+`### Principles and implementation`, every one of which needs a Rust source tree
+that does not exist: that `cargo metadata` reports exactly one `lib` and one
+`bin` target with the recorded names; that `cargo build --release` produces
+`target/release/rslbp`; that `cargo package --list` contains the
+allow-listed files **and** nothing under `.github/`, `docs/` or `research/`; that
+`cargo publish --dry-run` exits 0, which is the check that fails if the `include`
+list omitted a compile-time input; that the binary count is unchanged with the
+web feature on and off; and that an integration test resolves
+`env!("CARGO_BIN_EXE_rslbp")` with no non-default feature enabled.
+A useful negative control for P03, proposed here and not run: temporarily adding
+`required-features` to the `[[bin]]` block must make the AC6 test fail to
+compile with an unset `CARGO_BIN_EXE_rslbp`, which is the executable
+form of the Disagreement 4 argument. **No performance figure of any kind is
+claimed in this decision**, and none should be inferred from it; measuring build
+or package wall-clock cost is P03's, against the real template.

@@ -1,0 +1,13 @@
+R70 registry figures — point-in-time snapshot, NOT reproducible.
+retrieved: 2026-09-18T22:56:49Z
+
+problem_details recent_downloads(90d) = 38904
+problem_details downloads(all-time)  = 142723
+problem_details 0.10.0 license (recorded, not gated) = MIT OR Apache-2.0
+problemdetails newest non-yanked: 0.7.0 2026-04-23T10:59:26.949163Z rust_version=1.85.1 license=MIT
+http-api-problem newest non-yanked: 0.60.0 2025-01-06T18:20:07.392199Z rust_version=None license=Apache-2.0/MIT
+http-problem newest non-yanked: 0.3.0 2023-05-11T21:48:06.083330Z rust_version=None license=MIT OR Apache-2.0
+rfc7807 newest non-yanked: 0.0.1 2026-05-06T09:22:15.128136Z rust_version=None license=MIT
+date = "2026-09-03"
+problem-details-rs stars=10 pushed_at=2026-09-12T12:31:02Z subscribers=1
+problem-details-rs open issues (search/issues total_count) = 1

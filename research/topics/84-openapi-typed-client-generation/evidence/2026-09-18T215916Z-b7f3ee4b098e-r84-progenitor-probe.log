@@ -1,0 +1,41 @@
+R84 progenitor probe (revision 1)
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+fixture: fixtures/api-3.1.json, sha256 d0837b989cc0aa4e3a9fbfb69842da0b68f494cbde25251d21243fe7b4676f51
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+rustfmt: rustfmt 1.9.0
+
+PASS  P01 cargo install's record names cargo-progenitor 0.15.0 from crates.io
+      Error: components.schemas: invalid type: sequence, expected a string at line 46 column 16
+PASS  P02 the real 3.1.0 fixture is refused (exit 1) while parsing: a 3.1 type array is 'invalid type: sequence, expected a string'
+      -----------------------------------------------------
+       TYPE SPACE
+      -----------------------------------------------------
+         0  struct Health
+         1  enum ProjectState
+         2  struct Visibility
+         3  struct Project
+         4  struct ProjectPage
+         5  struct Problem
+         6  string
+         7  enum VisibilitySubtype0
+         8  option 8
+         9  option 7
+        10  vec 4
+        11  i64
+        12  ::std::num::NonZeroU64
+      -----------------------------------------------------
+      
+      
+      thread main (<id>) panicked at <registry>/cargo-progenitor-0.15.0/src/main.rs:95:68:
+      called `Result::unwrap()` on an `Err` value: Unstable("wrap_comments, normalize_doc_attributes")
+      note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+PASS  P03 on a 3.0.3 document the stable toolchain panics (exit 101) on Unstable("wrap_comments, normalize_doc_attributes")
+      gen fail: UnexpectedFormat("invalid version: 3.1.0")
+      Error: generation experienced errors
+PASS  P02b the same document with 3.0 syntax but labelled 3.1.0 is refused (exit 1) with UnexpectedFormat("invalid version: 3.1.0")
+PASS  P04 the panic leaves Cargo.toml and 0 Rust source files
+      gen fail: UnexpectedFormat("path /healthz is missing operation ID")
+      Error: generation experienced errors
+PASS  P05 without operationIds a 3.0.3 document is refused (exit 1) with 'is missing operation ID'
+
+PASS=6 FAIL=0 SKIP=0 TOTAL=6

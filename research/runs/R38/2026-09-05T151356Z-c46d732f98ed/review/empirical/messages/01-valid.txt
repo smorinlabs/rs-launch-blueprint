@@ -1,0 +1,6 @@
+feat(cli): add --json output flag
+
+Emit machine-readable output when --json is passed so that scripts
+can consume the result without parsing the human-readable table.
+
+Refs: #12

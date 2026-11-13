@@ -1,0 +1,178 @@
+# R49 round-4 provenance and enumeration audit
+## untruncated raw census
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:31:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:53:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:151:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:173:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:861:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:883:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:981:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:1003:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:1330:Finally, if implementers find that users strongly desire a short CLI name that differs from the crate name, and that this improves usability, a re-verify may recommend a deliberate distribution-name-vs-binary-name divergence. This would entail documenting the mapping and any implications for `cargo install` and `cargo-binstall` behavior, and possibly introducing aliases at the shell level.
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:1387:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:1409:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:1507:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md:1529:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa-perplexity.normalized.md:253:Finally, if implementers find that users strongly desire a short CLI name that differs from the crate name, and that this improves usability, a re-verify may recommend a deliberate distribution-name-vs-binary-name divergence. This would entail documenting the mapping and any implications for `cargo install` and `cargo-binstall` behavior, and possibly introducing aliases at the shell level.
+raw/doxa.md:31:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa.md:53:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa.md:151:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa.md:173:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa.md:861:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa.md:883:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa.md:981:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa.md:1003:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa.md:1330:Finally, if implementers find that users strongly desire a short CLI name that differs from the crate name, and that this improves usability, a re-verify may recommend a deliberate distribution-name-vs-binary-name divergence. This would entail documenting the mapping and any implications for `cargo install` and `cargo-binstall` behavior, and possibly introducing aliases at the shell level.
+raw/doxa.md:1387:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa.md:1409:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa.md:1507:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa.md:1529:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa.normalized.md:943:Finally, if implementers find that users strongly desire a short CLI name that differs from the crate name, and that this improves usability, a re-verify may recommend a deliberate distribution-name-vs-binary-name divergence. This would entail documenting the mapping and any implications for `cargo install` and `cargo-binstall` behavior, and possibly introducing aliases at the shell level.
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:28:| Established industry standard (third-party, orchestrates *around* Cargo) | `cargo-dist` (the tool is now named **`dist`**), `cross`, `cargo-zigbuild`, `cargo-binstall` (via `[package.metadata.binstall]`), `cbindgen`, `maturin`, `wasm-pack`, the **`cargo-xtask` pattern** | Release-artifact fan-out, cross-compilation, alternate-ecosystem outputs. None of them replaces `[[bin]]`/`[lib]`; every one of them *reads* those declarations |
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:74:| `bytecodealliance/wasmtime` | 18616 stars; Bytecode Alliance flagship | package `wasmtime-cli`, `[lib] doctest = false`, `[[bin]] name = "wasmtime" path = "src/bin/wasmtime.rs" doc = false`, `default-run = "wasmtime"` — **names diverge**, plus `[package.metadata.binstall]` | `exclude = [...]` |
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:313:   `cargo-dist`, `cargo-binstall`, `cross`, `cargo-zigbuild`, `cbindgen`, `cargo-packager`
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353:- **`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license `GPL-3.0-only`
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:354:  (`GET https://crates.io/api/v1/crates/cargo-binstall/versions`, newest non-yanked 1.23.0,
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:358:  downloads, `GET https://crates.io/api/v1/crates/cargo-binstall`, 2026-09-10; 2864 stars,
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:360:  `[package.metadata.binstall]` table it reads is an artifact-distribution decision that
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:407:- **`[package.metadata.binstall]` as a de-facto standard.** Both `wasmtime` and `atuin` now carry it
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:486:   and, if R68 adopts `cargo-binstall`, a `bin-dir` template that must interpolate `{ bin }` rather
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:805:  `cargo-dist` (19922 / 175385), `cargo-binstall` (125820 / 3483662), `cross` (307766 / 6269217),
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:811:  `cargo-binstall` 1.23.0 2026-09-05T16:59:01Z GPL-3.0-only rv 1.79.0; `cross` 0.2.5
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:817:  2026-09-08T10:07:06Z; `cargo-bins/cargo-binstall` 2864 / false / 2026-09-10T01:22:53Z;
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:826:  `axodotdev/cargo-dist` 297; `cargo-bins/cargo-binstall` 93; `cross-rs/cross` 228;
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:852:  `cargo-binstall`, `cross`, `cargo-zigbuild`, `cbindgen`, `cargo-packager`.
+raw/opus.md:28:| Established industry standard (third-party, orchestrates *around* Cargo) | `cargo-dist` (the tool is now named **`dist`**), `cross`, `cargo-zigbuild`, `cargo-binstall` (via `[package.metadata.binstall]`), `cbindgen`, `maturin`, `wasm-pack`, the **`cargo-xtask` pattern** | Release-artifact fan-out, cross-compilation, alternate-ecosystem outputs. None of them replaces `[[bin]]`/`[lib]`; every one of them *reads* those declarations |
+raw/opus.md:74:| `bytecodealliance/wasmtime` | 18616 stars; Bytecode Alliance flagship | package `wasmtime-cli`, `[lib] doctest = false`, `[[bin]] name = "wasmtime" path = "src/bin/wasmtime.rs" doc = false`, `default-run = "wasmtime"` — **names diverge**, plus `[package.metadata.binstall]` | `exclude = [...]` |
+raw/opus.md:313:   `cargo-dist`, `cargo-binstall`, `cross`, `cargo-zigbuild`, `cbindgen`, `cargo-packager`
+raw/opus.md:353:- **`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license `GPL-3.0-only`
+raw/opus.md:354:  (`GET https://crates.io/api/v1/crates/cargo-binstall/versions`, newest non-yanked 1.23.0,
+raw/opus.md:358:  downloads, `GET https://crates.io/api/v1/crates/cargo-binstall`, 2026-09-10; 2864 stars,
+raw/opus.md:360:  `[package.metadata.binstall]` table it reads is an artifact-distribution decision that
+raw/opus.md:407:- **`[package.metadata.binstall]` as a de-facto standard.** Both `wasmtime` and `atuin` now carry it
+raw/opus.md:486:   and, if R68 adopts `cargo-binstall`, a `bin-dir` template that must interpolate `{ bin }` rather
+raw/opus.md:805:  `cargo-dist` (19922 / 175385), `cargo-binstall` (125820 / 3483662), `cross` (307766 / 6269217),
+raw/opus.md:811:  `cargo-binstall` 1.23.0 2026-09-05T16:59:01Z GPL-3.0-only rv 1.79.0; `cross` 0.2.5
+raw/opus.md:817:  2026-09-08T10:07:06Z; `cargo-bins/cargo-binstall` 2864 / false / 2026-09-10T01:22:53Z;
+raw/opus.md:826:  `axodotdev/cargo-dist` 297; `cargo-bins/cargo-binstall` 93; `cross-rs/cross` 228;
+raw/opus.md:852:  `cargo-binstall`, `cross`, `cargo-zigbuild`, `cbindgen`, `cargo-packager`.
+## raw census counts
+      56
+  13 raw/doxa-9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3.md
+   1 raw/doxa-perplexity.normalized.md
+  13 raw/doxa.md
+   1 raw/doxa.normalized.md
+  14 raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md
+  14 raw/opus.md
+## canonical Opus count
+      14
+## original truncated method count and terminal lines
+      30
+raw/doxa.md:1507:- Which release binary artifacts (beyond the single `.crate` file `cargo publish` produces) this template ships — crates.io-only vs. `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall` metadata; R68 (`release-binary-artifacts`) owns F214, this item's SUBSTITUTE parent's sibling row — this item decides the manifest-level build/entry-point declaration, not the distribution-artifact-type question.
+raw/doxa.md:1529:- LOW: Does this template need a distribution-name-vs-binary-name divergence at all (F219, py's `uvx --from py-launch-blueprint plbp` pattern) — should the crate name and the `[[bin]]` name match to avoid needing any `cargo install --bin`/`cargo binstall`-equivalent name-lookup flag, or is there a reason to diverge?
+raw/doxa.normalized.md:943:Finally, if implementers find that users strongly desire a short CLI name that differs from the crate name, and that this improves usability, a re-verify may recommend a deliberate distribution-name-vs-binary-name divergence. This would entail documenting the mapping and any implications for `cargo install` and `cargo-binstall` behavior, and possibly introducing aliases at the shell level.
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:28:| Established industry standard (third-party, orchestrates *around* Cargo) | `cargo-dist` (the tool is now named **`dist`**), `cross`, `cargo-zigbuild`, `cargo-binstall` (via `[package.metadata.binstall]`), `cbindgen`, `maturin`, `wasm-pack`, the **`cargo-xtask` pattern** | Release-artifact fan-out, cross-compilation, alternate-ecosystem outputs. None of them replaces `[[bin]]`/`[lib]`; every one of them *reads* those declarations |
+raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:74:| `bytecodealliance/wasmtime` | 18616 stars; Bytecode Alliance flagship | package `wasmtime-cli`, `[lib] doctest = false`, `[[bin]] name = "wasmtime" path = "src/bin/wasmtime.rs" doc = false`, `default-run = "wasmtime"` — **names diverge**, plus `[package.metadata.binstall]` | `exclude = [...]` |
+## canonical Opus licence and independent scope passages
+- **`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license `GPL-3.0-only`
+  (`GET https://crates.io/api/v1/crates/cargo-binstall/versions`, newest non-yanked 1.23.0,
+  2026-09-05T16:59:01Z, `license` field, retrieved 2026-09-10), which is not compatible with
+  `MIT OR Apache-2.0` for anything linked. It passes as a *separately invoked binary* that never
+  enters the dependency tree, and it is otherwise healthy (125820 90-day / 3483662 all-time
+  downloads, `GET https://crates.io/api/v1/crates/cargo-binstall`, 2026-09-10; 2864 stars,
+  `pushed_at` 2026-09-10T01:22:53Z, 93 open issues). It is excluded here regardless because the
+  `[package.metadata.binstall]` table it reads is an artifact-distribution decision that
+  **R68 owns (F214)**, explicitly out of scope for this item. Recorded so R68 does not have to
+  re-derive the license position.
+## DECISION line-list enumerations, untruncated
+### pattern: licen
+8:`cargo-binstall` on a licence ground"*. **The finding is correct and the false
+9:claim was mine.** The canonical Opus raw report does state a licence ground:
+11:reads *"**`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license
+24:an adopter row, neither carrying licence content — which made a partial read look
+29:that way. The enumeration greps over `DECISION.md` (`licen`, `gate 1`, copyleft
+30:and licence identifiers, `binstall`) ran with no `head`; the only truncation
+39:both licence grounds that existed before the ruling — this decision's and the
+63:(Q4 as superseded by Q7.B) that licence compatibility is not checked for any tool
+67:build-orchestration crate — rested on a licence fact: the pick is dominant
+70:for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
+72:carried a *licence-as-gate* claim and all three are edited — the gate-1 row under
+85:`cargo-binstall` on a licence ground, so no engine position is disturbed and
+87:licence ground, at `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`,
+102:repository's own `license` field, its `LICENSE-MIT` + `LICENSE-APACHE` pair and
+104:dependencies and tools, not this repository's own declared licence.
+156:| 5 | Packaged-file scope | An explicit `[package] include` allow-list — `["/src", "/README.md", "/LICENSE-MIT", "/LICENSE-APACHE", "/CHANGELOG.md"]` — reviewed whenever a file that must ship is added. Not `exclude`; the two fields are mutually exclusive. `Cargo.toml` and any `license-file` are included by Cargo whatever `include` or `exclude` says. A minimized `Cargo.lock` is outside that selection too — `cargo package` adds it, generating one when none is on disk — but it is not unconditional: `cargo package --exclude-lockfile` omits it, and `cargo publish` has no such flag. Stated in full in `## Empirical check`, check L. | **F218** |
+260:figure was weighed.** (1) *License* — `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`.
+264:recommendation adds no dependency, so nothing enters the tree's license set at
+294:no licence ground is carried forward. **Two licence grounds existed before the
+308:forward. Its registry `license` value is still recorded in check 6 as measured
+374:`/README.md`, the two license files, `/CHANGELOG.md`) do not. **Confidence on
+437:  `README.md` and the two license files, **and** prints no path under `.github/`,
+464:- owns build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rs-launch-blueprint, matching the package name, so cargo install rs-launch-blueprint installs the command rs-launch-blueprint and integration tests resolve it through CARGO_BIN_EXE_rs-launch-blueprint; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
+468:- assumes license = MIT OR Apache-2.0
+488:is what is fixed. `license` becomes the `[package] license` field and, through
+490:root `LICENSE-MIT` + `LICENSE-APACHE` pair that the `include` allow-list names.
+559:following files are always included"*, that `Cargo.toml` and any `license-file`
+723:**Check 6 — registry, advisory and license figures, re-measured this run**
+726:`license` and `rust_version`; `https://rustsec.org/packages/<name>.html` for
+729:| crate | 90-day | all-time | newest non-yanked | created_at | license | rust_version | RustSec |
+741:`cargo-make`'s `rust_version` is absent. The `license` column is retained because
+744:ruling (Q7.B), licence compatibility is not a fitness criterion for any
+794:- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10. Excluded `cargo-binstall` on **two** grounds: fitness gate 1 at `:353-356` (licence `GPL-3.0-only`, *"not compatible with `MIT OR Apache-2.0` for anything linked"*) and, independently, scope at `:359-362` (*"excluded here regardless"*, the `[package.metadata.binstall]` table being R68's F214). Under the owner's 2026-09-12 ruling (Q7.B) the gate-1 ground is void and is not carried forward; the scope ground is the one this decision adopts.
+### pattern: gate 1
+11:reads *"**`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license
+29:that way. The enumeration greps over `DECISION.md` (`licen`, `gate 1`, copyleft
+48:Fitness gate 1 stays `inapplicable` under the owner's 2026-09-12 ruling (Q7.B);
+64:or dependency this project uses, which strikes fitness gate 1 from every item's
+70:for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
+75:check 6's table. Gate 1 is recorded as `inapplicable` with the ruling as its
+293:`## Out of scope`). Gate 1 is `inapplicable` to it for the reason given above, so
+297:decision's own: revisions 1 and 2 wrote *"fails gate 1 as a dependency"* with the
+794:- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10. Excluded `cargo-binstall` on **two** grounds: fitness gate 1 at `:353-356` (licence `GPL-3.0-only`, *"not compatible with `MIT OR Apache-2.0` for anything linked"*) and, independently, scope at `:359-362` (*"excluded here regardless"*, the `[package.metadata.binstall]` table being R68's F214). Under the owner's 2026-09-12 ruling (Q7.B) the gate-1 ground is void and is not carried forward; the scope ground is the one this decision adopts.
+### pattern: copyleft
+29:that way. The enumeration greps over `DECISION.md` (`licen`, `gate 1`, copyleft
+70:for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
+### pattern: GPL-3.0-only
+12:`GPL-3.0-only` … which is not compatible with `MIT OR Apache-2.0` for anything
+92:only other changes: the title's revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell in
+298:registry value `GPL-3.0-only` immediately beside the clause *"out of scope
+733:| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | GPL-3.0-only | 1.79.0 | HTTP 404 |
+745:dependency or tool. `cargo-binstall`'s `GPL-3.0-only` value therefore excludes
+794:- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10. Excluded `cargo-binstall` on **two** grounds: fitness gate 1 at `:353-356` (licence `GPL-3.0-only`, *"not compatible with `MIT OR Apache-2.0` for anything linked"*) and, independently, scope at `:359-362` (*"excluded here regardless"*, the `[package.metadata.binstall]` table being R68's F214). Under the owner's 2026-09-12 ruling (Q7.B) the gate-1 ground is void and is not carried forward; the scope ground is the one this decision adopts.
+### pattern: binstall
+8:`cargo-binstall` on a licence ground"*. **The finding is correct and the false
+11:reads *"**`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license
+15:`[package.metadata.binstall]` table it reads is an artifact-distribution decision
+19:behind that claim was `grep -rn 'binstall' raw/*.md | head -30`. The glob was
+30:and licence identifiers, `binstall`) ran with no `head`; the only truncation
+38:`cargo-binstall` exclusion under `### Principles and implementation` now records
+41:`opus` now records that report's `cargo-binstall` exclusion on both of its
+50:reinstatement of that gate. `cargo-binstall` remains excluded, on the scope
+70:for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
+73:`### Principles and implementation`, the `cargo-binstall` exclusion in the same
+78:rather than omitted. The `cargo-binstall` exclusion **survives intact on its
+82:`[package.metadata.binstall]` table that crate reads belongs to R68 (F214), which
+85:`cargo-binstall` on a licence ground, so no engine position is disturbed and
+240:`cross`, `cargo-zigbuild`, `cargo-binstall`, `cbindgen`, `maturin`, `wasm-pack`,
+288:CI-tested floor. `cargo-binstall` is **excluded by scope, and by scope alone**:
+289:the `[package.metadata.binstall]` table it reads is R68's (F214), which this
+291:`cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall`
+304:excluded here regardless because the `[package.metadata.binstall]` table it reads
+398:`cargo-binstall` metadata a divergent pair additionally requires the `bin-dir`
+733:| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | GPL-3.0-only | 1.79.0 | HTTP 404 |
+745:dependency or tool. `cargo-binstall`'s `GPL-3.0-only` value therefore excludes
+794:- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10. Excluded `cargo-binstall` on **two** grounds: fitness gate 1 at `:353-356` (licence `GPL-3.0-only`, *"not compatible with `MIT OR Apache-2.0` for anything linked"*) and, independently, scope at `:359-362` (*"excluded here regardless"*, the `[package.metadata.binstall]` table being R68's F214). Under the owner's 2026-09-12 ruling (Q7.B) the gate-1 ground is void and is not carried forward; the scope ground is the one this decision adopts.
+## revision-3 enumeration verification against revision 2 (untruncated)
+grep -ni 'licen' -> 53 157 158 248 311 338 342 362 364 433 597 600 603 615
+ASSERT ok   licence line list matches the recorded full list
+grep -ni 'gate 1' -> 181
+ASSERT ok   gate-1 line list matches the recorded full list
+grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive' -> 8 29 30 32 36 37 61 90 94 110 132 150 162 167 182 191 197 204 231 243 264 273 278 290 297 301 338 354 363 413 456 516 607 610 616 652 665 680 716 730
+grep -n 'binstall' -> 137 181 183 272 607 615
+ASSERT ok   binstall line list matches the recorded full list
+## revision-4 repair coverage against revision-3 source
+## failed enumeration claim
+recorded list: 182 363 607 610 616
+untruncated grep output: 8 29 30 32 36 37 61 90 94 110 132 150 162 167 182 191 197 204 231 243 264 273 278 290 297 301 338 354 363 413 456 516 607 610 616 652 665 680 716 730
+ASSERT FAIL recorded licence-identifier line list is incomplete
+The bare alternative `mpl` matches ordinary words such as implementation and template; those matches were omitted from the claimed full list.

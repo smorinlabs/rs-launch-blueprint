@@ -1,0 +1,91 @@
+R84 source-claims check (revision 4)
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+PASS  A01 the prompt's couplings declare an empty owns line
+PASS  A02 the prompt's couplings consume exactly R69: web-extra-surface
+PASS  A03 the prompt pins the three engines muse, opus, doxa
+      msrv-policy identical 118
+      rust-edition identical 4
+      target-os-matrix identical 27
+      license identical 17
+      web-extra-surface identical 2638
+PASS  A04 all 5 values in inputs/parameters.json are byte-identical to the live docs/port/PARAMETERS.md registry
+PASS  A05 ledger row F335 is 'py-only | DIVERGENT | R84'
+PASS  A06 R42 (published) routes crates.io dev tools through one install-tool recipe: cargo binstall --locked --no-confirm <name>@<version>
+PASS  A07 R42's standing rule: prefer a crates.io-published tool; a release-only tool must justify itself
+PASS  A08 R49's live build-tool-output-shape value carries 'no build.rs and no build-orchestration crate'
+PASS  A09 R02 (accepted, unpublished) promotes a fifth member only on a second bounded context, production adapter or installable binary
+PASS  A10 R05 (accepted, unpublished) criterion 1: the default build carries no async runtime (cargo tree -i tokio -e normal finds nothing)
+PASS  A11 owner reference line 90 ends 'Run generation in CI and `git diff --exit-code` so drift fails the build.'
+PASS  A12 owner reference line 426 gates CI on 'OpenAPI/TS-client drift'
+PASS  A13 the ledger allocates OV-11 to R84 (owner decision 2026-09-21, Q5.A/Q6.A entry)
+      DECISION.md files outside research/runs/R84/ declaring OVERRIDE (OV-11): none
+PASS  A14 no other decision declares OVERRIDE (OV-11) (census over DECISION.md files under research/topics and research/runs)
+PASS  B01 py Justfile:311 at the pin is '@client-python out="clients/python":'
+PASS  B02 py Justfile:312 is 'uvx openapi-python-client generate --path docs/api/openapi.json --output-path {{out}} --overwrite'
+PASS  B03 the recipe sits in [group('build')] (Justfile:310)
+PASS  B04 the pinned tree contains 0 paths under clients/ — the generated client is not committed
+PASS  B05 the pinned .gitignore mentions neither 'client' nor 'openapi' — the output is not ignored either
+      EXAMPLEWEB.md:138:4. Generate a typed client with `just client-python` — never hand-write one.
+      Justfile:311:@client-python out="clients/python":
+      Justfile:312:    uvx openapi-python-client generate --path docs/api/openapi.json --output-path {{out}} --overwrite
+      docs/design/0002-web-api-conventions.md:86:  `just client-python` (openapi-python-client) from the committed snapshot.
+      docs/source/web/index.md:94:4. Generate a typed client with `just client-python` — never hand-write one.
+PASS  B06 exactly 5 lines at the pin name the recipe or tool, and none is under .github/ — no CI job runs it
+PASS  B07 py's committed snapshot declares openapi 3.1.0
+PASS  B08 its operationIds are the curated tag-function ids ops-healthz ops-readyz projects-list_projects projects-get_project
+PASS  B09 it carries no info.license object (so a generator's licence default would apply)
+PASS  B10 the Muse raw's 'Justfile:322' is not the pin's line (the recipe is at :312 there); it matches a later py commit such as aa5d7015
+PASS  C01 rest-api-standard.md at 0850d43e45d919ef5e37f7174c4212b46013c49f is blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+PASS  C02 :742-743 R4.1 'Every API MUST publish an OpenAPI document as the contract source of truth'
+PASS  C03 :743-744 R4.1 '— version 3.1, or 3.2 only where the team's full toolchain (parser, linter, generator, docs renderer) is verified'
+PASS  C04 :826-827 R4.9 enum additions are non-breaking; the client obligation to tolerate unknown values is R12.4
+PASS  C05 :828 R4.9's exception: 'genuinely closed enumerations, documented as closed'
+PASS  C06 :1790-1791 R12.3 'Clients MUST set explicit request timeouts'
+PASS  C07 :1799-1800 R12.4 'Clients MUST tolerate unknown response fields and unknown enum values'
+PASS  C08 :1815-1816 R12.6 'Clients SHOULD send `Accept: application/problem+json` explicitly'
+PASS  C09 :1819 R12.7 'Clients MUST NOT rely on every error being a problem document'
+PASS  C10 :1777 R12.1 retries only documented-retryable failures; :1784 R12.2 honour Retry-After
+PASS  C11 :272-273 R1.7 'Every deviation from a **SHOULD** MUST be recorded in the API's conformance note with its reason'
+      sha256(progenitor-impl-0.15.0.crate) = 83aef4388cf237992f3f55aeead8417f45e9305fdbb77e97a551e8166629c692
+PASS  D01 progenitor-impl 0.15.0 src/lib.rs:702 declares fn validate_openapi_spec_version
+PASS  D02 :703-704 admits a document only when its version starts_with("3.0.") (comment: 'only support OAS 3.0.x')
+PASS  D03 :798 progenitor's own unit test expects '... invalid version: 3.1.0'
+PASS  D04 :737 a missing operationId is an error: 'path {} is missing operation ID'
+PASS  D05 cargo-progenitor 0.15.0 src/main.rs:91-92 sets the nightly-only rustfmt options normalize_doc_attributes and wrap_comments
+PASS  D06 :95 unwraps rustfmt's result, the panic site observed by r84-progenitor-probe.sh P03
+PASS  D07 utoipa 5.5.0 OpenApiVersion has exactly one variant (counted: 1)
+PASS  D08 :385-387 that variant is Version31, #[serde(rename = "3.1.0")], #[default] — utoipa emits only 3.1.0
+PASS  D16 utoipa 6.0.0 (published 2026-09-22) still defaults to 3.1.0: openapi.rs:484-486 rename "3.1.0", #[default], Version31
+PASS  D17 utoipa 6.0.0 adds an opt-in Version32 (openapi.rs:487-489): 'Opt-in until OpenAPI 3.2 tooling support is widespread'
+      sha256(openapi-to-rust-0.17.0.crate) = ab34bc7990a6eb71becfdd5bfc9797f0e5c22839082b654e775f1ca8e1e252f1
+PASS  D09 openapi-to-rust 0.17.0 was published from gpu-cli/openapi-to-rust commit a968c13d (.cargo_vcs_info.json)
+PASS  D10 its manifest: edition 2024, rust-version 1.88.0, license MIT, default features ["cli"]
+PASS  D11 src/config.rs:174-178 documents [extensible_enums]: force a closed string enum to carry a Custom(String) fallback
+PASS  D12 src/analysis.rs:7428-7430 an anyOf of enum values plus an open string becomes an ExtensibleEnum with no configuration
+      src/client_generator.rs:70://! timeout_seconds = 30
+      src/config.rs:29://! timeout_seconds = 30
+      src/config.rs:348:    pub timeout_seconds: Option<u64>,
+      src/config.rs:740:            if let Some(timeout) = http.timeout_seconds
+      src/config.rs:744:                    "http_client.timeout_seconds: timeout_seconds must be between 1 and 3600"
+      src/config.rs:81://! timeout_seconds = 30
+      src/config.rs:842:            timeout_seconds: http.timeout_seconds,
+      src/config.rs:994:timeout_seconds = 30
+      src/generator.rs:241:                    timeout_seconds: None,
+      src/http_config.rs:14:    pub timeout_seconds: Option<u64>,
+PASS  D13 timeout_seconds is parsed and validated (config.rs) but client_generator.rs names it only in a //! doc line — it never reaches generated code
+PASS  D14 src/client_generator.rs:1436-1446 skips a caller's 'accept' header and sets Accept to the success media type
+      src/schema_roundtrip.rs:794:        "source schema invalid at #/components/schemas/{}{}: unsafe legacy recursive scope: {}",
+      src/schema_roundtrip.rs:2185:            assert!(reason.contains("unsafe legacy recursive scope"), "{reason}");
+PASS  D15 the tool's own sources (snapshots excluded) contain the token 'unsafe' only in 2 string literals, no unsafe block
+PASS  E01 the rust generator's Cargo.mustache hard-codes edition = "2021" and declares no rust-version
+PASS  E02 without an info.license object the generated manifest says license = "Unlicense"
+PASS  E03 no 'time' crate is ever declared by the template (Gemini's RUSTSEC-2020-0071 / time 0.1 exclusion has no ground here)
+PASS  E04 string enums derive a closed Deserialize: no #[serde(other)], Custom or Unknown arm in model.mustache (counted: 0)
+      rust generator options: avoidBoxedModels bestFitInt enumNameSuffix hideGenerationTimestamp library mockall packageName packageVersion preferUnsignedInt reqwestDefaultFeatures supportAsync supportMiddleware supportMultipleResponses supportTokenSource topLevelApiClient useBonBuilder useChrono useSerdePathToError useSingleRequestParameter 
+PASS  E05 none of the rust generator's documented options concerns unknown enum values
+PASS  E06 the generator's own metadata says 'generator stability | STABLE' yet its help text says '(beta)'
+PASS  E07 CodegenConstants.java carries the 'OpenAPI 3.1 support is still in beta' warning Opus observed at generation
+PASS  E08 the reqwest Configuration exposes 'pub client' — a caller can inject a client carrying a timeout (R12.3)
+
+PASS=60 FAIL=0 SKIP=0 TOTAL=60

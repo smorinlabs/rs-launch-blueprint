@@ -1,0 +1,23 @@
+--- review/evidence/r60-snapshot-provenance-r4.log	2026-09-14 16:20:25
++++ review/evidence/audit-cli-parsing-framework-r6-provenance-archive-root.log	2026-09-15 19:31:17
+@@ -34,16 +34,13 @@
+ anonymous fetch of src/commands/projects.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+ PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+ UNVERIFIABLE-HERE  ts-cb1cbcb2-src-commands-projects.ts.txt — private origin; the committed snapshot is the evidence of record
+-d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  r60-decision-r1.md (from git history)
+-PASS  C1 r60-decision-r1.md equals the git object MANIFEST.txt names
+-18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c  r60-decision-r2.md (from git history)
+-PASS  C1 r60-decision-r2.md equals the git object MANIFEST.txt names
+-14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100  r60-decision-r3.md (from git history)
+-PASS  C1 r60-decision-r3.md equals the git object MANIFEST.txt names
++UNVERIFIABLE-HERE  r60-decision-r1.md — this checkout carries no git history; the committed snapshot is the evidence of record
++UNVERIFIABLE-HERE  r60-decision-r2.md — this checkout carries no git history; the committed snapshot is the evidence of record
++UNVERIFIABLE-HERE  r60-decision-r3.md — this checkout carries no git history; the committed snapshot is the evidence of record
+ === C2. the pin is still the newest published commit for the standard ===
+ newest published commit touching cli-design-standard.md: fb30a591c267a7ec1130ba4cda679eaee494b9d7
+ PASS  C2a the newest commit for that path is still the pinned one
+ 
+-CHECKS RUN: 17   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2
++CHECKS RUN: 14   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 5
+ NOTE: UNVERIFIABLE-HERE entries have no public remote by design; each one's privacy was itself checked above.
+ RESULT: no snapshot contradicts its recorded source

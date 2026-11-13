@@ -1,0 +1,42 @@
+{
+  "source": "https://crates.io/api/v1/crates/axum-extra/0.12.6",
+  "source_crate": "https://crates.io/api/v1/crates/axum-extra",
+  "source_deps": "https://crates.io/api/v1/crates/axum-extra/0.12.6/dependencies",
+  "description": "Extra utilities for axum",
+  "max_stable_version": "0.12.6",
+  "newest_version": "0.12.6",
+  "num": "0.12.6",
+  "created_at": "2026-04-14T07:55:40.731964Z",
+  "yanked": false,
+  "license": "MIT",
+  "rust_version": "1.80",
+  "default_feature": [
+    "tracing"
+  ],
+  "features_the_reference_enables": {
+    "cookie": [
+      "dep:cookie"
+    ],
+    "cookie-private": [
+      "cookie",
+      "cookie?/private"
+    ],
+    "typed-header": [
+      "dep:headers"
+    ]
+  },
+  "requirements": {
+    "axum": {
+      "req": "^0.8.9",
+      "optional": true
+    },
+    "cookie": {
+      "req": "^0.18.0",
+      "optional": true
+    },
+    "headers": {
+      "req": "^0.4.0",
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "msrv-policy",
+    "value": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "rust-edition",
+    "value": "2024"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "target-os-matrix",
+    "value": "ubuntu-latest, macos-latest"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "license",
+    "value": "MIT OR Apache-2.0"
+  },
+  {
+    "kind": "researched",
+    "owner": "R38",
+    "param": "commit-message-convention",
+    "value": "type-enum: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test; header-max-length: 50 (the whole `type(scope): description` line); body-max-line-length: 72; footer-max-line-length: 72; length-semantics: soft-line (the header and every body/footer line are measured up to their last space, so a bare URL or any other un-wrappable final token never violates a cap); bot-exemption: for pull requests opened by dependabot, CI relaxes only the width rules (grammar and type enum stay enforced)"
+  }
+]

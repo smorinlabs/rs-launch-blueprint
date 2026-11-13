@@ -1,0 +1,50 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T01:24:41Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T01:24:41Z",
+      "state": "ready"
+    },
+    {
+      "at": "2026-09-17T01:26:40Z",
+      "publication": {
+        "acceptance_sha256": "5b9663c0c3ee2a64a8d4debe69b3a7b604fffea812ab9d24537ea677594f568c",
+        "decision_sha256": "4e0ae20af2cf39baeb60bc66e2890a54f35b6aacb38a0e8aeb75ca0f2ce08012",
+        "transaction": "f9ac318734704fd4a01990a7bd303e70"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "722a64fb7afb41552fab3ee8a8455bb0d9e2a6c73fd3a1ac3819f4b2e797eb07",
+    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+  },
+  "item": "R33",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md",
+  "publication": {
+    "acceptance_sha256": "5b9663c0c3ee2a64a8d4debe69b3a7b604fffea812ab9d24537ea677594f568c",
+    "decision_sha256": "4e0ae20af2cf39baeb60bc66e2890a54f35b6aacb38a0e8aeb75ca0f2ce08012",
+    "transaction": "f9ac318734704fd4a01990a7bd303e70"
+  },
+  "remaining_budget": "USD 0.00 (carried-forward republication; no provider submission)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-17T012441Z-a1424f847040",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "focused",
+  "updated_at": "2026-09-17T01:26:40Z"
+}

@@ -1,0 +1,78 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-26T19:02:08Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-26T19:02:08Z",
+      "state": "ready"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-10-01T05:43:55Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+          "parameters_semantic": "0e021d582d2d1caba625e127e2a494999611bf9e496a4f749b8ec901c473df9d",
+          "parameters_semantic_file": "3b55704771de5afaa8facc9a65f85ea37308ee7bc4558c114e8363c09ef32d4c",
+          "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+          "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+          "prerequisites": "558597411e1378b9c8a2f05ad2b855ab53a1d5fc9bf6e3afb5e187d289e33264",
+          "prompt": "b2e4cc0cfdda197b899f376fa8810e23a316ae8e5a677dffdfcdaca64edb9a75",
+          "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus",
+          "doxa"
+        ],
+        "previous_tier": "deep",
+        "reason": "Q5.A bulk substitution (owner 2026-09-21); migrate run to current muse-era policy per owner 1.A",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "ready"
+    },
+    {
+      "at": "2026-10-01T05:51:49Z",
+      "publication": {
+        "acceptance_sha256": "ec8f54d915973091d4bbdb1634be7f10f73799d696ae94bb4dda352c5d4d1dcd",
+        "decision_sha256": "256ac65e50e69f8f6a09f7ae62fb8f4e7ac71bac46f494da5aa88c15ef01ad0b",
+        "transaction": "484b7a9ff51440a49e861321be639e81"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "0b1fdc5f3bc2ffbf8f5d6eae74b3c46629fa1b69666d002a9560dd0a2a6e5bd6",
+    "parameters_semantic": "0e021d582d2d1caba625e127e2a494999611bf9e496a4f749b8ec901c473df9d",
+    "parameters_semantic_file": "3b55704771de5afaa8facc9a65f85ea37308ee7bc4558c114e8363c09ef32d4c",
+    "policy": "988a774d75b00455052cae5582b82b945177acdbe18b14030dfb17cff333e210",
+    "policy_item": "2e5cc5b0da04a866a7d4888d0070674dbe08eb74d464c36f9c929e2b842b9a92",
+    "prerequisites": "558597411e1378b9c8a2f05ad2b855ab53a1d5fc9bf6e3afb5e187d289e33264",
+    "prompt": "faa65b0ff197574abf3333da68ef308ed8e21e22f47639a58db76d46dc291564",
+    "registry": "855dd35531a7aa9e5b7284360d90d99af18a602365b14f0625c4bbb774834ea3"
+  },
+  "item": "R32",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md",
+  "publication": {
+    "acceptance_sha256": "ec8f54d915973091d4bbdb1634be7f10f73799d696ae94bb4dda352c5d4d1dcd",
+    "decision_sha256": "256ac65e50e69f8f6a09f7ae62fb8f4e7ac71bac46f494da5aa88c15ef01ad0b",
+    "transaction": "484b7a9ff51440a49e861321be639e81"
+  },
+  "remaining_budget": "USD 0.00 at prepare (Opus leg unpaid; Codex leg deferred under W1-CODEX3; Doxa leg pending owner authorisation W2-DOXA)",
+  "required_engines": [
+    "muse",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-26T190208Z-55160c36e3d0",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "deep",
+  "updated_at": "2026-10-01T05:51:49Z"
+}

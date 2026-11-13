@@ -1,0 +1,44 @@
+== R05 sync-async-execution-model — revision 3 evidence checks ==
+repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r05r3-archive
+run directory:   /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r05r3-archive/research/runs/R05/2026-09-17T033527Z-bfacc9e801a5
+toolchain:       rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo:           cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host:            Darwin 25.4.0 arm64
+retrieved-on:    2026-09-18 (UTC; one of the two lines that advance on rerun)
+grep binary:     /usr/bin/grep
+
+SKIP T00 — no .git entry (git archive extraction); content checks T01-T05 and T07 still run
+PASS T01 — R69 revision 10's run DECISION.md matches the owner-bound digest
+     file: research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md
+     sha256 = d34ab6e8339b6f416a510d070ee54daca38a9086a901a6bfbb9df0517f7fce0a (owner acceptance W0-R69c, 2026-09-18)
+PASS T02 — R69 revision 10's feature is web = ["dep:rs-launch-blueprint-web"], declared on the root package
+     the current decision ends at the '## Supersedes' heading on line 2685; it carries exactly 1 '- owns web-extra-surface' line, at line 1791, and the superseded section carries 1
+     /usr/bin/grep -c matches inside the current owned line: member-naming feature=1, 'declared on the root package'=1
+PASS T03 — axum 0.8.9 and tokio 1.53.1 are declared non-optionally in crates/web/Cargo.toml, at the same versions and the same six tokio features
+     /usr/bin/grep -c matches inside the owned line: non-optional axum=1, non-optional tokio with the six features=1
+     consequence: R05's criterion 2 (a dep: clause requires an optional dependency) no longer applies to axum or tokio, because the feature no longer names them
+PASS T04 — the axum handlers live under crates/web/src/ and the web tests under crates/web/tests/, with the whole member optional instead of a file-level cfg gate
+     /usr/bin/grep -c matches inside the owned line: crates/web/src/ module clause=1, crates/web/tests/ clause=1
+     consequence: R05's spawn_blocking bridge lives inside the optional member, which is where the handlers are
+PASS T05 — negative control: revision 9's web = ["dep:axum", "dep:tokio"] is absent from revision 10's current owned line, and still present both in that file's superseded section and in the registry row
+     /usr/bin/grep -c counts for the revision-9 form: current owned line=0 (want 0), superseded section=1 (want 1), registry row=1 (want 1)
+     /usr/bin/grep -c count for the revision-10 form in the registry row=0 (want 0)
+     the control discriminates in two directions: a search that matched everything would find the revision-9 form in the current line, and a search that matched nothing would miss it in the two places it really is
+     consequence: the registry has NOT yet been rewritten, which is exactly what R05 revision 3's new re-verify trigger keys on - R05 check C02's registry read is re-run when R69 republishes
+PASS T06 — under R69 revision 10's shape the root package's default tree still carries no tokio, and --features web still pulls tokio v1.53.1
+     cargo metadata on the revision-10 manifest pair exit=0 (the dep:<member> clause is legal against an optional PATH member, and the member's own non-optional axum/tokio are not the feature's business)
+     cargo tree counts (unique normal deps, root included): feature-off=38, feature-on=72
+     cargo tree -i tokio: feature-off exit=101 (not found), feature-on exit=0 with /usr/bin/grep matches for 'tokio v1.53.1'=1
+     the member crate rs-launch-blueprint-web appears in the feature-on tree 1 time(s) and is the whole of the +1 against R05 check C10's feature-on 71
+     the finding: R05's conclusion is unchanged by R69 revision 10 - the default tree is 38 crates with no runtime, exactly as C10 measured against revision 9, and criterion 1's cargo tree -i tokio -e normal on the root package remains the operative check
+     r05-check.sh sha256=e036bb2833c4263cd680627754f5ef792c87d82dea94e0e3e401ead1d1779459
+     r05-check.log sha256=610bf43d97c41039c6929f5daf1702f23618af5f3df217a50dedb9e85593df1e
+     r05-check-archive-r2.log sha256=c961172b3cd6e657462acf93d43913ab7dc97f903dd777c5a0c5e5f541ed6da5
+     p_scen_sync.Cargo.lock sha256=abcfd78e46fd7f2ff89a7bb3d43d4d62510a3aed9cf098c72ed82eee991850a1
+     p_scen_async.Cargo.lock sha256=4be720643bfcf535430f70f8e652eda51d746dcd7bd62bb86cc13d4892efcef9
+     p_scen_async_defaults.Cargo.lock sha256=48d4aa737bdafbc28bb606a09849c32265381bb0c0db4b38263210ee8729961b
+PASS T07 — the six revision-1 and revision-2 evidence artifacts are byte-identical to their committed digests
+
+== summary ==
+passed=7 failed=0 skipped=1
+RESULT: PASS

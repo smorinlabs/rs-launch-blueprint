@@ -1,0 +1,715 @@
+# typed: strict
+# frozen_string_literal: true
+
+require "toml-rb"
+require "open3"
+require "dependabot/shared_helpers"
+require "dependabot/cargo/helpers"
+require "dependabot/cargo/update_checker"
+require "dependabot/cargo/file_parser"
+require "dependabot/cargo/version"
+require "dependabot/errors"
+module Dependabot
+  module Cargo
+    class UpdateChecker
+      class VersionResolver # rubocop:disable Metrics/ClassLength
+        extend T::Sig
+
+        UNABLE_TO_UPDATE = /unable to update (?<url>.*?)$/i
+        BRANCH_NOT_FOUND_REGEX = /#{UNABLE_TO_UPDATE}.*to find branch `(?<branch>[^`]+)`/m
+        REVSPEC_PATTERN = /revspec '.*' not found/
+        OBJECT_PATTERN = /object not found - no match for id \(.*\)/
+        REVISION_PATTERN = /revision .* not found/
+        REF_NOT_FOUND_REGEX = /#{UNABLE_TO_UPDATE}.*(#{REVSPEC_PATTERN}|#{OBJECT_PATTERN}|#{REVISION_PATTERN})/m
+        GIT_REF_NOT_FOUND_REGEX = /Updating git repository `(?<url>[^`]*)`.*fatal: couldn't find remote ref/m
+
+        # Note that as of Rust 1.80, git error message handling in the `cargo update` command changed.
+        # This change causes the NOT_OUR_REF error to appear *before* the UNABLE_TO_UPDATE error.
+        # Issue filed in Cargo project: https://github.com/rust-lang/cargo/issues/14621
+        NOT_OUR_REF = /fatal: remote error: upload-pack: not our ref/
+        NOT_OUR_REF_REGEX = /#{NOT_OUR_REF}.*#{UNABLE_TO_UPDATE}/m
+
+        sig do
+          params(
+            dependency: Dependabot::Dependency,
+            credentials: T::Array[Dependabot::Credential],
+            original_dependency_files: T::Array[Dependabot::DependencyFile],
+            prepared_dependency_files: T::Array[Dependabot::DependencyFile]
+          ).void
+        end
+        def initialize(
+          dependency:,
+          credentials:,
+          original_dependency_files:,
+          prepared_dependency_files:
+        )
+          @dependency = dependency
+          @prepared_dependency_files = prepared_dependency_files
+          @original_dependency_files = original_dependency_files
+          @credentials = credentials
+
+          # Initialize instance variables with proper T.let declarations
+          @prepared_manifest_files = T.let(nil, T.nilable(T::Array[DependencyFile]))
+          @original_manifest_files = T.let(nil, T.nilable(T::Array[DependencyFile]))
+        end
+
+        sig { returns(T.nilable(T.any(String, Gem::Version))) }
+        def latest_resolvable_version
+          return @latest_resolvable_version if defined?(@latest_resolvable_version)
+
+          @latest_resolvable_version = T.let(fetch_latest_resolvable_version, T.nilable(T.any(String, Gem::Version)))
+        rescue Dependabot::SharedHelpers::HelperSubprocessFailed => e
+          raise Dependabot::DependencyFileNotResolvable, e.message
+        end
+
+        private
+
+        sig { returns(Dependency) }
+        attr_reader :dependency
+
+        sig { returns(T::Array[Credential]) }
+        attr_reader :credentials
+
+        sig { returns(T::Array[DependencyFile]) }
+        attr_reader :prepared_dependency_files
+
+        sig { returns(T::Array[DependencyFile]) }
+        attr_reader :original_dependency_files
+
+        sig { returns(T.nilable(T.any(String, Gem::Version))) }
+        def fetch_latest_resolvable_version
+          base_directory = T.must(prepared_dependency_files.first).directory
+          SharedHelpers.in_a_temporary_directory(base_directory) do
+            write_temporary_dependency_files
+
+            SharedHelpers.with_git_configured(credentials: credentials) do
+              run_cargo_update_command
+            end
+
+            updated_version = fetch_version_from_new_lockfile
+
+            return if updated_version.nil?
+            return updated_version if git_dependency?
+
+            version_class.new(updated_version)
+          end
+        rescue SharedHelpers::HelperSubprocessFailed => e
+          retry if better_specification_needed?(e)
+          handle_cargo_errors(e)
+          nil
+        end
+
+        sig { returns(T.nilable(T.any(String, Gem::Version))) }
+        def fetch_version_from_new_lockfile
+          check_rust_workspace_root unless File.exist?("Cargo.lock")
+          lockfile_content = File.read("Cargo.lock")
+          versions = TomlRB.parse(lockfile_content).fetch("package")
+                           .select { |p| p["name"] == dependency.name }
+
+          updated_version = updated_package(versions)
+
+          return unless updated_version
+
+          if git_dependency?
+            T.cast(updated_version.fetch("source"), String).split("#").last
+          else
+            T.cast(updated_version.fetch("version"), String)
+          end
+        end
+
+        sig do
+          params(
+            packages: T::Array[T::Hash[String, T.anything]]
+          ).returns(T.nilable(T::Hash[String, T.anything]))
+        end
+        def updated_package(packages)
+          if dependency.top_level?
+            packages.max_by do |package|
+              version_class.new(T.cast(package.fetch("version"), String))
+            end
+          else
+            updated_package_for_locked_identity(packages) ||
+              packages.min_by do |package|
+                version_class.new(T.cast(package.fetch("version"), String))
+              end
+          end
+        end
+
+        sig do
+          params(
+            updated_packages: T::Array[T::Hash[String, T.anything]]
+          ).returns(T.nilable(T::Hash[String, T.anything]))
+        end
+        def updated_package_for_locked_identity(updated_packages)
+          target = original_target_package
+          return unless target
+
+          source = T.cast(target["source"], T.nilable(String))
+          candidates = updated_package_candidates(updated_packages, target)
+
+          # Cargo can split a unified line across a version boundary, adding a
+          # new package while retaining the old one for dependents that still
+          # need it. A newly introduced identity is the update; the retained
+          # line only answers when nothing new appeared.
+          fresh = candidates.reject { |package| package_identity(package) == package_identity(target) }
+          return fresh.max_by { |package| version_class.new(T.cast(package.fetch("version"), String)) } if fresh.any?
+
+          candidates.find { |package| version_from_package(package) == dependency.version } ||
+            compatible_packages(updated_packages, source).max_by do |package|
+              version_class.new(T.cast(package.fetch("version"), String))
+            end
+        end
+
+        sig { returns(T.nilable(T::Hash[String, T.anything])) }
+        def original_target_package
+          return unless dependency.version
+
+          targets = original_packages_for_dependency.select do |package|
+            version_from_package(package) == dependency.version
+          end
+
+          package_source = T.cast(dependency.metadata[:cargo_package_source], T.nilable(String))
+          if package_source
+            targets.select! do |package|
+              T.cast(package["source"], T.nilable(String)) == package_source
+            end
+          end
+          targets.first if targets.one?
+        end
+
+        sig do
+          params(
+            updated_packages: T::Array[T::Hash[String, T.anything]],
+            target: T::Hash[String, T.anything]
+          ).returns(T::Array[T::Hash[String, T.anything]])
+        end
+        def updated_package_candidates(updated_packages, target)
+          target_source = T.cast(target["source"], T.nilable(String))
+          other_identities = original_packages_for_dependency
+                             .map { |package| package_identity(package) }
+          target_index = other_identities.index(package_identity(target))
+          other_identities.delete_at(target_index) if target_index
+
+          updated_packages
+            .select { |package| T.cast(package["source"], T.nilable(String)) == target_source }
+            .reject { |package| other_identities.include?(package_identity(package)) }
+        end
+
+        sig { returns(T::Array[T::Hash[String, T.anything]]) }
+        def original_packages_for_dependency
+          original_lockfile_packages.select do |package|
+            T.cast(package["name"], T.nilable(String)) == dependency.name
+          end
+        end
+
+        sig { returns(T::Array[T::Hash[String, T.anything]]) }
+        def original_lockfile_packages
+          original_lockfile = original_dependency_files.find { |file| file.name == "Cargo.lock" }
+          return [] unless original_lockfile
+
+          T.cast(
+            TomlRB.parse(T.must(original_lockfile.content)).fetch("package", []),
+            T::Array[T::Hash[String, T.anything]]
+          )
+        end
+
+        sig do
+          params(
+            packages: T::Array[T::Hash[String, T.anything]],
+            source: T.nilable(String)
+          ).returns(T::Array[T::Hash[String, T.anything]])
+        end
+        def compatible_packages(packages, source)
+          requirement = Requirement.new(T.must(dependency.version))
+          packages.select do |package|
+            T.cast(package["source"], T.nilable(String)) == source &&
+              requirement.satisfied_by?(version_class.new(T.cast(package.fetch("version"), String)))
+          end
+        end
+
+        sig { params(package: T::Hash[String, T.anything]).returns(T::Array[T.anything]) }
+        def package_identity(package)
+          [package["name"], package["version"], package["source"]]
+        end
+
+        sig { params(package: T::Hash[String, T.anything]).returns(String) }
+        def version_from_package(package)
+          source = T.cast(package["source"], T.nilable(String))
+          return T.must(source.split("#").last) if source&.start_with?("git+")
+
+          T.cast(package.fetch("version"), String)
+        end
+
+        # rubocop:disable Metrics/PerceivedComplexity
+        # rubocop:disable Metrics/CyclomaticComplexity
+        # rubocop:disable Metrics/AbcSize
+        sig { params(error: StandardError).returns(T::Boolean) }
+        def better_specification_needed?(error)
+          return false if @custom_specification
+          return false unless error.message.match?(/specification .* is ambigu/)
+
+          spec_options = error.message.gsub(/.*following:\n/m, "")
+                              .lines.map(&:strip)
+
+          ver = if git_dependency? && git_dependency_version
+                  git_dependency_version
+                else
+                  dependency.version
+                end
+
+          if spec_options.one? { |s| s.end_with?(T.must(ver)) }
+            @custom_specification = spec_options.find { |s| s.end_with?(T.must(ver)) }
+            return true
+          elsif spec_options.count { |s| s.end_with?(T.must(ver)) } > 1
+            spec_options.select! { |s| s.end_with?(T.must(ver)) }
+          end
+
+          if git_dependency? && git_source_url &&
+             spec_options.count { |s| s.include?(T.must(git_source_url)) } >= 1
+            spec_options.select! { |s| s.include?(T.must(git_source_url)) }
+          end
+
+          @custom_specification = T.let(spec_options.first, T.nilable(String))
+          true
+        end
+        # rubocop:enable Metrics/AbcSize
+        # rubocop:enable Metrics/CyclomaticComplexity
+        # rubocop:enable Metrics/PerceivedComplexity
+
+        sig { returns(String) }
+        def dependency_spec
+          return @custom_specification if @custom_specification
+
+          spec = dependency.name
+
+          if git_dependency?
+            spec += ":#{git_dependency_version}" if git_dependency_version
+          elsif dependency.version
+            spec += ":#{dependency.version}"
+          end
+
+          spec
+        end
+
+        # Shell out to Cargo, which handles everything for us, and does
+        # so without doing an install (so it's fast).
+        sig { void }
+        def run_cargo_update_command
+          run_cargo_command(
+            "cargo update -p #{dependency_spec} -vv",
+            fingerprint: "cargo update -p <dependency_spec> -vv"
+          )
+        end
+
+        sig { params(command: String, fingerprint: T.nilable(String)).void }
+        def run_cargo_command(command, fingerprint: nil)
+          start = Time.now
+          command = SharedHelpers.escape_command(command)
+          env = Helpers.cargo_command_env(original_dependency_files, credentials)
+
+          stdout, process = Open3.capture2e(env, command)
+          time_taken = Time.now - start
+
+          # Raise an error with the output from the shell session if Cargo
+          # returns a non-zero status
+          return if process.success?
+
+          raise SharedHelpers::HelperSubprocessFailed.new(
+            message: stdout,
+            error_context: {
+              command: command,
+              fingerprint: fingerprint,
+              time_taken: time_taken,
+              process_exit_value: process.to_s
+            }
+          )
+        end
+
+        sig { params(prepared: T::Boolean).void }
+        def write_temporary_dependency_files(prepared: true)
+          write_manifest_files(prepared: prepared)
+
+          File.write(T.must(lockfile).name, T.must(lockfile).content) if lockfile
+          File.write(T.must(toolchain).name, T.must(toolchain).content) if toolchain
+          config_files.each do |config_file|
+            FileUtils.mkdir_p(File.dirname(config_file.name))
+            File.write(
+              config_file.name,
+              Helpers.sanitize_cargo_config(T.must(config_file.content), file_name: config_file.name)
+            )
+          end
+        end
+
+        sig { void }
+        def check_rust_workspace_root
+          cargo_toml = original_dependency_files
+                       .select { |f| f.name.end_with?("../Cargo.toml") }
+                       .max_by { |f| f.name.length }
+          return unless TomlRB.parse(T.must(cargo_toml).content)["workspace"]
+
+          msg = "This project is part of a Rust workspace but is not the " \
+                "workspace root."
+
+          if T.must(cargo_toml).directory != "/"
+            msg += "Please update your settings so Dependabot points at the " \
+                   "workspace root instead of #{T.must(cargo_toml).directory}."
+          end
+          raise Dependabot::DependencyFileNotResolvable, msg
+        end
+
+        sig { params(error: StandardError).void }
+        def handle_cargo_errors(error)
+          return if missing_feature_error?(error)
+          return if recoverable_workspace_error?(error)
+
+          handle_git_authentication_errors(error)
+          handle_git_reference_errors(error)
+          handle_toolchain_errors(error)
+          handle_resolvability_errors(error)
+
+          raise
+        end
+
+        sig { params(error: StandardError).returns(T::Boolean) }
+        def missing_feature_error?(error)
+          if error.message.include?("does not have these features") ||
+             error.message.include?("does not have that feature")
+            # TODO: Ideally we should update the declaration not to ask
+            # for the specified features
+            return true
+          end
+
+          false
+        end
+
+        sig { params(error: StandardError).void }
+        def handle_git_authentication_errors(error)
+          return unless error.message.include?("authenticate when downloading repo") ||
+                        error.message.include?("fatal: Authentication failed for")
+
+          urls = unreachable_git_urls
+
+          if T.must(urls).none?
+            url = T.must(
+              T.must(error.message.match(UNABLE_TO_UPDATE))
+                                          .named_captures.fetch("url")
+            ).split(/[#?]/).first
+            raise if T.must(reachable_git_urls).include?(url)
+
+            T.must(urls) << T.must(url)
+          end
+
+          raise Dependabot::GitDependenciesNotReachable, T.must(urls)
+        end
+
+        sig { params(error: StandardError).void }
+        def handle_git_reference_errors(error)
+          [BRANCH_NOT_FOUND_REGEX, REF_NOT_FOUND_REGEX, GIT_REF_NOT_FOUND_REGEX, NOT_OUR_REF_REGEX].each do |regex|
+            next unless error.message.match?(regex)
+
+            dependency_url = T.must(T.must(error.message.match(regex)).named_captures.fetch("url")).split(/[#?]/).first
+            raise Dependabot::GitDependencyReferenceNotFound, T.must(dependency_url)
+          end
+        end
+
+        sig { params(error: StandardError).returns(T::Boolean) }
+        def recoverable_workspace_error?(error)
+          if workspace_native_library_update_error?(error.message)
+            # This happens when we're updating one part of a workspace which
+            # triggers an update of a subdependency that uses a native library,
+            # whilst leaving another part of the workspace using an older
+            # version. Ideally we would prevent the subdependency update.
+            return true
+          end
+
+          if git_dependency? && error.message.include?("no matching package")
+            # This happens when updating a git dependency whose version has
+            # changed from a release to a pre-release version
+            return true
+          end
+
+          if error.message.include?("all possible versions conflict")
+            # This happens when a top-level requirement locks us to an old
+            # patch release of a dependency that is a sub-dep of what we're
+            # updating. It's (probably) a Cargo bug.
+            return true
+          end
+
+          false
+        end
+
+        sig { params(error: StandardError).void }
+        def handle_toolchain_errors(error)
+          return unless using_old_toolchain?(error.message)
+
+          raise Dependabot::DependencyFileNotEvaluatable, "Dependabot only supports toolchain 1.68 and up."
+        end
+
+        sig { params(error: StandardError).void }
+        def handle_resolvability_errors(error)
+          return unless resolvability_error?(error.message)
+
+          raise Dependabot::DependencyFileNotResolvable, error.message
+        end
+
+        sig { params(message: T.nilable(String)).returns(T.any(Dependabot::Version, T::Boolean)) }
+        def using_old_toolchain?(message)
+          return true if T.must(message).include?("usage of sparse registries requires `-Z sparse-registry`")
+
+          # Detect rustup installation failures for old toolchains (e.g. "syncing channel updates for 1.67-x86_64-...")
+          rustup_channel = /syncing channel updates for (?<version>\d+\.\d+)-/.match(T.must(message))
+          return version_class.new(rustup_channel[:version]) < version_class.new("1.68") if rustup_channel
+
+          version_log = /rust version (?<version>\d.\d+)/.match(message)
+          return false unless version_log
+
+          version_class.new(version_log[:version]) < version_class.new("1.68")
+        end
+
+        sig { returns(T.nilable(T::Array[String])) }
+        def unreachable_git_urls
+          return @unreachable_git_urls if defined?(@unreachable_git_urls)
+
+          @unreachable_git_urls = T.let([], T.nilable(T::Array[String]))
+          @reachable_git_urls = T.let([], T.nilable(T::Array[String]))
+
+          dependencies = FileParser.new(
+            dependency_files: original_dependency_files,
+            source: nil
+          ).parse
+
+          dependencies.each do |dep|
+            checker = GitCommitChecker.new(
+              dependency: dep,
+              credentials: credentials
+            )
+            next unless checker.git_dependency?
+
+            requirement = T.must(dep.requirements.find { |r| r.source_string("type") == "git" })
+            url = T.must(requirement.source_string("url"))
+
+            if checker.git_repo_reachable?
+              T.must(@reachable_git_urls) << url
+            else
+              T.must(@unreachable_git_urls) << url
+            end
+          end
+
+          @unreachable_git_urls
+        end
+
+        sig { returns(T.nilable(T::Array[String])) }
+        def reachable_git_urls
+          return @reachable_git_urls if defined?(@reachable_git_urls)
+
+          unreachable_git_urls
+          @reachable_git_urls
+        end
+
+        sig { params(message: String).returns(T::Boolean) }
+        def resolvability_error?(message)
+          return true if common_resolvability_error?(message)
+          return true if binary_path_error?(message)
+
+          original_requirements_resolvable = original_requirements_resolvable?
+          return false if original_requirements_resolvable == :unknown
+
+          !original_requirements_resolvable
+        end
+
+        sig { params(message: String).returns(T::Boolean) }
+        def common_resolvability_error?(message)
+          message.include?("failed to parse lock") ||
+            message.include?("believes it's in a workspace") ||
+            message.include?("wasn't a root") ||
+            message.include?("requires a nightly version") ||
+            message.match?(/feature `[^\`]+` is required/) ||
+            message.include?("unexpected end of input while parsing major version number")
+        end
+
+        sig { params(message: String).returns(T::Boolean) }
+        def binary_path_error?(message)
+          message.match?(/couldn't find `[^`]+\.rs`/) ||
+            message.match?(/failed to find `[^`]+\.rs`/) ||
+            message.match?(/could not find `[^`]+\.rs`/) ||
+            message.match?(/cannot find binary `[^`]+`/) ||
+            message.match?(/binary target `[^`]+` not found/) ||
+            message.include?("Please specify bin.path if you want to use a non-default path") ||
+            message.include?("binary target") ||
+            message.include?("target not found")
+        end
+
+        sig { returns(T.any(TrueClass, FalseClass, Symbol)) }
+        def original_requirements_resolvable?
+          base_directory = T.must(original_dependency_files.first).directory
+          SharedHelpers.in_a_temporary_directory(base_directory) do
+            write_temporary_dependency_files(prepared: false)
+
+            SharedHelpers.with_git_configured(credentials: credentials) do
+              run_cargo_update_command
+            end
+          end
+
+          true
+        rescue SharedHelpers::HelperSubprocessFailed => e
+          if e.message.include?("no matching version") ||
+             e.message.include?("failed to select a version") ||
+             e.message.include?("no matching package named") ||
+             e.message.include?("failed to parse manifest") ||
+             e.message.include?("failed to update submodule")
+            false
+          else
+            :unknown
+          end
+        end
+
+        sig { params(message: String).returns(T::Boolean) }
+        def workspace_native_library_update_error?(message)
+          return false unless message.include?("native library")
+
+          library_count = T.must(prepared_manifest_files).count do |file|
+            package_name = TomlRB.parse(file.content).dig("package", "name")
+            next false unless package_name
+
+            message.include?("depended on by `#{package_name} ")
+          end
+
+          library_count >= 2
+        end
+
+        sig { params(prepared: T::Boolean).returns(T.nilable(T::Array[Dependabot::DependencyFile])) }
+        def write_manifest_files(prepared: true)
+          manifest_files = if prepared then prepared_manifest_files
+                           else
+                             original_manifest_files
+                           end
+
+          T.must(manifest_files).each do |file|
+            path = file.name
+            # Convert absolute paths to relative paths to avoid permission errors
+            relative_path = path.start_with?("/") ? path[1..-1] || "." : path
+            dir = Pathname.new(relative_path).dirname
+            FileUtils.mkdir_p(dir) unless dir.to_s == "."
+            File.write(relative_path, sanitized_manifest_content(T.must(file.content)))
+
+            next if virtual_manifest?(file)
+
+            File.write(File.join(dir, "build.rs"), dummy_app_content)
+
+            FileUtils.mkdir_p(File.join(dir, "src"))
+            File.write(File.join(dir, "src/lib.rs"), dummy_app_content)
+            File.write(File.join(dir, "src/main.rs"), dummy_app_content)
+          end
+        end
+
+        sig { returns(T.nilable(String)) }
+        def git_dependency_version
+          return unless lockfile
+
+          TomlRB.parse(T.must(lockfile).content)
+                .fetch("package", [])
+                .select { |p| p["name"] == dependency.name }
+                .find { |p| p["source"]&.end_with?(dependency.version) }
+                &.fetch("version")
+        end
+
+        sig { returns(T.nilable(String)) }
+        def git_source_url
+          dependency.requirements
+                    .find { |r| r.source_string("type") == "git" }
+                    &.source_string("url")
+        end
+
+        sig { returns(String) }
+        def dummy_app_content
+          %{fn main() {\nprintln!("Hello, world!");\n}}
+        end
+
+        sig { params(content: String).returns(String) }
+        def sanitized_manifest_content(content)
+          object = TomlRB.parse(content)
+
+          object.delete("bin")
+
+          object["package"].delete("default-run") if object.dig("package", "default-run")
+
+          package_name = object.dig("package", "name")
+          return TomlRB.dump(object) unless package_name&.match?(/[\{\}]/)
+
+          raise "Sanitizing name for pkg with lockfile. Investigate!" if lockfile
+
+          object["package"]["name"] = "sanitized"
+          TomlRB.dump(object)
+        end
+
+        sig { returns(T.nilable(T::Array[DependencyFile])) }
+        def prepared_manifest_files
+          @prepared_manifest_files ||=
+            prepared_dependency_files
+            .select { |f| f.name.end_with?("Cargo.toml") }
+        end
+
+        sig { returns(T.nilable(T::Array[DependencyFile])) }
+        def original_manifest_files
+          @original_manifest_files ||=
+            original_dependency_files
+            .select { |f| f.name.end_with?("Cargo.toml") }
+        end
+
+        sig { returns(T.nilable(DependencyFile)) }
+        def lockfile
+          @lockfile ||= T.let(
+            prepared_dependency_files
+                                            .find { |f| f.name == "Cargo.lock" },
+            T.nilable(Dependabot::DependencyFile)
+          )
+        end
+
+        sig { returns(T.nilable(DependencyFile)) }
+        def toolchain
+          @toolchain ||= T.let(
+            original_dependency_files
+                                             .find { |f| f.name == "rust-toolchain" },
+            T.nilable(Dependabot::DependencyFile)
+          )
+        end
+
+        # Cargo merges `.cargo/config.toml` hierarchically (package directory plus
+        # every ancestor up to the repo root), so we materialise all of them and
+        # let Cargo perform the merge with its own precedence rules. Ancestor
+        # configs carry relative `../` names and are written to the matching
+        # location within the temporary tree.
+        sig { returns(T::Array[Dependabot::DependencyFile]) }
+        def config_files
+          @config_files ||= T.let(
+            original_dependency_files.select do |f|
+              f.name.end_with?(".cargo/config.toml")
+            end,
+            T.nilable(T::Array[Dependabot::DependencyFile])
+          )
+        end
+
+        sig { returns(T::Boolean) }
+        def git_dependency?
+          GitCommitChecker.new(
+            dependency: dependency,
+            credentials: credentials
+          ).git_dependency?
+        end
+
+        # When the package table is not present in a workspace manifest, it is
+        # called a virtual manifest: https://doc.rust-lang.org/cargo/reference/
+        # manifest.html#virtual-manifest
+        sig { params(file: DependencyFile).returns(T::Boolean) }
+        def virtual_manifest?(file)
+          !T.must(file.content).include?("[package]")
+        end
+
+        sig { returns(T.class_of(Dependabot::Version)) }
+        def version_class
+          dependency.version_class
+        end
+      end
+    end
+  end
+end

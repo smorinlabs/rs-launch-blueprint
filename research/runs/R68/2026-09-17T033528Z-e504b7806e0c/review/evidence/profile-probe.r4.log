@@ -1,0 +1,106 @@
+=== R68 profile probe ===
+date(UTC): 2026-09-27T06:05:22Z
+toolchain selected by: PATH (/opt/homebrew/bin/rustc)
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+rustc -vV commit-hash: 48a229ceaefd4985c50990b14116b6d856af0985
+rustc -vV host: aarch64-apple-darwin
+rustc -vV LLVM version: 22.1.8
+os: macOS 26.4 (25E246)
+arch: arm64
+cpu: Apple M4 Pro
+
+ASSERT ok   toolchain is the pinned rustc 1.98.1 / cargo 1.98.1
+
+probe root: created under $TMPDIR, deleted on exit
+
+--- fetching the pinned dependency tree (the only online step) ---
+lockfile: profile-probe.Cargo.lock sha256 2756d45c172e38e05192d18dfc98cb028ff112dd1164b1f6a58d3cfc21ec1082
+packages pinned in the lockfile (all features, all targets): 85
+probe dependency tree, unique lines of cargo tree: default=52 all-features=93
+resolved versions of the named direct dependencies:
+  anyhow 1.0.104
+  clap 4.6.7
+  serde 1.0.229
+  serde_json 1.0.151
+  thiserror 2.0.20
+  tracing 0.1.44
+  tracing-subscriber 0.3.23
+  axum 0.8.9
+  tokio 1.53.1
+
+--- size matrix: one clean build per row, fresh CARGO_TARGET_DIR, --features web, measured binary is rslbp ---
+SIZE baseline (release defaults)               1994032 bytes  (after external strip -S -x:    1628360)
+TIME baseline (release defaults)              16 s clean (wall clock, does not reproduce)
+SIZE lto=thin                                  1968928 bytes  (after external strip -S -x:    1603320)
+TIME lto=thin                                 16 s clean (wall clock, does not reproduce)
+SIZE lto=fat                                   1598560 bytes  (after external strip -S -x:    1297032)
+TIME lto=fat                                  24 s clean (wall clock, does not reproduce)
+SIZE codegen-units=1                           1697232 bytes  (after external strip -S -x:    1430312)
+TIME codegen-units=1                          18 s clean (wall clock, does not reproduce)
+SIZE thin+cu1 (owner reference)                1675728 bytes  (after external strip -S -x:    1423160)
+TIME thin+cu1 (owner reference)               18 s clean (wall clock, does not reproduce)
+SIZE fat+cu1 (recommended)                     1504528 bytes  (after external strip -S -x:    1230568)
+TIME fat+cu1 (recommended)                    25 s clean (wall clock, does not reproduce)
+SIZE opt-level=s                               2252048 bytes  (after external strip -S -x:    1993512)
+TIME opt-level=s                              14 s clean (wall clock, does not reproduce)
+SIZE opt-level=z                               2428208 bytes  (after external strip -S -x:    2018504)
+TIME opt-level=z                              16 s clean (wall clock, does not reproduce)
+SIZE strip=symbols                             1537408 bytes  (after external strip -S -x:    1537432)
+TIME strip=symbols                            15 s clean (wall clock, does not reproduce)
+SIZE strip=debuginfo                           1994032 bytes  (after external strip -S -x:    1628360)
+TIME strip=debuginfo                          15 s clean (wall clock, does not reproduce)
+SIZE panic=abort                               1590384 bytes  (after external strip -S -x:    1296488)
+TIME panic=abort                              15 s clean (wall clock, does not reproduce)
+SIZE debug=line-tables-only                    2242648 bytes  (after external strip -S -x:    1628280)
+TIME debug=line-tables-only                   17 s clean (wall clock, does not reproduce)
+
+--- deltas versus the Cargo release-defaults baseline of 1994032 bytes ---
+DELTA baseline (release defaults)                +0.0%
+DELTA lto=thin                                   -1.3%
+DELTA lto=fat                                   -19.8%
+DELTA codegen-units=1                           -14.9%
+DELTA thin+cu1 (owner reference)                -16.0%
+DELTA fat+cu1 (recommended)                     -24.5%
+DELTA opt-level=s                               +12.9%
+DELTA opt-level=z                               +21.8%
+DELTA strip=symbols                             -22.9%
+DELTA strip=debuginfo                            +0.0%
+DELTA panic=abort                               -20.2%
+DELTA debug=line-tables-only                    +12.5%
+
+ASSERT ok   fat+cu1 (1504528 B) is smaller than thin+cu1 (1675728 B), the owner reference architecture's row
+ASSERT ok   fat+cu1 is at least 20% under the baseline (-24.5%)
+ASSERT ok   thin+cu1 does NOT reach a 20% reduction (-16.0%) — the measured ground for differing with the reference
+ASSERT ok   lto=thin alone stays within 5% of the baseline (-1.3%)
+ASSERT ok   lto=fat alone is smaller than the baseline (-19.8%)
+ASSERT ok   codegen-units=1 alone is smaller than the baseline (-14.9%)
+ASSERT ok   opt-level=s is LARGER than the baseline (+12.9%)
+ASSERT ok   opt-level=z is LARGER than the baseline (+21.8%)
+ASSERT ok   strip=debuginfo is byte-identical to the baseline (1994032 == 1994032) — a no-op, because the release profile carries no debuginfo
+ASSERT ok   strip=symbols is more than 15% under the baseline (-22.9%) — the largest single size win measured
+ASSERT ok   debug=line-tables-only is LARGER than the baseline (+12.5%)
+ASSERT ok   panic=abort is smaller than the baseline (-20.2%)
+
+--- backtrace and exit status of the BUILT binary: RUST_BACKTRACE=1 rslbp panic ---
+BACKTRACE baseline                   frames=4   exit=101
+BACKTRACE fat+cu1 (recommended)      frames=4   exit=101
+BACKTRACE strip=symbols              frames=0   exit=101
+BACKTRACE panic=abort                frames=2   exit=134
+BACKTRACE debug=line-tables-only     frames=5   exit=101
+
+ASSERT ok   strip=symbols prints ZERO backtrace frames (frames=0) — the diagnostic cost that refuses the largest size win
+ASSERT ok   the default profile prints 4 backtrace frames
+ASSERT ok   the RECOMMENDED fat+cu1 profile still prints 4 backtrace frames
+ASSERT ok   an unwinding panic exits 101 (observed 101)
+ASSERT ok   the recommended profile also exits 101 on panic (observed 101)
+ASSERT ok   panic=abort does NOT exit 101 (observed 134); neither status is in R67's taxonomy, and abort additionally skips the flush-before-exit path
+BACKTRACE debug=line-tables-only: 'at ./src/' lines in tree=2, after copying the binary out and deleting its target/=0
+ASSERT ok   in the build tree, debug=line-tables-only does print file:line (2 lines)
+ASSERT ok   once the binary travels away from target/, the file:line information is GONE (0 lines) — macOS split-debuginfo is unpacked, so an end user never receives it
+
+--- incremental cost: touch src/main.rs, rebuild the two profiles that were kept ---
+TIME baseline (release defaults)               0 s bin-only rebuild (wall clock, does not reproduce)
+TIME fat+cu1 (recommended)                    12 s bin-only rebuild (wall clock, does not reproduce)
+
+RESULT: PASS — every assertion held

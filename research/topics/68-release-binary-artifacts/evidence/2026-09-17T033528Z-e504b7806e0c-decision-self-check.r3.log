@@ -1,0 +1,69 @@
+=== R68 decision self-check ===
+date(UTC): 2026-09-27T04:11:30Z
+decision: DECISION.md (69711 bytes)
+
+--- 1. heading set ---
+64:## Decision
+343:## Parameters
+383:## Empirical check
+580:## Engines
+ASSERT ok   the H2 set is exactly Decision, Parameters, Empirical check, Engines, in that order
+ASSERT ok   the required H3 'Principles and implementation' is present
+ASSERT ok   no '## Supersedes' section is present: no revision of this item has been published, so no revision reverses a published entry
+ASSERT ok   the title line names revision 3
+R68-r1-snapshot.md sha256 = 070b7ae10b4a3de48d8b1a1d7cb4799c18d4bfec92713f7d30776128e4578fd7
+ASSERT ok   the revision-1 snapshot is byte-identical to the audited revision 1
+R68-r2-snapshot.md sha256 = 72bd7972c748e529a1b226db5940e7ade4b5a2adf8e98588b137479bb6d3c5c8
+ASSERT ok   the revision-2 snapshot is byte-identical to the audited revision 2
+ASSERT ok   a 're-verify:' line is present
+
+--- 2. Parameters grammar against the prompt's ## Couplings block ---
+prompt: 24:- owns:
+prompt '- owns:' payload after trimming whitespace = '' (empty means this item owns nothing)
+/usr/bin/grep -c '^- owns ' DECISION.md = 0
+ASSERT ok   the prompt's '- owns:' line is empty and DECISION.md writes no '- owns' line
+/usr/bin/grep -c '| researched | R68 |' docs/port/PARAMETERS.md = 0
+ASSERT ok   the registry records no parameter owned by R68, so writing an '- owns' line would invent a registry row
+25:- consumes: R49: build-tool-output-shape
+ASSERT ok   the prompt consumes exactly R49's build-tool-output-shape
+
+--- 3. '- assumes' lines against docs/port/PARAMETERS.md ---
+assumes lines found: 5 -> ['build-tool-output-shape', 'msrv-policy', 'rust-edition', 'target-os-matrix', 'license']
+ASSERT ok   '- assumes build-tool-output-shape' is byte-identical to the registry (1818 chars)
+ASSERT ok   '- assumes msrv-policy' is byte-identical to the registry (118 chars)
+ASSERT ok   '- assumes rust-edition' is byte-identical to the registry (4 chars)
+ASSERT ok   '- assumes target-os-matrix' is byte-identical to the registry (27 chars)
+ASSERT ok   '- assumes license' is byte-identical to the registry (17 chars)
+ASSERT ok   every '- assumes' line matches its registry row byte-for-byte, with no backticks
+
+--- 4. cited ledger and owner-review locations ---
+| F214 | distributable artifact types | packaging-distribution | different | DIVERGENT | R68 | standalone; py ships sdis
+ASSERT ok   docs/port/COMMONALITY.md:218 is the F214 row this decision settles
+| F220 | documented end-user install method | packaging-distribution | py-only | ADOPT | — | follows F214 (R68) — the RE
+ASSERT ok   docs/port/COMMONALITY.md:224 is the F220 row whose value this decision derives
+| F072 | release-please auth token mechanism | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-05; tool: actions/create-github-app-tok
+ASSERT ok   docs/port/COMMONALITY.md:78 is the F072 row naming the App-token source the release-please to dist hand-off depends on
+ASSERT ok   the owner-review section that moved the profile subject onto R68 exists verbatim
+ASSERT ok   the 2026-09-12 Q7.B licence ruling that answers fitness gate 1 'inapplicable' exists
+
+--- 5. the owner reference architecture's profile row, quoted verbatim ---
+199-
+200:[profile.release]
+201-lto = "thin"
+202-codegen-units = 1
+/usr/bin/grep -c '^lto = "thin"$' owner reference = 1
+/usr/bin/grep -c '^codegen-units = 1$' owner reference = 1
+ASSERT ok   the owner reference's Reference Cargo.toml section states lto = "thin" and codegen-units = 1 — the row this decision agrees with on one key and differs from on the other
+ASSERT ok   the owner reference's own Caveats section records that its material was compiled in the author's head rather than against the toolchain
+ASSERT ok   the container rows this decision hands to R51 are in the reference's C15 section
+
+--- 6. profile-probe.r2.log against profile-probe.Cargo.lock ---
+profile-probe.Cargo.lock sha256 = 2756d45c172e38e05192d18dfc98cb028ff112dd1164b1f6a58d3cfc21ec1082
+ASSERT ok   profile-probe.r2.log was produced from the committed lockfile (its printed sha256 matches)
+ASSERT ok   profile-probe.r2.log ends RESULT: PASS
+
+--- 6. privacy ---
+files under review/ containing an email-shaped string = 0
+ASSERT ok   no email address appears anywhere under review/
+
+RESULT: PASS — every assertion held

@@ -1,0 +1,15 @@
+# date_utc=2026-09-27T16:53:04Z host=Darwin arm64
+F0 fixture d51ddf0b5d1ee52144d736457b50667439c2ecbf6e6c8b922cf13695bad714fb  ./base.json
+F0 fixture fcecf66b58f83ca85f36ac69487e751ef4804d7fe35ada2817ab799ba6b26afd  ./head-additive-optional-property.json
+F0 fixture ab35e82b1c4da3b12e2187acfac85afceec282fbd5bd86df32c4824c5707401b  ./head-operation-id-renamed.json
+F0 fixture 0485296adcd82f0cdac9448a92a2fbfaf5cb1d16edfb5224e6f033b857847869  ./head-removed-operation.json
+F0 fixture e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./breaking-accepted.txt
+F0 fixture cbf8f42a2060f80f225b4a712d8fd1760658dae88d1df1327a72f7b1f02c664e  ./oasdiff-levels.txt
+F1 oasdiff on PATH: no — NOT EXECUTED (no install route inside the named endpoints)
+O1 PLANNED: oasdiff breaking base.json base.json --allow-external-refs=false --fail-on ERR --severity-levels oasdiff-levels.txt --err-ignore breaking-accepted.txt ; expect exit=0 (identical documents produce no finding)
+O2 PLANNED: oasdiff breaking base.json head-removed-operation.json --allow-external-refs=false --fail-on ERR --severity-levels oasdiff-levels.txt --err-ignore breaking-accepted.txt ; expect exit=1 (removing GET /v1/projects/{id} is ERR-level api-path-removed-without-deprecation (rules.go:184))
+O3 PLANNED: oasdiff breaking base.json head-additive-optional-property.json --allow-external-refs=false --fail-on ERR --severity-levels oasdiff-levels.txt --err-ignore breaking-accepted.txt ; expect exit=0 (an added optional response property is not breaking)
+O4 PLANNED: oasdiff breaking base.json head-operation-id-renamed.json --allow-external-refs=false --fail-on ERR --severity-levels oasdiff-levels.txt --err-ignore breaking-accepted.txt ; expect exit=1 (operationId rename is INFO by default (rules.go:616); oasdiff-levels.txt raises api-operation-id-removed to err)
+O5 PLANNED: append the O4 finding's text line to breaking-accepted.txt and rerun O4; expect exit=0 (a reviewed acceptance, criterion A10)
+O6 PLANNED: rerun O4 without --severity-levels; expect exit=0 (demonstrates why the override is required)
+# done (not executed)

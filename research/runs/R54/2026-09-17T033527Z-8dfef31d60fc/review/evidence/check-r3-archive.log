@@ -1,0 +1,40 @@
+=== R54 revision 3 evidence checks (JF-5) ===
+repo-root  /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r54-arch3-2909
+run-dir    research/runs/R54/2026-09-17T033527Z-8dfef31d60fc
+grep       /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD) — invoked by absolute path; its version is printed beside every count below
+network    none, and no git history is required — every check reads a file already in the repository
+
+PASS B01 revision 1 check.sh is unchanged (7e22e8ffc7c4ae15b87c587250e6dc8914c18ab2273be2c14127a7bfa13a1894)
+PASS B02 revision 1 check.log is unchanged (a1f676c92f523faeecd5c2cd6c6e088cbed968950ec4fa085909acc4a2a3a9de)
+PASS B03 revision 1 check-rerun.log is unchanged (a1f676c92f523faeecd5c2cd6c6e088cbed968950ec4fa085909acc4a2a3a9de)
+PASS B04 revision 1 walkup_probe.rs is unchanged (faa0e5de7bf4f42e21c09c07ea1f3084c92b51244869efd9ae6a02a0128ec094)
+PASS B05 revision 1 shellcheck.log is unchanged (empty) (e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)
+PASS B06 all 13 revision-1 snapshots are unchanged (digest of the sorted sha256 manifest: fa53d95ac8143ce41b223c2826f4ff366f82413063dbc0c0f5f2ec94c59878cf)
+PASS B07 revision 2 check-r2.sh is unchanged (165bd08d38273c655ecce1c8be8eae6157e12a9995af230254955d6ae614fa62)
+PASS B08 revision 2 check-r2.log is unchanged (41aea179be46dc5c1cd4072f365ef89bc86c08bcb4261190c5c25281a53dd5fc)
+PASS B09 revision 2 check-r2-archive.log is unchanged (3dcb5981dd114a11c7deae47e6b8966580857a2ae56fbce211bd4b5f39566102)
+PASS B10 revision 2 r2-rerun.diff is unchanged (empty: the rerun matched byte-for-byte) (e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)
+PASS B11 revision 2 shellcheck-r2.log is unchanged (empty) (e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)
+PASS M01 JF-5: raw/doxa-openai.normalized.md carries 12 member-level `owns` lines (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c '^- `owns ' = 12)
+PASS M02 JF-5: those 12 lines fall in exactly the three ranges :398-401, :536-539 and :678-681
+PASS M03 JF-5: lines :398-401 hold 4 member-level `owns` lines (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c '^- `owns ')
+PASS M04 JF-5: lines :536-539 hold 4 member-level `owns` lines (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c '^- `owns ')
+PASS M05 JF-5: lines :678-681 hold 4 member-level `owns` lines (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c '^- `owns ')
+PASS M06 JF-5: the twelve member-level names are exactly those the audit lists
+PASS M07 the answer-level form is a different count and still 8, so the eight-versus-twelve distinction the sentence draws is real (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c '^`owns ' = 8)
+PASS M08 JF-5: the corrected sentence carries twelve and its three ranges (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c -F matches=1)
+PASS M09 JF-5: the superseded wording survives exactly once, inside the revision note's JF-5 row, and nowhere as an assertion (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c: all=1 note=1)
+PASS M10 JF-5: the corrected sentence is at DECISION.md:761 — the audit found the wrong count at :716 of revision 2
+PASS P01 - assumes msrv-policy unchanged and byte-identical to docs/port/PARAMETERS.md (118 bytes)
+PASS P02 - assumes rust-edition unchanged and byte-identical to docs/port/PARAMETERS.md (4 bytes)
+PASS P03 - assumes target-os-matrix unchanged and byte-identical to docs/port/PARAMETERS.md (27 bytes)
+PASS P04 - assumes license unchanged and byte-identical to docs/port/PARAMETERS.md (17 bytes)
+PASS P05 - assumes error-taxonomy-exit-codes unchanged and byte-identical to docs/port/PARAMETERS.md (4057 bytes)
+PASS E01 the decision is retitled to revision 3, date first (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c -F matches=1)
+PASS E02 the revision note is present (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c -F matches=1)
+PASS E03 the revision note names JF-5 (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c -F matches=1)
+PASS E04 the revision history is extended (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c -F matches=1)
+PASS E05 no "## Supersedes" HEADING — this item is unpublished
+PASS E06 the H2 set is exactly Decision, Parameters, Empirical check, Engines (/usr/bin/grep [grep (BSD grep, GNU compatible) 2.6.0-FreeBSD] -c: matched=4 total=4)
+
+failures=0 skipped=0

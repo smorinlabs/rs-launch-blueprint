@@ -1,0 +1,147 @@
+
+=== check 1 — toolchain and host ===
+rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+gh:    gh version 2.98.0 (2026-08-20)
+uname: Darwin 25.4.0 arm64
+os:    macOS 26.4
+
+=== check 2 — crates.io newest unyanked version, licence, rust_version ===
+mdbook             newest_unyanked=0.5.4     license=MPL-2.0   rust_version=1.88.0
+cobalt-bin         newest_unyanked=0.20.4    license=MIT       rust_version=1.85
+mdbook-mermaid     newest_unyanked=0.17.1    license=MPL-2.0   rust_version=None
+mdbook-admonish    newest_unyanked=1.20.0    license=MIT       rust_version=1.76.0
+mdbook-alerts      newest_unyanked=0.8.0     license=MIT       rust_version=None
+zola               NO_UNYANKED total_versions=1 newest=0.1.1 yanked=True
+PASS  crates.io query exit                                       0
+PASS  mdbook 0.5.4 is MPL-2.0                                    present
+PASS  cobalt-bin is MIT (permissive Rust SSG)                    present
+PASS  mdbook-mermaid is MPL-2.0                                  present
+PASS  zola registry entry is a yanked placeholder                present
+
+=== check 3 — GitHub repository licence and archived flag ===
+rust-lang/mdBook                   MPL-2.0 archived=false
+getzola/zola                       EUPL-1.2 archived=false
+lambdalisue/rs-mdbook-alerts       MIT archived=true
+badboy/mdbook-mermaid              MPL-2.0 archived=false
+actions/configure-pages            MIT archived=false
+actions/upload-pages-artifact      MIT archived=false
+actions/deploy-pages               MIT archived=false
+PASS  rust-lang/mdBook licence                                   MPL-2.0
+PASS  rust-lang/mdBook archived                                  false
+PASS  getzola/zola licence                                       EUPL-1.2
+PASS  rs-mdbook-alerts archived                                  true
+PASS  mdbook-mermaid archived                                    false
+PASS  actions/configure-pages licence                            MIT
+PASS  actions/upload-pages-artifact licence                      MIT
+PASS  actions/deploy-pages licence                               MIT
+
+=== check 4 — RustSec ===
+PASS  rustsec.org/packages/mdbook.html                           200
+PASS  rustsec.org/packages/mdbook-mermaid.html                   404
+PASS  RUSTSEC-2021-0001 fetch exit                               0
+PASS  RUSTSEC-2021-0001 patched range                            present
+
+=== check 5 — mdBook maintainer documentation (snapshots in evidence/snapshots/) ===
+PASS  md->html link conversion + GitHub motivation               present
+PASS  README.md -> index.html conversion                         present
+PASS  admonitions use GitHub alert syntax                        present
+PASS  admonition family: CAUTION                                 present
+PASS  definition lists documented                                present
+PASS  definition-lists disable switch                            present
+PASS  heading attributes syntax                                  present
+PASS  SUMMARY.md is mandatory                                    present
+PASS  [book] src is configurable                                 present
+PASS  create-missing documented                                  present
+PASS  mdBook default code edition is 2015                        present
+PASS  --theme copies MPL theme into the tree                     present
+PASS  non-chapter files are copied to output                     present
+PASS  CI guidance: prebuilt binary is fast                       present
+PASS  CI guidance: --no-default-features drops serve             present
+
+=== check 6 — GitHub's own renderer on the dialect (POST /markdown, mode=gfm) ===
+PASS  POST /markdown exit                                        0
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg data-component="Octicon" class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p>hello</p>
+</div>
+<h1>Head { #id .cls }</h1>
+<p>term<br>
+: definition</p>
+<p><a href="./other.md">link</a></p>PASS  alert renders as a GitHub callout                          present
+PASS  heading attributes render literally                        present
+PASS  definition list renders literally                          present
+PASS  relative .md link href preserved                           present
+
+=== check 7 — adopters running mdBook through the first-party Pages triple ===
+PASS  goals blob fetch exit                                      0
+PASS  spotifyd blob fetch exit                                   0
+-- goals-mdbook.yml
+   44:          cargo install --version ${MDBOOK_VERSION} mdbook
+   45:          cargo install --version ${MDBOOK_MERMAID_VERSION} mdbook-mermaid
+   49:        uses: actions/configure-pages@v5
+   55:        uses: actions/upload-pages-artifact@v3
+   69:        uses: actions/deploy-pages@v4
+-- spotifyd-docs.yml
+   38:          cargo install --version ${MDBOOK_VERSION} mdbook
+   41:        uses: actions/configure-pages@v3
+   43:        run: mdbook build ./docs
+   45:        uses: actions/upload-pages-artifact@v3
+   59:        uses: actions/deploy-pages@v4
+PASS  goals: mdbook installed and run                            present
+PASS  goals: configure-pages present                             1
+PASS  goals: upload-pages-artifact                               1
+PASS  goals: deploy-pages present                                1
+PASS  spotifyd: deploy-pages present                             1
+goals action pins: actions/configure-pages@v5 actions/deploy-pages@v4 actions/upload-pages-artifact@v3 
+spotifyd action pins: actions/configure-pages@v3 actions/deploy-pages@v4 actions/upload-pages-artifact@v3 
+PASS  goals pinned run 34280395920 conclusion                    success
+PASS  goals pinned run event                                     push
+PASS  goals Pages build_type                                     workflow
+PASS  goals Pages html_url                                       https://goals.rust-lang.org/
+PASS  published site responds                                    200
+
+=== check 8 — licence walk over the resolved dependency tree of mdbook = "=0.5.4" ===
+lock registry packages: 218 ; snapshot entries: 218 ; mode: snapshot+sample
+ASSERT lock_matches_snapshot=True
+ASSERT sample_12_matches_snapshot=True
+ 120  MIT OR Apache-2.0
+  49  MIT
+   8  MPL-2.0
+   7  Apache-2.0 OR MIT
+   5  Unlicense OR MIT
+   5  MIT/Apache-2.0
+   5  Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+   3  ISC
+   3  Apache-2.0
+   2  MIT OR Apache-2.0 OR LGPL-2.1-or-later
+   2  Unlicense/MIT
+   2  BSD-2-Clause OR Apache-2.0 OR MIT
+   1  (MIT OR Apache-2.0) AND MIT
+   1  Apache-2.0 / MIT
+   1  CC-BY-4.0 AND MIT
+   1  MIT AND BSD-3-Clause
+   1  CC0-1.0
+   1  Apache-2.0 OR BSL-1.0
+   1  (MIT OR Apache-2.0) AND Unicode-3.0
+MPL-2.0 packages (8): mdbook, mdbook-core, mdbook-driver, mdbook-html, mdbook-markdown, mdbook-preprocessor, mdbook-renderer, mdbook-summary
+non-permissive-only (GPL/AGPL/EUPL/SSPL with no permissive arm): none
+query errors: none
+packages with no declared licence: none
+noteworthy: font-awesome-as-a-crate 0.3.1=CC-BY-4.0 AND MIT ; r-efi 6.0.0=MIT OR Apache-2.0 OR LGPL-2.1-or-later
+ASSERT mpl_are_exactly_the_mdbook_family=True
+ASSERT no_strong_copyleft_in_tree=True
+PASS  licence walk exit                                          0
+
+=== check 9 — MPL-2.0 is file-level (Mozilla FAQ) ===
+PASS  MPL FAQ fetch exit                                         0
+PASS  MPL FAQ file-level copyleft sentence                       present
+
+=== check 10 — fixed parameters generated from the registry and diffed ===
+-- generated from docs/port/PARAMETERS.md:
+   - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+   - assumes rust-edition = 2024
+   - assumes target-os-matrix = ubuntu-latest, macos-latest
+   - assumes license = MIT OR Apache-2.0
+PASS  parameter round-trip diff                                  empty
+
+=== result ===
+failed assertions: 0

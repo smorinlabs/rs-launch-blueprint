@@ -1,0 +1,26 @@
+283,294c283,294
+< 27:    runs-on: ubuntu-latest
+< 37:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+< 40:    runs-on: ${{ matrix.os }}
+< 61:        os: ["ubuntu-latest"]
+< 62:    runs-on: ${{ matrix.os }}
+< 78:        os: ["ubuntu-latest"]
+< 79:    runs-on: ${{ matrix.os }}
+< 96:    runs-on: ubuntu-latest
+< 109:    runs-on: ubuntu-latest
+< 124:    runs-on: ubuntu-latest
+< 138:    runs-on: ubuntu-latest
+< 170:    runs-on: ubuntu-latest
+---
+> 29:    runs-on: ubuntu-latest
+> 39:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+> 42:    runs-on: ${{ matrix.os }}
+> 67:        os: ["ubuntu-latest"]
+> 68:    runs-on: ${{ matrix.os }}
+> 88:        os: ["ubuntu-latest"]
+> 89:    runs-on: ${{ matrix.os }}
+> 104:    runs-on: ubuntu-latest
+> 118:    runs-on: ubuntu-latest
+> 134:    runs-on: ubuntu-latest
+> 150:    runs-on: ubuntu-latest
+> 186:    runs-on: ubuntu-latest

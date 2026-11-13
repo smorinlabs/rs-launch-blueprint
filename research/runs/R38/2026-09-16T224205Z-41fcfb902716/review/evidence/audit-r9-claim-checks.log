@@ -1,0 +1,60 @@
+decision-sha256 c2e9b6e1f1cf096b640ecd2925c8f79010bf7e875a9ce91d18a1d3ad84b3ce24
+carried-sha256 cf9ffcb2b84383c2fc797a86539612e3aaeff22753384f68d04cc2204eb501fa
+carried-bytes 14374
+--- owner Q7.B ruling ---
+### 2026-09-12 — no licence check for anything the template uses (Q4, superseded and widened by Q7.B)
+
+Owner ruling, verbatim:
+
+> Here, we don't need to check the licensing for any tool we use. Zero license
+> check. That accounts for other tools and libraries we're including. The license
+> we have only applies to the source code in the repo itself directly, not
+> anything it includes or depends on.
+
+Q7.B extended this knowingly to crates compiled into the shipped artifact, after
+the owner was shown that a linked crate's terms travel into every downstream
+--- R38 gate-1 disposition ---
+| 15 | Does `cargo-commitlint` exempt URLs? | — | — | "inherently exempts standard URLs from body line-length calculations" (its citation is commitlint's documentation) | — | `validator.rs:1144-1145` counts `line.chars()`; comparison cases 05 and 07 rejected at 72 | G's claim is false at 2.1.0 |
+| 16 | Bot handling | none initially; add only after an observed failure, keyed on the PR event, never the commit author | `commitlint.dependabot.config.mjs` selected by PR-author login (py's shape) | skip the CI step entirely for `github.actor == 'dependabot[bot]'` | width-only `committed.bot.toml` selected by `github.event.pull_request.user.login` | Case 19/R4: every dependabot subject exceeds 50 columns, so "none" turns every dependabot PR red on day one; skipping the whole step lets an invalid type land (the first log's R3 defect, which the revision-1 audit rejected) and `github.actor` mis-routes after a human pushes into a bot PR (py `commitlint.yml:8-10`); O's "trusted event field, never the commit author" is the rule revision 2 already adopted | Unchanged: py's shape, width-only, keyed on the PR author |
+| 17 | Runtime, if commitlint | Node 24 LTS, hash-pinned; Bun "only after a parity test" | Bun or pnpm, explicit path | none (native) | runner-up (1) needs `bun ./node_modules/@commitlint/cli/cli.js` by explicit path | Moot for the pick; recorded in runner-up (1) as an explicit-path Node or Bun invocation — the explicit path is what removes py's three resolution modes, not the runtime's identity | Runner-up wording extended |
+| 18 | CI re-run mechanism, if commitlint | shell out to the locked CLI, never an action | `wagoid/commitlint-github-action` or the CLI | native shell-out (`--from/--to`) | official `crate-ci/committed` action, SHA-pinned to the same version its `entrypoint.sh` hardcodes | Moot for the pick; O's principle (one locked binary for hook and CI) is met because the action's SHA fixes the binary version (`entrypoint.sh` `VERSION=1.1.11`) | Unchanged |
+| 19 | `conventional_commits_linter` | excluded on capability and evidence gates — its own words about 0.16.1, with no evidence recorded for the capability half | excluded: `AGPL-3.0` | — | revision 5 held only `Excluded by gate 1`, on P's licence finding; the capability half was never evaluated here and O's claim was never verified | Gate 1 is inapplicable under the owner's ruling of 2026-09-12, so revision 6 installed 0.17.1 and executed it: zero body-length and footer-length options exist (B3); the 83-column body line and the 96-column footer pass where `committed` rejects them in the same run (C04, C08 with `-ctl` controls); `--type` is the two-valued preset `any\|angular` and `--type chore` exits 2 at the parser (B4, B5); no `rust-version` is declared anywhere at 0.17.1 (D2, D6); the release ships Linux-musl assets only and upstream CI has no macOS job (D11, D12, D14, D15) | Excluded on capability and on gates 2 and 4, on executed evidence. The licence is recorded, not weighed. O's capability claim is corroborated for 0.17.1 by measurement — it is not adopted as a citation, and it was about a different version |
+| 20 | Figures | none retrieved (gateway rejected API calls; states so) | none retrieved (states so) | approximate figures presented as retrieved | endpoint figures | Re-read from the prescribed endpoints on 2026-09-09 (above): G's `cargo-commitlint` figures are wrong by more than an order of magnitude; its `committed` and `commitlint-rs` figures are approximate | Endpoint figures stand; G's are not used |
+--- selected exact pin ---
+## Decision
+
+**Adopt `committed` (crate-ci) at the exact pin `1.1.11` — no range; a later release is accepted only through the upgrade gate stated below — as the Conventional-Commits linter that runs at `commit-msg` time and again in CI**, configured by a repository-root `committed.toml` (plus `committed.bot.toml`, used by CI for bot pull requests). The `commit-message-convention` it enforces is an explicit eleven-member type enum (`build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test`), a 50-column cap on the whole header line (`type(scope): description`, the same span commitlint's `header-max-length` counts; executed as case 21), and a 72-column cap on every body and footer line under soft-line measurement (the exact value is in `## Parameters`). commitlint through a provisioned Node/Bun runtime — both source repos' tool, the Codex report's pick, and the pick of two of the three Doxa provider reports (OpenAI, Perplexity) — is the architectural runner-up and is not adopted. `cargo-commitlint` 2.1.0 — the Gemini provider report's pick and the OpenAI report's runner-up, a native binary with three independent length knobs — was installed and executed against the same fixture (`## Empirical check`); it rejects the bare-URL and trailer lines the contract must accept (comparison cases 05, 07), tests upstream on Linux only, has 3 stars and one human contributor, and ships an installed-hook template that exits 0 when its binary is missing, so it is recorded as a runner-up with conditions, not adopted. `conventional_commits_linter` 0.17.1 — which revision 5 excluded on its licence alone and which re-entered the field unevaluated when the owner struck that gate — was installed at the pin and executed against the same fixture here: it caps the header only, has no body-line and no footer-line rule of any kind, exposes a two-valued type preset rather than a declarable vocabulary, declares no `rust-version`, and ships neither a macOS binary nor a macOS CI job, so it is excluded on capability and on gates 2 and 4, on the executed evidence in `## Empirical check`.
+
+Ledger rows this settles (all `docs/port/COMMONALITY.md:153-161`):
+
+| Row | Settled value |
+|---|---|
+| F149 commit-msg linter tool | `committed`, exact pin `1.1.11` in every place that names a version (install recipe, `--version` assertion, action SHA); a later release passes the recorded upgrade gate first |
+| F150 hook invocation mechanism | `committed --fixup --wip --commit-file {1}` from the hook manager's `commit-msg` stage (`{1}` is the message-file path; R37 wires the stage) |
+--- preserved revision-7 comparator/log ---
+PASS
+--- legacy comparator exits ---
+PASS selflog/new-2.txt-is-scratch-path-free (0)
+
+===== DONE =====
+failed assertions: 0
+RESULT: PASS — every rerun conformed to the rule; every negative control was rejected.
+PASS selflog/new-2.txt-is-scratch-path-free (0)
+
+===== DONE =====
+failed assertions: 3
+RESULT: FAIL — the difference rule stated in review/DECISION.md does not hold.
+--- mutation controls ---
+PASS selflog/new-2.txt-is-scratch-path-free (0)
+
+===== DONE =====
+failed assertions: 2
+skipped assertions: 0
+RESULT: FAIL — the difference rule stated in review/DECISION.md does not hold.
+
+===== DONE =====
+failed assertions: 2
+skipped assertions: 1
+skipped by name (each one is a skip, never a pass):
+  r6/carried-copy-is-the-committed-blob
+RESULT: FAIL — the difference rule stated in review/DECISION.md does not hold.

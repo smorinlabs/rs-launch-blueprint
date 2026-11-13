@@ -11,6 +11,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-014(6) and D-014(7) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — ts omits a taplo installer because Oxfmt already formats TOML, and omits a yamlfmt installer because Oxfmt already formats YAML; both eliminate the dedicated per-tool installer recipe and script py needed, rather than replacing it with an equivalent.
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): Against the existing solutions and follow a similar pattern
 
+### Baseline review (2026-09-04)
+- F181 (`just check-deps`, `COMMON → REUSE`) is held pending this item: if rustup components plus `cargo install`/`cargo-binstall` remove the per-tool installer layer, F181 collapses into F180, and `package-manager-invocation` decides whether a `command -v` loop is the right presence test. F179 keeps the bootstrap-versus-task layering; Make as the entry mechanism is a choice this item justifies, not an ecosystem necessity. F190/F103's toolchain-file channel is decided by R27 in coordination with this item (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which specific non-cargo dev tools this template needs beyond rustfmt/clippy (a secret scanner, a YAML linter, a spell checker, actionlint); R27–R29 (lint/format tool choices), R39 (`secret-scanning-hooks`), and R40 (`auxiliary-hygiene-hooks`) each own their own tool pick — this item decides how a chosen tool gets provisioned and invoked, not which tool is chosen.
 - The hook manager's own distribution/install mechanism; R37 (`hook-manager-distribution`) owns F143/F144/F174 — lefthook's own install path is a separate provisioning question from the rest of the dev toolchain.
@@ -20,6 +23,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R42
 - owns: package-manager-invocation
 - consumes:
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R37 (`hook-manager-distribution`) decides how lefthook itself is installed (F143), a distribution question this item does not re-decide.
 - related (not a registry dependency): R27, R28, R29, R32, R37, R40 each pick their own dev tool; this item's `package-manager-invocation` parameter tells their Justfile recipes and lefthook jobs how to invoke whatever tool they pick.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
@@ -63,6 +70,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -73,7 +86,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

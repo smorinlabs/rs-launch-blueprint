@@ -1,0 +1,160 @@
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+=== P. coupled decisions, pinned by revision and sha256 ===
+PASS  P69 R69 revision 11 (run copy) sha256 of research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md == 2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815
+PASS  P69h  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1
+PASS  P70 R70 revision 5 sha256 of research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md == a8d4da0ba18bad9bb581aad51f6e11234b29f3db14e1bbb99d2cfeb5e14d4b85
+PASS  P70h  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:1
+PASS  P73 R73 revision 4 (run copy) sha256 of research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md == 9e5aaf13544bc41f5ca56cac563a5c0e1dfd7bb9f9373afec6302de34e0ff775
+PASS  P73h  research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md:1
+PASS  P77 R77 revision 5 (published) sha256 of research/topics/77-web-env-settings/DECISION.md == a3c2dc6ca904b80f8e565f9ad0999cb3a0ab3f78f5d0f9e8d53c1b9d97765b55
+PASS  P77h  research/topics/77-web-env-settings/DECISION.md:1
+PASS  P79 R79 revision 6 (published) sha256 of research/topics/79-prometheus-metrics/DECISION.md == f3d4f8c72d2a73dc95649d15e8d7b46e2edbb9b61e3a1b047cd1f5e67c512948
+PASS  P79h  research/topics/79-prometheus-metrics/DECISION.md:1
+PASS  P80 R80 revision 6 (published) sha256 of research/topics/80-health-probe-endpoints/DECISION.md == 4b63412a4dc1df4c2e31caa51fa20ca509c8e8cd430595f72b94de0843d4c204
+PASS  P80h  research/topics/80-health-probe-endpoints/DECISION.md:1
+PASS  P02 R02 revision 3 (published; accepted at revision 2, OA-R02) sha256 of research/topics/02-crate-boundary-enforcement/DECISION.md == d8c64f7c36663f0c92dcc83cc444a56f203f6c4f52d3fff2a64de9f611cfd2e7
+PASS  P02h  research/topics/02-crate-boundary-enforcement/DECISION.md:1
+
+=== R69 revision 11 (run copy) ===
+PASS  R69-serve  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1200
+PASS  R69-salvo  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1586
+PASS  R69-warp  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1588
+PASS  R69-tide  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1591
+PASS  R69-rv  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1881
+PASS  R69-owns  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1885
+PASS  R69-owns-b  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1885
+PASS  R69-audit-a  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:2362
+PASS  R69-audit-b  research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:2370
+PASS  R69-zero no ConnectInfo or into_make_service anywhere in R69 revision 11 == 0
+
+=== R70 revision 5 ===
+PASS  R70-M1  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:121
+PASS  R70-M2  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:122
+PASS  R70-type  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:229
+PASS  R70-cat  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:235
+PASS  R70-table  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:279
+PASS  R70-hdr-a  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:391
+PASS  R70-hdr-b  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:392
+PASS  R70-gap-a  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:606
+PASS  R70-gap-b  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:608
+PASS  R70-gap-c  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:611
+PASS  R70-norow R70's code table rows (lines 281-297) carry no rate-limit code == 0
+
+=== R73 revision 4 (run copy) ===
+PASS  R73-root  research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md:90
+PASS  R73-mem  research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md:87
+PASS  R73-port  research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md:115
+PASS  R73-r74a  research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md:1287
+PASS  R73-r74b  research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md:1288
+PASS  R73-r74c  research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/review/DECISION.md:1291
+
+=== R77 revision 5 (published) ===
+PASS  R77-empty  research/topics/77-web-env-settings/DECISION.md:324
+PASS  R77-cred  research/topics/77-web-env-settings/DECISION.md:319
+PASS  R77-idem  research/topics/77-web-env-settings/DECISION.md:787
+PASS  R77-move2  research/topics/77-web-env-settings/DECISION.md:966
+PASS  R77-nofl  research/topics/77-web-env-settings/DECISION.md:971
+PASS  R77-nodis  research/topics/77-web-env-settings/DECISION.md:978
+PASS  R77-port  research/topics/77-web-env-settings/DECISION.md:979
+PASS  R77-fix  research/topics/77-web-env-settings/DECISION.md:980
+PASS  R77-memb-a  research/topics/77-web-env-settings/DECISION.md:985
+PASS  R77-memb-b  research/topics/77-web-env-settings/DECISION.md:986
+PASS  R77-memb-c  research/topics/77-web-env-settings/DECISION.md:987
+
+=== R79 revision 6 (published) ===
+PASS  R79-two  research/topics/79-prometheus-metrics/DECISION.md:229
+PASS  R79-merge  research/topics/79-prometheus-metrics/DECISION.md:428
+PASS  R79-merge2  research/topics/79-prometheus-metrics/DECISION.md:429
+PASS  R79-r117  research/topics/79-prometheus-metrics/DECISION.md:788
+PASS  R79-optin  research/topics/79-prometheus-metrics/DECISION.md:662
+PASS  R79-optin2  research/topics/79-prometheus-metrics/DECISION.md:663
+
+=== R80 revision 6 (published) ===
+PASS  R80-r75a  research/topics/80-health-probe-endpoints/DECISION.md:911
+PASS  R80-r75b  research/topics/80-health-probe-endpoints/DECISION.md:912
+
+=== R02, published topics, and programme documents ===
+PASS  R02-web  research/topics/02-crate-boundary-enforcement/DECISION.md:43
+PASS  R02-root  research/topics/02-crate-boundary-enforcement/DECISION.md:40
+PASS  R01-seam  research/topics/01-ports-and-adapters-seam/DECISION.md:138
+PASS  R67-cat  research/topics/67-error-and-exit-code-contract/DECISION.md:383
+PASS  IDX-R74  research/CLAUDE.md:79
+PASS  PAR-17  docs/port/PARAMETERS.md:17
+PASS  PAR-17b  docs/port/PARAMETERS.md:17
+PASS  OR-W2  docs/port/OWNER-REVIEW.md:187
+PASS  OA-R69  docs/port/OWNER-ACCEPTANCES.md:60
+PASS  OA-R02  docs/port/OWNER-ACCEPTANCES.md:71
+PASS  OA-R05  docs/port/OWNER-ACCEPTANCES.md:75
+PASS  OA-R05b  docs/port/OWNER-ACCEPTANCES.md:75
+PASS  OD-gate2  docs/planning/p02/owner-decisions.md:459
+PASS  OD-s11  docs/planning/p02/owner-decisions.md:421
+PASS  CM-F316  docs/port/COMMONALITY.md:320
+PASS  CM-F317  docs/port/COMMONALITY.md:321
+PASS  CM-F323  docs/port/COMMONALITY.md:327
+PASS  WS-ts  docs/port/areas/web-service.md:7
+PASS  WS-F316  docs/port/areas/web-service.md:22
+PASS  WS-F317  docs/port/areas/web-service.md:23
+PASS  WS-F323  docs/port/areas/web-service.md:29
+PASS  RM-vocab  docs/port/README.md:61
+PASS  OREF-70  research/runs/R74/2026-09-18T215916Z-14066395aaea/inputs/owner-reference-axum-companion-stack-2026-09-16.md:70
+PASS  OREF-333  research/runs/R74/2026-09-18T215916Z-14066395aaea/inputs/owner-reference-axum-companion-stack-2026-09-16.md:333
+PASS  OREF-zero no ConnectInfo or into_make_service in the owner reference == 0
+
+=== Q. the engine substitution: authority chain and the frozen prompt ===
+PASS  Q0 the live topic prompt is byte-identical to inputs/prompt.md
+PASS  Q1 prompt engines line  research/topics/74-rate-limiting-middleware/prompts/rate-limiting-middleware.prompt.md:25
+PASS  Q2 prompt substitution sentence  research/topics/74-rate-limiting-middleware/prompts/rate-limiting-middleware.prompt.md:71
+PASS  Q3 RUNBOOK engine_overrides pilot  research/RUNBOOK.md:70
+PASS  Q4 RUNBOOK bulk set names R74  research/RUNBOOK.md:71
+PASS  Q5 RUNBOOK Q9.B  research/RUNBOOK.md:72
+PASS  Q6 RUNBOOK Q17.A  research/RUNBOOK.md:75
+PASS  Q7 EXECUTION.json override row for R74 == ["muse","opus","doxa"]
+PASS  Q8 EXECUTION.json item row for R74 == ["muse","opus","doxa"]
+PASS  Q9 manifest migration codex -> muse under Q5.A == codex|muse|muse bulk substitution (owner decision Q5.A 2026-09-21)
+PASS  Q10 manifest required_engines == ["muse","opus","doxa"]
+
+=== M. the Muse leg: identity, registration state, and the lines the decision cites ===
+PASS  M1 raw/muse.md sha256 == c3e018cfd5f7df4f4887d4c04d2464fbd0280e749a42d7a69e48a8684c2690dd
+PASS  M2 raw/muse.md line count == 337
+PASS  M3 operations/muse.json model|state|request == muse-spark|submitting|e762efa45fe34c2db2a4efd1fa28f85c
+PASS  M4 manifest operations.muse.state (present on disk, not yet registered) == submitting
+PASS  M0a the prompt never mentions W2-REST, R11.2 or the REST standard == 0
+PASS  M0b raw/muse.md never mentions W2-REST, R11.2 or the REST standard == 0
+PASS  M19 loco is_enabled claim  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:19
+PASS  M25 off by default (B1), one value (B2)  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:25
+PASS  M25b  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:25
+PASS  M33 tower_governor source readings  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:33
+PASS  M35 tower-rate-limiter verdict  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:35
+PASS  M35b fixed window over-states  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:35
+PASS  M37 crates pulled, no count  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:37
+PASS  M45 owner reference rows  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:45
+PASS  M47 no BASELINE-REVIEW  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:47
+PASS  M47b preserves exactly  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:47
+PASS  M51 recommendation  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:51
+PASS  M116 tracing is R58's  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:116
+PASS  M138 single-parameter interval  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:138
+PASS  M138b fixed window overstating  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:138
+PASS  M149 fixed window rejected on B6  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:149
+PASS  M166 recommendation arithmetic  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:166
+PASS  M179 one string  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:179
+PASS  M209 dashmap advisory  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:209
+PASS  M250 capacity is not the gate  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:250
+PASS  M295 settings fields  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:295
+PASS  M337 G2 nothing executed  research/runs/R74/2026-09-18T215916Z-14066395aaea/raw/muse.md:337
+
+=== Y. py precedent at the pin (local clone, no network) ===
+PASS  Y1 settings.py:70 rate_limit is optional, default None  b08bccfb:settings.py:70
+PASS  Y2 app.py:128 comment: RequestID + SecurityHeaders outermost  b08bccfb:app.py:128
+PASS  Y3 app.py:129 comment: CORS preflights and slowapi 429s short-circuit  b08bccfb:app.py:129
+PASS  Y4 app.py:131 IdempotencyMiddleware added first  b08bccfb:app.py:131
+PASS  Y4b app.py:132  b08bccfb:app.py:132
+PASS  Y5 app.py:136 CORS registered before the limiter  b08bccfb:app.py:136
+PASS  Y6 app.py:143 the gate  b08bccfb:app.py:143
+PASS  Y7 app.py:144 the limiter is installed after CORS  b08bccfb:app.py:144
+PASS  Y8 app.py:145 SecurityHeaders  b08bccfb:app.py:145
+PASS  Y9 app.py:146 RequestID is added last, so outermost  b08bccfb:app.py:146
+PASS  Y10 app.py:220 no storage_uri  b08bccfb:app.py:220
+
+CHECKS RUN: 134  PASS: 134  FAILURES: 0  SKIPPED: 0

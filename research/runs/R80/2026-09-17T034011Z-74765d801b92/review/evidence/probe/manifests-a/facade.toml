@@ -1,0 +1,23 @@
+[workspace]
+members = ["crates/core", "crates/web"]
+resolver = "3"
+
+[package]
+name = "facade"
+version = "0.4.2"
+edition = "2024"
+rust-version = "1.96"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[features]
+web = ["dep:probe-web"]
+
+[dependencies]
+probe-web = { path = "crates/web", optional = true }
+
+[dev-dependencies]
+probe-web = { path = "crates/web" }
+probe-core = { path = "crates/core" }

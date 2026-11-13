@@ -1,0 +1,142 @@
+INFO scratch copy of fixture/ at /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r32-taxonomy.2H9gks; CARGO_TARGET_DIR=/tmp/cargo-s66-R32-target/r32-taxonomy
+INFO rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew); cargo-nextest 0.9.146 (8af696ddc 2026-09-21)
+INFO      Compiling memchr v2.8.3
+INFO      Compiling autocfg v1.5.1
+INFO      Compiling regex-syntax v0.8.11
+INFO      Compiling libc v0.2.189
+INFO      Compiling predicates-core v1.0.10
+INFO      Compiling termtree v0.5.1
+INFO      Compiling assert_cmd v2.2.2
+INFO      Compiling normalize-line-endings v0.3.0
+INFO      Compiling anstyle v1.0.14
+INFO      Compiling difflib v0.4.0
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-taxonomy.2H9gks)
+INFO      Compiling predicates-tree v1.0.13
+INFO      Compiling num-traits v0.2.19
+INFO      Compiling aho-corasick v1.1.5
+INFO      Compiling regex-automata v0.4.18
+INFO      Compiling wait-timeout v0.2.1
+INFO      Compiling float-cmp v0.10.0
+INFO      Compiling regex v1.13.1
+INFO      Compiling bstr v1.13.1
+INFO      Compiling predicates v3.1.4
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 3.15s
+INFO   ────────────
+INFO    Nextest run ID 3dcda69e-f385-46ee-8de2-d27f8d454704 with nextest profile: default
+INFO       Starting 1 test across 4 binaries (5 tests skipped)
+INFO           PASS [   1.222s] (1/1) rs-launch-blueprint::cli slow::large_config_round_trip
+INFO   ────────────
+INFO        Summary [   1.224s] 1 test run: 1 passed, 5 skipped
+PASS E6a — nextest --run-ignored only -E 'test(/(^|::)slow::/)': 1 run, 1 passed
+PASS E6b — ... and it is slow::large_config_round_trip
+PASS E6c — ... and no live test ran
+PASS E6d — the same with live: only live::projects_api_round_trip
+PASS E6e — ... and no slow test ran
+PASS E6f — --run-ignored all: 6 run, 6 passed (py's pytest -m "")
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+INFO        Running tests/cli/main.rs (/tmp/cargo-s66-R32-target/r32-taxonomy/debug/deps/cli-9c399806c4991970)
+INFO   
+INFO   running 6 tests
+INFO   test live::projects_api_round_trip ... ignored, live: requires external services
+INFO   test slow::large_config_round_trip ... ignored, slow: takes >1s
+INFO   test in_process::projects_lists_names_in_process ... ok
+INFO   test in_process::unknown_command_is_usage_error_in_process ... ok
+INFO   test binary::binary_usage_error_exits_2_with_empty_stdout ... ok
+INFO   test binary::binary_lists_projects ... ok
+INFO   
+INFO   test result: ok. 4 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.17s
+INFO   
+PASS E6h — cargo test (no nextest): slow skipped with its reason
+PASS E6i — cargo test (no nextest): live skipped with its reason
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO        Running tests/cli/main.rs (/tmp/cargo-s66-R32-target/r32-taxonomy/debug/deps/cli-9c399806c4991970)
+INFO   
+INFO   running 1 test
+INFO   test slow::large_config_round_trip ... ok
+INFO   
+INFO   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 1.20s
+INFO   
+PASS E6j — cargo test -- --ignored slow:: runs only the slow test
+INFO   cargo nextest run --locked --run-ignored only -E 'test(/(^|::)slow::/)'
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO   ────────────
+INFO    Nextest run ID 455fdc31-2d9f-49c8-8c57-cc16bf9d3363 with nextest profile: default
+INFO       Starting 1 test across 4 binaries (5 tests skipped)
+INFO           PASS [   1.213s] (1/1) rs-launch-blueprint::cli slow::large_config_round_trip
+INFO   ────────────
+INFO        Summary [   1.214s] 1 test run: 1 passed, 5 skipped
+PASS E6-test-slow — the Justfile recipe 'just test-slow' exits 0
+INFO   cargo nextest run --locked --run-ignored only -E 'test(/(^|::)live::/)'
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO   ────────────
+INFO    Nextest run ID 0cc47ae3-98d8-429d-8f19-52baa63055c5 with nextest profile: default
+INFO       Starting 1 test across 4 binaries (5 tests skipped)
+INFO           PASS [   0.008s] (1/1) rs-launch-blueprint::cli live::projects_api_round_trip
+INFO   ────────────
+INFO        Summary [   0.008s] 1 test run: 1 passed, 5 skipped
+PASS E6-test-live — the Justfile recipe 'just test-live' exits 0
+INFO   cargo nextest run --locked --features web --run-ignored all
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-taxonomy.2H9gks)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.40s
+INFO   ────────────
+INFO    Nextest run ID 4e8c61d7-4e1d-46ec-be14-9a896f2a13fe with nextest profile: default
+INFO       Starting 8 tests across 5 binaries
+INFO           PASS [   0.021s] (1/8) rs-launch-blueprint::web health_is_ok_in_process
+INFO           PASS [   0.022s] (2/8) rs-launch-blueprint::cli in_process::projects_lists_names_in_process
+INFO           PASS [   0.024s] (3/8) rs-launch-blueprint::cli in_process::unknown_command_is_usage_error_in_process
+INFO           PASS [   0.026s] (4/8) rs-launch-blueprint::cli live::projects_api_round_trip
+INFO           PASS [   0.250s] (5/8) rs-launch-blueprint::cli binary::binary_usage_error_exits_2_with_empty_stdout
+INFO           PASS [   0.250s] (6/8) rs-launch-blueprint::cli binary::binary_lists_projects
+INFO           PASS [   0.498s] (7/8) rs-launch-blueprint::web serve_binary_starts
+INFO           PASS [   1.231s] (8/8) rs-launch-blueprint::cli slow::large_config_round_trip
+INFO   ────────────
+INFO        Summary [   1.232s] 8 tests run: 8 passed, 0 skipped
+INFO   cargo test --doc --locked --features web
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO      Doc-tests rs_launch_blueprint
+INFO   
+INFO   running 1 test
+INFO   test src/lib.rs - run (line 36) ... ok
+INFO   
+INFO   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+INFO   
+INFO   all doctests ran in 0.49s; merged doctests compilation took 0.23s
+PASS E6-test-all — the Justfile recipe 'just test-all' exits 0
+PASS E6r — just test-slow ran exactly the slow test
+PASS E6s — just test-live ran exactly the live test
+PASS E6t — just test-all ran all 8 with the web feature on (6 CLI-tier incl. slow and live, 2 web-tier)
+PASS E6u — ... including the doc-test
+INFO override check: shrink the committed default to period 1s x terminate-after 1; the slow:: override must still apply
+PASS E6g0 — the default cap was shrunk for this check
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-taxonomy.2H9gks)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+INFO   ────────────
+INFO    Nextest run ID 1a3e774f-c9ba-4294-a299-ae9750b9138b with nextest profile: default
+INFO       Starting 1 test across 5 binaries (6 tests skipped)
+INFO           PASS [   1.211s] (1/1) rs-launch-blueprint::cli slow::large_config_round_trip
+INFO   ────────────
+INFO        Summary [   1.212s] 1 test run: 1 passed, 6 skipped
+PASS E6g — the 1.2 s slow:: test passes: the committed [[profile.default.overrides]] filter matches it
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO   ────────────
+INFO    Nextest run ID aad6a44f-bb64-4163-abc9-363c5f7ddf2b with nextest profile: default
+INFO       Starting 1 test across 1 binary (4 binaries skipped)
+INFO    TERMINATING [>  1.000s] (───) rs-launch-blueprint::nonslow sleeps_1200ms
+INFO        TIMEOUT [   1.002s] (1/1) rs-launch-blueprint::nonslow sleeps_1200ms
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO   
+INFO       (test timed out)
+INFO   
+INFO     Cancelling due to test failure: 
+INFO   ────────────
+INFO        Summary [   1.002s] 1 test run: 0 passed, 1 timed out, 0 skipped
+INFO        TIMEOUT [   1.002s] (1/1) rs-launch-blueprint::nonslow sleeps_1200ms
+INFO   error: test run failed
+PASS E6g2 — control: a 1.2 s test outside slow:: times out under the same shrunk default
+INFO runner-up check: carry the live class by a nextest default-filter instead of #[ignore]
+PASS E6k — the live test's #[ignore] was removed for this check
+PASS E6l — under nextest the default-filter excludes the live test
+PASS E6m — under plain cargo test the same live test RUNS (libtest never reads .config/nextest.toml)
+RESULT PASS=22 FAIL=0

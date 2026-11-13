@@ -1,0 +1,107 @@
+=== R70 revision 5: engines and counts ===
+date (UTC): 2026-09-28T05:30:30Z
+HEAD: 5cdf85d33239e65c2531bea1bb5572ee623e7dc6
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+--- A. which engines this item has, and on whose authority
+PASS  raw/muse.md sha256 == 989725675cb0f0c7d0dbb975435097d4d0f837e0ec32c137fc4cf64b3c4a7249
+PASS  raw/opus.md sha256 == 82538638b5f54017c22853eb9e52e6d4e6c71b78e35fad8ed6ea68be3fefe39e
+PASS  raw/opus.md is byte-identical to the collected raw/opus-82538638….md == 82538638b5f54017c22853eb9e52e6d4e6c71b78e35fad8ed6ea68be3fefe39e
+PASS  raw/muse.md line count == 218
+PASS  inputs/prompt.md sha256 equals manifest input_hashes.prompt == b47f8a263268a266a453429fa9b70d4761d205beb9d766056e4ec95cbbe656fc
+PASS  prompt names the engines (:23)
+PASS  prompt states the Muse-for-Codex substitution (:69)
+PASS  EXECUTION.json engine_overrides.R70 / items.R70.engines == muse,opus / muse,opus
+PASS  manifest required_engines == muse,opus
+PASS  manifest migration event (at / from / to / cites Q5.A) == 2026-09-21T23:06:20Z codex muse True
+PASS  ledger records owner decision Q5.A (:1114)
+PASS  RUNBOOK records Q9.B retiring Codex (:72)
+
+--- B. both legs: collected per the ledger, present and well-shaped on disk
+PASS  ledger entry heading for the collection (:1157)
+PASS  ledger records R70's Muse sha prefix and content (:1157)
+PASS  the ledger's 98972567 is the prefix of raw/muse.md's sha256
+PASS  both legs present and non-empty (raw/muse.md / raw/opus.md) == yes yes
+PASS  check-answer-shape.sh raw/opus.md bundle == OK: validation passed
+PASS  manifest operations.opus.raw_sha256 equals raw/opus.md's sha256 == 82538638b5f54017c22853eb9e52e6d4e6c71b78e35fad8ed6ea68be3fefe39e
+PASS  check-answer-shape.sh raw/muse.md bundle == OK: validation passed
+PASS  raw/muse.md #### members == 2
+PASS  raw/opus.md #### members == 4
+
+--- C. the Muse report, at every line revision 4 cites
+PASS  engine and retrieval date (:3)
+PASS  problemdetails all-time figure (:13)
+PASS  LOW question: negative result (:19)
+PASS  no BASELINE-REVIEW (:25)
+PASS  404/405 via fallback; rejections reshaped (:27)
+PASS  totality claimed at compile time (:29)
+PASS  nothing executed (:37)
+PASS  recommendation: one envelope (:41)
+PASS  dominant choice http-api-problem (:57)
+PASS  problemdetails ranked runner-up (:61)
+PASS  no candidate fails a gate (:65)
+PASS  http-api-problem declares no rust-version (:73)
+PASS  member recommendation (:77)
+PASS  runner-up named (:81)
+PASS  no CONFLICT (envelope member) (:89)
+PASS  exhaustive match, no wildcard arm (:124)
+PASS  trait impl on R67's error type (:124)
+PASS  trait is web-local (:128)
+PASS  derive and runtime map excluded (:136)
+PASS  trait impl for R67 type (:148)
+PASS  R67 treated as undecided (member) (:160)
+PASS  assumes placeholder for R67 (:187)
+PASS  assumes placeholder for R69 (:188)
+PASS  envelope field list for R71 (:199)
+PASS  planned negative check expects a compile error (:209)
+PASS  gap 5: nothing executed (:218)
+
+--- D. the evidence that settles each disagreement
+PASS  gate 2 wording (D1) (:62)
+PASS  registry check: zero rust_version declarations (D1) (:24)
+PASS  same-crate _ arm is unreachable (D2) (:46)
+PASS  same-crate: no value can reach it (D2) (:47)
+PASS  cross-crate _ arm draws nothing (D2) (:48)
+PASS  prompt calls R67 undecided (D2) (:34)
+PASS  prerequisites.json pins R67's published decision (D2) == 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+PASS  R67 topic DECISION.md sha256 (D2) == 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+PASS  R67: a different crate needs a _ arm (D2) (:150)
+PASS  R67 prescribes the ALL coverage test (D2) (:151)
+PASS  R67 Disagreement 7, inside the cited :653-662 (D2) (:654)
+PASS  R67 silent-refactor sentence is on the A4 row (EF-1) (:136)
+PASS  R67 :135 does not carry the silent-refactor sentence (EF-1)
+PASS  R02 revision 2 snapshot sha256 (D3) == 9e8f8e8c11ffb9b383819b2de1b05eab71a32e3af358b75ea8475d48f3c9707f
+PASS  R02: web depends on core only (D3) (:29)
+PASS  ProblemSource is a web-local trait (D3) (:349)
+PASS  ProblemSource implemented in the web crate (D3) (:359)
+
+--- E. the counts the audits corrected
+NOTE  probe-r2.sh criterion numbers: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 
+PASS  distinct criteria R1..R24 in probe-r2.sh == 24
+PASS  carried criteria present (R1-R3, R7-R10, R12-R17) (JF-1 1) == 13
+PASS  new criteria present (R4-R6, R11, R18-R24) (JF-1 1) == 11
+PASS  bullets under 'What these checks do not prove' (JF-1 2) == 9
+PASS  revision-1 bodies quoted (JF-1 4, EF-2) == 2
+PASS  revision-2 bodies quoted (JF-1 4, EF-2) == 6
+PASS  stale 'The four bodies' lead-in is gone outside the repair table (EF-2) == 0
+PASS  rest-r2.sh makes no OV-05 assertion (JF-1 5) == 0
+PASS  rest-r2.sh asserts OV-06 free (JF-1 5) (:260)
+PASS  R80 published copy is revision 6 == 1
+PASS  R80 revision 6 claims OV-05 in its override heading (JF-1 5, EA-1) (:790)
+PASS  decision prose no longer says 'OV-05 and OV-06' (JF-1 5) == 0
+PASS  decision header is revision 5 (:1)
+
+--- F. the /readyz diagnostic carrier (revision 5)
+PASS  R80 rev 6 defers the carrier: requirement (:860)
+PASS  R80 rev 6 defers the carrier: way (a) (:861)
+PASS  R80 rev 6 defers the carrier: owner (:863)
+PASS  py carries the report as a diagnostics extension (:853)
+PASS  R80's executed T4 carries the report under diagnostics (:1155)
+PASS  R80 builds the report's detail redacted at its source (:1007)
+PASS  way (c) is barred: R3 forbids a detail-public 5xx (:914)
+PASS  stale 'R80's to justify' is gone outside the repair table == 0
+PASS  stale 'Being researched in parallel' is gone == 0
+PASS  stale 'R80 justifying a fifth extension member' trigger is gone outside the repair table == 0
+
+=== summary ===
+PASS 87  FAIL 0  SKIP 0  TOTAL 87

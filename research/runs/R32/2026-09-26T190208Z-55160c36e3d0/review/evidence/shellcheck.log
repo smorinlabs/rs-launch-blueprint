@@ -1,0 +1,14 @@
+shellcheck version: 0.11.0 at /opt/homebrew/bin/shellcheck, run 2026-09-28T04:36:05Z from review/evidence/
+OK lib.sh
+OK r32-citations.sh
+OK r32-hook.sh
+OK r32-install.sh
+OK r32-isolation.sh
+OK r32-msrv.sh
+OK r32-parallel.sh
+OK r32-r2-sources.sh
+OK r32-shape.sh
+OK r32-sources.sh
+OK r32-taxonomy.sh
+OK r32-tiers.sh
+OK r32-timeout.sh

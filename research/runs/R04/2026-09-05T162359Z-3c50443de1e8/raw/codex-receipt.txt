@@ -1,0 +1,9 @@
+Wrote [raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/raw/codex.md).
+
+SHA-256: `581d44c532bf6eed136e89fd5702367a2369aa616ace9656baf64e51d4d60ae4`
+
+H3 fields: 15, in the required order.
+
+`CONFLICT:` none. `BASELINE-REVIEW:` F014 emitted.
+
+Unverified: GitHub issue-response figures rate-limited; RustSec package URLs returned not found.

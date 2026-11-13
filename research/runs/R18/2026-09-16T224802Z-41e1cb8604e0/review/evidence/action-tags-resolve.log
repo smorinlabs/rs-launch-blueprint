@@ -1,0 +1,22 @@
+# action-tags-resolve.log
+retrieved: 2026-09-10T05:15:59Z (UTC)
+
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.220 --jq '.object.sha+" "+.object.type'
+020e931323e467e00b803ad64e03410d3796b8f7 tag
+exit: 0
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.219 --jq '.object.sha+" "+.object.type'
+edeb53db9b99ad823c31c54b43df20472010d965 tag
+exit: 0
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.217 --jq '.object.sha+" "+.object.type'
+ef7878a0506921197f7f9cd8a6c8dc7b11497021 tag
+exit: 0
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.175 --jq '.object.sha+" "+.object.type'
+e3b2771caf63a7d585066ee84cc62c5cd0855c76 tag
+exit: 0
+
+# dereference annotated tag v1.0.219 to its commit (doxa-openai cited SHA 5ccc3a35a6367cdb8e6fbd0728287467540ecfe2)
+$ gh api repos/anthropics/claude-code-action/git/tags/edeb53db9b99ad823c31c54b43df20472010d965 --jq '.object.sha'
+5ccc3a35a6367cdb8e6fbd0728287467540ecfe2
+
+# dereference annotated tag v1.0.220 to its commit (recommended pin target for R20)
+19dda84776b3518d98b8798e591daee763049ed3

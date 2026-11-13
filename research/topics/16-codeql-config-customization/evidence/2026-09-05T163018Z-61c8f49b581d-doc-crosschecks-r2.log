@@ -1,0 +1,46 @@
+# revision 2 — documentation cross-checks — retrieved 2026-09-10T01:23:15Z
+$ curl -sS https://api.github.com/repos/github/codeql-action/releases/latest   (newest release at retrieval; NOT the pin)
+codeql-bundle-v2.27.0 2026-09-09T11:31:59Z
+exit=0
+$ curl -sS https://api.github.com/repos/github/codeql-action/tags?per_page=5 | jq .[].name
+v4.38.0 v4.37.9 v4.37.8 v4.37.7 v4.37.6
+exit=0
+$ curl -sS https://raw.githubusercontent.com/github/codeql-action/v4.38.0/src/defaults.json   (the release after v4.37.9, for the re-verify note)
+{
+  "bundleVersion": "codeql-bundle-v2.27.0",
+  "cliVersion": "2.27.0",
+  "priorBundleVersion": "codeql-bundle-v2.26.4",
+  "priorCliVersion": "2.26.4"
+}
+
+exit=0
+$ curl -sS 'https://api.github.com/repos/github/codeql/contents/rust/ql/src/queries/security?ref=codeql-cli/v2.27.0'   (CWE directories at 2.27.0, static; 2.26.4 had 19 security queries incl. BadCtorInitialization)
+CWE-020 CWE-022 CWE-078 CWE-079 CWE-089 CWE-117 CWE-295 CWE-311 CWE-312 CWE-319 CWE-327 CWE-614 CWE-696 CWE-770 CWE-798 CWE-825 CWE-918
+exit=0
+$ curl -sS 'https://api.github.com/repos/github/codeql/contents/rust/ql/src/queries/security?ref=codeql-cli/v2.26.4'
+CWE-020 CWE-022 CWE-079 CWE-089 CWE-117 CWE-295 CWE-311 CWE-312 CWE-319 CWE-327 CWE-614 CWE-696 CWE-770 CWE-798 CWE-825 CWE-918
+exit=0
+
+# revision 2 continuation (second synthesizer context) — the query id behind the CWE-078 directory named above — retrieved 2026-09-10T02:32:03Z
+$ curl -sS https://raw.githubusercontent.com/github/codeql/codeql-cli/v2.27.0/rust/ql/src/queries/security/CWE-078/CommandInjection.ql | grep -E '@(id|name|kind|precision|problem.severity|security-severity|tags)'
+ * @name Uncontrolled command line
+ * @kind path-problem
+ * @problem.severity error
+ * @security-severity 9.8
+ * @precision high
+ * @id rust/command-line-injection
+ * @tags security
+exit=0
+$ curl -sS 'https://api.github.com/repos/github/codeql/contents/rust/ql/src/queries/security/CWE-078?ref=codeql-cli/v2.27.0'   (directory contents; static, not executed)
+CommandInjection.qhelp CommandInjection.ql CommandInjectionBad.rs CommandInjectionGood.rs
+exit=0
+
+# revision 2 continuation — the CLI flags github/codeql-action v4.37.9 derives from the workflow's config-file: and build-mode: inputs — retrieved 2026-09-10T02:35:15Z
+$ curl -sS https://raw.githubusercontent.com/github/codeql-action/v4.37.9/src/codeql.ts | grep -n -- 'codescanning-config|build-mode'   (database-create path)
+107:   * Extract code with 'codeql database trace-command --use-build-mode'. This can only be used when
+567:      extraArgs.push(`--codescanning-config=${codeScanningConfigFile}`);
+573:        extraArgs.push(`--build-mode=${config.buildMode}`);
+683:          "--use-build-mode",
+803:        `--sarif-codescanning-config=${getGeneratedCodeScanningConfigPath(
+913:        `--sarif-codescanning-config=${getGeneratedCodeScanningConfigPath(
+exit=0

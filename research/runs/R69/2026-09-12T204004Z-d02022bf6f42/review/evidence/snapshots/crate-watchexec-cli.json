@@ -1,0 +1,19 @@
+{
+  "crate": "watchexec-cli",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/watchexec-cli",
+    "versions": "https://crates.io/api/v1/crates/watchexec-cli/versions"
+  },
+  "recent_downloads": 8702,
+  "downloads": 659914,
+  "repository": "https://github.com/watchexec/watchexec",
+  "versions_total": 59,
+  "newest_non_yanked": {
+    "num": "2.7.2",
+    "created_at": "2026-09-06T04:28:41.425571Z",
+    "yanked": false,
+    "rust_version": null,
+    "license": "Apache-2.0"
+  }
+}

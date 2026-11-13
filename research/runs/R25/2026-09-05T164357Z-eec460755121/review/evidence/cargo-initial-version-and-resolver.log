@@ -1,0 +1,83 @@
+# R25 — cargo's own initial version, and Cargo's 0.y compatibility band observed in the resolver (executed 2026-09-09)
+# working directory: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad  (session scratchpad; nothing is created inside the repository worktree)
+# toolchain: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+
+## 1. What version does a brand-new Rust package start at?
+$ cargo new --lib --vcs none probe-lib && cargo new --bin --vcs none probe-bin
+    Creating library `probe-lib` package
+note: see more `Cargo.toml` keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+    Creating binary (application) `probe-bin` package
+note: see more `Cargo.toml` keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+exit=0
+--- probe-lib/Cargo.toml ---
+[package]
+name = "probe-lib"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+--- probe-bin/Cargo.toml ---
+[package]
+name = "probe-bin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+## 2. Does Cargo treat a 0.y minor bump as incompatible? (bare requirement == caret requirement)
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/resolve/a/Cargo.toml ---
+[package]
+name = "resolve-a"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bitflags = "0.9.0"
+$ (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/resolve/a && cargo generate-lockfile)
+        Updating crates.io index
+         Locking 1 package to latest Rust 1.98.0 compatible version
+          Adding bitflags v0.9.1 (available: v2.13.2)
+exit=0
+    resolved:
+      name = "bitflags"
+      version = "0.9.1"
+      source = "registry+https://github.com/rust-lang/crates.io-index"
+
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/resolve/b/Cargo.toml ---
+[package]
+name = "resolve-b"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bitflags = "1.0.0"
+$ (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/resolve/b && cargo generate-lockfile)
+        Updating crates.io index
+         Locking 1 package to latest Rust 1.98.0 compatible version
+          Adding bitflags v1.3.2 (available: v2.13.2)
+exit=0
+    resolved:
+      name = "bitflags"
+      version = "1.3.2"
+      source = "registry+https://github.com/rust-lang/crates.io-index"
+
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/resolve/c/Cargo.toml ---
+[package]
+name = "resolve-c"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = { version = "0.7.0", default-features = false }
+$ (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/resolve/c && cargo generate-lockfile)
+        Updating crates.io index
+         Locking 29 packages to latest Rust 1.98.0 compatible versions
+          Adding axum v0.7.9 (available: v0.8.9)
+exit=0
+    resolved:
+      name = "axum"
+      version = "0.7.9"
+      source = "registry+https://github.com/rust-lang/crates.io-index"
+
+## Reading: a bare requirement "0.9.0" locks to 0.9.1 while 2.13.2 exists; "0.7.0" locks axum to 0.7.9 while 0.8.9 exists;
+## a bare requirement "1.0.0" moves freely to 1.3.2 but not to 2.13.2. The incompatibility boundary is the left-most non-zero component.

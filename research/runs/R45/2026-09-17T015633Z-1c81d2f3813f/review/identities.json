@@ -1,0 +1,46 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T165440Z-58f1cbb2e6c5",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T165440Z-58f1cbb2e6c5-r5",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T165440Z-58f1cbb2e6c5-r5",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T165440Z-58f1cbb2e6c5-r5",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence/r45-check-r5.sh"
+    ],
+    "cwd": "/Users/stevemorin/c/rs-launch-blueprint-p02-plan, the repository root, which is why the argv above carries the full repository-relative script path. The round-5 empirical audit also extracted `git archive HEAD` under /private/tmp and ran the unmodified script from that extraction to exit 0, logged to review/evidence/audit-r45-r5-archive.log, where E1-E5 have the same values and results and E6 correctly reports SKIP because the archive has no .git; only the in-place leg named in argv is asserted here.",
+    "toolchain": "GNU Bash 3.2.57, curl 8.7.1, BSD grep 2.6.0 and Darwin 25.4 arm64, as the round-5 empirical audit's `## Rerun` records. E1 through E6 all pass with `failed checks: 0`. The output comparison against the committed r45-greptile-snapshot-r5.log differs only in the generated capture timestamp and the private mktemp path, agreeing on every check result, committed-observation value, live value and emitted script source.",
+    "output_log": "review/evidence/audit-r45-r5-recorded.log",
+    "exit_code": 0
+  }
+}

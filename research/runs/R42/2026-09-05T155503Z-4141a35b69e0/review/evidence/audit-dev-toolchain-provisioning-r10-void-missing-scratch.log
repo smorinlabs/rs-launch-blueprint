@@ -1,0 +1,168 @@
+audit=R42 revision-10 check-16 clean-archive rerun
+archive=/private/tmp/r42-audit-r10-archive.svIGYe
+archive-decision-sha256=a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c
+argv=extract recorded check16.sh from archived evidence/binstall-signing.log; SCRATCH=/private/tmp/r42-audit-r10-archive.svIGYe/scratch PERTURB= /bin/bash
+grep=/usr/bin/grep
+PERTURB=<none, clean run>
+
+--- 1. The signature policy, read in the source at the immutable tag v1.23.0
+curl: (56) Failure writing output to destination, passed 843 returned 4294967295
+args.rs HTTP 200 curl-exit 56
+ASSERT-FAIL http-args.rs expected [0 200] got [56 200]
+shasum: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/args.rs: No such file or directory
+args.rs sha256 
+ASSERT-FAIL sha256-args.rs expected [4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783] got []
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/args.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-only_signed expected [0] got [2]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/args.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-skip_signatures expected [0] got [2]
+
+--- 2. What the GitHub-release fetcher does when the crate declares no signing key
+curl: (56) Failure writing output to destination, passed 1369 returned 4294967295
+gh_crate_meta.rs HTTP 200 curl-exit 56
+ASSERT-FAIL http-gh_crate_meta.rs expected [0 200] got [56 200]
+shasum: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/gh_crate_meta.rs: No such file or directory
+gh_crate_meta.rs sha256 
+ASSERT-FAIL sha256-gh_crate_meta.rs expected [15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2] got []
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/gh_crate_meta.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-verifier-match expected [0] got [2]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/gh_crate_meta.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-verified-line expected [0] got [2]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/gh_crate_meta.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-gh-is_third_party expected [0] got [2]
+
+--- 3. Signing metadata is opt-in per crate — the maintainers' own words
+curl: (56) Failure writing output to destination, passed 1369 returned 4294967295
+SIGNING.md HTTP 200 curl-exit 56
+ASSERT-FAIL http-SIGNING.md expected [0 200] got [56 200]
+shasum: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/SIGNING.md: No such file or directory
+SIGNING.md sha256 
+ASSERT-FAIL sha256-SIGNING.md expected [9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9] got []
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/SIGNING.md: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-no-autodiscovery expected [0] got [2]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/SIGNING.md: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-signing-stanza expected [0] got [2]
+
+--- 4. The other prebuilt fetcher, QuickInstall, pins its own key instead
+curl: (56) Failure writing output to destination, passed 1369 returned 4294967295
+quickinstall.rs HTTP 200 curl-exit 56
+ASSERT-FAIL http-quickinstall.rs expected [0 200] got [56 200]
+shasum: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/quickinstall.rs: No such file or directory
+quickinstall.rs sha256 
+ASSERT-FAIL sha256-quickinstall.rs expected [821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7] got []
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/quickinstall.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-quickinstall-key expected [0] got [2]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/quickinstall.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-qi-download-signature expected [0] got [2]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/quickinstall.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-qi-is_third_party expected [0] got [2]
+
+--- 5. Which fetcher the WARN line names, so the log can be read
+curl: (56) Failure writing output to destination, passed 1369 returned 4294967295
+resolution.rs HTTP 200 curl-exit 56
+ASSERT-FAIL http-resolution.rs expected [0 200] got [56 200]
+shasum: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/resolution.rs: No such file or directory
+resolution.rs sha256 
+ASSERT-FAIL sha256-resolution.rs expected [2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2] got []
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/resolution.rs: No such file or directory
+grep exit=2
+ASSERT-FAIL grep-warn-line expected [0] got [2]
+
+--- 6. Do the specs check 15 exercised declare signing in their PUBLISHED Cargo.toml?
+curl: (56) Failure writing output to destination, passed 945 returned 4294967295
+cargo-shear-1.13.1.crate HTTP 200 curl-exit 56
+ASSERT-FAIL http-cargo-shear-1.13.1.crate expected [0 200] got [56 200]
+/bin/bash: line 102: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/cargo-shear-1.13.1.Cargo.toml: No such file or directory
+tar exit=1
+ASSERT-FAIL tar-cargo-shear-1.13.1 expected [0] got [1]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/cargo-shear-1.13.1.Cargo.toml: No such file or directory
+cargo-shear@1.13.1 signing: ABSENT
+ASSERT-OK   signing-verdict-cargo-shear@1.13.1 = ABSENT
+curl: (56) Failure writing output to destination, passed 1369 returned 4294967295
+taplo-cli-0.10.0.crate HTTP 200 curl-exit 56
+ASSERT-FAIL http-taplo-cli-0.10.0.crate expected [0 200] got [56 200]
+/bin/bash: line 102: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/taplo-cli-0.10.0.Cargo.toml: No such file or directory
+tar exit=1
+ASSERT-FAIL tar-taplo-cli-0.10.0 expected [0] got [1]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/taplo-cli-0.10.0.Cargo.toml: No such file or directory
+taplo-cli@0.10.0 signing: ABSENT
+ASSERT-OK   signing-verdict-taplo-cli@0.10.0 = ABSENT
+curl: (56) Failure writing output to destination, passed 1369 returned 4294967295
+cargo-binstall-1.23.0.crate HTTP 200 curl-exit 56
+ASSERT-FAIL http-cargo-binstall-1.23.0.crate expected [0 200] got [56 200]
+/bin/bash: line 102: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/cargo-binstall-1.23.0.Cargo.toml: No such file or directory
+tar exit=1
+ASSERT-FAIL tar-cargo-binstall-1.23.0 expected [0] got [1]
+grep: /private/tmp/r42-audit-r10-archive.svIGYe/scratch/cargo-binstall-1.23.0.Cargo.toml: No such file or directory
+cargo-binstall@1.23.0 signing: ABSENT
+ASSERT-FAIL signing-verdict-cargo-binstall@1.23.0 expected [PRESENT] got [ABSENT]
+
+--- 7. Execute both policies against those specs, --dry-run so nothing is installed
+~/.cargo/bin listing sha256 before: 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+asset HTTP 200 curl-exit 0
+ASSERT-OK   http-release-asset = 0 200
+unzip exit=0
+ASSERT-OK   unzip-release-asset = 0
+cargo-binstall binary sha256 5e17743fdc1aeedd3e6982b04f53ee23bc7d5e727454559ab0e2129d15e86188
+command -v cargo-binstall -> /private/tmp/r42-audit-r10-archive.svIGYe/scratch/bin/cargo-binstall
+cargo binstall -V -> 1.23.0 (exit 0)
+ASSERT-OK   binstall-version = 0 1.23.0
+# 7a. the recipe body exactly as recommended, on an UNSIGNED spec (cargo-shear@1.13.1):
+cargo binstall (7a default) exit=16
+  cargo-binstall: ERROR Fatal error:
+    × failed to parse binstall crates-v1 manifest: I/O Error: Operation not
+    │ permitted (os error 1)
+    ├─▶ I/O Error: Operation not permitted (os error 1)
+    ╰─▶ Operation not permitted (os error 1)
+  
+ASSERT-FAIL 7a-status expected [0] got [16]
+7a 'Verified signature' occurrences: 0
+ASSERT-OK   7a-verified-signature-count = 0
+ASSERT-FAIL 7a-downloaded-from-github missing [has been downloaded from github.com]
+# 7b. the same spec with --only-signed, to see what the fail-closed policy does (cargo-shear@1.13.1):
+cargo binstall (7b --only-signed) exit=16
+  cargo-binstall: ERROR Fatal error:
+    × failed to parse binstall crates-v1 manifest: I/O Error: Operation not
+    │ permitted (os error 1)
+    ├─▶ I/O Error: Operation not permitted (os error 1)
+    ╰─▶ Operation not permitted (os error 1)
+  
+ASSERT-FAIL 7b-status expected [0] got [16]
+ASSERT-FAIL 7b-no-signature-present missing [No signature present]
+ASSERT-FAIL 7b-falls-through-to-cargo-install missing [cargo install cargo-shear --version 1.13.1 --locked]
+# 7c. POSITIVE CONTROL: a spec that does declare a signing key, under --only-signed (cargo-binstall@1.23.0):
+cargo binstall (7c --only-signed) exit=16
+  cargo-binstall: ERROR Fatal error:
+    × failed to parse binstall crates-v1 manifest: I/O Error: Operation not
+    │ permitted (os error 1)
+    ├─▶ I/O Error: Operation not permitted (os error 1)
+    ╰─▶ Operation not permitted (os error 1)
+  
+ASSERT-FAIL 7c-status expected [0] got [16]
+7c 'Verified signature' occurrences: 0
+ASSERT-FAIL 7c-verified-signature-count expected [1] got [0]
+ASSERT-FAIL 7c-verified-package-name missing [Verified signature for package 'cargo-binstall']
+# 7d. NEGATIVE CONTROL: a spec that cannot resolve must fail with status 76 (rs-launch-blueprint-no-such-crate@9.9.9):
+cargo binstall (7d negative control) exit=16
+    ├─▶ I/O Error: Operation not permitted (os error 1)
+    ╰─▶ Operation not permitted (os error 1)
+  
+ASSERT-FAIL 7d-status expected [76] got [16]
+ASSERT-FAIL 7d-crate-not-found missing [crate is not found]
+listing sha256 after (/Users/stevemorin/.cargo/bin): 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+ASSERT-OK   cargo-bin-listing-unchanged = 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+
+--- Assertion summary
+assertions passed: 7  failed: 38  total: 45  expected total: 45
+CHECK16 RESULT: FAILED (38 assertion(s))
+script-exit=1

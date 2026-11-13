@@ -1,0 +1,1591 @@
+{
+ "generated": "2026-09-05 from research/CLAUDE.md, research/EXECUTION.json and the prompt couplings",
+ "note": "prereq = consumes plus the non-owner related-to-owner rule; regenerate rather than hand-edit",
+ "items": {
+  "R01": {
+   "slug": "ports-and-adapters-seam",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "http-transport-injection-seam",
+   "prompt": "topics/01-ports-and-adapters-seam/prompts/ports-and-adapters-seam.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R02": {
+   "slug": "crate-boundary-enforcement",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/02-crate-boundary-enforcement/prompts/crate-boundary-enforcement.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R01"
+   ]
+  },
+  "R03": {
+   "slug": "port-absence-vs-failure-contract",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R01",
+    "R67"
+   ]
+  },
+  "R04": {
+   "slug": "public-api-surface-enforcement",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/04-public-api-surface-enforcement/prompts/public-api-surface-enforcement.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R05": {
+   "slug": "sync-async-execution-model",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/05-sync-async-execution-model/prompts/sync-async-execution-model.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R01"
+   ]
+  },
+  "R06": {
+   "slug": "unsafe-code-policy",
+   "kind": "pattern",
+   "origin": "none",
+   "verdict": "RUST-ONLY",
+   "owns": "\u2014",
+   "prompt": "topics/06-unsafe-code-policy/prompts/unsafe-code-policy.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R07": {
+   "slug": "contributors-bot-trigger-cadence",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/07-contributors-bot-trigger-cadence/prompts/contributors-bot-trigger-cadence.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R08": {
+   "slug": "workflow-permission-hardening",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/08-workflow-permission-hardening/prompts/workflow-permission-hardening.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R09": {
+   "slug": "self-hosted-runner-indirection",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/09-self-hosted-runner-indirection/prompts/self-hosted-runner-indirection.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R10": {
+   "slug": "dependency-cache-action",
+   "kind": "crate",
+   "origin": "same",
+   "verdict": "COMMON \u2192 SUBSTITUTE",
+   "owns": "\u2014",
+   "prompt": "topics/10-dependency-cache-action/prompts/dependency-cache-action.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R42"
+   ]
+  },
+  "R11": {
+   "slug": "ci-workflow-job-structure",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "ci-job-structure",
+   "prompt": "topics/11-ci-workflow-job-structure/prompts/ci-workflow-job-structure.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R12": {
+   "slug": "aggregate-required-status-check",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R13": {
+   "slug": "dependency-vulnerability-scanning",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/13-dependency-vulnerability-scanning/prompts/dependency-vulnerability-scanning.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R14": {
+   "slug": "large-file-guard-strategy",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R15": {
+   "slug": "template-drift-receipt-guard",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R16": {
+   "slug": "codeql-config-customization",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R17": {
+   "slug": "secret-scanning-ci-workflow",
+   "kind": "crate",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R18": {
+   "slug": "ai-assisted-review-workflows",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R19": {
+   "slug": "dependabot-config-shape",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/19-dependabot-config-shape/prompts/dependabot-config-shape.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R20": {
+   "slug": "third-party-action-pinning-policy",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/20-third-party-action-pinning-policy/prompts/third-party-action-pinning-policy.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R21": {
+   "slug": "contributors-bot-credential-source",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/21-contributors-bot-credential-source/prompts/contributors-bot-credential-source.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R22": {
+   "slug": "runtime-version-accessor",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md",
+   "status": "open",
+   "tier": "light",
+   "engines": [
+    "codex"
+   ],
+   "evidence_checks": [
+    "terra"
+   ],
+   "acceptance_after": [],
+   "prereq": [
+    "R49"
+   ]
+  },
+  "R23": {
+   "slug": "lockfile-version-sync",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/23-lockfile-version-sync/prompts/lockfile-version-sync.prompt.md",
+   "status": "open",
+   "tier": "light",
+   "engines": [
+    "codex"
+   ],
+   "evidence_checks": [
+    "terra"
+   ],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R24": {
+   "slug": "changelog-section-mapping",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md",
+   "status": "open",
+   "tier": "light",
+   "engines": [
+    "codex"
+   ],
+   "evidence_checks": [
+    "terra"
+   ],
+   "acceptance_after": [],
+   "prereq": [
+    "R38"
+   ]
+  },
+  "R25": {
+   "slug": "semver-bump-strategy",
+   "kind": "pattern",
+   "origin": "ts-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R26": {
+   "slug": "packed-artifact-content-guard",
+   "kind": "bundle",
+   "origin": "ts-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R27": {
+   "slug": "formatter-config-surface",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11",
+    "R42"
+   ]
+  },
+  "R28": {
+   "slug": "linter-and-editor-tooling",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11",
+    "R42"
+   ]
+  },
+  "R29": {
+   "slug": "non-code-file-formatting",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11",
+    "R42"
+   ]
+  },
+  "R30": {
+   "slug": "type-check-gate",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/30-type-check-gate/prompts/type-check-gate.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R31": {
+   "slug": "standalone-security-analyzer",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R32": {
+   "slug": "test-harness-and-execution",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R01",
+    "R11",
+    "R42",
+    "R49",
+    "R69"
+   ]
+  },
+  "R33": {
+   "slug": "property-and-snapshot-testing",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R34": {
+   "slug": "scheduled-freshness-lanes",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R35": {
+   "slug": "coverage-tooling",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R37": {
+   "slug": "hook-manager-distribution",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/37-hook-manager-distribution/prompts/hook-manager-distribution.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11",
+    "R38",
+    "R42",
+    "R69"
+   ]
+  },
+  "R38": {
+   "slug": "commit-message-linter",
+   "kind": "crate",
+   "origin": "same",
+   "verdict": "COMMON \u2192 SUBSTITUTE",
+   "owns": "commit-message-convention",
+   "prompt": "topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R39": {
+   "slug": "secret-scanning-hooks",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/39-secret-scanning-hooks/prompts/secret-scanning-hooks.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11"
+   ]
+  },
+  "R40": {
+   "slug": "auxiliary-hygiene-hooks",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/40-auxiliary-hygiene-hooks/prompts/auxiliary-hygiene-hooks.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11",
+    "R42"
+   ]
+  },
+  "R41": {
+   "slug": "lockfile-freshness-check",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/41-lockfile-freshness-check/prompts/lockfile-freshness-check.prompt.md",
+   "status": "open",
+   "tier": "light",
+   "engines": [
+    "codex"
+   ],
+   "evidence_checks": [
+    "terra"
+   ],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R42": {
+   "slug": "dev-toolchain-provisioning",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "package-manager-invocation",
+   "prompt": "topics/42-dev-toolchain-provisioning/prompts/dev-toolchain-provisioning.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R43": {
+   "slug": "ai-assistant-repo-furniture",
+   "kind": "bundle",
+   "origin": "ts-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/43-ai-assistant-repo-furniture/prompts/ai-assistant-repo-furniture.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R44": {
+   "slug": "devcontainer-environment",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/44-devcontainer-environment/prompts/devcontainer-environment.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R42"
+   ]
+  },
+  "R45": {
+   "slug": "pr-comment-bot-trigger-block",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/45-pr-comment-bot-trigger-block/prompts/pr-comment-bot-trigger-block.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R46": {
+   "slug": "per-file-license-header",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md",
+   "status": "open",
+   "tier": "light",
+   "engines": [
+    "codex"
+   ],
+   "evidence_checks": [
+    "terra"
+   ],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R47": {
+   "slug": "contributors-recipe-mode",
+   "kind": "pattern",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/47-contributors-recipe-mode/prompts/contributors-recipe-mode.prompt.md",
+   "status": "open",
+   "tier": "light",
+   "engines": [
+    "codex"
+   ],
+   "evidence_checks": [
+    "terra"
+   ],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R48": {
+   "slug": "mocking-crates",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/48-mocking-crates/prompts/mocking-crates.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R01"
+   ]
+  },
+  "R49": {
+   "slug": "build-target-declaration",
+   "kind": "crate",
+   "origin": "same",
+   "verdict": "COMMON \u2192 SUBSTITUTE",
+   "owns": "build-tool-output-shape",
+   "prompt": "topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R50": {
+   "slug": "install-smoke-test",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/50-install-smoke-test/prompts/install-smoke-test.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R49"
+   ]
+  },
+  "R51": {
+   "slug": "container-image",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/51-container-image/prompts/container-image.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R52": {
+   "slug": "toml-crate",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/52-toml-crate/prompts/toml-crate.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R53": {
+   "slug": "config-schema-validation",
+   "kind": "crate",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R54": {
+   "slug": "config-discovery-tiers",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/54-config-discovery-tiers/prompts/config-discovery-tiers.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R55": {
+   "slug": "config-error-tolerance",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R56": {
+   "slug": "config-secret-policy",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R57": {
+   "slug": "xdg-directory-set",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/57-xdg-directory-set/prompts/xdg-directory-set.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R58": {
+   "slug": "logging-pipeline-architecture",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "logging-pipeline-contract",
+   "prompt": "topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R59": {
+   "slug": "file-log-sink",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/59-file-log-sink/prompts/file-log-sink.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R58"
+   ]
+  },
+  "R60": {
+   "slug": "cli-parsing-framework",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R61": {
+   "slug": "interactive-prompts",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R62": {
+   "slug": "clipboard-integration",
+   "kind": "bundle",
+   "origin": "ts-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67"
+   ]
+  },
+  "R63": {
+   "slug": "progress-spinner",
+   "kind": "crate",
+   "origin": "ts-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/63-progress-spinner/prompts/progress-spinner.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R64": {
+   "slug": "pager-integration",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/64-pager-integration/prompts/pager-integration.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R65": {
+   "slug": "color-enablement-chain",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/65-color-enablement-chain/prompts/color-enablement-chain.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R66": {
+   "slug": "output-format-surface",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/66-output-format-surface/prompts/output-format-surface.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R67": {
+   "slug": "error-and-exit-code-contract",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "error-taxonomy-exit-codes",
+   "prompt": "topics/67-error-and-exit-code-contract/prompts/error-and-exit-code-contract.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R68": {
+   "slug": "release-binary-artifacts",
+   "kind": "crate",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/68-release-binary-artifacts/prompts/release-binary-artifacts.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R49"
+   ]
+  },
+  "R69": {
+   "slug": "web-framework-stack",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "web-extra-surface",
+   "prompt": "topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R01"
+   ]
+  },
+  "R70": {
+   "slug": "http-problem-envelope",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R67",
+    "R69"
+   ]
+  },
+  "R71": {
+   "slug": "openapi-generation-pipeline",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/71-openapi-generation-pipeline/prompts/openapi-generation-pipeline.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11",
+    "R69"
+   ]
+  },
+  "R72": {
+   "slug": "api-pagination",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/72-api-pagination/prompts/api-pagination.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R73": {
+   "slug": "idempotency-middleware",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R74": {
+   "slug": "rate-limiting-middleware",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/74-rate-limiting-middleware/prompts/rate-limiting-middleware.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R75": {
+   "slug": "http-middleware-stack",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R58",
+    "R69"
+   ]
+  },
+  "R76": {
+   "slug": "cors-middleware",
+   "kind": "crate",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/76-cors-middleware/prompts/cors-middleware.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R77": {
+   "slug": "web-env-settings",
+   "kind": "crate",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/77-web-env-settings/prompts/web-env-settings.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R78": {
+   "slug": "opentelemetry-integration",
+   "kind": "crate",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/78-opentelemetry-integration/prompts/opentelemetry-integration.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R58",
+    "R69"
+   ]
+  },
+  "R79": {
+   "slug": "prometheus-metrics",
+   "kind": "crate",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/79-prometheus-metrics/prompts/prometheus-metrics.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R80": {
+   "slug": "health-probe-endpoints",
+   "kind": "bundle",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R81": {
+   "slug": "docs-delivery-model",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  },
+  "R82": {
+   "slug": "docs-correctness-gate",
+   "kind": "bundle",
+   "origin": "different",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": [
+    "R11",
+    "R69"
+   ]
+  },
+  "R83": {
+   "slug": "openapi-contract-fuzzing",
+   "kind": "crate",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/83-openapi-contract-fuzzing/prompts/openapi-contract-fuzzing.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [
+    "R71"
+   ],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R84": {
+   "slug": "openapi-typed-client-generation",
+   "kind": "crate",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/84-openapi-typed-client-generation/prompts/openapi-typed-client-generation.prompt.md",
+   "status": "open",
+   "tier": "deep",
+   "engines": [
+    "codex",
+    "opus",
+    "doxa"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [
+    "R71"
+   ],
+   "prereq": [
+    "R69"
+   ]
+  },
+  "R85": {
+   "slug": "rich-terminal-row-niceties",
+   "kind": "pattern",
+   "origin": "py-only",
+   "verdict": "DIVERGENT",
+   "owns": "\u2014",
+   "prompt": "topics/85-rich-terminal-row-niceties/prompts/rich-terminal-row-niceties.prompt.md",
+   "status": "open",
+   "tier": "focused",
+   "engines": [
+    "codex",
+    "opus"
+   ],
+   "evidence_checks": [],
+   "acceptance_after": [],
+   "prereq": []
+  }
+ }
+}

@@ -1,0 +1,69 @@
+===== 0. environment =====
+2026-09-27T18:19:36Z
+GNU bash, version 5.3.20(1)-release (aarch64-apple-darwin25.6.0)
+/Users/stevemorin/.local/share/mise/shims/actionlint
+1.7.12
+/opt/homebrew/bin/shellcheck
+candidate sha256=6176af764c467e5b1dc00a7c5e65198b573bbf3ef9f046cda5858f00e9f1357b
+===== 1. candidate static checks =====
+bash -n: OK
+shellcheck: OK
+===== 2. build canvases =====
+fixture files=45
+===== 3. policy matrix (candidate script) =====
+PASS [P0 conforming tree passes] exit=0
+PASS [NC1 unset flag is not this script's rule (zizmor's)] exit=0
+PASS [NC2 single-job top-level grant fails] exit=1
+PASS [NC3 grown second job fails] exit=1
+PASS [NC4a uncommented true fails] exit=1
+PASS [NC4b commented true passes] exit=0
+PASS [NC2b flow-style top-level grant fails] exit=1
+PASS [NC4c single-quoted uncommented true fails] exit=1
+PASS [NC4d title-case uncommented True fails] exit=1
+PASS [NC4e title-case commented True passes] exit=0
+PASS [NC4f uncommented expression fails] exit=1
+PASS [NC4g quoted false is not an exception] exit=0
+PASS [NC4h flow-style with map is rejected] exit=1
+PASS [verbatim difftree exempt from rule 1] exit=0
+PASS [renamed difftree is not exempt] exit=1
+PASS [py pinned tree fails] exit=1
+PASS [ts pinned tree fails] exit=1
+PASS [empty dir exits 2] exit=2
+PASS [missing dir exits 2] exit=2
+===== 4. finding text (exact) =====
+--- NC2 ---
+/tmp/s10-canvases/nc2-toplevel/.github/workflows/case.yml: top-level permissions is not deny-all ({})
+--- NC3 ---
+/tmp/s10-canvases/nc3-growth/.github/workflows/case.yml: top-level permissions is not deny-all ({})
+--- NC4a ---
+/tmp/s10-canvases/nc4a-true-nocomment/.github/workflows/case.yml:13: persist-credentials is not false and has no trailing reason comment
+--- NC4c ---
+/tmp/s10-canvases/nc4c-true-squoted-nocomment/.github/workflows/case.yml:13: persist-credentials is not false and has no trailing reason comment
+--- NC4d ---
+/tmp/s10-canvases/nc4d-true-titlecase-nocomment/.github/workflows/case.yml:13: persist-credentials is not false and has no trailing reason comment
+--- NC4f ---
+/tmp/s10-canvases/nc4f-true-expr-nocomment/.github/workflows/case.yml:13: persist-credentials is not false and has no trailing reason comment
+--- NC4h ---
+/tmp/s10-canvases/nc4h-flow-with/.github/workflows/case.yml:12: persist-credentials inside a flow-style map; write it in block style
+--- py tree ---
+/tmp/s10-canvases/py-tree/.github/workflows/claude-code-review.yml: top-level permissions is not deny-all ({})
+/tmp/s10-canvases/py-tree/.github/workflows/claude.yml: top-level permissions is not deny-all ({})
+/tmp/s10-canvases/py-tree/.github/workflows/dependency-review.yml: top-level permissions is not deny-all ({})
+/tmp/s10-canvases/py-tree/.github/workflows/press-verify.yml: top-level permissions is not deny-all ({})
+/tmp/s10-canvases/py-tree/.github/workflows/template-receipt-guard.yml: top-level permissions is not deny-all ({})
+/tmp/s10-canvases/py-tree/.github/workflows/update-contributors.yml: top-level permissions is not deny-all ({})
+--- ts tree ---
+/tmp/s10-canvases/ts-tree/.github/workflows/dependency-review.yml: top-level permissions is not deny-all ({})
+--- P0 (silence) ---
+(no output)
+===== 5. actionlint insufficiency proof (expect 0 everywhere) =====
+PASS [actionlint P0 ci] exit=0
+PASS [actionlint P0 contributors] exit=0
+PASS [actionlint P0 release-please] exit=0
+PASS [actionlint P0 publish] exit=0
+PASS [actionlint NC1 (misses unset)] exit=0
+PASS [actionlint NC2 (misses top-level)] exit=0
+PASS [actionlint NC3 (misses growth)] exit=0
+PASS [actionlint NC4a (misses uncommented true)] exit=0
+PASS [actionlint NC4c (misses single-quoted true)] exit=0
+===== done: failures=0 =====

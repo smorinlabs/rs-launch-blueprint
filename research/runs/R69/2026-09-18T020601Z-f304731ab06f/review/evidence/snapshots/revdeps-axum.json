@@ -1,0 +1,5 @@
+{
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoint": "https://crates.io/api/v1/crates/axum/reverse_dependencies?per_page=1",
+  "reverse_dependencies": 8598
+}

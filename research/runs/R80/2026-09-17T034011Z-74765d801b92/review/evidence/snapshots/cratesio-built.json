@@ -1,0 +1,10 @@
+{
+  "crate": {
+    "name": "built",
+    "newest_version": "0.8.1",
+    "max_stable_version": "0.8.1",
+    "recent_downloads": 18238136,
+    "downloads": 63168750,
+    "repository": "https://github.com/lukaslueg/built"
+  }
+}

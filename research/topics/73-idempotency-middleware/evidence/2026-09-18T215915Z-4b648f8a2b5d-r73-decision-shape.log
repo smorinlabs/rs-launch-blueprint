@@ -1,0 +1,83 @@
+== R73 decision shape ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+date_utc: 2026-09-27T23:13:04Z
+repo_root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+in_git_worktree: yes
+decision_sha256: 9e5aaf13544bc41f5ca56cac563a5c0e1dfd7bb9f9373afec6302de34e0ff775
+
+-- shape --
+PASS D1-title — the date-first H1 is exactly the revision-rules form
+PASS D1-h2 — exactly the four required H2 headings, in order, and nothing else
+PASS D1-supersedes — no ## Supersedes section: revision 4 repairs revision 3 without reversing its recommendation, and RUNBOOK §5 reserves the section for a reversal
+PASS D1-revnote — a **Revision note, revision 4.** paragraph precedes ## Decision
+PASS D1-peer — the H2 sequence equals published research/topics/11-ci-workflow-job-structure/DECISION.md (# 2026-09-23 — R11 — ci-workflow-job-structure (bundle, Deep) — decision (revision 7))
+PASS D1-peer-lines — the peer carries a re-verify: line and its - assumes lines in the same grammar used here
+PASS D1-h3 — the required ### Principles and implementation H3 is present
+PASS D1-reverify — exactly one re-verify: line
+PASS D1-h5 — no ##### heading anywhere, so the bundle Members-window rule cannot be violated
+PASS D1-gate1 — licence gate 1 is recorded as inapplicable with the owner ruling named, not deleted
+
+-- parameters --
+PASS D2-owns — no `- owns` line: the prompt declares no owned parameter and the index row carries an em dash
+PASS D3-count — exactly four - assumes lines, matching the four owner-fixed parameters
+PASS D3-params — every - assumes value is byte-identical to its row in docs/port/PARAMETERS.md
+PASS D3-snapshot — the four fixed rows in this run's inputs/PARAMETERS.md equal the live registry's
+PASS D3-grammar — no - assumes line carries a backtick, a citation or trailing commentary
+PASS D3-conflict — no CONFLICT: line, consistent with the decision text
+
+-- override numbering --
+PASS D4-ov-present — the override is numbered OV-16, the number the controller allocated
+PASS D4-ov-parts — the override carries its **Argument:** section
+PASS D4-ov-parts — the override carries its **Options:** section
+PASS D4-ov-single — OV-16 is the only override number this decision declares
+PASS D4-ov-unique — no other decision declares OV-16 by heading, and the control found 2 declaring OV-03, so the zero is not vacuous
+
+-- hygiene --
+PASS D5-email — no personal email address anywhere under review/
+PASS D5-token — no token-shaped string under review/
+PASS D5-target — no target/ tree under review/
+PASS D5-lock — no Cargo.lock under review/
+PASS D5-nested — no nested git repository under review/
+
+-- cited artifacts --
+PASS D6-artifacts — every cited script and log is present
+  r73-standard-conformance     CHECKS RUN: 45 PASS: 45 FAIL: 0 SKIP: 0
+  r73-probe                    CHECKS RUN: 27 PASS: 27 FAIL: 0 SKIP: 0
+  r73-sources                  CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0
+  r73-registry                 CHECKS RUN: 17 PASS: 17 FAIL: 0 SKIP: 0
+  r73-muse-currency            CHECKS RUN: 46 PASS: 46 FAIL: 0 SKIP: 0
+PASS D6-total — the five logs sum to 158 checks, the figure the decision cites
+PASS D6-cited — the decision states the same 158-check total
+PASS D6-labels-control — 151 distinct check labels scanned, so the resolution result below is not vacuous
+PASS D6-labels — every check label the decision cites resolves to a committed log or script
+
+-- revision-3 re-citations --
+PASS D8-r2 — review/R73-r2-snapshot.md is byte-identical to revision 2 (sha256 842d48f6…), the text both revision-2 audits judged
+PASS D8-gemini-lock — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/doxa-gemini.normalized.md:23 carries "atomic `try_acquire_lock` method" — Gemini proposes an atomic reserve-or-conflict primitive
+PASS D8-gemini-409 — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/doxa-gemini.normalized.md:109 carries "receive an `HTTP 409 Conflict`" — Gemini plans a concurrent-request 409 check
+PASS D8-r02-accept — docs/port/OWNER-ACCEPTANCES.md records R02 accepted at revision 2 (9e8f8e8c…)
+FAIL D8-r02-sha — the R02 run decision is absent, or no longer the accepted revision 2
+FAIL D8-r02-workspace — research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:22 does not carry "root-package workspace** of four packages"; it reads: | **JF-2** — one clause of Disagreement 1's ground is refuted by the raw reports | The ground is narrowed to R49 and R69, which no twin cites, and the decision now says of R01 that the legs name it fr
+FAIL D8-r02-b1b2 — R02 revision 2 no longer carries B1/B2 at :78 and :251
+PASS D8-dryrun — rest-api-standard.md blob 71bd813c line 338 is the §1.10 dry_run reservation row
+
+-- repository validators --
+FAIL D7-tree — scripts/check-research-tree.sh fails on the clean extraction:
+        FAIL: index R11: resolved but research/topics/11-ci-workflow-job-structure/audit-codex.md is missing or empty
+        FAIL: index R11: resolved but research/topics/11-ci-workflow-job-structure/audit-fable.md is missing or empty
+        FAIL: index R11: resolved but research/topics/11-ci-workflow-job-structure/DECISION.md is missing or empty
+        FAIL: index R13: resolved but research/topics/13-dependency-vulnerability-scanning/audit-codex.md is missing or empty
+        FAIL: index R55: resolved but research/topics/55-config-error-tolerance/audit-codex.md is missing or empty
+        FAIL: index R55: resolved but research/topics/55-config-error-tolerance/audit-fable.md is missing or empty
+        FAIL: index R55: resolved but research/topics/55-config-error-tolerance/DECISION.md is missing or empty
+        FAIL: index R57: resolved but research/topics/57-xdg-directory-set/audit-codex.md is missing or empty
+        FAIL: index R57: resolved but research/topics/57-xdg-directory-set/audit-fable.md is missing or empty
+        FAIL: index R57: resolved but research/topics/57-xdg-directory-set/DECISION.md is missing or empty
+        FAIL: index R62: resolved but research/topics/62-clipboard-integration/audit-codex.md is missing or empty
+        FAIL: index R62: resolved but research/topics/62-clipboard-integration/audit-fable.md is missing or empty
+        FAIL: index R62: resolved but research/topics/62-clipboard-integration/DECISION.md is missing or empty
+        FAIL: index R72: resolved but research/topics/72-api-pagination/audit-codex.md is missing or empty
+        FAIL: index R72: resolved but research/topics/72-api-pagination/audit-fable.md is missing or empty
+PASS D7-tree-live — scripts/check-research-tree.sh also passes in the live checkout
+
+CHECKS RUN: 41 PASS: 37 FAIL: 4 SKIP: 0

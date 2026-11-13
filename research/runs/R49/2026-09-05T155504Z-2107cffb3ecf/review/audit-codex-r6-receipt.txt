@@ -1,0 +1,4 @@
+Audit: [review/audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/audit-codex.md) · sha256 `6718fdf346271e927e53acae0a77737d1d8d36110f8598e86cd4096d5b578900` · reject · rerun exit 0: `review/evidence/audit-build-target-declaration-r6.log`.
+
+Finding: the decision claims equivalence for every reported pattern, but only tests four; the separately reported widened SPDX pattern lacks an embedded-ugrep comparison.
+

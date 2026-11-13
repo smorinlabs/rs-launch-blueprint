@@ -1,0 +1,36 @@
+# R07 revision-2 negative control — the recommended hybrid block with the
+# `paths-ignore` guard moved from `push` onto the new `schedule` entry. GitHub's
+# workflow-syntax reference documents paths/paths-ignore only for push,
+# pull_request and pull_request_target. Expected: actionlint rejects it, which
+# is why the recommended block keeps the guard under `push` only.
+name: Update Contributors
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 6 1 * *'
+      paths-ignore:
+        - CONTRIBUTORS.md
+        - .contributors.jsonl
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  contributors-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: smorinlabs/contributors-please-action@v1.3.9
+        with:
+          pat: ${{ secrets.CONTRIBUTORS_PLEASE_PAT }}
+          output-file: CONTRIBUTORS.md
+          state-file: .contributors.jsonl
+          config-file: .contributors.yml
+          mode: pull-request

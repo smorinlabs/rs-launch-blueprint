@@ -1,0 +1,108 @@
+=== R70 revision 2 — REST standard conformance evidence ===
+date (UTC): 2026-09-19T01:25:52Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+standard repo: /Users/stevemorin/c/rest-standards
+blob: 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+commit: 0850d43e45d919ef5e37f7174c4212b46013c49f
+
+--- A. the standard at the pinned blob
+PASS  the blob exists and is a blob
+PASS  the extracted file hashes back to the pinned blob
+PASS  the pinned commit carries this blob as rest-api-standard.md
+PASS  the standard declares version 2.0.0
+lines in blob: 3427
+
+--- A1. section 1.4 / 1.8 / 1.9 / 1.10 — requirement language, switches, deviations, reserved names
+PASS  R1.1 requirement language (line 128)
+PASS  R1.1: BCP 14 keywords bind only when they appear in all capitals
+PASS  R1.6 applicability switches (line 229)
+PASS  R1.6: a switch declared off MUST carry a stated reason
+PASS  R1.6: the switch vocabulary is four names
+PASS  R1.6: a switch never waives a per-endpoint guard
+PASS  R1.7 no silent deviation (line 271)
+PASS  R1.7: silent deviation at any strength is nonconformance
+PASS  R1.8 reservation discipline (line 312)
+PASS  R1.9 dry_run rejection guard (line 318)
+PASS  R1.9: dry_run to an endpoint that does not implement it MUST be rejected with 400
+PASS  reserved response header: request-id on every response including errors
+
+--- A2. section 4.2 to 4.4 — representation, negotiation, extension hygiene
+PASS  R4.3 object at the top level (line 762)
+PASS  R4.4 snake_case body properties (line 768)
+PASS  R4.4: the body-property grammar
+PASS  R4.8 null and omission (line 818)
+PASS  R4.10 default media type (line 846)
+PASS  R4.10's default clause carries no BCP 14 keyword (the standard says so)
+PASS  R4.11 Vary on negotiated responses (line 856)
+PASS  R4.11's exception: responses with no negotiation
+
+--- A3. section 5.1 and 5.2 — status-code discipline and the operation map
+PASS  R5.1 status matches the outcome (line 916)
+PASS  R5.1: a failed operation MUST NOT return 2xx
+PASS  R5.2 no unregistered status codes (line 934)
+PASS  R5.3 the 422 / 409 / 400 split (line 939)
+PASS  R5.3: 400 remains correct for malformed syntax
+PASS  R5.9 401 versus 403 (line 994)
+PASS  R5.9: the two MUST NOT be conflated
+PASS  R5.10 cross-tenant existence masking (line 1000)
+PASS  R5.11 Allow, 415, 428 (line 1008)
+PASS  R5.11: 415 answers an unsupported request media type
+
+--- A4. section 5.3 — the rules that move this recommendation
+PASS  R5.12 every application error servable as problem+json (line 1019)
+PASS  R5.12: the infrastructure carve-out MUST be documented as such
+PASS  R5.12: application/json mirroring is neither required nor forbidden
+PASS  R5.13 the required member set (line 1049)
+PASS  R5.13: type, title, status and a stable machine-readable code
+PASS  R5.13.1: type is an https URI under a domain the provider controls
+PASS  R5.13.1: the fixed template binding type to code
+PASS  R5.13.1: the code grammar
+PASS  R5.13.2: neither type nor code may change once published
+PASS  R5.13.3: dereferencing type is a courtesy, never a contract
+PASS  R5.13.4: human documentation lives in a separate documentation member
+PASS  R5.13.5: type MUST be present and about:blank MUST NOT be used
+PASS  R5.14 RFC 7807 never cited (line 1098)
+PASS  R5.14's exception: historical notes explicitly labeled as such
+PASS  R5.15 field-level errors[] (line 1105)
+PASS  R5.15: an array of pointer, code and detail entries
+PASS  R5.16 the published catalog (line 1114)
+PASS  R5.17 no internal detail in a response body (line 1120)
+PASS  R5.17: query fragments are named among the banned content
+
+--- A5. section 8.5 and 12.3 — redaction and the client obligation
+PASS  R8.12 redaction (line 1422)
+PASS  R8.12: echoed request input is named explicitly
+PASS  R12.6 clients ask for problem+json (line 1815)
+PASS  R12.7 clients never rely on a problem document (line 1819)
+
+--- A6. the standard's own worked error body (appendix E)
+PASS  appendix E error body carries "type": "https://problems.example.com/validation-failed"
+PASS  appendix E error body carries "code": "validation_failed"
+PASS  appendix E error body carries "documentation": "https://developers.example.com/errors#validation_failed"
+PASS  appendix E error body carries "pointer": "/amount"
+PASS  appendix E error body carries "code": "below_minimum"
+PASS  appendix E reading: the human link lives in documentation, not in type
+
+--- B. revision 1 artifacts carried byte-identical
+PASS  revision-1 registry.sh is byte-identical
+PASS  revision-1 registry.log is byte-identical
+PASS  revision-1 registry-figures.log is byte-identical
+PASS  revision-1 probe.sh is byte-identical
+PASS  revision-1 probe.log is byte-identical
+PASS  revision-1 archive-check.sh is byte-identical
+PASS  revision-1 archive-check.log is byte-identical
+PASS  revision-1 registry-archive.log is byte-identical
+PASS  revision-1 probe-archive.log is byte-identical
+
+--- C. OVERRIDE numbering
+PASS  OV-01 is claimed by 3 decision(s) outside this item
+PASS  OV-02 is claimed by 1 decision(s) outside this item
+PASS  OV-03 is claimed by 1 decision(s) outside this item
+PASS  OV-04 is claimed by 1 decision(s) outside this item
+PASS  OV-06, allocated to this item, is claimed by no decision outside it
+PASS  OV-06 is allocated to this item and left unused, as this revision records no override
+NOTE  DECISION.md mentions "OVERRIDE (OV-" 1 time(s) (headings are counted separately below)
+PASS  this decision declares no OVERRIDE heading
+
+=== summary ===
+PASS 79  FAIL 0  SKIP 0  TOTAL 79

@@ -1,0 +1,24 @@
+# R33 adoption-figure record — the check-4 crates.io counter lines of the 2026-09-13 run.
+#
+# Why this file exists: crates.io download and reverse-dependency counters move every day
+# and in both directions, so the figures the decision quotes cannot be re-fetched. They are
+# fixed here, in this run's own evidence directory, and review/empirical/r33-checks.sh reads
+# this file (check 4b) to recompute every ratio the decision states. Check 4 still fetches
+# the live counters, but it asserts only the dominance floors, which survive drift.
+#
+# source-path: research/runs/R33/2026-09-05T164358Z-eae89906c763/review/evidence/property-and-snapshot-testing.log
+# source-sha256: 235dd90ffcdaba32eea3bf66909d4983da6fe43d05360d4dc0e8fe3c25777102
+# source-run: 2026-09-13T07:25Z, the run recorded by revision 3 of review/DECISION.md
+# source-commit: 1b5c470660d0e298315879f4b4d779ba52534001 — revision 4 re-ran the script and
+#   overwrote that log, so recover the 2026-09-13T07:25Z bytes with:
+#   git show 1b5c4706:<source-path>
+# extracted: 2026-09-13, by revision 4's synthesizer, with
+#   grep -E '^  [a-z-]+: recent_downloads=' <source-path>
+# fields: recent_downloads is the crates.io 90-day download count; downloads is all-time;
+#   reverse_deps is meta.total from /reverse_dependencies?per_page=1.
+  proptest: recent_downloads=47141103 downloads=185879611 reverse_deps=10448
+  quickcheck: recent_downloads=10720585 downloads=68002370 reverse_deps=1536
+  insta: recent_downloads=26700493 downloads=98716669 reverse_deps=4400
+  cargo-insta: recent_downloads=199628 downloads=1560749 reverse_deps=5
+  snapbox: recent_downloads=3236799 downloads=12229363 reverse_deps=156
+  expect-test: recent_downloads=7439591 downloads=37128584 reverse_deps=313

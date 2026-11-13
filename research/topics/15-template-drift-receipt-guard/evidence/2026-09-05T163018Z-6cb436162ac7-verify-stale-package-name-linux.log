@@ -1,0 +1,19 @@
+# R15 empirical check — leg=linux — 2026-09-09T07:05:56Z
+# os: Linux 6.17.0-41-generic aarch64
+# rustc: rustc 1.98.1 (48a229cea 2026-09-01) | cargo: cargo 1.98.1 (797e8a9bc 2026-08-05)
+# floor: rustc 1.96.0 (ac68faa20 2026-05-25) | cargo 1.96.0 (30a34c682 2026-05-25)
+# uv: uv 0.12.11 (aarch64-unknown-linux-gnu) | press: press 4.0.1
+# python: Python 3.13.7
+--- press/press-source.toml
+[identity]
+package_name = "rs_launch_blueprint_core"
+repo_name    = "rs-launch-blueprint"
+app_name     = "rslbp"
+author       = "Fixture Author"
+email        = "fixture@example.com"
+owner        = "smorinlabs"
+display_name = "Rs Launch Blueprint"
+$ press verify
+error: package_name: declared 'rs_launch_blueprint_core' is neither discoverable nor present anywhere in the target (undiscoverable and absent)
+exit=2
+CASE verify-stale-package-name exit=2 expect=2

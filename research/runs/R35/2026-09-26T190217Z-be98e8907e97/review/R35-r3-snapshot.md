@@ -1,0 +1,330 @@
+# 2026-09-26 — R35 — coverage-tooling (bundle, Focused) — decision (revision 3)
+
+**Revision note, revision 1.** This is the first synthesis for R35. It is written from the two raw reports in this run, `raw/muse.md` and `raw/opus.md`, read in full. Nothing has been published for R35, so there is no prior revision, no audit to answer and no `## Supersedes`. The synthesis **re-executed** what the two legs could only propose: neither leg ran a coverage tool (`raw/muse.md:45`, `raw/opus.md:9`). Two executed results change what the legs wrote. First, the Opus leg's recipe **silently drops workspace members from every report** (check `C4e`), so every `report` line below carries `--workspace`. Second, the Muse leg's claim that doc tests are covered through `--doc` is **false on stable** (checks `F4a`, `F4b`).
+
+Actor `synth-opus-2026-09-26T190217Z-be98e8907e97-r1`, model `claude-opus-5-5`, item kind `bundle`, effort tier `focused`. The run manifest lists `required_engines` `codex` and `opus` (`manifest.json`); this run's `raw/` holds a Muse report and an Opus report, and `operations/` is empty (see `## Engines`).
+
+**Revision note, revision 2.** Prose-only revision answering the judgment audit's two findings on revision 1 (`review/audit-fable.md`, verdict `reject`); the empirical audit approved revision 1 with 207/0/0 (`review/audit-claude.md`), and no evidence file changed. JF-2/JF-3: the HIGH Q1 accuracy sub-question (`inputs/prompt.md:31`) is now answered — an Accuracy row joins the collector comparison, the runner-up records the signal-interference consequence, and accuracy joins the legs' agreements in `## Engines`. JF-4: the Compatibility claim about the maintainer's CI no longer says it installs `llvm-tools-preview`; it cites the toolchain matrix (`:57-73`) and the `cargo llvm-cov nextest` step (`:90-99`) separately. [Corrected by revision 3: "no evidence file changed" left `r35-inputs.sh` asserting the revision-1 title, so it failed `X7` against this revision.]
+
+**Revision note, revision 3.** Actor `synth-opus-2026-09-26T190217Z-be98e8907e97-r3`, model `claude-opus-5-5`, written 2026-09-27; revision 2's author is not recorded in this file. It answers both revision-2 audits, each verdict `reject`, and the recommendation does not move. Judgment audit (`review/audit-fable.r2.md`). **JF4-1**: revision 2 said the signal-driven entry-path test makes `--engine llvm` "required" for the runner-up. `cargo-tarpaulin`'s own README at tag 0.37.4 says signal tests "may not work" under ptrace and offers `--forward`, which its option list calls the default (`S12c`, `S12e`, `S12f`). The runner-up bullet now says that, and rests `--engine llvm` on runner parity, the reason the collector table already gives. **JF3-1**: the `## Engines` agreement line no longer credits both legs with Opus's ptrace specifics; each leg's accuracy point is attributed to that leg. Empirical audit (`review/audit-claude.r2.md`). **EF-1**: `X7` in `r35-inputs.sh` now derives the revision number from this file's revision notes, checks that they run 1..N without a gap, and asserts the title against N. **EF-2**: `r35-inputs.sh` gains `cite` checks for the five revision-2 citations and for every citation revision 3 adds. **Evidence changed in revision 3**: a new script `r35-tarpaulin.sh` with its log and a README snapshot (`S12`); an updated `r35-inputs.sh` with a fresh log; a fresh `shellcheck.log`; the five rerun logs under `review/evidence/rerun-2026-09-27/`. All seven scripts were rerun on 2026-09-27 and pass (totals under `## Empirical check`). The committed logs of `r35-install.sh`, `r35-coverage.sh`, `r35-flags.sh`, `r35-toolchain.sh` and `r35-sources.sh` are kept as the 2026-09-26 retrieval record that the live figures below quote.
+
+**Fitness gate 1 (licence) is `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`** for every candidate below, as the prerequisite R11 records it (`research/topics/11-ci-workflow-job-structure/DECISION.md:82`). Licences are still reported as facts.
+
+## Decision
+
+**Status.** This decision is a **proposal validated in the implementation phase**, under the same owner ruling of 2026-09-10 that R11 records (`research/topics/11-ci-workflow-job-structure/DECISION.md:86`). `rs-launch-blueprint` has no Rust source and no `.github/` tree today. Everything below was executed on a fixture workspace on one macOS host (see `## Empirical check`); nothing ran on a GitHub-hosted runner.
+
+**Recommendation — one stack.** `cargo-llvm-cov` **0.9.1**, driving rustc's stable `-C instrument-coverage` (LLVM source-based coverage), with the rustup component **`llvm-tools-preview`** supplying `llvm-profdata` and `llvm-cov`. One `just coverage` recipe is the only place the threshold lives, and the CI `coverage` job runs that recipe:
+
+```make
+# Coverage floors (LLVM metrics). The ONLY place the threshold values live.
+coverage_fail_under := "--fail-under-lines 95 --fail-under-functions 95 --fail-under-regions 90"
+
+# One instrumented run, three reports, gate last so the reports exist when it fails.
+# Every report line carries --workspace: without it, report measures the root package only.
+coverage:
+    cargo llvm-cov clean --workspace
+    cargo llvm-cov --no-report --locked --workspace --all-features
+    cargo llvm-cov report --workspace --html
+    cargo llvm-cov report --workspace --lcov --output-path target/llvm-cov/lcov.info
+    cargo llvm-cov report --workspace --show-missing-lines {{coverage_fail_under}}
+```
+
+```yaml
+  coverage:
+    needs: plan
+    if: needs.plan.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    env:
+      CARGO_LLVM_COV_SETUP: "no"             # a missing component fails; it never prompts (T2)
+    steps:
+      - uses: actions/checkout@<sha>          # pin per R20
+        with:
+          persist-credentials: false
+      - run: rustup component add llvm-tools-preview
+      # cache step per R10/R11: one more cache-bearing job id on ubuntu-latest
+      # just and cargo-llvm-cov@0.9.1 installed per R42
+      - run: just coverage
+      - uses: actions/upload-artifact@<sha>   # pin per R20
+        if: ${{ !cancelled() }}
+        with:
+          name: coverage
+          path: target/llvm-cov/
+```
+
+This exact recipe was executed on the fixture: it exits 0 on the intact suite (`C3a`), exits non-zero when an untested 25-line function is added (`C6a`), writes the HTML and LCOV reports before the gate line fails (`C6b`), and passes again when the function is removed (`C6c`). The CI job block was **not** executed (no runner); `permissions:` scopes are R08's.
+
+**Ledger rows this decision settles: F134–F138** (`docs/port/COMMONALITY.md`, verdict `DIVERGENT`, as the prompt lists them at `inputs/prompt.md:8`).
+
+| Row | What is decided | Settled by |
+|---|---|---|
+| **F134** coverage tool | `cargo-llvm-cov` 0.9.1 + `llvm-tools-preview` | both legs agree; `I1`–`I7`, `C3a`, `S1`–`S6` |
+| **F135** scope and exclusions | `--workspace --all-features`; the tool's default ignore regex (`tests/`, `examples/`, `benches/`, `tests.rs`-style files, target dir, registry, toolchains); **no** per-file exclusions. A binary's entry path is covered by a subprocess test, not excluded | `C4a`–`C4e`, `C5a`–`C5c`, `C8a`, `F8d`, `F8e` |
+| **F136** threshold location and values | location: **one Justfile variable** in the repository; values: **lines 95, functions 95, regions 90** — a proposal on the owner call F136 carries (class F) | `C8b`, `C8c`, `F8f`; see `### The threshold values` |
+| **F137** CI enforcement | the `coverage` job **fails** below the floor, and that failure **must block merging** — this item's requirement; whether it blocks as a required check directly or through R12's aggregate is R12's mechanism | `C6a`; the same split R11 uses for a failed `plan` (`research/topics/11-ci-workflow-job-structure/DECISION.md:283`); D13 |
+| **F138** report formats | terminal summary with missing lines, HTML, LCOV — the same three locally and in CI, where `target/llvm-cov/` is uploaded as a workflow artifact | `C3b`–`C3e`, `C6d`, `F6a`, `F6b` |
+
+**BASELINE-REVIEW dispositions.** Neither leg raised a `BASELINE-REVIEW:` line (`raw/muse.md:47`, `raw/opus.md:169`), and this decision raises none. The prompt's "coverage-tool dev-dependency" wording (`inputs/prompt.md:4`) does not map to Rust: the tool is an installed binary, so `Cargo.toml` gains no entry. That is a mapping of the value test, not a challenged baseline.
+
+### Landscape
+
+**The category.** Code-coverage collection for a Cargo workspace (how execution counts are gathered), the driver that turns them into reports, the gate that turns a percentage into an exit status, and the report formats.
+
+| Bin | Candidates | Standing here |
+|---|---|---|
+| Built-in / first-party toolchain | `rustc -C instrument-coverage` plus the rustup component `llvm-tools-preview` | the substrate every viable answer builds on; undriven on its own (the rustc book's recipe needs unstable flags for doc tests, `S8b`) |
+| Established industry standard | `cargo-llvm-cov` (driver over the first-party substrate); `cargo-tarpaulin` (ptrace engine on Linux x86_64, LLVM engine elsewhere, per its 0.37.4 README, `review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:19-21`, `S12b`, as the Opus leg also reports, `raw/opus.md:92`); `grcov` (report-side aggregator, no test driver) | the shortlist |
+| Up-and-comer | no new collector; `actions/upload-code-coverage` is a new GitHub reporting surface used by `clap` (`raw/opus.md:23`) | a reporting option, not a gate |
+| External gate services | Codecov (`codecov/codecov-action` v7.1.1, released 2026-09-17, `S9`), Coveralls | gate *location* alternatives, not collectors |
+
+**Authorities, and why each counts.** The rustc book's *Instrumentation-based Code Coverage* chapter, the Rust project's own documentation of the stable flag: it calls `llvm-tools-preview` "the recommended path" and says the tools' interface "is not currently subject to Rust's usual stability guarantees" (`S8a`, `S8c`, snapshot line 125). The rust-lang/rust tracking issues #84605 (`#[coverage]`), #79649 (branch coverage), #79417 (doc-test remapping) and #119164 (`preview` component names), all **open** on 2026-09-26 (`S7`). The maintainers' own documentation: the `cargo-llvm-cov` 0.9.1 README **as packaged in the crate that was built here** (`I4`, snapshot `review/evidence/snapshots/cargo-llvm-cov-0.9.1-README.md`), and the `codecov-action` README (`S9a`). RustSec, the ecosystem's advisory record (`S6`). crates.io and GitHub metadata under the prompt's figure table (`S1`–`S5`). The annual Rust survey does not ask about coverage tooling; that is an authority gap (`raw/opus.md:26`), not filled by inference.
+
+**Practice evidence.** The Opus leg read the CI workflows of 28 well-regarded projects (`raw/opus.md:35-53`): 8 run coverage in CI; 6 of those use `cargo-llvm-cov` and 2 use `cargo-tarpaulin`; **none uses an in-repo `--fail-under` gate** — all 8 report to an external surface. This synthesis re-read three of those workflows live and confirms each claim it checked: `ratatui/ratatui` and `starship/starship` run `cargo-llvm-cov`, `clap-rs/clap` runs `cargo-tarpaulin`, and none of the three carries a `fail-under` gate (`S10`). The other 25 rows are **carried from the Opus leg, not re-read**. The Muse leg's adopter evidence is unfilled (`S_ADOPTERS`, `S_ADOPTERS_DETAIL`, `raw/muse.md:24`, `:27`). **Practice therefore does not support an in-repo gate**; the gate choice below rests on a template argument, and says so.
+
+### Principles and implementation
+
+**The shared requirement, and its agreement level.** Across py, ts and rs: *test coverage is measured with the ecosystem's native instrumentation over the shipped source, a declared numeric floor turns a drop into a failing check, and the developer can read which lines are uncovered.* The agreement is at the level of **policy** (a floor exists, is declared in the repository's reviewed files, and fails a check) and **capability** (a missing-lines report locally and a machine-readable report in CI). Both legs state this requirement in substance (`raw/muse.md:33`, `raw/opus.md:59`).
+
+**What must agree and what may vary.**
+
+| Must agree across py, ts, rs | May vary by ecosystem |
+|---|---|
+| native instrumentation for the language (F134) | the tool |
+| the `tests/` tier is not counted as product code (F135) | the metric names and numeric values: LLVM on stable reports lines, functions and regions; it has no "statements", and branch coverage is nightly-only (`F5`) |
+| a numeric floor exists, and a CI check that blocks merging **fails** below it (F136, F137) | whether a base-branch comparison exists (py's `target: auto`) |
+| a local report with missing lines plus a browsable report (F138) | the exact report formats beyond those two |
+| the everyday test loop stays coverage-free | how the floor is wired into CI |
+
+**Where each source repository stands against the principle** (source-repo facts as the prompt pins them at `inputs/prompt.md:8-9`; the Opus leg reports those line numbers drifted at newer heads, `raw/opus.md:5`, and this synthesis did not re-read the source repositories). py meets the floor only through Codecov: its project target is `auto` and its patch target is 80%, both evaluated by the service (`.codecov.yml:14`, `:18`). ts declares 95/95/90/95 in `vitest.config.ts:20` but its CI never runs coverage, so the floor fails nothing (`.github/workflows/ci.yml:95`). ts's prior port decision D-019(3) says those thresholds are "enforced in CI" (`inputs/prompt.md:11`); its CI does not do that.
+
+**Observable acceptance criteria**, each with the check that executed it on the fixture:
+
+- **AC1** — `just coverage` runs the non-doc test suite once under instrumentation and exits 0 on an adequately tested workspace (`C3a`).
+- **AC2** — adding untested code below the floor makes `just coverage` exit non-zero, after the reports are written (`C6a`, `C6b`), and the missing lines are listed (`C6d`).
+- **AC3** — `target/llvm-cov/html/index.html` and `target/llvm-cov/lcov.info` exist (`C3d`, `C3e`); every `SF:` record is a `src/` file of the root package or a member, with no `tests/`, registry or toolchain path (`C4a`, `C4b`); the workspace member is included (`C4d`).
+- **AC4** — the threshold values appear in exactly one tracked file, and it is the file CI executes (the Justfile variable; the tool reads no threshold from any environment variable, `F8f`).
+- **AC5** — `just test` builds no instrumented artifacts (`C2b`).
+
+**Architectural alternatives, compared before any tool.**
+
+| Alternative | Gate location | Consequence for this template | Verdict |
+|---|---|---|---|
+| **A. In-repo gate**: the driver's flags fail the command | a reviewed Justfile variable; the CI job's exit status | works in every repository generated from the template with no account, secret or OIDC grant; loses base-branch comparison and patch coverage | **Selected** |
+| **B. External-service gate** (py) | Codecov YAML plus Codecov's status check | gives no-regression and patch coverage; every generated repository must register with Codecov and hold a token or an OIDC grant, because "Tokenless uploading is unsupported" except for pull requests from forks to public repositories (`S9a`, codecov-action README line 49) | **Ranked runner-up**, optional and non-gating |
+| **C. Configured but not enforced** (ts today) | test-runner config only | the floor never fails a check | **Rejected**: violates the principle |
+| **D. Report-only** (20 of 28 surveyed projects run no coverage; 8 of 8 that do report externally) | none | no floor | **Rejected**: violates the principle |
+
+A over B: a template's CI must pass on the first push of a freshly generated repository. B's gate needs an external account and a permission R08 owns before it means anything; A needs neither. This is the argument both legs make (`raw/muse.md:133`, `raw/opus.md:86`), and it is a template argument, not a practice majority.
+
+**Collector comparison inside A.**
+
+| Property | `cargo-llvm-cov` 0.9.1 | `cargo-tarpaulin` 0.37.4 | `grcov` 0.10.7 |
+|---|---|---|---|
+| Mechanism | rustc `-C instrument-coverage` on every OS | ptrace on Linux x86_64 by default, LLVM engine elsewhere (`review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:19-21`, `S12b`; `raw/opus.md:92`) | converts existing profiles; no driver |
+| Accuracy | precise line/region data from compiler-inserted counters (`raw/opus.md:99`, `raw/muse.md:37`) | its 0.37.4 README says Tarpaulin's line coverage "may still contain  minor inaccuracies", said without naming an engine (`review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:14`, `S12a`), calls LLVM coverage "generally being far more accurate" (`:123`, `S12g`), and warns that signal tests "may not work" under ptrace (`:115-116`, `S12e`); the Opus leg attributes the first to ptrace (`raw/opus.md:99`) | inherits its collector |
+| Same mechanism on `ubuntu-latest` and `macos-latest` | yes | only with `--engine llvm` forced | n/a |
+| Gate flags | `--fail-under-lines`, `--fail-under-functions`, `--fail-under-regions` on `report` (`F1`) | `--fail-under` (lines only, `raw/opus.md:94`, not re-read) | none |
+| Branch metric on stable | no (`F5`) | no (`raw/opus.md:95`) | n/a |
+| Doc tests on stable | **no** (`F4a`, `F4b`) | via `--doc` (`raw/opus.md:96`, not re-read) | n/a |
+| Instrumented build isolated from `target/debug` | yes, `target/llvm-cov-target` (`C3f`) | no by default | n/a |
+| Install MSRV | `rust-version = "1.87"` (`I5`); built on the 1.96 floor (`I1`) | undeclared (`S2a`) | undeclared (`S3a`) |
+| `unsafe` | `#![forbid(unsafe_code)]` at `src/main.rs:3` (`I7`) | ptrace backend uses `nix` (`raw/opus.md:213`, not re-read) | inherits collector |
+
+**Representative performance.** One host, one fixture, both cold: the committed log records `just test` at 12 s and `just coverage` at 13 s (`C2a`, `C3a`). Earlier runs in the same session recorded 12 s / 12 s, 17 s / 29 s and 17 s / 16 s, so the figures show only that the instrumented run is of the same order as the plain one at this scale. The workload was the fixture below (5 source files, 13 tests, axum and tokio in the dependency graph), `debug` profile, on `Darwin 25.4.0 arm64`. `cargo-tarpaulin` was **not** run, so no tool-versus-tool runtime comparison exists: that is an evidence gap, and it does not decide the choice. The choice rests on the same mechanism on both runners, the gate flags and the practice evidence.
+
+**F135 — exclusions, and the thin-entry-file question.** On stable, the only exclusion mechanism is **file-level** `--ignore-filename-regex`; the item-level `#[coverage(off)]` attribute is nightly-only (`F8c`, #84605 open, `S7`). ts excludes two thin I/O-adapter files (`inputs/prompt.md:9`). The executed fixture answers the Rust version of that question directly. The CLI binary's `main.rs` is covered by integration tests that spawn `CARGO_BIN_EXE_rslbp` (10 of 10 lines, `C5a`), and library code reached only through the spawned binary is counted (`C5b`). The serve binary's bind-serve-drain path is covered by a subprocess test that sends `SIGINT` and waits for a clean exit (18 of 18 lines, `C5c`). **Without** that test, 13 of its 18 lines go unexecuted (`C8a`). **Recommendation: ship no `--ignore-filename-regex` entries; cover every binary's entry path with a subprocess test instead.** R32 owns the test tier that hosts such tests; this item requires only that the entry path be reached. An exclusion is added only when evidence shows no test tier can reach a file, as a single Justfile variable with one comment per excluded file (ts's "explained exclusions only" convention, `inputs/prompt.md:11`). `cfg(coverage)` is not used, because it changes the program under measurement. `--all-features` is a standing scope choice: when R78 and R79 add the `otel` and `metrics` features that nest on `web` (`inputs/PARAMETERS.md:17`), their code is compiled and measured by this recipe and needs tests to hold the floor.
+
+One scope fact neither leg stated: **in-file `#[cfg(test)]` modules are counted.** The default ignore regex excludes `tests/` directories and `tests.rs`/`*_tests.rs` files only (`F8d`), so a `#[cfg(test)] mod tests` inside `src/lib.rs` contributes its test functions to the totals (`F3c`). The Opus leg's "test code is not counted" (`raw/opus.md:63`) therefore holds for the `tests/` tier only. Where unit tests live is R32's decision; if R32 puts them in `tests.rs` files, the default regex excludes them.
+
+### The threshold values
+
+**Proposed: lines 95, functions 95, regions 90.** F136 is class F, a design split the owner decides (`raw/muse.md:133`, `raw/opus.md:86`); this is a proposal on it.
+
+| Source | Value | What it is |
+|---|---|---|
+| ts D-019(3) (`inputs/prompt.md:11`), `vitest.config.ts:20` | 95/95/90/95 lines/functions/branches/statements | the only **project-level** floor either source repository declares in-repo; recorded in a prior port decision as the intended enforced gate |
+| py `.codecov.yml:14`, `:18` (`inputs/prompt.md:9`) | project `target: auto`; **patch** `target: 80%` | a no-regression rule plus a floor on the lines a pull request changes; py has no project-level numeric floor |
+
+The Opus leg maps ts's values onto LLVM's stable metrics (`raw/opus.md:112-116`): lines → lines; functions → functions; branches → **regions** (a sub-line proxy, not branch coverage); statements dropped. The Muse leg proposes a single `--fail-under-lines 80` from "the only enforced numeric threshold in either source repo" (`raw/muse.md:133`). That 80 is py's **patch** target, which measures a diff, not the project. Used as a project floor, it is a different rule under the same number.
+
+**The executed discriminator** (`C8b`, `C8c`). On the fixture with the serve binary's entry path left untested — 13 lines, a whole production code path — the totals are lines 81.71 %, functions 89.47 %, regions 75.76 %. The 95/95/90 floor **fails** that run; the lines-80 floor **passes** it. At template scale, an 80 % line floor cannot see an untested entry point. With every entry path tested, the fixture measures lines 100 %, functions 100 %, regions 96.97 % and passes 95/95/90 with 6.97 points of regions headroom (`C3a`).
+
+**The cost of the functions metric, measured.** One public generic that no test instantiates is recorded as a function with zero executions and lowers the fixture's functions total from 100 % to exactly 95 % (`C7a`, `C7b`) — at the floor. A second would fail it. The denominator also includes in-file test functions (`F3c`), which inflates the percentage. On a larger workspace one unused generic moves the total less, but the rule is strict: every public generic needs a test that instantiates it. This is the main risk the proposal carries, and the first P03 measurement is its re-verify trigger.
+
+**Ranked runner-up: `--fail-under-lines 80` alone** (Muse). It is legible and lenient. It loses because it passes a run with an untested entry point (`C8c`), and because its source value is a patch rule.
+
+### Members
+
+#### cargo-llvm-cov
+
+- **Landscape.** Established-standard bin; the only driver over the first-party instrumentation that gates on several metrics.
+- **Principles and implementation.** Builds with `-C instrument-coverage` into `target/llvm-cov-target` (`C3f`), runs the tests, merges `.profraw` with `llvm-profdata`, reports with `llvm-cov`. It has no configuration file and reads no threshold from the environment (`F8f`), so the Justfile variable is the single declaration. It writes **one format per invocation**: `--lcov --html` together is rejected with `error: --html may not be used together with --lcov` (`F6a`). That is why the recipe runs the tests once with `--no-report` and derives each format with `report` (`F6b`).
+- **Dominant choice: yes.** 90-day downloads 1,682,448 against `cargo-tarpaulin`'s 295,600, a ratio of 5.69 (`S1b`; both legs reported 5.7 from the same endpoint earlier the same day). 6 of 8 surveyed coverage-running projects (`raw/opus.md:51`). Figures (`S1`–`S6`, retrieved 2026-09-26 Pacific): all-time downloads 8,002,951; last release 0.9.1, 2026-09-06, not yanked; licence `Apache-2.0 OR MIT`; `rust_version` 1.87; GitHub `taiki-e/cargo-llvm-cov` 1,469 stars, not archived, pushed 2026-09-06; 51 open issues; issue responsiveness over the 10 newest issues (#492–#524): 6 answered, median first maintainer response 2.09 days, 4 unanswered; RustSec package page HTTP 404, meaning no advisory has been filed. **Maintenance state: `active`.**
+- **Qualified shortlist.** (1) `cargo-llvm-cov` 0.9.1. (2) `cargo-tarpaulin` 0.37.4: 90-day 295,600; all-time 3,048,747; last release 2026-09-21; `MIT OR Apache-2.0`; 3,021 stars; 30 open issues; no RustSec page; `rust_version` undeclared (`S2a`); state `active`.
+- **Excluded by gate.** None. Gates 2–6 for `cargo-llvm-cov`: MSRV 1.87 is within the 1.96 floor, executed by building it on 1.96.1 (`I1`, `I5`); no advisory, `#![forbid(unsafe_code)]` (`I7`, `S6`); platforms — its own CI tests `1.87`, stable and beta on `ubuntu-24.04` and **nightly only** on `macos-latest` (`review/evidence/snapshots/sources/cargo-llvm-cov-ci.yml:57-73`); this synthesis ran it on stable 1.93.0 on macOS arm64 (`C3a`); Windows `aarch64-pc-windows-msvc` is known not to work (README line 618), and Windows is not required; an installed binary, so no default features and no runtime coupling; no binary-size cost to the shipped artifact, and one extra instrumented debug build per coverage run. **`grcov` 0.10.7 is not excluded by a gate** — licence `MPL-2.0` is inapplicable under the owner ruling — **it is left off the shortlist on fit and maintenance**: it has no test driver and no gate flag, its last release is 2026-03-03, more than six months before retrieval (the rubric's trigger, `S3a`), and the concrete `at-risk` signal is responsiveness: 8 of its 10 newest issues have no maintainer comment, and the 2 answered took a median of 16.16 days (`S5a`). RUSTSEC-2025-0005 is patched in `>0.8.20` (`S6b`).
+- **Up-and-comers.** No new collector. `actions/upload-code-coverage` is a reporting surface to watch for the optional upload (`raw/opus.md:234`).
+- **Fit for this template.** CLI: the spawned binary is measured (`C5a`). Library and member crates: measured when `report` carries `--workspace` (`C4d`); dropped silently when it does not (`C4e`). Web service: `--all-features` turns on `web`, and the router module and the serve binary are measured (`C4c`). The same mechanism runs on both matrix OSes. `--locked` is honoured, and a `nextest` form exists for R32.
+- **Recommendation.** Adopt 0.9.1 through the recipe above.
+- **Ranked runner-up.** `cargo-tarpaulin` 0.37.4 with `--engine llvm` forced on both OSes: its gate is lines-only, its default engine differs between the two runners, and its MSRV is undeclared. The signal-driven entry-path test F135 requires (`C5c`, `C8a`) is a hazard under the ptrace default: tarpaulin's 0.37.4 README says tests using unix signals "may not work with ptrace instrumentation" and names `--forward` as the mitigation (`review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:113-119`, `S12d`–`S12f`), which its option list says "is now the default behaviour" (`:73`, `S12c`). The signal hazard therefore does not by itself require the LLVM engine. Runner parity does: ptrace is the Linux x86_64 default and LLVM the macOS default (`:19-21`, `S12b`), so one mechanism on `ubuntu-latest` and `macos-latest` means `--engine llvm` on both.
+- **Tradeoffs.** Gains: one mechanism on both OSes, three gate metrics, an isolated instrumented build. Costs: no configuration file; branch and doc-test coverage need nightly (`F4`, `F5`); macOS is tested upstream on nightly only; the LLVM tools are outside Rust's stability guarantee (`S8c`).
+- **Parameters.** Owns none. Invoked as `cargo llvm-cov`, which is the registered invocation rule for a `cargo-<sub>` executable (`inputs/PARAMETERS.md:14`).
+- **Migration implications.** `Justfile`: the `coverage` recipe and the `coverage_fail_under` variable; `cargo-llvm-cov@0.9.1` joins R42's tool list. `.github/workflows/ci.yml`: the `coverage` job. `Cargo.toml`: no change.
+- **Validation strategy.** Executed: `C3a`–`C8c`, `F1`–`F7`. Planned for P03: the same recipe on `ubuntu-latest` and on the 1.96 floor.
+- **Confidence & re-verify trigger.** High on the collector. Re-verify on a 0.10 release, or when branch or doc-test coverage stabilises (#79649, #79417).
+- **Sources.** `S1`–`S6`, `S10`, `S11`; packaged README and `Cargo.toml` (`I4`–`I6`).
+
+#### llvm-tools-preview
+
+- **Landscape.** First-party toolchain bin: the rustup component that ships `llvm-profdata` and `llvm-cov` built against rustc's own LLVM. The alternative is a system LLVM passed through `LLVM_COV` and `LLVM_PROFDATA`, whose major version must match rustc's.
+- **Principles and implementation.** `cargo-llvm-cov` locates the tools in the active rustup toolchain's sysroot. The component is **per toolchain**: installed on 1.93.0 and absent on 1.96 on this host (`T4a`, `T4b`). On a rustup toolchain without it, and with `CARGO_LLVM_COV_SETUP=no`, the tool fails and names the exact `rustup component add llvm-tools-preview --toolchain 1.96-aarch64-apple-darwin` command (`T2`, `T2b`). With a non-rustup `cargo` first on `PATH` — this host's Homebrew `cargo` 1.98.1 — it fails with `failed to find llvm-tools-preview, please install llvm-tools-preview, or set LLVM_COV and LLVM_PROFDATA environment variables` (`T3`, `T3b`), exactly as the Opus leg read it from the source (`raw/opus.md:167`).
+- **Dominant choice: yes**; the rustc book calls it "the recommended path" (`S8a`). Crate figures are **inapplicable**: it is a rustup component, not a crates.io crate, so downloads, releases, stars and issue responsiveness have no referent. Its maintenance follows the Rust release train.
+- **Qualified shortlist.** (1) The rustup component. (2) System LLVM through `LLVM_COV`/`LLVM_PROFDATA`, for non-rustup toolchains only.
+- **Excluded by gate.** None. Licence gate inapplicable (owner ruling). Available on every stable toolchain, including the 1.96 floor, per the T2 message. No RustSec entry applies, because RustSec covers crates. It ships for both runner platforms; this run executed it on `aarch64-apple-darwin` only. It has no features, and it costs a download per toolchain with no effect on the shipped binary.
+- **Up-and-comers.** None. Watch rust-lang/rust#119164 (open, `S7`), which concerns the short `llvm-tools` spelling; the template uses `llvm-tools-preview`.
+- **Fit for this template.** One `rustup component add llvm-tools-preview` step in the `coverage` job. It is kept **out** of `rust-toolchain.toml`'s `components`, so `just test` and every other job never download it (`raw/opus.md:169`). Contributors need rustup's `cargo` first on `PATH` (`T3`).
+- **Recommendation.** Add it in the CI `coverage` job and on first local use. Test its presence with `rustup component list --installed`, per the registered rule for rustup components (`inputs/PARAMETERS.md:14`; `T4a`).
+- **Ranked runner-up.** Listing it in `rust-toolchain.toml` `components`: that removes the first-use step, but it downloads the tools for every contributor and every job.
+- **Tradeoffs.** Lean jobs and lean contributor installs, at the cost of one explicit install step. The tool interface is outside the stability guarantee (`S8c`).
+- **Parameters.** Owns none. It follows whatever channel R42's `rust-toolchain.toml` selects.
+- **Migration implications.** One CI step. The contributor docs (with R32) state that `just coverage` needs rustup's `cargo` and the component.
+- **Validation strategy.** Executed: `T1`–`T4b`. Planned: the CI step on `ubuntu-latest`.
+- **Confidence & re-verify trigger.** High. Re-verify when #119164 closes or the component is renamed.
+- **Sources.** `S7`, `S8`; `T2`, `T3` logs.
+
+### Compatibility
+
+The members are tested together by their maintainer: `cargo-llvm-cov`'s CI runs `cargo llvm-cov nextest` (which requires the component) on `1.87`, stable and beta on `ubuntu-24.04`, and on nightly on `macos-latest` (`review/evidence/snapshots/sources/cargo-llvm-cov-ci.yml:57-73` for the matrix, `:90-99` for the step). Shared adopters run the pair on stable: ratatui on `ubuntu-latest`, and starship with a matrix that includes macOS (`S10`; runner details as the Opus leg reports them, `raw/opus.md:388`). This synthesis ran the pair — `cargo-llvm-cov` 0.9.1 built on rustc 1.96.1, running against rustc 1.93.0's `llvm-tools-preview` (LLVM 21.1.8) — through the recommended recipe on a workspace with axum 0.8.9, tokio 1.53.1 and tower 0.5.3 (`C1`, `C3a`).
+
+Coupled items, each as a slot this decision fills or leaves:
+
+| Item | Relationship |
+|---|---|
+| **R11** `ci-job-structure` | the `coverage` job is R11's pre-assigned slot: `needs: plan`, `if code == 'true'`, one more cache-bearing id (`research/topics/11-ci-workflow-job-structure/DECISION.md:291`), and its own `target/` (`C3f`). The ubuntu budget: R11's design holds 3 cache-bearing ids on `ubuntu-latest` (`research/topics/11-ci-workflow-job-structure/DECISION.md:407`), R04's semver job adds one (`:290`), and `coverage` adds one, for **5**, under R11's "roughly six" ceiling (`:278`) |
+| **R12** | whether `coverage` is a required check directly or through an aggregate |
+| **R32** | the base test runner (a `cargo llvm-cov nextest` form exists), the tier hosting the entry-path subprocess tests, and where unit tests live (`F3c`) |
+| **R42** | how CI installs `just` and `cargo-llvm-cov@0.9.1` |
+| **R20** / **R08** | action pins; job `permissions:` (no `id-token` is needed, because nothing is uploaded to a service) |
+| **R69** | the `web` feature `--all-features` turns on (`inputs/PARAMETERS.md:17`) |
+
+### Migration implications
+
+| File | Change |
+|---|---|
+| `Justfile` | add the `coverage` recipe and `coverage_fail_under` exactly as above; `just test` stays uninstrumented |
+| `.github/workflows/ci.yml` | add the `coverage` job above |
+| `Cargo.toml` | no change: no dev-dependency, no `check-cfg` entry (no `cfg(coverage)`) |
+| `rust-toolchain.toml` | no change |
+| `.gitignore` | no change: every report lands under `target/` (`C3g`) |
+| `.codecov.yml` | not created. If the owner picks the runner-up gate, add one modelled on py's and an upload step with OIDC, which needs R08 to grant `id-token: write` |
+| contributor / test docs (with R32) | state that doc tests are not counted on stable; that `just coverage` needs rustup's `cargo` and `llvm-tools-preview`; and where the reports land |
+| follow-on, py and ts (rationale only) | ts: run its coverage in CI so its configured floor fails the job. py: optionally add an in-repo `--cov-fail-under` so the floor survives without the service |
+
+**Doc tests (the LOW question).** On stable they are **not** covered: `--doctests` and `--doc` both fail with ``error: the option `Z` is only accepted on the nightly compiler`` (`F4a`, `F4b`). The README lists doc-test support as unstable (`F8a`, README line 917), and the rustc book's doc-test recipe needs `-Z unstable-options --persist-doctests` (`S8b`). A function reached only by its doc test is recorded with zero executions (`F3b`). `cargo test --doc` still runs the doc tests, uninstrumented, in R11's `check` job (`F4c`). Coverage therefore counts unit, integration and subprocess tests only.
+
+### Validation strategy
+
+Executed on this host: `r35-install.sh`, `r35-coverage.sh`, `r35-flags.sh`, `r35-toolchain.sh`, `r35-sources.sh` and `r35-tarpaulin.sh` (see `## Empirical check`). **What P03 must validate**, each a proposal this research could not execute: the recipe on `ubuntu-latest` and on the 1.96 floor and current stable (this run used 1.93.0); the CI job on a pull request, including that a failing gate still uploads `target/llvm-cov/` and that a docs-only pull request skips the job; the template skeleton's measured totals against 95/95/90, which is the value's re-verify trigger; and the job's wall clock against `check`'s.
+
+### Sources and retrieval
+
+| Source | Endpoint or path | Retrieved | Checks |
+|---|---|---|---|
+| crates.io figures | `GET https://crates.io/api/v1/crates/<name>` and `/versions` for `cargo-llvm-cov`, `cargo-tarpaulin`, `grcov` | 2026-09-26 Pacific | `S1`–`S3` |
+| GitHub repositories, open issues, responsiveness | `GET https://api.github.com/repos/<o>/<r>`, `/search/issues?q=repo:<o>/<r>+is:issue+is:open`, `/repos/<o>/<r>/issues?...`, `/issues/<n>/comments` | same | `S4`, `S5` |
+| RustSec | `https://rustsec.org/packages/<name>.html`, `https://rustsec.org/advisories/RUSTSEC-2025-0005.html` | same | `S6` |
+| rust-lang/rust issues; rustc book | `GET https://api.github.com/repos/rust-lang/rust/issues/<n>`; `/contents/src/doc/rustc/src/instrument-coverage.md` | same | `S7`, `S8` |
+| codecov-action README and latest release | `GET https://api.github.com/repos/codecov/codecov-action/readme`, `/releases/latest` | same | `S9` |
+| adopter workflows; `cargo-llvm-cov` CI | `GET https://api.github.com/repos/<o>/<r>/contents/.github/workflows/<file>` | same | `S10`, `S11` |
+| `cargo-tarpaulin` 0.37.4 README | `GET https://api.github.com/repos/xd009642/tarpaulin/contents/README.md?ref=0.37.4`, saved as `review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md` | 2026-09-27 | `S12` |
+| `cargo-llvm-cov` 0.9.1 README and `Cargo.toml` as packaged | the crate `cargo install` downloaded from crates.io into the private `CARGO_HOME` | same | `I4`–`I7`, `F8` |
+
+Every fetched body is saved under `review/evidence/snapshots/sources/`, with digests in `review/evidence/SHA256SUMS-sources`, except the `S12` README, whose sha256 `r35-tarpaulin.log` prints.
+
+re-verify: 2027-03-26, or earlier on any of — the first P03 measurement of the template skeleton's lines, functions or regions against 95/95/90, which re-opens the values; the owner disposing of F136 or F137 differently, for example choosing the external gate; `cargo-llvm-cov` 0.10 or any release changing `report`'s package selection, gate flags or one-format rule; stabilisation of branch coverage (#79649), `#[coverage]` (#84605) or doc-test coverage (#79417); a stable release whose `llvm-tools-preview` output changes; rust-lang/rust#119164 closing; R32 choosing nextest or moving unit tests into `tests.rs` files; R12 publishing its required-check mechanism; R42 naming how CI installs `just` and `cargo-llvm-cov`; R04, R13 or another item taking `ubuntu-latest` past roughly six cache-bearing job ids; R78 or R79 publishing a feature that `--all-features` turns on; `actions/upload-code-coverage` publishing a release; or `GET https://crates.io/api/v1/crates/grcov/versions` showing a release after 2026-03-03 together with maintainer responses, which would lift `grcov` off `at-risk`
+
+## Parameters
+
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+- assumes ci-job-structure = one .github/workflows/ci.yml whose jobs are partitioned by whether a check compiles Rust, never by which check it is. Tier 0 is a single always-run detector job named plan on ubuntu-latest carrying no toolchain, no cache action and no target/ directory: after actions/checkout with fetch-depth 0 and persist-credentials false it runs one bash step under set -euo pipefail that computes git diff --no-ext-diff --no-textconv --no-renames --name-only from BASE_SHA to HEAD, so the path list includes the source side of every rename, with BASE_SHA read from github.event.pull_request.base.sha through the step env block, treats every file name as data and never evaluates it, and writes exactly four job outputs - code, web, workflows, docs - as the literal strings true or false and never as any other value, publishing true on all four for every event whose name is not pull_request so that pushes to main and merge-queue entries are never skip-gated. Every output that gates a required check fails closed, whether the check compiles or not, so a path nobody anticipated runs the gate rather than skipping it, and the body makes that structural - code and web start true and are set false only on affirmative proof that every changed path is skippable, a grep exit of 1, never on a match, an error or a test cut short, and workflows and docs likewise start true and are set false only on a grep exit of 1, and every path test reads the whole list from a here-string rather than through a pipeline whose early-exiting grep can end it under pipefail: code is the negation of a skip-list of paths that cannot affect a compile, a package or an installed artifact, with every entry of the package include allow-list R49 owns forced non-skippable because each of them is a packaging input, and with no skip-list entry allowed to match a file any package contains - so the Markdown entry matches only root-level files. Markdown under docs/ and .github/ISSUE_TEMPLATE/ stays skippable through those directory entries, and no entry matches anything under src/ or a member directory, because src/ is packaged and a workspace member that names no include list packages its whole directory; web is fail-closed too - every change that sets code also sets web, because the web member depends on the core member and the root package that hosts the serve binary depends on every member, and web is additionally set by any change under the web member's directory, so the paths R69 names are a subset of the rule rather than its whole; workflows gates only workflow-lint and its pattern contains the whole input of every check in that job by construction - the workflow files, the local actions they call, which live under .github/actions/, and the workflow linter's own config file; docs keys on the prose tree and gates no job in this file, because R82's link check is a step of hygiene, so it is kept only as a literal output that no check whose input another item declares may consume; and a fifth key is added only when some job would be skipped by it that code does not already skip, and is itself written as the negation of a skip-list, or, if it gates only a job that compiles nothing, as a pattern containing that job's whole input. Tier 1 is the checks that compile nothing, each its own cheap job carrying no cache step: hygiene, which deliberately has no needs edge so that a formatter failure still reports on a pull request whose compile tier is skipped, and which hosts every non-compiling check whose input no key contains, R29's non-code formatting slot and R20's two action-pin checks included, as is R82's link check, while R82's rustdoc part is the doc build step of check; and workflow-lint, gated on workflows, which hosts only checks whose whole input is the workflow tree. Tier 2 is the checks that compile: ONE job named check per entry of target-os-matrix through a strategy matrix over os alone with fail-fast false - never a matrix dimension over Cargo features, because the cache action keys on the job id and not on matrix values - running clippy with the feature off, clippy with the feature on, a no-default-features check of the facade, cargo test with the feature off scoped by -p to the non-web packages so the feature-off property is proven rather than assumed, cargo test over the workspace with the feature on, a build of the serve binary and a doc build, as ordered steps sharing one target/, every cargo command carrying --locked, where each cargo step runs under !cancelled() so that one failing step does not hide the results of the steps after it; plus msrv-floor, a separate single-runner job rather than a matrix leg of check because the floor needs only the declared-floor check Cargo's own CI guide shows rather than check's whole step list, verifying the declared rust-version on ubuntu-latest, which widens to every runner by substituting the matrix os expression into runs-on if the owner answers the open F033 cross-product question that way; plus install-smoke, R50's one ubuntu-latest job, whose web leg is a step conditioned on the web output. Every gated job consumes the detector through needs: plan and a POSITIVE predicate of the form needs.plan.outputs.KEY == 'true', never a negated one, and carrying no status function, so that the platform's implicit success() skips every gated job whenever plan fails or is skipped, under either polarity; the positive form is kept for consistency with R18, R86 and the dorny/paths-filter example, because the one remaining empty-key case, a misspelled output name, is caught by lint on the consumer side and by the detector cases on the producer side, and because a consumer that opts out of skip propagation with always() or !cancelled() must read plan's result, never plan's outputs, as its condition; actionlint type-checks the output name and the needs edge but does NOT reject the negated form, so that rule travels in prose to every consumer rather than being left to lint. A failed plan skips every gated job and skipped is a successful check status, so a failed plan must itself fail a required check; this file hands that constraint on without deciding how it is met: either plan is itself a required check, or an aggregate, if R12 chooses one, includes plan in its needs and treats a failure or cancelled result of plan as failure. ci.yml carries no trigger-level paths or paths-ignore filter of any kind, because a workflow skipped by path filtering leaves its checks Pending and blocks merging while a job skipped by a conditional reports Success; its triggers are pull_request and push restricted to main, plus merge_group so a queue's speculative merge still reports; it declares an empty workflow-level permissions map with a per-job re-grant whose scopes are R08's; and it declares workflow-level concurrency with cancel-in-progress true on a group keyed to the workflow plus the pull-request number, falling back to the commit sha when there is no pull request, so a force-push cancels the superseded pull-request run while consecutive pushes to main never cancel one another and keep populating the cache. This file holds no aggregate required-status job, which is R12's, and no release, secret-scanning, devcontainer or AI-review job, which are separate workflow files. Every further check arrives as a named slot under one rule: a check that compiles nothing is a step of hygiene, or its own cheap job behind a path gate only when that gate's key contains the whole input of every check in the job; a check that compiles what check already compiles is an ordered step of check; and a check needing its own toolchain, its own runner or a target/ it must not share becomes its own job with needs: plan and a positive predicate, counted against a ceiling of roughly six cache-bearing job ids per runner, where the budget arithmetic is the sum over cache-bearing job ids of that job id's runner count. Any single-job workflow file that compiles no Rust, R17's scanner included, lands on ubuntu-latest, because it neither shares nor claims a target/ cache entry and gains nothing from a second runner
+
+**No `- owns` line**: the prompt's Couplings list no owned parameter (`inputs/prompt.md:20`). **No `CONFLICT:` line**: the recommendation fits R11's slot rule for a check "needing its own toolchain, its own runner or a target/ it must not share" (`inputs/PARAMETERS.md:12`). Running the job on `ubuntu-latest` only rests on one mechanism and one source across both OSes; `check` already runs the tests on both.
+
+**Registered values read as prose, not as `assumes` lines.** The prompt's `- consumes:` line names only `ci-job-structure` (`inputs/prompt.md:21`), and an `assumes` line may name only a fixed or consumed parameter. The Opus leg wrote two further `assumes` lines (`raw/opus.md:398-399`); this decision reads those two registry rows as prose:
+
+| Registry row | What this decision reads from it |
+|---|---|
+| `package-manager-invocation` (R42, `inputs/PARAMETERS.md:14`) | the tool is invoked as `cargo llvm-cov`; a rustup component's presence is tested with `rustup component list --installed`, never `command -v` |
+| `web-extra-surface` (R69, `inputs/PARAMETERS.md:17`) | `web` is the one off-by-default feature, and consumers select it "with --features web or --all-features", which the recipe does |
+
+## Empirical check
+
+**Host and toolchains, every version read from the tool.** `Darwin 25.4.0 arm64`. Coverage ran on rustup **1.93.0** (`rustc 1.93.0 (254b59607 2026-01-19)`, LLVM 21.1.8), the only local toolchain carrying `llvm-tools-preview`. The tool was built on rustup **1.96.1** (`rustc 1.96.1 (31fca3adb 2026-06-26)`), the template floor under current stable 1.98. Homebrew `cargo 1.98.1` was used only for the negative case `T3`. Also used: `just` 1.57.0, `bash` 5.3.20, `shellcheck` 0.11.0, `jq`, `curl` and `gh` (REST calls only). `CARGO_HOME=/tmp/cargo-s9-R35`, the private cargo home the run provided; every script unsets the session's `CARGO_TARGET_DIR`, so paths are fixture-relative. Every script creates its scratch fixture with `mktemp -d` and removes it on exit. The only files written are in `review/evidence/` and the private `CARGO_HOME`.
+
+**Why 1.93.0 and not the floor or current stable.** Adding `llvm-tools-preview` to another toolchain would write to `~/.rustup`, outside this run, and download from `static.rust-lang.org`, a host outside the topic's named endpoints. That was not done. Running the recipe on 1.96 and on current stable is left to P03 and the empirical audit. That the pinned tool **installs** on the 1.96 floor was executed (`I1`).
+
+**Working directory:** the repository root; each script resolves paths from its own location. Commands:
+
+```
+bash research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/r35-install.sh
+bash research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/r35-coverage.sh
+bash research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/r35-flags.sh
+bash research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/r35-toolchain.sh
+bash research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/r35-sources.sh
+bash research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/r35-tarpaulin.sh
+bash research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/r35-inputs.sh
+```
+
+| Script | Committed log | Rerun 2026-09-27 | What it decides |
+|---|---|---|---|
+| `r35-install.sh` | PASS=8 FAIL=0 | PASS=8 FAIL=0 | the pinned tool builds on the 1.96 floor; its packaged `rust-version`, licence and `forbid(unsafe_code)`; a README snapshot for offline citation |
+| `r35-coverage.sh` | PASS=29 FAIL=0 | PASS=29 FAIL=0 | the recommended recipe on the fixture: positive run, formats, scope, the `--workspace` defect, subprocess coverage of both binaries, the gate's negative control, the functions metric with an unused generic, and the thin-entry-file discriminator between 95/95/90 and lines-80 |
+| `r35-flags.sh` | PASS=29 FAIL=0 | PASS=29 FAIL=0 | doc tests and branch coverage rejected on stable; one format per invocation; `report`'s gate flags; the README's exclusion and limitation statements; in-file test modules counted |
+| `r35-toolchain.sh` | PASS=7 FAIL=0 | PASS=7 FAIL=0 | how the tool finds the LLVM tools: with the component, without it, and under Homebrew `cargo` |
+| `r35-sources.sh` | PASS=25 FAIL=0 | PASS=25 FAIL=0 | every live figure in this decision, snapshotted |
+| `r35-tarpaulin.sh` | PASS=7 FAIL=0 (new in revision 3) | the same log | `cargo-tarpaulin` 0.37.4's README on accuracy, engine defaults, signals and `--forward`, snapshotted |
+| `r35-inputs.sh` | PASS=128 FAIL=0 (fresh against revision 3) | the same log | every `file:line` citation here resolves; the prerequisite's hash; the raw reports' hashes, shape results and placeholder count; this file's H2 order, revision-numbered title and `Parameters` lines |
+| **total** | **PASS=233 FAIL=0** | **PASS=233 FAIL=0** | |
+
+**The committed logs and the rerun.** The logs of the first five scripts are the 2026-09-26 synthesis run (UTC timestamps 2026-09-27T01:57Z–02:24Z), and every live figure in this decision quotes them. On 2026-09-27 (07:39Z–07:42Z) all five were rerun with a fresh private `CARGO_HOME`; `r35-install.sh` and `r35-sources.sh` ran from a `/tmp` copy of `review/evidence/` so the committed snapshots stayed as retrieved. Every PASS/FAIL line matched. The fresh logs are committed under `review/evidence/rerun-2026-09-27/`. Their differing lines were timestamps, scratch paths, wall clock (`C2a` 13 s, `C3a` 11 s, `I1` 49 s) and rolling counts: `cargo-llvm-cov` 90-day downloads 1,685,922 and `cargo-tarpaulin` 296,308 (ratio still 5.69), and `mozilla/grcov` stars 1,367. The rerun's packaged README is byte-identical to the committed snapshot, and the committed snapshots still match `SHA256SUMS-sources` (49 of 49). `r35-tarpaulin.log` and `r35-inputs.log` are the 2026-09-27 run itself.
+
+The fixture is written out in full inside `r35-coverage.sh`. It has a core library member, a root package with the `rslbp` CLI binary, and the `web` feature gating a router module and an `rslbp-serve` binary with `required-features = ["web"]`, using the axum, tokio and tower versions in R69's row. Its tests are 4 unit tests, 4 CLI subprocess tests, 3 in-process router tests and 2 serve-binary subprocess tests; one of those sends `SIGINT`. Its `Justfile` is the recommended one. All seven scripts are `shellcheck` 0.11.0 clean at default severity (`review/evidence/shellcheck.log`). They carry three `# shellcheck disable=SC2016` directives, each with an inline reason: two in `r35-flags.sh`, where the backticks are literal Markdown in the README, and one file-wide in `r35-inputs.sh`, whose quoted phrases are literal Markdown or `bash -c` bodies.
+
+**What no check here establishes.** No GitHub-hosted runner ran anything: the CI job block, the artifact upload, the `plan` gating and the Linux behaviour are proposed. The recipe ran on 1.93.0, not on the 1.96 floor or current stable. `cargo-tarpaulin` and `grcov` were not executed, and the tarpaulin claims in the collector table marked "not re-read" are carried from the Opus leg; only the README statements `S12` checks were re-read. The two timing figures are one host and one fixture, cold, and are not a comparison. 25 of the Opus leg's 28 practice-survey rows were not re-read. The source repositories were not read by this synthesis. Live figures drift: the 90-day download counts moved between the legs' retrieval and this run.
+
+## Engines
+
+| Engine | Report | Identity | sha256 |
+|---|---|---|---|
+| Muse | `raw/muse.md` (225 lines) | header line 1: `# R35 — coverage-tooling (bundle) — Muse raw report`; no model identifier anywhere in the report | `583d7df2fbae57b9036f5f4c3792280c36c78569dd35d1119eb9b943a56c1638` |
+| Claude Opus | `raw/opus.md` (456 lines) | header line 3: "Opus seat (`claude-opus-5-5`), CLI run 2026-09-26" | `6884140168ad55b6eea9125513b951edf177702b17c3e7e08686add0d09cc1fd` |
+
+**Identity and operation records.** `manifest.json` records `"operations": {}` and `required_engines` `["codex", "opus"]`; `operations/` is empty. No operation record binds either report to a provider call, so each identity above comes from the report's own header line only. The manifest names `codex` and the run holds a Muse report in that seat. Whether that substitution is authorised for R35 is a controller question this synthesis cannot answer from its permitted reads.
+
+**Shape.** `scripts/check-answer-shape.sh <raw> bundle` prints `OK: validation passed` for both reports (`X1`, `X2`). **A shape pass is not factual quality** (RUNBOOK §5): the Muse report passes while carrying **43 distinct unfilled `S_*` placeholder tokens on 26 lines** (`X3`). Among them are the reference stable toolchain (`S_STABLE`, `raw/muse.md:5`), the whole adopter survey (`S_ADOPTERS_DETAIL`, `:27`), the doc-test note (`S_DOC_NOTE`, `:51`), grcov's maintenance state (`S_G_STATE`, `:72`) and the Codecov tokenless analysis (`S_CODECOV_TOKENLESS_SHORT`, `:141`). Every Muse claim that rests on a placeholder is treated here as unsupported. The Muse report also cites another item's raw report for a programme-pin convention (`raw/muse.md:3`, `:225`); nothing in this decision depends on that citation. The Muse figures that **are** filled — downloads, releases, open-issue counts, advisories (`raw/muse.md:41`, `:72`) — agree with the Opus leg and with `S1`–`S6`.
+
+**Where the legs agree**, re-derived here: `cargo-llvm-cov` 0.9.1 as the collector (`I1`–`I7`, `S1`); `cargo-tarpaulin` as the ranked runner-up; LLVM instrumentation as more accurate than ptrace, each leg with its own specifics — Opus: precise line/region data against ptrace's "may still contain minor inaccuracies" and signal interference (`raw/opus.md:99`); Muse: compiler-inserted counters and source-accurate regions/branches against ptrace being "less accurate on optimized/inlined code" (`raw/muse.md:37`, `:96`), with no unix-signal claim (`X14`); an in-repo gate over an external service, with Codecov as the non-gating runner-up (`S9a` supplies the tokenless fact both legs needed); a dedicated `coverage` job in R11's slot on `ubuntu-latest`; no per-file exclusions at inception; no `Cargo.toml` entry; no `BASELINE-REVIEW:` line.
+
+**The disagreements, each adjudicated on evidence.**
+
+| # | Question | Muse | Opus | Settled for | Evidence |
+|---|---|---|---|---|---|
+| D1 | threshold values | lines 80 only (`raw/muse.md:133`, `:158`) | lines 95, functions 95, regions 90 (`raw/opus.md:112-116`) | **Opus**, as a proposal on the owner's F136 call | Muse's 80 is py's **patch** target (`inputs/prompt.md:9`), not a project floor; the executed discriminator: lines-80 passes a run with an untested entry point, 95/95/90 fails it (`C8b`, `C8c`); the functions cost is measured (`C7a`, `C7b`) |
+| D2 | where the threshold is declared | the CI YAML flag **and** a Justfile recipe "mirroring the CI flags", with a grep check that the two agree (`raw/muse.md:104`, `:178`) | one Justfile variable that CI executes (`raw/opus.md:106`) | **Opus** | Muse's own principle — "the flag and the failure are the same process exit code" (`raw/muse.md:133`) and "any second threshold declaration that could drift from the flag" (`:174`) — argues against two copies; the tool reads no threshold from the environment (`F8f`) |
+| D3 | doc tests on stable | "included via the tool's `--doc` flag" (`raw/muse.md:51`, a placeholder note) | not covered; `--doctests` unstable (`raw/opus.md:123`) | **Opus** | `--doc` and `--doctests` both fail on stable (`F4a`, `F4b`); README lines 14 and 917 (`F8a`); rustc book (`S8b`) |
+| D4 | the recipe | one invocation `cargo llvm-cov --workspace --lcov --output-path lcov.info --fail-under-lines 80`, plus `--html` locally (`raw/muse.md:88`) | `--no-report` once, then three `report` lines (`raw/opus.md:135-140`) | **Opus's structure, corrected** | one format per invocation (`F6a`), so Muse's HTML needs a second full test run; Opus's `report` lines omit `--workspace` and drop the member silently (`C4e`); corrected lines pass (`C4d`, `C3a`) |
+| D5 | `grcov` | qualified shortlist; state unfilled (`raw/muse.md:72`) | excluded, `at-risk` (`raw/opus.md:225-229`) | **neither heading**: off the shortlist on fit, maintenance `at-risk`, no gate failed | no driver, no gate flag; last release 2026-03-03 (`S3a`); 8 of 10 newest issues unanswered, median 16.16 days over 2 answered (`S5a`); Opus filed it under "Excluded by gate" although it names no failed gate |
+| D6 | second member | the threshold-and-gate pattern (`raw/muse.md:125`) | `llvm-tools-preview` (`raw/opus.md:305`) | **Opus** | the component is separately installed, and its install decision changes behaviour (`T2`, `T3`); the gate is a configuration of the tool, recorded under `### The threshold values` |
+| D7 | CI report formats | terminal plus the `lcov.info` artifact; HTML locally (`raw/muse.md:51`) | the same three locally and in CI; upload `target/llvm-cov/` (`raw/opus.md:121`) | **Opus** | the single-recipe rule (AC4) means CI produces the HTML anyway; the reports exist when the gate fails (`C6b`) |
+| D8 | `.gitignore` | add `lcov.info` and `target/llvm-cov*` (`raw/muse.md:104`) | no change (`raw/opus.md:276`) | **Opus** | every report lands under `target/` (`C3g`); Muse's root `lcov.info` came from its own `--output-path lcov.info` |
+| D9 | `--all-features` | absent (`raw/muse.md:88`) | present (`raw/opus.md:143`) | **Opus** | without the `web` feature the router module and the serve binary are not compiled, so they cannot be measured; with it they are (`C4c`); R69's row names `--all-features` (`inputs/PARAMETERS.md:17`) |
+| D10 | macOS proof | "the tool's own CI proves both runners" (`raw/muse.md:154`) | macOS tested upstream on nightly only (`raw/opus.md:219`) | **Opus** | `cargo-llvm-cov-ci.yml:57-73` (`S11`); this run adds stable 1.93.0 on macOS arm64 (`C3a`) |
+| D11 | thin entry files (F135) | no exclusions; ts's two-file convention kept as an escape hatch (`raw/muse.md:84`) | no exclusions; subprocess coverage of `main.rs` "expected, not verified" (`raw/opus.md:110`) | **both, now executed** | `main.rs` covered by subprocess tests (`C5a`); the serve binary's entry path covered by a `SIGINT` subprocess test (`C5c`) and uncovered without it (`C8a`) |
+| D13 | whether blocking is this item's (F137) | "Required-check status (blocking the PR) is part of this recommendation" (`raw/muse.md:158`) | "this item only guarantees the job fails"; required status is R12's (`raw/opus.md:119`) | **split**: the requirement is this item's, the mechanism R12's | a failing job nobody requires blocks nothing, which is ts's configured-but-unenforced state (`inputs/prompt.md:9`) under another name, so F137 parity needs the block; R11 hands the mechanism to R12 in the same shape for a failed `plan` (`research/topics/11-ci-workflow-job-structure/DECISION.md:283`) |
+| D12 | `Parameters` lines | the `ci-job-structure` value verbatim (`raw/muse.md:199`), no list-item prefix | `ci-job-structure` described, not quoted (`raw/opus.md:397`), plus two `assumes` lines for unconsumed parameters (`:398-399`) | **neither as written** | this decision writes the registry values byte-identical (`X9`) and reads R42's and R69's rows as prose |
+
+**Smaller corrections, found by execution.** The Opus leg's acceptance criterion "no `tests/` paths" holds, but in-file `#[cfg(test)]` test functions **are** counted (`F3c`), so "test code is not counted" (`raw/opus.md:63`) is true only of the `tests/` tier. The Opus leg's reference stable is its host's Homebrew `rustc 1.98.1` (`raw/opus.md:7`); under that toolchain `cargo llvm-cov` cannot find the LLVM tools at all (`T3`). Both legs' 90-day download figure for `cargo-llvm-cov` (1,696,594) is a rolling count, and this run read 1,682,448 from the same endpoint.
+
+**Confidence.** **High** on the collector and the component: one mechanism on both OSes, three gate metrics, the practice majority among coverage users, active maintenance, no advisories, and the recipe executed end to end. **High** that the gate belongs in the repository and fails a job, as a template argument; practice does not support it (`S10`), and it is the owner's call. **Medium** on 95/95/90: the discriminator favours it over lines-80 (`C8b`, `C8c`), but the functions metric sits at the floor after a single unused generic in a 20-function workspace (`C7b`), and no template skeleton exists to measure. **High** on the doc-test and branch limits (`F4`, `F5`, `S7`). **Not established:** Linux behaviour, the floor and current-stable toolchains, and any CI wall clock.

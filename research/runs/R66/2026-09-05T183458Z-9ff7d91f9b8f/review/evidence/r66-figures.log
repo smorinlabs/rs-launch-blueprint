@@ -1,0 +1,134 @@
+=== R66 figure and fitness-gate check — live endpoints ===
+host:      Darwin 25.4.0 arm64
+bash:      3.2.57(1)-release
+curl:      curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+jq:        jq-1.8.2
+grep:      /usr/bin/grep -> grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+ROOT:      /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+PASS A0     ROOT sentinel AGENTS.md present
+
+--- A1 crates.io newest un-yanked version, licence, declared MSRV, features ---
+PASS A1h-serde GET /crates/serde/versions HTTP == 200
+PASS A1n-serde serde newest un-yanked num == 1.0.229
+PASS A1m-serde serde declared rust_version (gate 2) == 1.56
+PASS A1l-serde serde declared license (recorded; gate 1 inapplicable) == MIT OR Apache-2.0
+PASS A1f-serde serde feature keys == alloc,default,derive,rc,std,unstable
+PASS A1h-serde_json GET /crates/serde_json/versions HTTP == 200
+PASS A1n-serde_json serde_json newest un-yanked num == 1.0.151
+PASS A1m-serde_json serde_json declared rust_version (gate 2) == 1.71
+PASS A1l-serde_json serde_json declared license (recorded; gate 1 inapplicable) == MIT OR Apache-2.0
+PASS A1h-tabled GET /crates/tabled/versions HTTP == 200
+PASS A1n-tabled tabled newest un-yanked num == 0.22.0
+PASS A1m-tabled tabled declared rust_version (gate 2) == null
+PASS A1l-tabled tabled declared license (recorded; gate 1 inapplicable) == MIT
+PASS A1f-tabled tabled feature keys == ansi,assert,default,derive,macros,std
+PASS A1h-tempfile GET /crates/tempfile/versions HTTP == 200
+PASS A1n-tempfile tempfile newest un-yanked num == 3.27.0
+PASS A1m-tempfile tempfile declared rust_version (gate 2) == 1.63
+PASS A1l-tempfile tempfile declared license (recorded; gate 1 inapplicable) == MIT OR Apache-2.0
+PASS A1h-csv GET /crates/csv/versions HTTP == 200
+PASS A1n-csv csv newest un-yanked num == 1.4.0
+PASS A1m-csv csv declared rust_version (gate 2) == 1.73
+PASS A1l-csv csv declared license (recorded; gate 1 inapplicable) == Unlicense/MIT
+PASS A1h-comfy-table GET /crates/comfy-table/versions HTTP == 200
+PASS A1n-comfy-table comfy-table newest un-yanked num == 8.0.0
+PASS A1m-comfy-table comfy-table declared rust_version (gate 2) == null
+PASS A1l-comfy-table comfy-table declared license (recorded; gate 1 inapplicable) == MIT
+PASS A1f-comfy-table comfy-table feature keys == _debug,_integration_test,custom_styling,default,reexport_crossterm,tty
+
+--- A2 GitHub repository state (archived is a gate; counters are not printed) ---
+PASS A2h-serde-rs/serde GET /repos/serde-rs/serde HTTP == 200
+PASS A2a-serde-rs/serde serde-rs/serde archived == false
+PASS A2h-serde-rs/json GET /repos/serde-rs/json HTTP == 200
+PASS A2a-serde-rs/json serde-rs/json archived == false
+PASS A2h-zhiburt/tabled GET /repos/zhiburt/tabled HTTP == 200
+PASS A2a-zhiburt/tabled zhiburt/tabled archived == false
+PASS A2h-Nukesor/comfy-table GET /repos/Nukesor/comfy-table HTTP == 200
+PASS A2a-Nukesor/comfy-table Nukesor/comfy-table archived == false
+PASS A2h-Stebalien/tempfile GET /repos/Stebalien/tempfile HTTP == 200
+PASS A2a-Stebalien/tempfile Stebalien/tempfile archived == false
+PASS A2h-BurntSushi/rust-csv GET /repos/BurntSushi/rust-csv HTTP == 200
+PASS A2a-BurntSushi/rust-csv BurntSushi/rust-csv archived == false
+PASS A2h-nushell/nushell GET /repos/nushell/nushell HTTP == 200
+PASS A2a-nushell/nushell nushell/nushell archived == false
+PASS A2h-sharkdp/hyperfine GET /repos/sharkdp/hyperfine HTTP == 200
+PASS A2a-sharkdp/hyperfine sharkdp/hyperfine archived == false
+
+--- A3 RustSec (gate 3) — 404 means 'no advisory' only if a known-bad crate returns 200 ---
+PASS A3-serde rustsec.org/packages/serde.html (no advisory page) == 404
+PASS A3-serde_json rustsec.org/packages/serde_json.html (no advisory page) == 404
+PASS A3-tabled rustsec.org/packages/tabled.html (no advisory page) == 404
+PASS A3-comfy-table rustsec.org/packages/comfy-table.html (no advisory page) == 404
+PASS A3-tempfile rustsec.org/packages/tempfile.html (no advisory page) == 404
+PASS A3-csv rustsec.org/packages/csv.html (no advisory page) == 404
+PASS A3c-atty positive control: atty has an advisory page == 200
+PASS A3d-atty positive control: atty page names at least one RUSTSEC- id
+PASS A3c-time positive control: time has an advisory page == 200
+PASS A3d-time positive control: time page names at least one RUSTSEC- id
+
+--- A4 Markdown escaping in the two candidate renderers ---
+PASS A4     tabled-0.22.0.crate extracted
+PASS A4a    positive control: exactly one file declares 'pub const fn markdown()' (/usr/bin/grep -rc -F) == 1
+PASS A4b    tabled src has no replace("|" call site (/usr/bin/grep -rn -F, lines) == 0
+PASS A4c    tabled src emits no backslash-pipe escape (/usr/bin/grep -rn -F, lines) == 0
+PASS A4d    GET hyperfine src/export/markdown.rs HTTP == 200
+PASS A4e    hyperfine joins cells with ' | ' verbatim (positive control on the file's identity)
+PASS A4f    hyperfine markdown exporter performs no replace/escape (/usr/bin/grep -c -F) == 0
+
+--- A8 gate 3, second half: declared and actual `unsafe` posture ---
+PASS A8-serde serde-1.0.229.crate extracted
+PASS A8c-serde positive control: serde-1.0.229/src/lib.rs present
+PASS A8u-serde serde src contains `unsafe` (/usr/bin/grep -rn -E, lines=2) — posture: uses unsafe, audit required
+PASS A8n-serde negative control: serde src has no synthetic token == 0
+PASS A8-serde_json serde_json-1.0.151.crate extracted
+PASS A8c-serde_json positive control: serde_json-1.0.151/src/lib.rs present
+PASS A8u-serde_json serde_json src contains `unsafe` (/usr/bin/grep -rn -E, lines=15) — posture: uses unsafe, audit required
+PASS A8n-serde_json negative control: serde_json src has no synthetic token == 0
+PASS A8-tempfile tempfile-3.27.0.crate extracted
+PASS A8c-tempfile positive control: tempfile-3.27.0/src/lib.rs present
+PASS A8u-tempfile tempfile src contains `unsafe` (/usr/bin/grep -rn -E, lines=4) — posture: uses unsafe, audit required
+PASS A8n-tempfile negative control: tempfile src has no synthetic token == 0
+PASS A8-csv csv-1.4.0.crate extracted
+PASS A8c-csv positive control: csv-1.4.0/src/lib.rs present
+PASS A8u-csv csv src contains `unsafe` (/usr/bin/grep -rn -E, lines=4) — posture: uses unsafe, audit required
+PASS A8n-csv negative control: csv src has no synthetic token == 0
+PASS A8u-tabled tabled src contains `unsafe` (/usr/bin/grep -rn -E, lines=1) — posture: uses unsafe, audit required
+
+--- A5 practice evidence (adopter manifests read directly) ---
+PASS A5     GET nushell crates/nu-table/Cargo.toml HTTP == 200
+PASS A5a    nushell's nu-table enables tabled's ansi feature with default-features = false
+PASS A5b    GET nushell root Cargo.toml HTTP == 200
+     note   nushell workspace pin: tabled = { version = "0.21", default-features = false }
+PASS A5c    nushell declares a workspace tabled pin
+PASS A5d    GET hyperfine Cargo.toml HTTP == 200
+PASS A5e    hyperfine declares csv = "1.3"
+PASS A5e    hyperfine declares serde_json = "1.0"
+PASS A5f    hyperfine declares no table or markdown crate (/usr/bin/grep -c -E) == 0
+
+--- A6 maintainers' stated MSRV and semver policies ---
+PASS A6     GET comfy-table README HTTP == 200
+PASS A6a    comfy-table states it targets the CURRENT stable Rust version only
+PASS A6b    comfy-table states older Rust versions are not officially supported
+PASS A6c    GET tabled README HTTP == 200
+PASS A6d    tabled states it breaks on minor version bumps
+PASS A6e    tabled directs consumers to pin an exact version
+PASS A6f    tabled treats an MSRV bump as a breaking change
+
+--- A7 gate 4: does each crate's own CI run on macos-latest? ---
+PASS A7h-serde-rs/serde/master GET serde-rs/serde/master/.github/workflows/ci.yml HTTP == 200
+PASS A7-serde-rs/serde/master serde-rs/serde/master CI declares macos-latest == no
+PASS A7u-serde-rs/serde/master control: serde-rs/serde/master CI names ubuntu-latest
+PASS A7h-serde-rs/json/master GET serde-rs/json/master/.github/workflows/ci.yml HTTP == 200
+PASS A7-serde-rs/json/master serde-rs/json/master CI declares macos-latest == no
+PASS A7u-serde-rs/json/master control: serde-rs/json/master CI names ubuntu-latest
+PASS A7h-zhiburt/tabled/master GET zhiburt/tabled/master/.github/workflows/ci.yml HTTP == 200
+PASS A7-zhiburt/tabled/master zhiburt/tabled/master CI declares macos-latest == yes
+PASS A7u-zhiburt/tabled/master control: zhiburt/tabled/master CI names ubuntu-latest
+PASS A7h-Stebalien/tempfile/master GET Stebalien/tempfile/master/.github/workflows/ci.yml HTTP == 200
+PASS A7-Stebalien/tempfile/master Stebalien/tempfile/master CI declares macos-latest == yes
+PASS A7u-Stebalien/tempfile/master control: Stebalien/tempfile/master CI names ubuntu-latest
+PASS A7h-BurntSushi/rust-csv/master GET BurntSushi/rust-csv/master/.github/workflows/ci.yml HTTP == 200
+PASS A7-BurntSushi/rust-csv/master BurntSushi/rust-csv/master CI declares macos-latest == yes
+PASS A7u-BurntSushi/rust-csv/master control: BurntSushi/rust-csv/master CI names ubuntu-latest
+
+CHECKS RUN: 108   FAILURES: 0   INDETERMINATE: 0

@@ -1,0 +1,34 @@
+# Negative control for round-2 finding JF-7 — produced 2026-09-17 on Darwin arm64.
+#
+# JF-7: revision 2's evidence/check-r2.sh fed four checks (JF4a, JF4b, JF5a,
+# JF5b) from the tail of a pipeline, so their ok/no mutated pass/fail in a
+# subshell. A FAIL among those four would print into the log and still leave
+# fail=0, so the closing `[ "$fail" -eq 0 ]` could not trip. This control forces
+# exactly that failure in both scripts and records what each does.
+#
+# Procedure, reproducible as written (neither committed script is edited):
+#   d=$(mktemp -d); git archive HEAD | tar -x -C "$d"
+#   R="$d/research/runs/R55/2026-09-17T020714Z-62a04ad8fee1/review/evidence"
+#   sed -i '' "s/'click.Path(exists=True) parity: a usage error, exit 2.'/'THIS NEEDLE IS NOT IN THE FILE - negative control'/" "$R/<script>"
+#   "$R/<script>"; echo "exit=$?"
+# The substitution replaces JF5b's needle with text absent from ts config.ts:154,
+# so JF5b must fail. Everything else in both scripts is untouched.
+#
+# ---------------------------------------------------------------------------
+# check-r2.sh (revision 2, the defect) — the gate does NOT trip:
+FAIL JF5b: ts config.ts:154 is the click.Path(exists=True) parity comment, not :153 — /usr/bin/grep counted 0 occurrences of: THIS NEEDLE IS NOT IN THE FILE - negative control
+=== summary ===
+PASS=18 FAIL=0 SKIP=0
+exit=0
+#
+# ---------------------------------------------------------------------------
+# check-r3.sh (revision 3, repaired) — the gate DOES trip:
+FAIL JF5b: ts config.ts:154 is the click.Path(exists=True) parity comment, not :153 — /usr/bin/grep counted 0 occurrences of: THIS NEEDLE IS NOT IN THE FILE - negative control
+=== summary ===
+PASS=28 FAIL=1 SKIP=0
+exit=1
+#
+# ---------------------------------------------------------------------------
+# Same mutation, same failing check, same FAIL line in both logs. Revision 2
+# reports FAIL=0 and exits 0; revision 3 reports FAIL=1 and exits 1. That is the
+# whole of JF-7, demonstrated rather than asserted.

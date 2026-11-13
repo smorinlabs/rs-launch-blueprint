@@ -1,0 +1,6 @@
+Audit: `review/audit-codex.md`  
+Audit SHA-256: `0e8ed4cf1811c891ab0bbf675ca604912673f0372024bcd626a086648876af28`  
+Decision SHA-256: `4e0ae20af2cf39baeb60bc66e2890a54f35b6aacb38a0e8aeb75ca0f2ce08012`  
+Verdict: approve  
+Rerun: exit `0` — `review/evidence/audit-property-and-snapshot-testing-r6.log`  
+Findings: none.

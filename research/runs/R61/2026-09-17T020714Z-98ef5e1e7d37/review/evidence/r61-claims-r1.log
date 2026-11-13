@@ -1,0 +1,398 @@
+================================================================
+R61 interactive-prompts — empirical check
+run directory : /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37
+executed at   : 2026-09-17T05:43:30Z (UTC)
+retrieval date for every live figure below: the date on the line above
+================================================================
+
+### Section 1 — toolchain and platform
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+os: Darwin arm64 / macOS 26.4
+python3: Python 3.14.7
+grep binary: /usr/bin/grep  (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS C1a — local rustc is in the 1.9x series (observed 1.98.0)
+
+### Section 2 — candidate tarballs, checksum-verified against crates.io
+endpoint: GET https://static.crates.io/crates/<n>/<n>-<v>.crate
+endpoint: GET https://crates.io/api/v1/crates/<n>/<v>   field: version.checksum
+PASS C2-inquire — inquire 0.9.4 tarball sha256 equals crates.io version.checksum (6654738b8024300cf062d04a1c13c10c8e2cea598ec1c47dc9b6641159429756)
+PASS C2-dialoguer — dialoguer 0.12.0 tarball sha256 equals crates.io version.checksum (25f104b501bf2364e78d0d3974cbc774f738f5865306ed128e1e0d7499c0ad96)
+PASS C2-crossterm — crossterm 0.29.0 tarball sha256 equals crates.io version.checksum (d8b9f2e4c67f833b660cdb0a3523065869fb35570177239812ed4c905aeff87b)
+PASS C2-console — console 0.16.6 tarball sha256 equals crates.io version.checksum (e96a4956774c13c126a8b5af4daa79384f4d826534c95a02d76afb39e2ab64e3)
+PASS C2-cliclack — cliclack 0.5.6 tarball sha256 equals crates.io version.checksum (134778b6a125729ff495c23ba32f64e0c26d61edd52f1f6715a0d036785cf30b)
+PASS C2-demand — demand 2.1.0 tarball sha256 equals crates.io version.checksum (c578ab3368e9211f6f8e262c60b105d5e91bd9725a38567ccfe9f1c7d86507f2)
+
+### Section 3 — THE LOAD-BEARING FINDING: the prompt back-ends open /dev/tty
+crossterm-0.29.0/src/terminal/sys/file_descriptor.rs, tty_fd():
+#[cfg(feature = "libc")]
+/// Creates a file descriptor pointing to the standard input or `/dev/tty`.
+pub fn tty_fd() -> io::Result<FileDesc<'static>> {
+    let (fd, close_on_drop) = if unsafe { libc::isatty(libc::STDIN_FILENO) == 1 } {
+        (libc::STDIN_FILENO, false)
+    } else {
+        (
+            fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open("/dev/tty")?
+                .into_raw_fd(),
+            true,
+        )
+    };
+
+    Ok(FileDesc::new(fd, close_on_drop))
+}
+
+PASS C3a — crossterm declares tty_fd()
+PASS C3b — crossterm tty_fd() opens /dev/tty when stdin is not a terminal
+PASS C3c — crossterm tty_fd() branches on isatty(STDIN_FILENO)
+crossterm-0.29.0/src/terminal/sys/unix.rs, enable_raw_mode():
+#[cfg(feature = "libc")]
+pub(crate) fn enable_raw_mode() -> io::Result<()> {
+    let mut original_mode = TERMINAL_MODE_PRIOR_RAW_MODE.lock();
+    if original_mode.is_some() {
+        return Ok(());
+    }
+
+    let tty = tty_fd()?;
+    let fd = tty.raw_fd();
+    let mut ios = get_terminal_attr(fd)?;
+    let original_mode_ios = ios;
+    raw_terminal_attr(&mut ios);
+PASS C3d — crossterm enable_raw_mode() is built on tty_fd()
+console-0.16.6/src/unix_term.rs, Input::unbuffered():
+impl Input<fs::File> {
+    fn unbuffered() -> io::Result<Self> {
+        let stdin = io::stdin();
+        if is_a_terminal(&stdin) {
+            Ok(Input::Stdin(stdin))
+        } else {
+            let f = fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open("/dev/tty")?;
+            Ok(Input::File(f))
+        }
+    }
+PASS C3e — console declares Input::unbuffered()
+PASS C3f — console Input::unbuffered() opens /dev/tty when stdin is not a terminal
+
+### Section 4 — console raises SIGINT to the process on ^C (the dialoguer path)
+    c_result(|| unsafe { libc::tcsetattr(input.as_raw_fd(), libc::TCSADRAIN, &original) })?;
+
+    // if the user hit ^C we want to signal SIGINT to ourselves.
+    if let Err(ref err) = rv {
+        if err.kind() == io::ErrorKind::Interrupted {
+            if !ctrlc_key {
+                unsafe {
+                    libc::raise(libc::SIGINT);
+                }
+            } else {
+                return Ok(Key::CtrlC);
+            }
+        }
+PASS C4a — console comments the self-signal
+PASS C4b — console read_single_key raises SIGINT rather than returning a value
+
+### Section 5 — inquire 0.9.4 API facts
+                    Action::Cancel => {
+                        let pre_cancel_result = self.pre_cancel()?;
+
+                        if pre_cancel_result {
+                            backend.frame_setup()?;
+                            backend.render_canceled_prompt(self.message())?;
+                            backend.frame_finish(true)?;
+                            return Err(InquireError::OperationCanceled);
+                        }
+
+                        ActionResult::NeedsRedraw
+                    }
+                    Action::Interrupt => return Err(InquireError::OperationInterrupted),
+                    Action::Inner(inner_action) => self.handle(inner_action)?,
+PASS C5a — inquire maps ESC (Action::Cancel) to OperationCanceled
+PASS C5b — inquire maps ^C (Action::Interrupt) to OperationInterrupted — a value, not a signal
+PASS C5c — Confirm::prompt_skippable exists
+PASS C5d — prompt_skippable turns ESC into Ok(None)
+PASS C5e — inquire's crossterm back-end writes to stderr
+files under inquire-0.9.4/src containing 'stdout' in ANY case, counted by /usr/bin/grep -rilF: 0
+PASS C5f — inquire-0.9.4/src never names stdout in any case (case-INSENSITIVE count by /usr/bin/grep) [= 0]
+the IO enum behind CrosstermTerminal, and the gate on its only non-stderr variant:
+
+enum IO {
+    Std(Stderr),
+    #[allow(unused)]
+    Test(Vec<u8>),
+}
+
+}
+
+#[cfg(test)]
+mod test {
+    use crate::terminal::Terminal;
+    use crate::ui::{Color, Key, KeyModifiers};
+
+    use super::Attributes;
+    use super::CrosstermKeyReader;
+    use super::CrosstermTerminal;
+    use super::IO;
+
+    impl CrosstermTerminal {
+        pub fn new_in_memory_output() -> Self {
+            Self {
+                io: IO::Test(Vec::new()),
+            }
+PASS C5l — the IO enum is crate-private: no public API hands inquire a stream to write to [= 0]
+PASS C5m — the constructor for the only non-stderr IO variant (new_in_memory_output) sits under #[cfg(test)]
+PASS C5g — MultiSelect::prompt returns the selected VALUES (Vec<T>)
+PASS C5h — inquire's RenderConfig::default consults NO_COLOR (why R65 must pass an explicit config)
+PASS C5i — inquire declares rust-version (fitness gate 2, declaration half) [= 1.80.0]
+inquire [features] block:
+[features]
+date = ["chrono"]
+default = [
+    "macros",
+    "crossterm",
+    "one-liners",
+    "fuzzy",
+]
+editor = ["tempfile"]
+experimental-multiline-input = []
+PASS C5j — one-liners is a default feature this stack drops
+PASS C5k — fuzzy is a default feature this stack drops
+
+### Section 6 — dialoguer 0.12.0 API facts (the ranked runner-up)
+    #[inline]
+    pub fn interact(self) -> Result<Vec<usize>> {
+        self.interact_on(&Term::stderr())
+    }
+    fn _interact_on(self, term: &Term, allow_quit: bool) -> Result<Option<Vec<usize>>> {
+        if !term.is_term() {
+            return Err(io::Error::new(io::ErrorKind::NotConnected, "not a terminal").into());
+        }
+PASS C6a — dialoguer MultiSelect returns INDICES (Vec<usize>), not values
+PASS C6b — dialoguer guards on the OUTPUT Term, never on stdin
+PASS C6c — dialoguer renders on stderr by default
+PASS C6d — dialoguer declares rust-version (fitness gate 2, declaration half) [= 1.66]
+
+### Section 7 — fitness gate 2, read strictly: cliclack and demand declare no rust-version
+(the strict reading is the controller's, docs/planning/p02/execution-ledger.md)
+PASS C7-cliclack-0.5.6 — cliclack-0.5.6 Cargo.toml has no rust-version key (lines matching '^rust-version', counted by /usr/bin/grep: 0) — gate 2 not cleared
+PASS C7-demand-2.1.0 — demand-2.1.0 Cargo.toml has no rust-version key (lines matching '^rust-version', counted by /usr/bin/grep: 0) — gate 2 not cleared
+cliclack collapses ESC and ^C into one state:
+            match state {
+                State::Submit(result) => return Ok(result),
+                State::Cancel => return Err(io::ErrorKind::Interrupted.into()),
+                _ => {}
+            }
+
+            match term.read_key_raw() {
+                Ok(Key::Escape) => {
+                    state = State::Cancel;
+
+                    // WORKAROUND: for the `Esc` key, `Cancel` means "cancellation of cancellation".
+                    if let State::Cancel = self.on(&Event::Key(Key::Escape)) {
+                        state = State::Active;
+                    }
+                }
+
+                Ok(Key::CtrlC) => state = State::Cancel,
+
+PASS C7c — cliclack turns Cancel into one io error
+PASS C7d — cliclack maps ^C to the same State::Cancel as ESC
+demand installs a process-wide SIGINT handler:
+use console::Term;
+use signal_hook::{
+    consts::SIGINT,
+    iterator::{Handle, Signals},
+};
+use std::{
+    io::Error,
+    sync::{LazyLock, RwLock},
+    thread,
+};
+
+static HANDLE: LazyLock<RwLock<CtrlcHandle>> = LazyLock::new(|| RwLock::new(CtrlcHandle(None)));
+PASS C7e — demand registers a real SIGINT handler (R67 forbids a prompt-local one)
+
+### Section 8 — the org CLI Design Standard at the pinned blob
+blob f9de0437baece3383e73ca2c5f48b7ab399b51c7 -> sha256 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f, 773 lines
+PASS C8a — the pinned blob's content hash is stable [= 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f]
+--- :253 (R4.2 global flag table, --no-input) ---
+| Safety/action | `--no-input` | — | Never prompt; fail if input would be required. |
+--- :381 (R7.1) ---
+Streams follow the POSIX file-descriptor contract — fd 1 (stdout) carries the command's *requested result*; fd 2 (stderr) carries everything else: diagnostics, progress, prompts, warnings, and errors (clig.dev, 12-Factor, gcloud). This split is what makes a tool pipeable and lets shells redirect diagnostics (`2>`) independently of data. Requested output goes to stdout **even when it is informational**: explicit help (`--help`/`acme help`), `--version`, and query results are the user's requested data and **MUST** go to stdout with exit `0` (R7.5). Usage text printed because of an error follows the error path instead: stderr with a nonzero exit (R7.9). A warning emitted during a normal data command **MUST** go to stderr so it never contaminates stdout.
+--- :456 (R8.1) ---
+Irreversible or destructive operations **MUST** confirm before proceeding when stdin is a TTY, and **MUST** offer a non-interactive bypass. Prompt text **SHOULD** be written to stderr so stdout remains data-clean (R7.1). Tools **SHOULD NOT** open `/dev/tty` or another controlling terminal for surprise prompts when stdin is not a TTY; if a tool supports that behavior, it **MUST** document it and **MUST** disable it under `--no-input` and non-interactive/CI modes. The two bypass flags are distinct: **`--yes`/`-y`** answers the confirmation prompt (consent), while **`--force`/`-f`** overrides a guard condition — for example, the resource is protected, is in use, or has drifted from its expected state. `--force` **MUST NOT** imply routine consent; a non-interactive guarded destructive action may require both `--force` and `--yes`. Under `--no-input` with no required bypass flag, the command **MUST** fail rather than guess.
+--- :461 (R8.2) ---
+A tool **MUST** be fully usable without a TTY. It **MUST NOT** block on a prompt when input is unavailable; instead it uses provided flags/env or fails with a clear message. Use exit `2` when required non-auth input or consent is missing because prompting is disabled/unavailable, use exit `4` when authentication or authorization input is missing, and use exit `1` for runtime input failures such as unreadable files. `--no-input` forces this mode explicitly.
+--- :472 (R8.5) ---
+A CLI **MAY** provide interactive setup or wizard commands such as `init` or `auth login`. Interactive flows **SHOULD** be cancelable with Ctrl-C using the signal behavior in R9.6, **SHOULD** show what will be written before writing durable state, and **MUST** have a non-interactive path using flags, env, or config. Under `--no-input`, they **MUST** fail rather than prompt.
+PASS C8b — :253 carries --no-input's definition
+PASS C8c — R7.1 at :381 puts prompts on stderr
+PASS C8d — R8.1 at :456 carries the /dev/tty prohibition
+PASS C8e — R8.1 at :456 requires failure under --no-input with no bypass
+PASS C8f — R8.2 at :461 assigns exit 2 to missing required non-auth input or consent
+PASS C8g — R8.5 at :472 makes an init flow fail under --no-input
+
+### Section 9 — advisories: the 404 means 'no advisory page', proven by a positive control
+endpoint: GET https://rustsec.org/packages/<name>.html
+PASS C9-inquire — rustsec.org has no advisory page for inquire [= 404]
+PASS C9-dialoguer — rustsec.org has no advisory page for dialoguer [= 404]
+PASS C9-crossterm — rustsec.org has no advisory page for crossterm [= 404]
+PASS C9-console — rustsec.org has no advisory page for console [= 404]
+PASS C9-cliclack — rustsec.org has no advisory page for cliclack [= 404]
+PASS C9-demand — rustsec.org has no advisory page for demand [= 404]
+PASS C9-ctl — positive control: rustsec.org DOES serve a page for atty, so 404 is a real negative [= 200]
+PASS C9-ctl-body — the atty control page names a real advisory
+
+### Section 10 — registry and repository figures (VOLATILE — see the comparison rule in DECISION.md)
+endpoint: GET https://crates.io/api/v1/crates/<name>   fields: crate.recent_downloads, crate.downloads,
+          newest versions[] entry with yanked=false -> num, created_at
+  inquire    recent_downloads(90d)=4978577      downloads(all)=20585265     newest_non_yanked=0.9.4 created_at=2026-02-24
+  dialoguer  recent_downloads(90d)=16348116     downloads(all)=82200680     newest_non_yanked=0.12.0 created_at=2025-08-23
+  crossterm  recent_downloads(90d)=43995611     downloads(all)=191657943    newest_non_yanked=0.29.0 created_at=2025-04-05
+  console    recent_downloads(90d)=80406869     downloads(all)=349775351    newest_non_yanked=0.16.6 created_at=2026-09-10
+  cliclack   recent_downloads(90d)=1036365      downloads(all)=3429371      newest_non_yanked=0.5.6 created_at=2026-08-10
+  demand     recent_downloads(90d)=256972       downloads(all)=593441       newest_non_yanked=2.1.0 created_at=2026-08-25
+PASS C10a — the recommended version is still inquire's newest non-yanked release [= 0.9.4]
+PASS C10b — the runner-up version is still dialoguer's newest non-yanked release [= 0.12.0]
+endpoint: GET https://api.github.com/repos/<o>/<r>   fields: stargazers_count, archived, pushed_at
+endpoint: GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open   field: total_count
+  mikaelmello/inquire        stars=2626    archived=False pushed_at=2026-03-02
+  console-rs/dialoguer       stars=1614    archived=False pushed_at=2026-09-16
+  crossterm-rs/crossterm     stars=4223    archived=False pushed_at=2026-09-14
+  ast-grep/ast-grep          stars=15932   archived=False pushed_at=2026-09-16
+PASS C10c — mikaelmello/inquire is not archived [= False]
+  mikaelmello/inquire newest commit date (GET repos/<o>/<r>/commits?per_page=1, .[0].commit.committer.date): 2026-02-24T17:21:29Z
+PASS C10d — the newest inquire commit is still 2026-02-24 — the at-risk quiet interval is unchanged
+  mikaelmello/inquire open issues=59 open PRs=30 (search/issues total_count, never open_issues_count)
+PASS C10e — inquire's open-PR queue is still large (30 >= 20) — at-risk signal (ii) holds
+  stars, archived and pushed_at for the repositories not printed above:
+  console-rs/console         stars=1195    archived=False pushed_at=2026-09-10
+  fadeevab/cliclack          stars=367     archived=False pushed_at=2026-08-10
+  jdx/demand                 stars=258     archived=False pushed_at=2026-09-15
+  open issues and open PRs for every crate whose figures this decision tabulates:
+  console-rs/dialoguer       open_issues=71     open_prs=28
+  crossterm-rs/crossterm     open_issues=170    open_prs=76
+  console-rs/console         open_issues=48     open_prs=22
+  fadeevab/cliclack          open_issues=10     open_prs=0
+  jdx/demand                 open_issues=8      open_prs=4
+
+### Section 11 — the shared adopter that proves R60's parser and this item's crate ship together
+38:clap = { version = "4.5.4", features = ["derive"] }
+46:inquire = "0.9.0"
+54:clap_complete = "4.5.2"
+PASS C11a — ast-grep's CLI crate declares inquire
+PASS C11b — the same manifest declares clap (R60's parser)
+
+### Section 12 — LIKE-FOR-LIKE dependency cost, resolved rather than asserted
+Three throwaway manifests, each carrying R63's indicatif and R67's signal-hook, differing
+only in the prompt crate. Counts are unique packages in the normal dependency tree for
+x86_64-unknown-linux-gnu, EXCLUDING the spike's own root package.
+  spike-base: 9 packages (unique, normal tree, cfg(unix) x86-64, root excluded)
+  spike-a: 35 packages (unique, normal tree, cfg(unix) x86-64, root excluded)
+  spike-b: 11 packages (unique, normal tree, cfg(unix) x86-64, root excluded)
+  marginal cost of inquire over the shared base : 26 packages
+  marginal cost of dialoguer over the same base : 2 packages
+PASS C12a — base (indicatif + signal-hook 0.4.4) resolves to 9 packages [= 9]
+PASS C12b — base + inquire resolves to 35 packages [= 35]
+PASS C12c — base + dialoguer resolves to 11 packages [= 11]
+  highest declared rust-version anywhere in the inquire tree, and async-runtime scan:
+    max declared rust_version: 1.85.0 (unicode-segmentation)
+    async runtimes in the tree: none
+PASS C12d — the inquire tree's binding MSRV is 1.85.0, eleven minors under the 1.96 policy floor
+PASS C12e — no async runtime is pulled in at any depth
+  duplicate resolutions in the inquire spike (cargo tree -d):
+    signal-hook v0.3.18
+    ├── crossterm v0.29.0
+    │   └── inquire v0.9.4
+    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
+    └── signal-hook-mio v0.2.5
+        └── crossterm v0.29.0 (*)
+    
+    signal-hook v0.4.4
+    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
+PASS C12f — crossterm pins signal-hook 0.3.x
+PASS C12g — the template's own R67 signal-hook 0.4.4 stands beside it
+PASS C12h — signal-hook is the ONLY duplicated package (two majors, counted by /usr/bin/grep) [= 2]
+  duplicate resolutions in the dialoguer spike (cargo tree -d):
+    warning: nothing to print.
+    
+    To find dependencies that require specific target platforms, try to use option `--target all` first, and then narrow your search scope accordingly.
+PASS C12i — the dialoguer spike resolves with zero duplicates
+
+### Section 13 — EXECUTED OBSERVATION: the /dev/tty fallback fires with stdin not a TTY
+A throwaway binary calls crossterm::terminal::enable_raw_mode() and console's own guard
+predicate, under two conditions. Nothing from the template is built; the crate is called.
+  --- case A: NO controlling terminal, stdin redirected from /dev/null ---
+    stdin_is_terminal=false
+    stderr_is_terminal=false
+    dialoguer_guard_term_stderr_is_term=false
+    crossterm_enable_raw_mode=Err kind=Uncategorized raw_os_error=Some(6)
+PASS C13a — case A: stdin is not a terminal
+PASS C13b — case A: with no controlling terminal the /dev/tty open fails — the negative control
+  --- case B: a controlling PTY IS present, stdin still redirected from /dev/null ---
+    stdin_is_terminal=false
+    stderr_is_terminal=true
+    dialoguer_guard_term_stderr_is_term=true
+    crossterm_enable_raw_mode=Ok  (a terminal was acquired)
+    child_exit_status=0
+PASS C13c — case B: stdin is still not a terminal
+PASS C13d — case B: crossterm ACQUIRES the controlling terminal anyway — the surprise-prompt case R8.1 forbids
+PASS C13e — case B: dialoguer's own guard returns true, so no candidate crate blocks this case
+PASS C13f — case B: the observation ran to completion
+
+### Section 14 — the four fixed - assumes lines are byte-identical to the registry
+generated from /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md:
+  - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+  - assumes rust-edition = 2024
+  - assumes target-os-matrix = ubuntu-latest, macos-latest
+  - assumes license = MIT OR Apache-2.0
+PASS C14a — four fixed parameter rows were extracted from the registry [= 4]
+PASS C14b — the run's inputs/PARAMETERS.md fixed rows are byte-identical to the live registry
+found in DECISION.md:
+  - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+  - assumes rust-edition = 2024
+  - assumes target-os-matrix = ubuntu-latest, macos-latest
+  - assumes license = MIT OR Apache-2.0
+PASS C14c — DECISION.md's - assumes block is byte-identical to the registry, in registry order
+PASS C14d — DECISION.md declares no owned parameter (the prompt's - owns: line is empty) [= 0]
+PASS C14e — DECISION.md raises no CONFLICT: line [= 0]
+the prompt's Couplings block, which is what makes C14d and C14e the right expectations:
+23:- owns:
+24-- consumes:
+25-- effort: focused
+26-- engines: codex, opus
+PASS C14f — the prompt carries an - owns: line
+
+### Section 15 — the OVERRIDE number does not collide
+files mentioning the bare string 'OV-02' outside this item (docs/port/ and research/topics/*/DECISION.md, counted by /usr/bin/grep): 0
+PASS C15a — the string OV-02 appears in no other published decision or port document [= 0]
+PASS C15b — OV-01 is taken: the owner refused it on 2026-09-14 (R60's CLI-standard waiver)
+PASS C15c — R60 retains OV-01's record rather than deleting it
+
+### Section 16 — F360's status, and R67's rows, read from the repository
+rows whose first column is F360 in docs/port/BASELINE-REVIEW.md (counted by /usr/bin/grep): 0
+PASS C16a — F360 is NOT an adjudicated baseline row — a BASELINE-REVIEW: line against it challenges no inherited baseline [= 0]
+PASS C16b — F360 is DIVERGENT and owned by R61, so this item answers it directly
+PASS C16c — F277 is an ADOPT baseline this decision must preserve
+PASS C16d — F278 is an ADOPT baseline this decision must preserve
+PASS C16e — R67 RSLB205 covers exactly this item's three refusal triggers
+PASS C16f — R67 RSLB903 is the Ctrl-C-during-a-prompt row
+PASS C16h — R67 forbids a prompt-local Ctrl-C handler — the rule that rules out demand
+PASS C16i — R67 assigns exit 5 to conflict/precondition failed, which is why py's 5 cannot be reused
+
+### Section 17 — the raw reports this decision synthesizes
+  codex.md sha256 a22fcc08990a3db262b3c950447646fac3d0293d284e55b484e2233320444f2e
+  opus.md sha256 162d21eddec4acbf60828bc9e92adc353c3bbc983c2e079b7ee35a199b323fa7
+PASS C17a — raw/codex.md is the shape-checked report [= a22fcc08990a3db262b3c950447646fac3d0293d284e55b484e2233320444f2e]
+PASS C17b — raw/opus.md is the shape-checked report [= 162d21eddec4acbf60828bc9e92adc353c3bbc983c2e079b7ee35a199b323fa7]
+PASS C17c — the Codex raw emits the F360 baseline-review line this decision carries
+PASS C17d — the Codex raw recommends dialoguer
+PASS C17e — the Opus raw recommends inquire
+PASS C17f — the Opus raw numbered its override OV-01, which this decision renumbers to OV-02
+
+================================================================
+TOTAL  pass=97  fail=0  skip=0
+================================================================

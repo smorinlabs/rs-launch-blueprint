@@ -1,0 +1,10 @@
+{
+  "crate": {
+    "name": "serde_json",
+    "newest_version": "1.0.151",
+    "max_stable_version": "1.0.151",
+    "recent_downloads": 317743616,
+    "downloads": 1313719716,
+    "repository": "https://github.com/serde-rs/json"
+  }
+}

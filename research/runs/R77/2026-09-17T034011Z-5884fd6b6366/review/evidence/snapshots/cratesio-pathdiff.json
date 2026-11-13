@@ -1,0 +1,368 @@
+{
+    "categories": [],
+    "crate": {
+        "badges": [],
+        "categories": [],
+        "created_at": "2017-09-20T00:06:24.615980Z",
+        "default_version": "0.2.3",
+        "description": "Library for diffing paths to obtain relative paths",
+        "documentation": "https://docs.rs/pathdiff/",
+        "downloads": 191737074,
+        "exact_match": false,
+        "homepage": null,
+        "id": "pathdiff",
+        "keywords": [
+            "path",
+            "relative"
+        ],
+        "links": {
+            "owner_team": "/api/v1/crates/pathdiff/owner_team",
+            "owner_user": "/api/v1/crates/pathdiff/owner_user",
+            "owners": "/api/v1/crates/pathdiff/owners",
+            "reverse_dependencies": "/api/v1/crates/pathdiff/reverse_dependencies",
+            "version_downloads": "/api/v1/crates/pathdiff/downloads",
+            "versions": null
+        },
+        "max_stable_version": "0.2.3",
+        "max_version": "0.2.3",
+        "name": "pathdiff",
+        "newest_version": "0.2.3",
+        "num_versions": 5,
+        "recent_downloads": 37311348,
+        "repository": "https://github.com/Manishearth/pathdiff",
+        "trustpub_only": false,
+        "updated_at": "2024-11-25T18:15:15.304010Z",
+        "versions": [
+            1352270,
+            1298962,
+            430815,
+            233175,
+            65802
+        ],
+        "yanked": false
+    },
+    "keywords": [
+        {
+            "crates_cnt": 363,
+            "created_at": "2014-11-20T19:59:55.464269Z",
+            "id": "path",
+            "keyword": "path"
+        },
+        {
+            "crates_cnt": 11,
+            "created_at": "2017-09-20T00:06:24.615980Z",
+            "id": "relative",
+            "keyword": "relative"
+        }
+    ],
+    "versions": [
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-11-25T18:15:15.304010Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                        "created_at": "2012-04-06T05:41:40Z",
+                        "github_username_matches": true,
+                        "id": 1139,
+                        "login": "Manishearth",
+                        "name": "Manish Goregaokar",
+                        "url": "https://github.com/Manishearth"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "df94ce210e5bc13cb6651479fa48d14f601d9858cfe0467f43ae157023b938d3",
+            "crate": "pathdiff",
+            "crate_size": 7495,
+            "created_at": "2024-11-25T18:15:15.304010Z",
+            "description": "Library for diffing paths to obtain relative paths",
+            "dl_path": "/api/v1/crates/pathdiff/0.2.3/download",
+            "documentation": "https://docs.rs/pathdiff/",
+            "downloads": 119700097,
+            "edition": "2018",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 1352270,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 165,
+                        "comment_lines": 12,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 165,
+                "total_comment_lines": 12
+            },
+            "links": {
+                "authors": "/api/v1/crates/pathdiff/0.2.3/authors",
+                "dependencies": "/api/v1/crates/pathdiff/0.2.3/dependencies",
+                "version_downloads": "/api/v1/crates/pathdiff/0.2.3/downloads"
+            },
+            "num": "0.2.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                "created_at": "2012-04-06T05:41:40Z",
+                "github_username_matches": true,
+                "id": 1139,
+                "login": "Manishearth",
+                "name": "Manish Goregaokar",
+                "url": "https://github.com/Manishearth"
+            },
+            "readme_path": "/api/v1/crates/pathdiff/0.2.3/readme",
+            "repository": "https://github.com/Manishearth/pathdiff",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-11-25T18:15:15.304010Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-10-11T18:45:35.968276Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                        "created_at": "2012-04-06T05:41:40Z",
+                        "github_username_matches": true,
+                        "id": 1139,
+                        "login": "Manishearth",
+                        "name": "Manish Goregaokar",
+                        "url": "https://github.com/Manishearth"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "d61c5ce1153ab5b689d0c074c4e7fc613e942dfb7dd9eea5ab202d2ad91fe361",
+            "crate": "pathdiff",
+            "crate_size": 7481,
+            "created_at": "2024-10-11T18:45:35.968276Z",
+            "description": "Library for diffing paths to obtain relative paths",
+            "dl_path": "/api/v1/crates/pathdiff/0.2.2/download",
+            "documentation": "https://docs.rs/pathdiff/",
+            "downloads": 3998257,
+            "edition": "2018",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 1298962,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 164,
+                        "comment_lines": 12,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 164,
+                "total_comment_lines": 12
+            },
+            "links": {
+                "authors": "/api/v1/crates/pathdiff/0.2.2/authors",
+                "dependencies": "/api/v1/crates/pathdiff/0.2.2/dependencies",
+                "version_downloads": "/api/v1/crates/pathdiff/0.2.2/downloads"
+            },
+            "num": "0.2.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                "created_at": "2012-04-06T05:41:40Z",
+                "github_username_matches": true,
+                "id": 1139,
+                "login": "Manishearth",
+                "name": "Manish Goregaokar",
+                "url": "https://github.com/Manishearth"
+            },
+            "readme_path": "/api/v1/crates/pathdiff/0.2.2/readme",
+            "repository": "https://github.com/Manishearth/pathdiff",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-10-11T18:45:35.968276Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-09-27T21:37:38.430801Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                        "created_at": "2012-04-06T05:41:40Z",
+                        "github_username_matches": true,
+                        "id": 1139,
+                        "login": "Manishearth",
+                        "name": "Manish Goregaokar",
+                        "url": "https://github.com/Manishearth"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "8835116a5c179084a830efb3adc117ab007512b535bc1a21c991d3b32a6b44dd",
+            "crate": "pathdiff",
+            "crate_size": 7142,
+            "created_at": "2021-09-27T21:37:38.430801Z",
+            "description": "Library for diffing paths to obtain relative paths",
+            "dl_path": "/api/v1/crates/pathdiff/0.2.1/download",
+            "documentation": "https://docs.rs/pathdiff/",
+            "downloads": 61369039,
+            "edition": "2018",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 430815,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 154,
+                        "comment_lines": 11,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 154,
+                "total_comment_lines": 11
+            },
+            "links": {
+                "authors": "/api/v1/crates/pathdiff/0.2.1/authors",
+                "dependencies": "/api/v1/crates/pathdiff/0.2.1/dependencies",
+                "version_downloads": "/api/v1/crates/pathdiff/0.2.1/downloads"
+            },
+            "num": "0.2.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                "created_at": "2012-04-06T05:41:40Z",
+                "github_username_matches": true,
+                "id": 1139,
+                "login": "Manishearth",
+                "name": "Manish Goregaokar",
+                "url": "https://github.com/Manishearth"
+            },
+            "readme_path": "/api/v1/crates/pathdiff/0.2.1/readme",
+            "repository": "https://github.com/Manishearth/pathdiff",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-09-27T21:37:38.430801Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-04-20T16:49:17.307486Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                        "created_at": "2012-04-06T05:41:40Z",
+                        "github_username_matches": true,
+                        "id": 1139,
+                        "login": "Manishearth",
+                        "name": "Manish Goregaokar",
+                        "url": "https://github.com/Manishearth"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "877630b3de15c0b64cc52f659345724fbf6bdad9bd9566699fc53688f3c34a34",
+            "crate": "pathdiff",
+            "crate_size": 6189,
+            "created_at": "2020-04-20T16:49:17.307486Z",
+            "description": "Library for diffing paths to obtain relative paths",
+            "dl_path": "/api/v1/crates/pathdiff/0.2.0/download",
+            "documentation": "https://docs.rs/pathdiff/",
+            "downloads": 2414621,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 233175,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 44,
+                        "comment_lines": 11,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 44,
+                "total_comment_lines": 11
+            },
+            "links": {
+                "authors": "/api/v1/crates/pathdiff/0.2.0/authors",
+                "dependencies": "/api/v1/crates/pathdiff/0.2.0/dependencies",
+                "version_downloads": "/api/v1/crates/pathdiff/0.2.0/downloads"
+            },
+            "num": "0.2.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1617736?v=4",
+                "created_at": "2012-04-06T05:41:40Z",
+                "github_username_matches": true,
+                "id": 1139,
+                "login": "Manishearth",
+                "name": "Manish Goregaokar",
+                "url": "https://github.com/Manishearth"
+            },
+            "readme_path": "/api/v1/crates/pathdiff/0.2.0/readme",
+            "repository": "https://github.com/Manishearth/pathdiff",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-04-20T16:49:17.307486Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "a3bf70094d203e07844da868b634207e71bfab254fe713171fae9a6e751ccf31",
+            "crate": "pathdiff",
+            "crate_size": 6186,
+            "created_at": "2017-09-20T00:06:24.615980Z",
+            "description": "Library for diffing paths to obtain relative paths",
+            "dl_path": "/api/v1/crates/pathdiff/0.1.0/download",
+            "documentation": "https://docs.rs/pathdiff/",
+            "downloads": 4150315,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 65802,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 39,
+                        "comment_lines": 15,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 39,
+                "total_comment_lines": 15
+            },
+            "links": {
+                "authors": "/api/v1/crates/pathdiff/0.1.0/authors",
+                "dependencies": "/api/v1/crates/pathdiff/0.1.0/dependencies",
+                "version_downloads": "/api/v1/crates/pathdiff/0.1.0/downloads"
+            },
+            "num": "0.1.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/pathdiff/0.1.0/readme",
+            "repository": "https://github.com/Manishearth/pathdiff",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:08:03.112386Z",
+            "yank_message": null,
+            "yanked": false
+        }
+    ]
+}

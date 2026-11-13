@@ -1,0 +1,5 @@
+Output: [raw/evidence-terra.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/raw/evidence-terra.md)
+SHA-256: `029ebeaeca8f3123644d76161ce9d4427a745b9a7ad4aae5c027b2159d2798f7`
+Verdict: defective
+Counts: ok 5, wrong 1, unverifiable 3
+

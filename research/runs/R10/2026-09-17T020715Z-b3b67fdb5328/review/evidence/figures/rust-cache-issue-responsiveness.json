@@ -1,0 +1,80 @@
+{
+  "endpoint": "https://api.github.com/repos/Swatinem/rust-cache/issues?state=all&sort=created&direction=desc&per_page=100 (pull requests excluded) plus .../issues/<n>/comments",
+  "retrieved": "2026-09-17 (UTC)",
+  "issues": [
+    {
+      "number": 381,
+      "state": "open",
+      "comments": 0,
+      "created_at": "2026-08-18T21:27:46Z",
+      "days_to_first_maintainer_reply": null
+    },
+    {
+      "number": 375,
+      "state": "closed",
+      "comments": 1,
+      "created_at": "2026-08-12T15:02:10Z",
+      "days_to_first_maintainer_reply": 0.025
+    },
+    {
+      "number": 374,
+      "state": "open",
+      "comments": 0,
+      "created_at": "2026-08-11T12:59:42Z",
+      "days_to_first_maintainer_reply": null
+    },
+    {
+      "number": 370,
+      "state": "closed",
+      "comments": 1,
+      "created_at": "2026-08-05T02:26:45Z",
+      "days_to_first_maintainer_reply": 1.171
+    },
+    {
+      "number": 369,
+      "state": "closed",
+      "comments": 0,
+      "created_at": "2026-08-01T20:53:58Z",
+      "days_to_first_maintainer_reply": null
+    },
+    {
+      "number": 352,
+      "state": "closed",
+      "comments": 0,
+      "created_at": "2026-06-22T01:22:33Z",
+      "days_to_first_maintainer_reply": null
+    },
+    {
+      "number": 348,
+      "state": "open",
+      "comments": 0,
+      "created_at": "2026-06-13T05:50:57Z",
+      "days_to_first_maintainer_reply": null
+    },
+    {
+      "number": 344,
+      "state": "open",
+      "comments": 0,
+      "created_at": "2026-05-27T14:06:57Z",
+      "days_to_first_maintainer_reply": null
+    },
+    {
+      "number": 341,
+      "state": "closed",
+      "comments": 5,
+      "created_at": "2026-05-13T21:29:13Z",
+      "days_to_first_maintainer_reply": null
+    },
+    {
+      "number": 337,
+      "state": "closed",
+      "comments": 3,
+      "created_at": "2026-05-11T11:07:28Z",
+      "days_to_first_maintainer_reply": 0.115
+    }
+  ],
+  "answered": 3,
+  "unanswered": 7,
+  "median_days_among_answered": 0.115,
+  "median_over_all_ten": "undefined: more than half are unanswered"
+}

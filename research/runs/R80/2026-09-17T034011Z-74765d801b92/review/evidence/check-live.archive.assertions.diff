@@ -1,0 +1,4 @@
+1c1
+< === R80 check-live.sh (mode: fetch) ===
+---
+> === R80 check-live.sh (mode: snapshots) ===

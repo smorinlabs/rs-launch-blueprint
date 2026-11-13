@@ -1,0 +1,19 @@
+{
+  "crate": "xitca-web",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/xitca-web",
+    "versions": "https://crates.io/api/v1/crates/xitca-web/versions"
+  },
+  "recent_downloads": 2770,
+  "downloads": 45974,
+  "repository": "https://github.com/HFQR/xitca-web",
+  "versions_total": 17,
+  "newest_non_yanked": {
+    "num": "0.8.3",
+    "created_at": "2026-08-29T05:45:37.596691Z",
+    "yanked": false,
+    "rust_version": "1.98",
+    "license": "Apache-2.0"
+  }
+}

@@ -1,0 +1,507 @@
+---
+prompt: # Deep-research prompt — Pre-1.0 semver bump strategy (R25, pattern)
+
+## Objective
+Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template shaped as CLI + library + web service. Deliver a named pattern (with a reference implementation) for: whether `rs-launch-blueprint` starts its release-please-managed version at pre-1.0 with `bump-minor-pre-major`/`bump-patch-for-minor-pre-major` semantics (ts's shape, currently at 0.1.3) or starts post-1.0 with standard semver bump semantics (py's shape, currently at 2.4.2). Item kind: `pattern`. Value test: if this answer is wrong, the template's first-published version number, `release-please-config.json`'s bump-strategy flags, and `Cargo.toml`'s initial `version` field all get rewritten.
+
+## Context
+- Research mandate (owner clarification 2026-09-04, spec §2/A5): identify the shared engineering principle, the level at which agreement is required (capability, standard, architectural pattern or policy), and observable acceptance criteria; then research the architectures and libraries that best realize them in this ecosystem. Source implementations and ledger classifications are evidence, not predetermined winners. Agreement, familiarity, or maximum benchmark throughput alone cannot select a design. This mandate supersedes inherited-mechanism wording below; explicit owner requirements, fixed parameters, and dependency ownership remain binding. Report a challenged baseline as `BASELINE-REVIEW: F### — principle — proposed change — evidence` in the answer; do not silently change another item or the ledger.
+- Source precedent (spec §2): only ts has this feature — it is pre-1.0 and configures release-please's pre-1.0 bump dampening; py is already post-1.0 and has no such config. Evidence: ts `release-please-config.json:6` — `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` both set `true`; py: none (`release-please-config.json` has no equivalent keys; py's current version is 2.4.2, ts's is 0.1.3). Ledger row F070 (`docs/port/COMMONALITY.md`), verdict `DIVERGENT`, origin `ts-only`.
+- Recorded baseline and owner-fixed parameters (apply the research mandate above): `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). The version source of truth is `Cargo.toml`'s `[package] version` field (ledger row F063, `COMMON → REUSE`, not a research item) — this item decides the bump-strategy semantics applied to that field, not where the field lives.
+- Prior decisions of the TypeScript port that explain the current shape: D-021(1) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — "`package.json` version bumped exclusively by release-please v5.0.0 manifest-mode Release PRs (`release-type: node`, `bump-minor-pre-major`, `include-v-in-tag`), GitHub App token auth; tags remain the release trigger" — `rs-launch-blueprint`, as a brand-new Rust port with no prior 1.0 release, is in the same "starting fresh" position ts was when it made this choice.
+
+## Out of scope
+- The release-please auth mechanism, publish-workflow tag/version consistency guard, and OIDC Trusted Publishing shape — those are separate `COMMON → REUSE` rows (F072 auth token, F074 tag/version guard, F075 OIDC publishing); this item decides only the numeric bump-strategy semantics.
+- Whether `rs-launch-blueprint` uses release-please at all as its release tool — both source repos already use it (ledger rows F063, F066 and F073, `COMMON → REUSE`) and this item assumes that choice; it decides only the pre-1.0-vs-post-1.0 bump dampening within it.
+- Prior art in the owner's other Rust repositories — do not look for or cite it.
+
+## Couplings
+- id: R25
+- owns:
+- consumes:
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
+If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
+
+## Questions
+Decision: whether `rs-launch-blueprint` launches at a pre-1.0 version with release-please's `bump-minor-pre-major`/`bump-patch-for-minor-pre-major` dampening enabled (feat commits bump the minor digit, not major; fix commits bump patch even under a `0.x` minor) or launches post-1.0 with standard semver bump semantics from its first release.
+- HIGH: Given `rs-launch-blueprint` is a brand-new Rust port with no existing consumers or published crate history, does the Rust/Cargo ecosystem's own convention for a new crate's initial version (`0.1.0` vs `1.0.0`) argue for one strategy over the other independent of what py or ts did?
+- HIGH: Does `cargo`'s own semver interpretation of a `0.x` version (where a minor bump is treated as breaking, per Cargo's caret-requirement default) change how `bump-minor-pre-major` should be understood for a Rust crate specifically, versus npm's `0.x` semver interpretation ts's choice was made under?
+- HIGH (owner clarification 2026-09-04): Which engineering principles and agreement levels must this item preserve across py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint, and which architectures, libraries or conventions best realize them in each ecosystem? Use the existing implementations and their research as evidence, without assuming any repo is the winner. Distinguish missing capability or accidental drift from justified ecosystem differences. Preserve agreement at the declared level. Recommend a shared low-level value only when it is an explicit owner requirement or evidence supports the same tradeoff in all affected ecosystems; otherwise explain each justified difference and how it preserves the principle. Changes to py and ts remain a follow-on project; this answer supplies their rationale.
+- MEDIUM: What do release-please's own current-version docs say about the `bump-minor-pre-major`/`bump-patch-for-minor-pre-major` flags' interaction with a `release-type: rust` (or generic) config, and are both flags supported identically for Rust as for Node?
+- LOW: Does the template's library-crate nature (published to crates.io, unlike py's application-shaped nature) push toward pre-1.0 caution (many crates.io libraries stay pre-1.0 for years) more strongly than it pushed for ts?
+
+## Required evidence
+Survey method (owner direction, 2026-09-04) — forest before trees. Do these four steps before evaluating any candidate, and report them under `### Landscape`:
+1. Landscape first: name the category this item decides and map the Rust field in three bins — built-in or first-party toolchain · established industry standard · up-and-comer. Every shortlisted candidate comes from that map, never from prior familiarity alone.
+2. Authority is established, not assumed: draw on a diverse set of authoritative sources and state why each is authoritative (Rust project and team publications, RFCs and working-group output, the annual Rust survey, maintainers' own documentation, widely cited independent write-ups). A single blog post is a lead, not an authority.
+3. Practice evidence: survey what mainstream, well-regarded Rust projects use, weighting newer popular ones, and cite the evidence that they are well regarded (adoption, maintainer standing, community references) rather than asserting it.
+4. Fit over abstract best: judge every candidate against the use case this template presents (CLI · library · web service) and the py and ts precedent in `## Context`, not against "best in general".
+
+Architecture and example evidence (owner clarification A5): extract the principle behind each source choice and evaluate it against current authoritative guidance and production practice. Compare significant architectural alternatives, not only replacement libraries. A library already named in this prompt is a research lead, not a closed shortlist. For every recommendation cite a maintained reference implementation, or state the evidence gap; explain how the full example composes and how its behavior will be verified. Evaluate performance with workload, configuration, instrumentation, latency, throughput and resource cost stated; do not infer an absolute fastest option from unlike benchmarks.
+
+Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):
+| Figure | Source | Field / rule |
+|---|---|---|
+| 90-day downloads | `GET https://crates.io/api/v1/crates/<name>` | `crate.recent_downloads` |
+| All-time downloads | same | `crate.downloads` |
+| Last release | `GET https://crates.io/api/v1/crates/<name>/versions` | newest with `yanked: false`: `num`, `created_at` |
+| Stars, archived | `GET https://api.github.com/repos/<o>/<r>` | `stargazers_count`, `archived`, `pushed_at` |
+| Open issues | `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open` | `total_count` (never `open_issues_count`) |
+| Issue responsiveness | 10 most recently opened issues | median days to first maintainer response; unanswered count |
+| Advisories | `https://rustsec.org/packages/<name>.html` | open advisories |
+| Adopters | reverse-dependencies page + the projects' `Cargo.toml` | name + source link demonstrating adoption and why the project is a relevant, well-regarded reference |
+
+Maintenance state by rubric, one of `active | stable-quiet | at-risk | dormant | archived`: no release in 6 months is a trigger to investigate, never the verdict; `at-risk` needs a concrete signal; `dormant` needs an unpatched advisory, a broken build on current stable, or a maintainer's own notice.
+
+Fitness gates, answered per candidate **before** popularity is weighed; a failed gate lists the candidate under *Excluded by gate*:
+1. license compatible with `MIT OR Apache-2.0`;
+2. crate and dependency-tree MSRV within `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`;
+3. no open RustSec advisory; `unsafe` posture stated;
+4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
+5. default features and any async-runtime coupling stated;
+6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
+## Answer template
+Use exactly these field names as H3 headings, in this order.
+
+### Landscape
+The survey-method output (`## Required evidence`): the three-bin map with the candidates found in each, the authoritative sources used and why each counts, and the well-regarded projects surveyed with the evidence that they are well regarded.
+### Principles and implementation
+State the shared requirement, its source and agreement level, the essential behaviors, and observable acceptance criteria. Distinguish what must agree from what may vary. If an architectural pattern is shared, verify that it remains appropriate in the target ecosystem. Compare architectural alternatives before choosing libraries; explain how the recommended design preserves each principle and where a different ecosystem needs a different design. Cite production usage and maintained reference examples, compare maturity, dependability, representative performance and integration cost, and explain the tradeoffs. Specify a minimal realistic example and an executable acceptance check; distinguish proposed checks from checks actually run. Include any `BASELINE-REVIEW:` finding with its feature ID, affected items and evidence.
+### Dominant choice
+### Options
+name · where documented · adopters that practice it · date of the most recent authoritative write-up — no download columns.
+### Excluded by gate
+### Up-and-comers
+### Fit for this template
+Argues per target shape — CLI · library · web, separately.
+### Recommendation
+### Ranked runner-up
+And the condition under which it wins.
+### Tradeoffs
+What the pick gives up versus each runner-up and why that cost is accepted.
+### Parameters
+`owns <param> = <value>` per owned parameter; `assumes <param> = <value>` per consumed one; any `CONFLICT:` lines.
+### Migration implications
+File-level changes in the template.
+### Validation strategy
+Commands that prove the principle holds in a realistic example using the recommended libraries; state expected behavior and distinguish planned checks from executed results.
+### Confidence & re-verify trigger
+### Sources
+
+## Constraints
+- Fresh ecosystem survey; no prior-art baseline.
+- Survey method (`## Required evidence`): landscape first, established authority, practice evidence, fit — reported under `### Landscape`.
+- Stable Rust only; edition `2024`; MSRV policy `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`; license `MIT OR Apache-2.0`.
+- CI on `ubuntu-latest, macos-latest` — every recommendation must work on all of them.
+- Every claim carries a source URL and retrieval date; every number carries its endpoint.
+mode: all_deep_research
+provider: perplexity
+model: sonar-deep-research
+operation_id: research-20260909-003254-a6983478d8e044ec
+created_at: 2026-09-09T00:32:54.053430
+---
+
+### Prompt
+
+```
+System: Conduct comprehensive research with citations and multiple perspectives. Organize findings clearly and highlight key insights.
+
+User: # Deep-research prompt — Pre-1.0 semver bump strategy (R25, pattern)
+
+## Objective
+Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template shaped as CLI + library + web service. Deliver a named pattern (with a reference implementation) for: whether `rs-launch-blueprint` starts its release-please-managed version at pre-1.0 with `bump-minor-pre-major`/`bump-patch-for-minor-pre-major` semantics (ts's shape, currently at 0.1.3) or starts post-1.0 with standard semver bump semantics (py's shape, currently at 2.4.2). Item kind: `pattern`. Value test: if this answer is wrong, the template's first-published version number, `release-please-config.json`'s bump-strategy flags, and `Cargo.toml`'s initial `version` field all get rewritten.
+
+## Context
+- Research mandate (owner clarification 2026-09-04, spec §2/A5): identify the shared engineering principle, the level at which agreement is required (capability, standard, architectural pattern or policy), and observable acceptance criteria; then research the architectures and libraries that best realize them in this ecosystem. Source implementations and ledger classifications are evidence, not predetermined winners. Agreement, familiarity, or maximum benchmark throughput alone cannot select a design. This mandate supersedes inherited-mechanism wording below; explicit owner requirements, fixed parameters, and dependency ownership remain binding. Report a challenged baseline as `BASELINE-REVIEW: F### — principle — proposed change — evidence` in the answer; do not silently change another item or the ledger.
+- Source precedent (spec §2): only ts has this feature — it is pre-1.0 and configures release-please's pre-1.0 bump dampening; py is already post-1.0 and has no such config. Evidence: ts `release-please-config.json:6` — `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` both set `true`; py: none (`release-please-config.json` has no equivalent keys; py's current version is 2.4.2, ts's is 0.1.3). Ledger row F070 (`docs/port/COMMONALITY.md`), verdict `DIVERGENT`, origin `ts-only`.
+- Recorded baseline and owner-fixed parameters (apply the research mandate above): `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). The version source of truth is `Cargo.toml`'s `[package] version` field (ledger row F063, `COMMON → REUSE`, not a research item) — this item decides the bump-strategy semantics applied to that field, not where the field lives.
+- Prior decisions of the TypeScript port that explain the current shape: D-021(1) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — "`package.json` version bumped exclusively by release-please v5.0.0 manifest-mode Release PRs (`release-type: node`, `bump-minor-pre-major`, `include-v-in-tag`), GitHub App token auth; tags remain the release trigger" — `rs-launch-blueprint`, as a brand-new Rust port with no prior 1.0 release, is in the same "starting fresh" position ts was when it made this choice.
+
+## Out of scope
+- The release-please auth mechanism, publish-workflow tag/version consistency guard, and OIDC Trusted Publishing shape — those are separate `COMMON → REUSE` rows (F072 auth token, F074 tag/version guard, F075 OIDC publishing); this item decides only the numeric bump-strategy semantics.
+- Whether `rs-launch-blueprint` uses release-please at all as its release tool — both source repos already use it (ledger rows F063, F066 and F073, `COMMON → REUSE`) and this item assumes that choice; it decides only the pre-1.0-vs-post-1.0 bump dampening within it.
+- Prior art in the owner's other Rust repositories — do not look for or cite it.
+
+## Couplings
+- id: R25
+- owns:
+- consumes:
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
+If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
+
+## Questions
+Decision: whether `rs-launch-blueprint` launches at a pre-1.0 version with release-please's `bump-minor-pre-major`/`bump-patch-for-minor-pre-major` dampening enabled (feat commits bump the minor digit, not major; fix commits bump patch even under a `0.x` minor) or launches post-1.0 with standard semver bump semantics from its first release.
+- HIGH: Given `rs-launch-blueprint` is a brand-new Rust port with no existing consumers or published crate history, does the Rust/Cargo ecosystem's own convention for a new crate's initial version (`0.1.0` vs `1.0.0`) argue for one strategy over the other independent of what py or ts did?
+- HIGH: Does `cargo`'s own semver interpretation of a `0.x` version (where a minor bump is treated as breaking, per Cargo's caret-requirement default) change how `bump-minor-pre-major` should be understood for a Rust crate specifically, versus npm's `0.x` semver interpretation ts's choice was made under?
+- HIGH (owner clarification 2026-09-04): Which engineering principles and agreement levels must this item preserve across py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint, and which architectures, libraries or conventions best realize them in each ecosystem? Use the existing implementations and their research as evidence, without assuming any repo is the winner. Distinguish missing capability or accidental drift from justified ecosystem differences. Preserve agreement at the declared level. Recommend a shared low-level value only when it is an explicit owner requirement or evidence supports the same tradeoff in all affected ecosystems; otherwise explain each justified difference and how it preserves the principle. Changes to py and ts remain a follow-on project; this answer supplies their rationale.
+- MEDIUM: What do release-please's own current-version docs say about the `bump-minor-pre-major`/`bump-patch-for-minor-pre-major` flags' interaction with a `release-type: rust` (or generic) config, and are both flags supported identically for Rust as for Node?
+- LOW: Does the template's library-crate nature (published to crates.io, unlike py's application-shaped nature) push toward pre-1.0 caution (many crates.io libraries stay pre-1.0 for years) more strongly than it pushed for ts?
+
+## Required evidence
+Survey method (owner direction, 2026-09-04) — forest before trees. Do these four steps before evaluating any candidate, and report them under `### Landscape`:
+1. Landscape first: name the category this item decides and map the Rust field in three bins — built-in or first-party toolchain · established industry standard · up-and-comer. Every shortlisted candidate comes from that map, never from prior familiarity alone.
+2. Authority is established, not assumed: draw on a diverse set of authoritative sources and state why each is authoritative (Rust project and team publications, RFCs and working-group output, the annual Rust survey, maintainers' own documentation, widely cited independent write-ups). A single blog post is a lead, not an authority.
+3. Practice evidence: survey what mainstream, well-regarded Rust projects use, weighting newer popular ones, and cite the evidence that they are well regarded (adoption, maintainer standing, community references) rather than asserting it.
+4. Fit over abstract best: judge every candidate against the use case this template presents (CLI · library · web service) and the py and ts precedent in `## Context`, not against "best in general".
+
+Architecture and example evidence (owner clarification A5): extract the principle behind each source choice and evaluate it against current authoritative guidance and production practice. Compare significant architectural alternatives, not only replacement libraries. A library already named in this prompt is a research lead, not a closed shortlist. For every recommendation cite a maintained reference implementation, or state the evidence gap; explain how the full example composes and how its behavior will be verified. Evaluate performance with workload, configuration, instrumentation, latency, throughput and resource cost stated; do not infer an absolute fastest option from unlike benchmarks.
+
+Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):
+| Figure | Source | Field / rule |
+|---|---|---|
+| 90-day downloads | `GET https://crates.io/api/v1/crates/<name>` | `crate.recent_downloads` |
+| All-time downloads | same | `crate.downloads` |
+| Last release | `GET https://crates.io/api/v1/crates/<name>/versions` | newest with `yanked: false`: `num`, `created_at` |
+| Stars, archived | `GET https://api.github.com/repos/<o>/<r>` | `stargazers_count`, `archived`, `pushed_at` |
+| Open issues | `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open` | `total_count` (never `open_issues_count`) |
+| Issue responsiveness | 10 most recently opened issues | median days to first maintainer response; unanswered count |
+| Advisories | `https://rustsec.org/packages/<name>.html` | open advisories |
+| Adopters | reverse-dependencies page + the projects' `Cargo.toml` | name + source link demonstrating adoption and why the project is a relevant, well-regarded reference |
+
+Maintenance state by rubric, one of `active | stable-quiet | at-risk | dormant | archived`: no release in 6 months is a trigger to investigate, never the verdict; `at-risk` needs a concrete signal; `dormant` needs an unpatched advisory, a broken build on current stable, or a maintainer's own notice.
+
+Fitness gates, answered per candidate **before** popularity is weighed; a failed gate lists the candidate under *Excluded by gate*:
+1. license compatible with `MIT OR Apache-2.0`;
+2. crate and dependency-tree MSRV within `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`;
+3. no open RustSec advisory; `unsafe` posture stated;
+4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
+5. default features and any async-runtime coupling stated;
+6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
+## Answer template
+Use exactly these field names as H3 headings, in this order.
+
+### Landscape
+The survey-method output (`## Required evidence`): the three-bin map with the candidates found in each, the authoritative sources used and why each counts, and the well-regarded projects surveyed with the evidence that they are well regarded.
+### Principles and implementation
+State the shared requirement, its source and agreement level, the essential behaviors, and observable acceptance criteria. Distinguish what must agree from what may vary. If an architectural pattern is shared, verify that it remains appropriate in the target ecosystem. Compare architectural alternatives before choosing libraries; explain how the recommended design preserves each principle and where a different ecosystem needs a different design. Cite production usage and maintained reference examples, compare maturity, dependability, representative performance and integration cost, and explain the tradeoffs. Specify a minimal realistic example and an executable acceptance check; distinguish proposed checks from checks actually run. Include any `BASELINE-REVIEW:` finding with its feature ID, affected items and evidence.
+### Dominant choice
+### Options
+name · where documented · adopters that practice it · date of the most recent authoritative write-up — no download columns.
+### Excluded by gate
+### Up-and-comers
+### Fit for this template
+Argues per target shape — CLI · library · web, separately.
+### Recommendation
+### Ranked runner-up
+And the condition under which it wins.
+### Tradeoffs
+What the pick gives up versus each runner-up and why that cost is accepted.
+### Parameters
+`owns <param> = <value>` per owned parameter; `assumes <param> = <value>` per consumed one; any `CONFLICT:` lines.
+### Migration implications
+File-level changes in the template.
+### Validation strategy
+Commands that prove the principle holds in a realistic example using the recommended libraries; state expected behavior and distinguish planned checks from executed results.
+### Confidence & re-verify trigger
+### Sources
+
+## Constraints
+- Fresh ecosystem survey; no prior-art baseline.
+- Survey method (`## Required evidence`): landscape first, established authority, practice evidence, fit — reported under `### Landscape`.
+- Stable Rust only; edition `2024`; MSRV policy `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`; license `MIT OR Apache-2.0`.
+- CI on `ubuntu-latest, macos-latest` — every recommendation must work on all of them.
+- Every claim carries a source URL and retrieval date; every number carries its endpoint.
+```
+
+# R25 Pattern: Pre‑1.0 Semantic Versioning Strategy for `rs-launch-blueprint`
+
+The decision for R25 is whether `rs-launch-blueprint` should launch as a pre‑1.0 crate using release‑please’s pre‑major “dampening” semantics, or instead begin at `1.0.0` under standard Semantic Versioning rules. After surveying authoritative specifications, Rust‑specific tooling behavior, and common practice for library crates, and after reconciling these with the cross‑language blueprint principles, the dominant recommendation is that `rs-launch-blueprint` start at `0.1.0` and explicitly enable both `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` in its `release-please-config.json`. This pattern aligns with how Cargo interprets `0.x.y` versions, matches the way Rust crates signal compatibility and instability before `1.0.0`, preserves the shared principle that version numbers communicate API stability and compatibility to both humans and tooling, and mirrors the TypeScript blueprint’s intent while respecting Python’s already‑stable status. The ranked runner‑up is to launch directly at `1.0.0` with standard semver bump semantics; this alternative is reserved for a future point where the Rust template’s public API and integration story are sufficiently proven that a stability promise from day one is justified. The rest of this report develops the landscape, principles, options, and tradeoffs in detail, and specifies the concrete parameter values and validation strategy for this pattern.
+
+## Background: Semantic Versioning and Rust’s Pre‑1.0 Conventions
+
+Semantic Versioning (SemVer) defines a three‑component version number of the form \(X.Y.Z\), labeled MAJOR.MINOR.PATCH, with explicit rules for when each component must be incremented.[11] According to the SemVer 2.0.0 specification, the MAJOR version must increase when incompatible API changes are introduced; the MINOR version must increase when new backward‑compatible functionality is added; and the PATCH version must increase when backward‑compatible bug fixes are made.[11] The specification also defines that version `1.0.0` is the point at which the public API is considered defined, and that after this point version increments must be driven by changes to this public API.[11] Before `1.0.0`, SemVer states that major version zero is “for initial development” and that “Anything MAY change at any time. The public API SHOULD NOT be considered stable.”[11][12] This guidance is intentionally permissive: it allows maintainers to iterate rapidly under `0.y.z` without a stability promise to consumers.
+
+Rust, through Cargo, adopts SemVer but applies an important nuance for pre‑1.0 versions in how dependency constraints are interpreted.[5][9] The Cargo Book explains that a simple version requirement like `"0.1.12"` is treated as a caret requirement `^0.1.12`, which allows SemVer‑compatible updates that do not modify the leftmost non‑zero digit.[9] For versions where the major component is zero, this means that `0.x.y` is considered compatible with `0.x.z` for `y ≥ z`, but not with `0.(x+1).0`, because changing the minor component changes the leftmost non‑zero digit.[9] The Rust Project Primer reinforces this by noting that before `1.0`, the SemVer rules are “shifted”: a minor bump such as `0.1.0 → 0.2.0` is treated as a breaking change, and a patch bump such as `0.1.0 → 0.1.1` can include new features and is still considered compatible.[5] This convention exists because pre‑1.0 crates are expected to have unstable APIs, and it is widely understood in the Rust ecosystem that many crates remain at `0.x` for an extended period.[5][8]
+
+Community discussions among Rust developers further clarify how this pre‑1.0 pattern is interpreted in practice.[1][8] In a Rust Users Forum thread on deciding when to go to `1.0.0`, contributors quote SemVer’s rule that “Major version zero (0.y.z) is for initial development” and emphasize that while `0.y.z` formally does not promise stability, stability expectations arise in practice once a crate reaches production usage.[1][11] Another widely cited discussion notes that, in Cargo, breaking changes are communicated by incrementing the leftmost non‑zero component, so `0.x` and `0.(x+1)` are treated as semver‑incompatible releases, whereas `0.x.y` and `0.x.(y+1)` are treated as compatible.[8][9] This means that for Rust crates, bumps in the minor digit of a `0.x.y` version are effectively acting as “major” compatibility boundaries, even though SemVer formally labels them as minor.[5][8][9] The practical implication is that starting at `0.1.0` and using minor bumps to signal breaking changes fits naturally into Cargo’s semantics and ecosystem conventions.
+
+Guidance targeted at new crate authors also tends to advise starting at `0.1.0` rather than `1.0.0`.[17] A comprehensive write‑up on publishing Rust crates explains that a typical initial development version is `0.1.0`, from which maintainers increment the patch version for minor changes and bug fixes, the minor version for new features, and eventually the major version for incompatible API changes.[17] The same guidance offers an example where adding a new function that does not interfere with existing functionality might lead to updating the version from `0.1.0` to `0.2.0`, implicitly treating `0.2.0` as the next evolution of the API still under initial development.[17] Combined with Cargo’s compatibility rules, this produces a clear convention: before `1.0.0`, patch bumps on a `0.x.y` version are compatible and may introduce features, while minor bumps represent potential breaking changes that reset the compatibility range.[5][9][17]
+
+SemVer itself went through release candidate iterations before stabilizing at 2.0.0, and these RC documents reiterate the same major‑version‑zero intent.[12][13] The 2.0.0‑rc.2 specification states that “Major version zero is all about rapid development,” explicitly framing `0.y.z` as a phase in which the public API is evolving, and the project is free to change without the same backward‑compatibility obligations that apply after `1.0.0`.[12] The RC documents also emphasize that once a versioned package has been released, its contents must not be modified; any changes must be released as a new version.[12][13] This immutability principle is important for automated tooling like Cargo and release‑please: they rely on version numbers monotonically signaling changes, without silent modifications to published artifacts.[11][12][13]
+
+Within this context, the choice between launching `rs-launch-blueprint` at `0.1.0` or `1.0.0` is not merely a matter of numbering aesthetics. It is a choice about the stability promise made to consumers, the way compatibility is encoded in dependency constraints, and the expectations set for how quickly the template’s public API may evolve. For a template that is both a CLI, a library, and a web service, intended to be reused and adapted by others, these signals matter both to human users and to automation in the Rust ecosystem.
+
+## Release‑please and Pre‑1.0 Bump Strategy
+
+Release‑please is an open‑source automation tool developed by Google that parses Git history and conventional commit messages to generate release pull requests containing changelogs and version bumps for projects.[4] Rather than requiring maintainers to manually decide whether each change warrants a patch, minor, or major version increment, release‑please infers the next version according to SemVer rules based on commit types and optional configuration.[4][7] It supports a variety of language‑specific “release types,” including `node`, `python`, and `rust`, and can operate in both simple single‑package mode and manifest‑based mode for monorepos or multi‑package repositories.[7][14][16] For Rust repositories, the `rust` release type expects a `Cargo.toml` and a `CHANGELOG.md` and updates the crate version accordingly.[14][16]
+
+The tool’s CLI and configuration documentation describe two important flags that modify behavior for pre‑1.0 versions: `bump-minor-pre-major` and `bump-patch-for-minor-pre-major`.[7][15][16] The CLI docs explain that `--bump-minor-pre-major` tells the versioning strategy to “bump the minor version for breaking changes for versions < 1.0.0”, and `--bump-patch-for-minor-pre-major` tells it to “bump the patch version for features for versions < 1.0.0”.[15] The manifest‑based advanced configuration exposes the same options in JSON form, allowing per‑package customization in monorepos: the `release-please-config.json` file at the repository root can specify these flags for each package, including Rust crates.[7] In the customizing documentation, release‑please lists `rust` among the supported strategy types and notes that these versioning options are generic, applying to any release type rather than being restricted to Node projects.[14][16]
+
+Concrete examples from other ecosystems illustrate how these flags behave in practice. A DeepWiki description of a MySQL‑related extension for a CLI documents a versioning strategy in which `bump-minor-pre-major` is set to `true`, meaning that breaking changes bump the minor version rather than the major before `1.0.0`, and `bump-patch-for-minor-pre-major` is set to `true`, meaning that features bump the patch version rather than the minor before `1.0.0`.[3] The same documentation shows how release‑please analyzes conventional commit messages, so that `feat:` commits trigger a patch bump pre‑1.0 and a minor bump post‑1.0, while `feat!:` or commits with `BREAKING CHANGE:` trigger a minor bump pre‑1.0 and a major bump post‑1.0.[3] Similar patterns appear in an Elixir tutorial on release‑please, which suggests a configuration where `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` are both `true`, so that breaking changes bump the minor version from `0.1.0` to `0.2.0`, features bump the patch from `0.1.0` to `0.1.1`, and pre‑release versions can be marked as `"alpha"`.[4] Another DeepWiki entry on release automation for a server SDK stack shows these same flags used globally to allow minor version bumps and treat features as patches before reaching `v1.0.0`.[10]
+
+Release‑please’s own advanced configuration documentation reinforces that these flags are part of a broader set of versioning strategies.[7] Besides the default SemVer behavior, versioning strategies can be configured as `always-bump-patch`, `always-bump-minor`, or `always-bump-major`, but the presence of `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` specifically encodes a distinct interpretation of pre‑1.0 semantics.[7] With both flags enabled, pre‑1.0 becomes a regime where breaking changes increment the minor component and features increment the patch component, aligning with Cargo’s convention that the leftmost non‑zero digit is the compatibility boundary and that patch versions within a `0.x.y` line are safe to auto‑update.[5][9][15] For Rust crates, this means that `0.1.3` to `0.1.4` can legitimately include new features without breaking dependents pinned to `^0.1.3`, while `0.1.3` to `0.2.0` signals a compatibility boundary that dependents will not cross automatically.[5][9][15]
+
+The fact that these options are explicitly supported for the `rust` release type and described in release‑please’s central documentation is a key piece of authority for R25.[14][15][16] It demonstrates that the tool expects maintainers of Rust crates to make an intentional choice about how pre‑1.0 versions are handled, and that the combination of these flags is an established pattern rather than an ad‑hoc tweak borrowed from the Node ecosystem. It also means that using these flags in `rs-launch-blueprint` will be fully supported, with behavior matching examples already in production in other languages.[3][4][10]
+
+## Cross‑Blueprint Versioning Principles
+
+The owner’s mandate for R25 emphasizes that the decision must not simply copy an existing implementation, but instead identify the shared engineering principles, the level at which agreement is required, and the observable acceptance criteria across the Python, TypeScript, and Rust blueprints. The TypeScript port (`ts-launch-blueprint`) currently uses release‑please in manifest mode with `release-type: node`, and explicitly enables `bump-minor-pre-major` and `include-v-in-tag`, starting at a pre‑1.0 version (`0.1.3`). The Python port (`py-launch-blueprint`) is currently at `2.4.2` and does not configure pre‑1.0 dampening flags because it is already post‑1.0 and has an established stability story. The ledger row F070 marks the pre‑1.0 dampening behavior as DIVERGENT and TS‑only, and the research mandate instructs that this divergence must be evaluated rather than assumed.
+
+A plausible shared principle across the three blueprints is that version numbers and release automation must encode API stability and compatibility in a way that is both conceptually consistent and idiomatic for each ecosystem. Conceptual consistency means that “major” changes are those that break existing consumers, “minor” changes are backward‑compatible feature additions, and “patch” changes are backward‑compatible bug fixes, as defined by SemVer.[11] Idiomatic means that the way these categories are mapped onto version components and communicated in tooling should match what mainstream users of the ecosystem expect, so that a dependency constraint like `^1.2` in Python or `^0.4` in Rust behaves in line with community norms.[5][9][11] For the TypeScript blueprint, this principle led to a pre‑1.0 start with dampened semantics, reflecting the fact that the API was evolving and that npm’s semver handling of `0.x` allows flexibility while still letting conventional commit types drive automated version bumps.[3][4]
+
+The level of agreement required appears to be architectural pattern rather than specific numeric version. All three blueprints should agree that they use semver‑based versioning, that release automation is driven by conventional commits and release‑please, and that pre‑1.0 and post‑1.0 phases are treated differently in terms of stability promises. They do not need to agree on the exact starting version number, because the Python blueprint’s `2.4.2` reflects historical evolution and legacy consumers, whereas the Rust blueprint is a new crate with no history. Instead, the agreement level is that pre‑1.0 is used for initial development when the public API is not yet stable, and that once an API is stable and widely consumed, the blueprint moves to `1.0.0` and uses standard semver semantics without dampening.[11][12][17] The acceptance criteria are observable: version numbers must evolve monotonically; CI must enforce consistency between tags and version fields; dependencies must resolve compatibly according to ecosystem norms; and consumers must not be surprised by breaking changes sneaking into patch‑level releases.[4][7][9][11]
+
+Within this framing, the divergence recorded in F070—pre‑1.0 dampening behavior present only in the TypeScript port—looks like an accidental asymmetry rather than a principled difference. The Python blueprint is post‑1.0 and cannot meaningfully configure pre‑1.0 dampening; it instead uses standard semver behavior, which is correct for a mature, application‑like project.[11] The Rust blueprint is structurally more like the TypeScript blueprint, in that it will produce a library crate intended for reuse and evolution, even though it also includes a CLI and web service component. For such a library crate, Rust practice strongly favors starting at `0.1.0` and remaining pre‑1.0 while the public API evolves, with Cargo’s compatibility rules making minor `0.x` bumps the primary mechanism for signaling breaking changes.[5][8][9][17] This suggests that the shared architectural pattern—pre‑1.0 for initial development with dampened semantics, then `1.0.0` once stable—should be preserved across TypeScript and Rust, while Python remains in the stable regime.
+
+The research mandate also requires that missing capability or accidental drift be distinguished from justified ecosystem differences. Here, the lack of pre‑1.0 dampening configuration in the Python blueprint is justified by its post‑1.0 status; there is no missing capability. The lack of such configuration in the Rust blueprint is simply because it is new and undecided. Conversely, the use of pre‑1.0 dampening in the TypeScript blueprint is not a quirk of npm; it is an expression of the pattern that initial development favors smaller numeric jumps to avoid prematurely burning major version numbers while still conveying breaking changes to tooling.[3][4][11] Adopting a similar pattern in Rust with the appropriate adaptation to Cargo’s semantics preserves the principle, rather than forcing artificial uniformity.
+
+In light of this, we will treat F070 as a baseline in need of review. The proposed change is to reclassify the pre‑1.0 dampening strategy as a common architectural pattern for new blueprints that are library‑shaped and under initial development, rather than as a TS‑only divergence. The evidence is drawn from SemVer, Cargo’s pre‑1.0 compatibility rules, Rust ecosystem practice with `0.x` crates, and release‑please’s generic support for `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` for Rust.[3][4][5][7][9][10][11][15][16][17] We will mark this explicitly in the principles section as a baseline review.
+
+## R25 Pattern Analysis
+
+### Landscape
+
+The category this item decides is the “pre‑1.0 semantic versioning and release‑automation strategy” for a Rust crate that is part of a multi‑language blueprint. This is a pattern rather than a library choice: it specifies how version numbers are interpreted and bumped by release‑please, how Cargo and consumers will see compatibility, and when the template transitions from initial development to stable API. As required, the landscape can be mapped into three bins: built‑in or first‑party toolchain; established industry standard; and up‑and‑comer patterns and tools.
+
+In the built‑in or first‑party bucket, the primary actors are the semver specification itself and Cargo’s interpretation of semver requirements.[5][9][11] SemVer 2.0.0 is the normative standard for versioning, hosted at semver.org, authored by Tom Preston‑Werner and widely cited across software ecosystems.[11] It is authoritative both because it defines the semantics of MAJOR.MINOR.PATCH and because tools like npm, Cargo, and many others adopt its rules explicitly.[5][9][11] The Cargo Book, maintained as part of the Rust project’s official documentation, is authoritative for how Rust’s package manager interprets version requirements, particularly caret (^)-style constraints and the special handling of pre‑1.0 versions.[9] The Rust Project Primer is a community‑curated but Rust‑team‑aligned guide aimed at Rust project maintainers, and its explanation of versioning and pre‑1.0 behavior is widely referenced.[5] Together, these sources define the baseline semantics that any pattern for `rs-launch-blueprint` must respect.
+
+In the established industry standard bucket, we place release‑please and conventional commits, along with cross‑ecosystem usage of pre‑1.0 dampening.[3][4][7][10][14][15][16] Release‑please’s documentation, hosted under the googleapis GitHub organization, is authoritative for its behavior and configuration options.[7][14][15] The tool is broadly adopted across Google‑maintained repositories and many external projects, and its language‑specific release types, including `rust`, encode best practices for automated releases.[14][16] DeepWiki write‑ups on specific projects such as the MySQL gemini CLI extension and Flipt server SDKs provide concrete, maintained reference implementations of pre‑1.0 dampening strategies, showing how the flags are set and how commit types map to version bumps.[3][10] A blog post on managing releases with release‑please in Elixir provides a language‑agnostic explanation of these options and demonstrates their intended usage.[4] While these materials are not formal standards, they collectively constitute de facto practice for projects using release‑please, and therefore carry weight.
+
+The up‑and‑comer bucket would usually include alternative release tools and emerging patterns like `cargo-release`, git‑driven changelog generators, or other CI‑driven release flows. However, the scope of R25 is constrained: the owner has already decided that release‑please is the release automation tool for this template, and R25 only decides the pre‑1.0 versus post‑1.0 bump semantics within it. That means that alternative tools are out of scope as candidates, though they inform understanding of how Rust projects typically handle versioning. Moreover, discussions on Rust forums and community platforms about when to go to `1.0.0` and how to use `0.x.y` versions are relevant practice evidence rather than competing tools.[1][8] These conversations are authoritative insofar as they represent the collective experience of Rust maintainers operating under Cargo’s semantics.
+
+For practice evidence, we must survey mainstream, well‑regarded Rust projects and patterns, weighting newer popular ones. The search results do not enumerate specific crates like `tokio` or `serde`, but they provide aggregated guidance and commentary on typical behavior. The Rust Project Primer explicitly warns that many crates in the Rust ecosystem “stay at 0.x for a long time,” which can surprise users who assume pre‑1.0 implies instability.[5] A Hacker News discussion elaborates that in the Rust ecosystem, version numbers like `log = "0.4"` in `Cargo.toml` are interpreted so that running `cargo update` will only bump to semver‑compatible releases within the `0.4.x` line, meaning machine interpretation treats patch bumps as compatible and minor `0.x` bumps as breaking.[8][9] The same discussion points out that maintainers often use 0.x to signal to humans that the API is not yet guaranteed stable, even while semver rules and Cargo treat cumulative patch releases as a stable range.[8][11] A Gyata article on publishing Rust crates provides a simple but widely applicable exemplar for a new crate starting at `0.1.0` and evolving through patch and minor versions before hitting `1.0.0`.[17] These sources collectively describe mainstream practice: new Rust library crates typically start at `0.1.0`, remain pre‑1.0 while the API evolves, use patch `0.x.y` updates for compatible improvements and bug fixes, and use minor `0.x` updates for breaking changes.[5][8][9][17]
+
+Fit over abstract best must be emphasized: R25 concerns a template that is simultaneously a CLI, a library, and a web service, intended as a starting point for new Rust projects. The decision is not about the absolute “best” versioning strategy in isolation, but about which strategy best serves such a template given the owner’s goals and the cross‑language blueprint context. The Rust ecosystem’s conventions, as codified by Cargo, SemVer, and community practice, are highly relevant here.[5][9][11][17] The landscape shows that pre‑1.0 semantics with minor‑as‑breaking and patch‑as‑compatible are both baked into Cargo and widely used, and that release‑please explicitly supports configuring pre‑1.0 dampening for Rust in line with these conventions.[5][7][9][14][15][16] The subsequent sections apply this landscape to the specific decision.
+
+### Principles and implementation
+
+The shared requirement across Python, TypeScript, and Rust blueprints for R25 can be stated as follows: version numbers and release automation must accurately reflect API compatibility and stability, in a way that is both semantically consistent across languages and idiomatic within each language’s ecosystem. The source of this requirement is the owner’s research mandate, which prioritizes architectural principles over inherited mechanisms, semver.org’s rules about how major, minor, and patch versions are interpreted, and Cargo’s documented behavior for Rust crates.[5][9][11] The level of agreement is architectural pattern: all blueprints must agree that they follow SemVer, distinguish pre‑1.0 initial development from post‑1.0 stable API, use release‑please to automate version bumps based on conventional commits, and avoid breaking changes in patch releases once the major version is at least one.[4][7][11] They may vary in initial version numbers and in the duration they remain pre‑1.0, according to ecosystem practice and project maturity.
+
+The essential behaviors for R25 are fourfold. First, for pre‑1.0 versions of `rs-launch-blueprint`, breaking changes must cause a bump in the leftmost non‑zero version component, which under `0.x.y` is the minor digit, so that Cargo’s caret requirements recognize them as incompatibilities.[5][8][9] Second, non‑breaking features should be allowed in patch releases under `0.x.y`, consistent with Rust’s convention that `0.x.y` and `0.x.(y+1)` are compatible and may include new functionality.[5][9][17] Third, release‑please must be configured so that its automated interpretation of conventional commits produces exactly these increments: patch for non‑breaking features and fixes, minor for breaking changes, and eventually major when `1.0.0` is reached and a breaking change occurs.[3][4][7][10][15] Fourth, once `rs-launch-blueprint` reaches `1.0.0`, the pattern must switch to standard SemVer semantics, meaning that minor bumps represent backward‑compatible features and patch bumps represent bug fixes, with breaking changes reserved for major version increments.[11]
+
+Observable acceptance criteria follow directly from these behaviors. A dependency on `rs-launch-blueprint` specified as `^0.1.3` must be able to auto‑update to `0.1.4` and other patch versions without encountering breaking changes, and must not auto‑update across minor `0.x` boundaries like `0.1.3 → 0.2.0`.[5][9] Release‑please’s generated changelog for a patch `0.x.y → 0.x.(y+1)` release should list only features and fixes marked as backward‑compatible, and its PR should show the patch digit increasing when `bump-patch-for-minor-pre-major` is enabled.[3][4][7][10][15] Breaking changes must be associated with `feat!` or `BREAKING CHANGE` commit annotations, and release‑please must bump the minor digit for `0.x` versions with `bump-minor-pre-major` set to `true`, and the major digit for `≥1.0.0` versions.[3][4][7][10][15] Finally, once `rs-launch-blueprint` is at `1.0.0` and beyond, consumers pinned to `^1.2.0` must be safe from breaking changes unless they opt into a new major version.[9][11]
+
+Within this frame, we perform the required baseline review. The ledger row F070 currently classifies the pre‑1.0 dampening strategy as DIVERGENT and TS‑only. Based on the evidence surveyed, this divergence appears to be accidental rather than principled. SemVer’s definition of major version zero as initial development applies equally to TypeScript packages and Rust crates.[11][12] Cargo’s adaptation treats `0.x` minor bumps as breaking, and patch bumps as compatible, which is exactly the behavior encoded by release‑please when both pre‑1.0 flags are enabled.[5][7][9][15] TypeScript’s choice to configure `bump-minor-pre-major` was driven by the desire to encode breaking changes as minor pre‑1.0 while keeping major version zero free for initial development, a principle that translates directly to Rust.[3][4] Rust guidance for new crates explicitly recommends starting at `0.1.0`, iterating under pre‑1.0, and only moving to `1.0.0` once the API is stable and used in production.[1][5][17] Therefore, we propose the following baseline review.
+
+> BASELINE-REVIEW: F070 — pre‑1.0 semver dampening — reclassify as a common architectural pattern for new library‑shaped blueprints — evidence: SemVer’s major version zero rules[11][12], Cargo’s pre‑1.0 compatibility conventions[5][9], Rust crate publishing guidance recommending `0.1.0` as initial version[17], and release‑please’s explicit support for `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` across languages including Rust[3][4][7][10][14][15][16].
+
+Implementation of this pattern in `rs-launch-blueprint` is straightforward. The initial version in `Cargo.toml` will be set to `0.1.0`, consistent with Rust publishing guidance.[5][17] The `release-please-config.json` will specify `"release-type": "rust"` (or omit it when using manifest mode) and set `"bump-minor-pre-major": true` and `"bump-patch-for-minor-pre-major": true`, following the documented advanced configuration.[4][7][10][14][15][16] Conventional commit conventions will be enforced in the repository, so that commits starting with `feat:` represent non‑breaking features, `fix:` represent bug fixes, and `feat!:` or `BREAKING CHANGE:` represent breaking API changes.[3][4][10] Release‑please’s release PRs will become the single mechanism for bumping the `Cargo.toml` version, and the template’s documentation will state clearly that patch releases under `0.x.y` may add features but are considered compatible, while minor releases under `0.x` may introduce breaking changes, matching Cargo’s semantics.[5][9][17] Once the template’s API stabilizes and has accumulated sufficient production usage, a deliberate decision will be made to release `1.0.0`, after which the pre‑major flags may be disabled or left innocuous, as they only have effect for versions below `1.0.0`.[7][15]
+
+### Dominant choice
+
+The dominant choice for R25, given the landscape and principles above, is to have `rs-launch-blueprint` launch as a pre‑1.0 crate at version `0.1.0` and to enable both `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` in its release‑please configuration. This pattern can be named the **“Rust pre‑1.0 dampened SemVer pattern”** for the blueprint.
+
+Under this pattern, `0.1.0` marks initial development, signaling to humans that the API is not yet stable and to Cargo that compatibility is governed by the minor digit as the leftmost non‑zero component.[5][9][11] Release‑please will interpret `feat:` commits as patch bumps and `fix:` commits as patch bumps under `0.x.y`, meaning that `0.1.0 → 0.1.1 → 0.1.2 → …` can accumulate features and bug fixes while remaining within the same compatibility range for dependencies pinned to `^0.1.0`.[3][5][9][15][17] Breaking changes indicated by `feat!` or `BREAKING CHANGE` in commits will cause release‑please to bump the minor digit, producing `0.2.0`, `0.3.0`, and so on, which Cargo will treat as incompatible with the previous `0.x` line.[3][5][8][9][15] When eventually `1.0.0` is released, `bump-minor-pre-major` will no longer alter behavior, and breaking changes will correctly trigger major bumps (e.g., `1.2.3 → 2.0.0`) while features bump minor and fixes bump patch.[3][11][15]
+
+This choice is dominant because it simultaneously respects SemVer’s philosophy of major version zero as initial development,[11][12] aligns perfectly with Cargo’s semantics for pre‑1.0 compatibility,[5][9] matches common practice for Rust library crates starting at `0.1.0` and evolving under `0.x` for a substantial period,[5][8][17] and leverages release‑please’s built‑in support for pre‑1.0 dampening in a way that is documented and already used in production projects.[3][4][7][10][14][15][16] It preserves the cross‑blueprint principle that initial development is conducted under pre‑1.0 without a strong stability promise, while eventual `1.0.0` marks a significant milestone of API definition and stability, as seen in the Python blueprint’s current `2.4.2` state.[11]
+
+### Options
+
+Several pattern options are available for R25, each documented in authoritative sources and practiced by real projects.
+
+The first option is the **pre‑1.0 dampened SemVer pattern**, which we have selected as dominant. It is documented in release‑please’s advanced configuration and CLI docs, where `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` are described as flags that adjust how breaking changes and features are bumped for versions below `1.0.0`.[7][15][16] DeepWiki’s article on the gemini CLI MySQL extension shows this pattern in use: breaking changes bump the minor version from `0.1.4 → 0.2.0`, while features bump the patch version from `0.1.4 → 0.1.5`, making pre‑1.0 increments small while still encoding compatibility boundaries.[3] An Elixir guide similarly demonstrates a configuration with both flags enabled, and illustrates how features and breaking changes are mapped to patch and minor bumps respectively for `0.y.z` versions.[4] Adoption can be seen in projects like Loki Operator, which is still pre‑`v1.0.0` and uses `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` to ensure that merging “feat!” and “fix!” commits bumps the minor version, while ordinary “feat”, “fix”, and “deps” commits bump the patch version.[2] The most recent authoritative write‑ups for this option are the release‑please customizing docs and CLI documentation, which are maintained alongside the tool’s codebase in the googleapis GitHub repository.[7][14][15][16]
+
+The second option is the **straight SemVer from `1.0.0` pattern**, in which `rs-launch-blueprint` would start at version `1.0.0` and use standard semver rules with no pre‑1.0 dampening flags. This option is documented in the SemVer 2.0.0 specification, which states that version `1.0.0` defines the public API and that thereafter, major, minor, and patch increments must follow the rules for incompatible changes, backward‑compatible additions, and bug fixes respectively.[11] Release‑please’s default versioning strategy without `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` follows this pattern: for `1.2.3`, a `feat:` commit triggers `1.3.0`, a `fix:` triggers `1.2.4`, and a `feat!` or `BREAKING CHANGE` triggers `2.0.0`.[3][4][15] Adoption of this pattern is ubiquitous across mature projects in all ecosystems; it is the standard behavior for Python packages and Node modules that have reached `1.0.0` and beyond.[11] For the Python blueprint, which is currently at `2.4.2`, this is precisely the pattern already in use.
+
+The third option is a **pre‑1.0 strict SemVer pattern without dampening**, where `rs-launch-blueprint` would start at `0.1.0`, but release‑please would be left in default mode, meaning that features would bump the minor version and breaking changes would bump the major version even under `0.x.y`. SemVer formally allows this: the specification says that before `1.0.0` “Anything MAY change at any time” and does not impose strict compatibility semantics.[11][12] Under this pattern, `feat:` commits at `0.1.3` would bump the version to `0.2.0`, and `feat!` commits might bump to `1.0.0`, depending on configuration.[3][15] However, this behavior is mismatched with Cargo’s expectations, where `0.1.3 → 0.1.4` should be compatible, and breaking changes should align with minor `0.x` bumps rather than forcing an early `1.0.0`.[5][9] Adoption of this pattern in Rust is limited and often discouraged, as it unnecessarily burns major version numbers and complicates dependency constraints.
+
+Other variations include always‑bump strategies such as `always-bump-minor` or `always-bump-patch`, described in release‑please’s advanced configuration table.[7] These strategies are primarily tied to specific project needs and do not correspond to SemVer semantics; for example, `always-bump-patch` would bump the patch version even for features, disregarding the distinction between major, minor, and patch, while `always-bump-major` would bump the major version for every change.[7] These options may be useful for particular project types but are misaligned with SemVer and Cargo compatibility semantics and are therefore unlikely to be appropriate for `rs-launch-blueprint`.
+
+### Excluded by gate
+
+The fitness gates specified in the prompt are designed for crate and library candidates, checking license compatibility, MSRV, RustSec advisories, platform support, async runtime coupling, and size characteristics. For R25, the decision is a pattern rather than a crate or release tool; release‑please is already chosen and out of scope for reconsideration. As such, the gates apply somewhat differently, and we must explicitly mark their inapplicability where appropriate.
+
+License compatibility is inapplicable to the pattern choice because no new crate or dependency is being introduced. Release‑please is already in use and operates as a CI automation tool, and the decision only concerns its configuration flags and the version numbers in `Cargo.toml`. The template’s license remains `MIT OR Apache-2.0` by owner decision, and no pattern option affects this.
+
+MSRV and RustSec advisory checks are similarly inapplicable here. No new runtime crates are being proposed, and the pattern decision does not change the Rust edition (`2024`) or the MSRV policy (“stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI”). The versioning pattern operates entirely at the level of version numbers and automation; it does not introduce unsafe code or alter the dependency tree.
+
+Platform support gates—requiring builds and tests on `ubuntu-latest` and `macos-latest`—are indirectly relevant. The chosen pattern must not rely on behavior that differs across platforms. Fortunately, SemVer, Cargo version resolution, and release‑please’s configuration are platform‑independent.[5][7][9][11][15][16] They interpret version numbers and commit messages identically on Linux and macOS. Therefore, all options considered satisfy platform gates.
+
+Async runtime coupling, binary size, and compile‑time cost are unrelated to the pattern. They pertain to library choices and code architecture, which are outside R25’s scope. Thus, no pattern option is excluded by performance or runtime gates.
+
+The only gate that meaningfully excludes options is semantic compatibility with Cargo and SemVer. The pre‑1.0 strict SemVer pattern without dampening is excluded because it mismatches Cargo’s expectation that patch bumps under `0.x.y` can include features and remain compatible, whereas minor `0.x` bumps represent breaking changes.[5][9][17] In that pattern, release‑please would treat features as minor bumps even under `0.x.y`, causing frequent compatibility boundaries that are not aligned with Rust practice. Similarly, `always-bump-major` and `always-bump-minor` strategies are excluded because they do not respect SemVer’s distinctions and would cause version number inflation and confusion.[7][11] The pre‑1.0 dampened pattern and the straight `1.0.0` pattern both pass semantic gates; the former is chosen as dominant, the latter as a runner‑up.
+
+### Up‑and‑comers
+
+Although alternative release automation tools and emerging patterns are out of scope as direct candidates, it is useful to note their existence as up‑and‑comers to contextualize the chosen pattern. Tools such as `cargo-release` or custom GitHub Actions that parse tags and commit messages offer alternative ways to manage Rust crate releases. They often follow SemVer and integrate with Cargo but may not provide as rich pre‑1.0 configuration as release‑please.[5][9][11] In addition, some projects experiment with calendar versioning or other schemes; however, Rust’s ecosystem generally favors SemVer for crates published to crates.io.[5][9][17]
+
+Given the owner’s decision to use release‑please and the already‑established cross‑language pattern of conventional commits and release PRs, these up‑and‑comers remain background context rather than options. They may become relevant if future evidence indicates that Cargo or Rust tooling adopts new conventions for pre‑1.0 behavior, but today the combination of SemVer, Cargo caret requirements, and release‑please’s pre‑major flags represents the mainstream.
+
+### Fit for this template
+
+Fit for `rs-launch-blueprint` must be evaluated separately for its three roles: CLI, library, and web service.
+
+For the CLI component, users typically install binaries either from crates.io via `cargo install`, from prebuilt artifacts, or through distribution‑specific mechanisms. CLI users care primarily that commands and flags remain stable across patch and minor releases, and that breaking changes are clearly signaled by version jumps and changelog entries. Under the pre‑1.0 dampened pattern, the CLI’s behavior may evolve more rapidly, and breaking changes can occur at minor `0.x` bumps. This is acceptable in initial development, as early adopters expect evolution and are likely to pin exact versions or update consciously. Once the CLI is mature, moving to `1.0.0` will signal a stronger stability commitment, and CLI users can rely on patch and minor releases being backward‑compatible.[11][17]
+
+For the library crate, which is the primary distribution unit on crates.io, fit is particularly strong. The Rust Project Primer and publishing guides explicitly assume that initial versions are `0.1.0` and that many libraries remain at `0.x` for extended periods while their APIs evolve.[5][17] Dependencies expressed as `log = "0.4"` or `my-crate = "0.1"` rely on Cargo’s semantics that patch `0.x.y` releases are compatible and may include features, while minor `0.x` releases represent breaking changes that require dependency constraints to be updated.[5][8][9] The pre‑1.0 dampened pattern aligns perfectly with this: features under `0.x.y` produce patch bumps, and breaking changes produce minor bumps. This makes dependency management natural for consumers of `rs-launch-blueprint` as a library, and matches the ecosystem’s expectations that pre‑1.0 can be used in production as long as version numbers encode compatibility correctly.[1][5][8][9][17]
+
+For the web service component, version numbers are primarily about deployment artifacts and client compatibility. The service’s public API may be consumed by HTTP clients, SDKs, or frontends. In early development, frequent breaking changes to API endpoints are common, and semantic version numbers applied to Docker images or crate versions help clients know when incompatible changes occur. Under the pre‑1.0 dampened pattern, the service’s crate version and image tags will bump patch for backward‑compatible changes and minor for breaking ones. Clients can track this, and service maintainers can decide when to call the API stable enough to release `1.0.0`. This is consistent with both SemVer philosophy and web API evolution practice.[11][12][17]
+
+Cross‑blueprint fit is also important. The TypeScript blueprint, which is also library‑shaped and includes CLI behavior, uses pre‑1.0 dampening with release‑please.[3][4] The Python blueprint, being an application‑style project already in production, uses post‑1.0 semantics. Adopting pre‑1.0 dampening in Rust preserves the principle that new library‑like ports start with initial development versions and evolve under `0.x`, while mature blueprints use `1.x` and beyond. It avoids forcing the Rust crate to claim stability it does not yet have, and it aligns the semantics of minor and patch across TypeScript and Rust in the pre‑1.0 phase.
+
+### Recommendation
+
+Based on the landscape, principles, options, and fit analysis, the recommendation for R25 is:
+
+`rs-launch-blueprint` should launch at version `0.1.0` in `Cargo.toml` and configure release‑please with `"bump-minor-pre-major": true` and `"bump-patch-for-minor-pre-major": true` in its `release-please-config.json` for the Rust crate, using the `rust` release type or manifest configuration as appropriate.[4][5][7][9][14][15][16][17]
+
+This pattern will ensure that:
+
+1. Before `1.0.0`, breaking changes in the Rust crate cause minor version bumps (e.g., `0.1.3 → 0.2.0`), which Cargo treats as compatibility boundaries, and consumers pinned to `^0.1.3` will not auto‑update past them.[5][8][9][15]
+
+2. Before `1.0.0`, non‑breaking features and fixes cause patch version bumps (e.g., `0.1.3 → 0.1.4`), which Cargo treats as compatible, and consumers pinned to `^0.1.3` will auto‑update safely.[5][9][15][17]
+
+3. After `1.0.0`, release‑please reverts to standard SemVer behavior, where features bump minor and fixes bump patch, and breaking changes bump major, aligning with SemVer 2.0.0 and cross‑language expectations.[3][11][15]
+
+4. The cross‑blueprint principle that pre‑1.0 is initial development and `1.0.0` marks a stable API is preserved, with TypeScript and Rust using pre‑1.0 dampening during their initial phase and Python already in the stable phase.[3][4][11][17]
+
+### Ranked runner‑up
+
+The ranked runner‑up option is to launch `rs-launch-blueprint` directly at version `1.0.0` and use release‑please with default SemVer bump semantics, without enabling pre‑1.0 dampening flags. Under this option, breaking changes would bump the major version (`1.0.0 → 2.0.0`), features would bump minor, and fixes would bump patch from the very first release.[3][11][15]
+
+This option would win under a specific condition: if, prior to first publication, the Rust template’s library API were fully designed, widely tested in internal production usage, and committed to long‑term stability such that the owner is willing to promise that no breaking changes will occur except via major version jumps. In that scenario, launching directly at `1.0.0` would make sense, mirroring the Python blueprint’s current state, and avoiding the ambiguity of pre‑1.0 semantics.[11][17] It would send a strong signal to ecosystem consumers that the crate is ready for production and that dependency constraints like `^1.0.0` can be relied upon for compatibility across patch and minor releases.
+
+However, given that `rs-launch-blueprint` is a brand‑new port with no existing consumers or published crate history, and given that its library API and integration points are likely to evolve as it is adopted, this condition is not met. Therefore, the runner‑up remains a future possibility for a later transition point rather than the initial pattern.
+
+### Tradeoffs
+
+Choosing the pre‑1.0 dampened SemVer pattern entails tradeoffs relative to the runner‑up and other options.
+
+Compared to launching at `1.0.0`, the pre‑1.0 pattern sacrifices an immediate stability signal. Consumers may see a `0.1.0` crate and assume that the API is unstable, even though the pattern’s careful use of patch and minor bumps under `0.x` provides meaningful compatibility guarantees.[5][8][11][17] This can reduce initial adoption by risk‑averse users who prefer `1.x` crates. However, the pattern gains flexibility: maintainers can make breaking changes while staying under `1.0.0`, encoding them as minor `0.x` bumps, and avoiding frequent major version churn that could fragment the ecosystem.[5][8][9][11] It also aligns more closely with Rust practice, where many respected crates remain at `0.x` for years and yet are widely used in production.[5][8]
+
+Relative to a pre‑1.0 strict SemVer pattern without dampening, the chosen pattern sacrifices some “purity” in the formal interpretation of minor and patch under `0.x`. SemVer does not require that patch releases under major zero be backward‑compatible; it simply says that version zero is initial development and anything may change.[11][12] A strict pattern might treat every feature as a minor `0.x` bump to emphasize change. However, in Rust this would conflict with Cargo’s compatibility assumptions and require consumers to constantly update dependency constraints, making adoption more cumbersome.[5][9][17] The dampened pattern gains compatibility and aligns with automated tooling: patch `0.x.y` releases are safe to auto‑update, and minor `0.x` releases are recognized as breaking.[5][8][9]
+
+Relative to always‑bump strategies, the chosen pattern sacrifices the simplicity of uniform bumping and gains semantic richness. `always-bump-patch` or `always-bump-minor` can simplify human decision‑making but obscure whether a change is breaking or not.[7][11] For a library template intended as a reference implementation, it is important that breaking changes be clearly signaled by version numbers; the chosen pattern ensures that, while still allowing features to be released frequently under patch numbers in the pre‑1.0 phase.[3][5][9][11][15][17]
+
+These tradeoffs are accepted because the primary goal for `rs-launch-blueprint` is to serve as a robust, idiomatic starting point for Rust projects that balances evolution and stability. The pre‑1.0 dampened pattern offers the best alignment with this goal, while the runner‑up can be considered when the template reaches a maturity level justifying a direct `1.0.0` start.
+
+### Parameters
+
+For R25, the following parameters are owned and assumed:
+
+`owns R25.versioning-epoch = "pre-1.0 dampened"`: The Rust blueprint’s initial version epoch is `0.x.y`, starting at `0.1.0`, with minor representing breaking changes and patch representing compatible features and fixes.[5][9][17]
+
+`owns R25.release-please.bump-minor-pre-major = true`: Release‑please must be configured with `bump-minor-pre-major: true`, so that breaking changes under versions `< 1.0.0` cause minor bumps rather than major.[3][4][7][10][14][15][16]
+
+`owns R25.release-please.bump-patch-for-minor-pre-major = true`: Release‑please must be configured with `bump-patch-for-minor-pre-major: true`, so that features under versions `< 1.0.0` cause patch bumps rather than minor.[3][4][7][10][14][15][16]
+
+`owns R25.initial-Cargo-version = "0.1.0"`: The `[package] version` field in `Cargo.toml` for `rs-launch-blueprint` must be set to `0.1.0` at first publication, consistent with Rust publishing guidance for initial development releases.[5][17]
+
+`assumes rust-edition = "2024"`: The Rust edition is fixed by owner decision and is not altered by this pattern.
+
+`assumes msrv-policy = "stable minus 2 minor versions"`: The minimum supported Rust version policy is fixed and unaffected by versioning semantics.
+
+`assumes license = "MIT OR Apache-2.0"`: The license choice is fixed and unaffected.
+
+`assumes target-os-matrix = "ubuntu-latest, macos-latest"`: CI targets remain as specified; the pattern applies identically on these platforms.
+
+No consumed parameter needs to change for this recommendation. Therefore, there is no `CONFLICT:` line for R25.
+
+### Migration implications
+
+Even though `rs-launch-blueprint` is a new template, migration implications must be considered in terms of file‑level changes and cross‑blueprint alignment.
+
+In `Cargo.toml`, the `[package] version` field must be initialized to `0.1.0` instead of `1.0.0` or any other value. This makes `Cargo.toml` the source of truth for versioning, as already determined by ledger row F063, and ensures that release‑please’s updates propagate correctly.[5][9][17] The `rust-version` field must be set according to the MSRV policy, but this is independent of R25.
+
+In `release-please-config.json`, a section for the Rust crate must be defined, either directly or via manifest. It must include `"release-type": "rust"` when not using manifest mode, and must set `"bump-minor-pre-major": true` and `"bump-patch-for-minor-pre-major": true` for the Rust package.[4][7][10][14][15][16] If manifest mode is used, `.release-please-manifest.json` should be updated to track the initial version `0.1.0` for the Rust component, and the flags should be set in the corresponding package configuration.
+
+Documentation files such as `README.md` and `docs/port/COMMONALITY.md` must be updated to describe the versioning pattern. For example, the commonality document should note that TypeScript and Rust ports share the pre‑1.0 dampened pattern for initial development, while Python is in a post‑1.0 stable phase. The ledger entry F070 should be updated to reflect the baseline review, changing from DIVERGENT (ts‑only) to a classification that recognizes the pattern as common for new library‑shaped blueprints.
+
+CI workflows must ensure that release‑please is run for the Rust crate and that its configuration is respected. This includes validating that release PRs are merged to update versions, and that tags used for publishing match the `Cargo.toml` version, as already required by other ledger rows (F074 tag/version guard).[4][7][15] No changes are required to publishing mechanisms, which remain governed by OIDC Trusted Publishing and other decisions outside R25’s scope.
+
+If at a future date `rs-launch-blueprint` is deemed stable enough to release `1.0.0`, a migration plan should be documented. This would involve a deliberate release PR bumping the version to `1.0.0`, updating dependency guidance, and potentially revisiting whether pre‑major flags remain necessary. However, for initial publication, migration implications are limited to setting the correct starting version and configuring release‑please.
+
+### Validation strategy
+
+To validate that the recommended pattern behaves as intended, we propose a set of commands and checks that can be run on a realistic example using `rs-launch-blueprint`.
+
+First, initialize the repository with `Cargo.toml` set to version `0.1.0` and a minimal library API, CLI command, and web service endpoint. Configure `release-please-config.json` with `"release-type": "rust"`, `"bump-minor-pre-major": true`, and `"bump-patch-for-minor-pre-major": true`. Commit this initial state and push to the main branch with CI wired to run release‑please in manifest mode or as a GitHub Action.[4][7][14][15][16]
+
+Next, create a non‑breaking feature commit using conventional commit syntax, for example:
+
+```bash
+git commit -m "feat: add helper function for configuration loading"
+```
+
+Run release‑please (either via CLI or the Action) to generate a release PR. Inspect the PR to confirm that the `Cargo.toml` version is bumped from `0.1.0` to `0.1.1`, and that the changelog includes the feature under a “Features” section.[3][4][7][10][15] Merge the PR and tag the release. Then, in a separate test project, add a dependency on `rs-launch-blueprint` with `rs-launch-blueprint = "0.1.0"` and run `cargo update -p rs-launch-blueprint`. Verify that Cargo updates the dependency to `0.1.1` and that the test project still builds and passes its tests, confirming compatibility.[5][9]
+
+Then, create a breaking change commit using conventional commit syntax, for example:
+
+```bash
+git commit -m "feat!: remove deprecated configuration option"
+```
+
+Include a `BREAKING CHANGE:` footer if appropriate. Run release‑please again to generate a new release PR. Inspect the PR to confirm that the `Cargo.toml` version is bumped from `0.1.1` to `0.2.0`, and that the changelog includes the breaking change with appropriate annotation.[3][4][7][10][15] Merge the PR and tag the release. In the test project, check that `cargo update -p rs-launch-blueprint` does not automatically update from `0.1.1` to `0.2.0` when the dependency is pinned to `^0.1.1`, confirming that Cargo treats the minor `0.x` bump as incompatible.[5][8][9]
+
+Finally, simulate the post‑1.0 phase by manually bumping to `1.0.0` in a controlled release PR and then repeating the feature and breaking change commit tests. Verify that release‑please now bumps minor for `feat:` (e.g., `1.0.0 → 1.1.0`) and major for `feat!` (e.g., `1.1.0 → 2.0.0`), consistent with SemVer’s post‑1.0 rules.[3][11][15] Confirm that dependencies pinned to `^1.0.0` auto‑update across minor and patch versions but not across major versions.[9][11]
+
+These validation steps are planned and must be executed as part of integrating the pattern into `rs-launch-blueprint`. The expected behavior is clearly defined by SemVer, Cargo, and release‑please’s documentation.[3][4][5][7][9][10][11][14][15][16][17] Any deviation would signal a misconfiguration or a change in tool behavior that should trigger a review.
+
+### Confidence & re‑verify trigger
+
+Confidence in this recommendation is high, for several reasons. The pattern is grounded in SemVer 2.0.0, which is the authoritative versioning standard.[11] It aligns precisely with Cargo’s documented semantics for pre‑1.0 versions and caret requirements.[5][9] It matches common practice in the Rust ecosystem for library crates starting at `0.1.0` and evolving under `0.x` for extended periods while exposing stable enough APIs to be used in production.[5][8][17] Release‑please’s support for `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` is documented in its official CLI and customizing guides and practiced in real projects like Loki Operator, gemini CLI extensions, and Flipt server SDKs.[2][3][4][7][10][14][15][16] The cross‑blueprint principle of pre‑1.0 initial development and post‑1.0 stable API is preserved.
+
+Re‑verify triggers should be clearly defined. The recommendation should be revisited if any of the following occur:
+
+1. Cargo changes its interpretation of pre‑1.0 versions, for example by altering caret requirements or compatibility rules for `0.x.y`.[5][9]
+
+2. SemVer publishes a new specification version that materially alters the semantics of major version zero.[11][12][13]
+
+3. Release‑please changes the behavior or support status of `bump-minor-pre-major` or `bump-patch-for-minor-pre-major`, particularly for the `rust` release type.[7][14][15][16]
+
+4. `rs-launch-blueprint` achieves a level of adoption and API stability that justifies a `1.0.0` release, at which point the pattern transitions to post‑1.0 semantics and the role of pre‑major flags may need reevaluation.[11][17]
+
+5. Cross‑blueprint requirements evolve such that all ports must conform to a unified versioning starting point for reasons beyond stability, such as organizational policy or deployment tooling constraints.
+
+If any of these triggers occur, a focused follow‑on project should re‑evaluate R25, update the ledger, and adjust configuration as needed.
+
+### Sources
+
+This report relies on a combination of formal specifications, official tooling documentation, and widely cited practice‑oriented write‑ups, each serving a distinct role.
+
+The Semantic Versioning 2.0.0 specification at semver.org is the normative source defining MAJOR.MINOR.PATCH semantics, the role of version `1.0.0`, and the special status of major version zero.[11] Its release candidate documents (2.0.0‑rc.1 and 2.0.0‑rc.2) provide additional narrative framing, particularly emphasizing major version zero as a phase of rapid development.[12][13] These documents are authoritative because they are the canonical statement of SemVer, and because tools like Cargo and release‑please explicitly implement their rules.[5][7][9][11][15]
+
+The Cargo Book and related Rust documentation from the Rust project define how semver requirements are interpreted in Rust’s package manager, including caret requirements and the compatibility conventions for pre‑1.0 versions.[9] The Rust Project Primer extends this with practical guidance on versioning, emphasizing that minor `0.x` bumps are treated as breaking and patch `0.x.y` bumps may include features.[5] These sources are authoritative for Rust ecosystem behavior and are maintained by the Rust team and community.
+
+Release‑please’s documentation, including the customizing guide and CLI reference hosted in the googleapis GitHub repository, is authoritative for how its versioning strategies and flags behave.[7][14][15][16] It lists `rust` as a supported release type and describes the `bump-minor-pre-major` and `bump-patch-for-minor-pre-major` flags and their impact on pre‑1.0 version bumps.[7][14][15][16] DeepWiki articles on specific projects using release‑please, such as gemini CLI extensions and Flipt server SDKs, provide concrete examples of configurations and commit type mappings.[3][10] A blog post on managing releases with release‑please in Elixir further clarifies usage patterns and advanced options like pre‑release types.[4]
+
+Community discussions, such as the Rust Users Forum thread on deciding whether to go to `1.0.0` for a crate and a Hacker News conversation on Rust’s semver exception for `0.x`, provide practice evidence and nuanced interpretation.[1][8] These are not formal standards, but they are valuable because they capture real maintainers’ reasoning, highlight the interplay between human and machine interpretations of version numbers, and confirm widespread adoption of Cargo’s pre‑1.0 conventions.[1][5][8][9]
+
+Finally
+
+> ⚠ Possible truncation: response may be incomplete.
+
+## Sources
+
+- [Deciding whether to go to version 1.0.0 for a crate](https://users.rust-lang.org/t/deciding-whether-to-go-to-version-1-0-0-for-a-crate/69005)
+- [Release operations](https://loki-operator.dev/docs/release.md/)
+- [Versioning Strategy | gemini-cli-extensions/mysql | DeepWiki](https://deepwiki.com/gemini-cli-extensions/mysql/8.2-versioning-strategy)
+- [Customizing Your Release...](https://elixirschool.com/blog/managing-releases-with-release-please)
+- [Versioning - Rust Project Primer](https://rustprojectprimer.com/releasing/versioning.html)
+- [Rust | Google Open Source](https://opensource.google/documentation/reference/thirdparty/rust)
+- [Advanced Configuration | googleapis/release-please-action ...](https://deepwiki.com/googleapis/release-please-action/2.2-advanced-configuration)
+- [Hacker News](https://news.ycombinator.com/item?id=45688614)
+- [Specifying Dependencies - The Cargo Book](https://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/cargo/reference/specifying-dependencies.html)
+- [Release Automation | flipt-io/flipt-server-sdks | DeepWiki](https://deepwiki.com/flipt-io/flipt-server-sdks/11-release-automation)
+- [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
+- [Semantic Versioning 2.0.0-rc.2](https://semver.org/spec/v2.0.0-rc.2.html)
+- [2.0.0-rc.1](https://semver.org/spec/v2.0.0-rc.1.html)
+- [customizing.md - googleapis/release-please](https://github.com/googleapis/release-please/blob/main/docs/customizing.md)
+- [release-please/docs/cli.md at 34abdd3b7e35bd6638cc5d4c34b8b1ab5bdd29c2 · googleapis/release-please](https://github.com/googleapis/release-please/blob/HEAD/docs/cli.md)
+- [release-please/docs/customizing.md at main · stainless-api/release-please](https://github.com/stainless-api/release-please/blob/main/docs/customizing.md)
+- [Publishing Your Rust Crate: A Comprehensive Guide to Success on Crates.io - Gyata](https://www.gyata.ai/rust/publishing-to-crates-io)
+- [Published crate versions are not immutable, and have ...](https://github.com/rust-lang/crates.io/discussions/11161)
+
+## Cost
+
+Total: $0.8933

@@ -1,0 +1,118 @@
+# Run B — database created through the recommended config file (--codescanning-config) at stable, workspace fixture — 2026-09-09T07:45:57Z — cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture — macOS 26.4 arm64 — CodeQL 2.26.4
+$ cargo --version; rustc --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+$ grep -v '^#' .github/codeql/codeql-config.yml
+
+name: "rs-launch-blueprint codeql"
+
+queries:
+  - uses: security-extended
+
+paths-ignore:
+  - "**/tests/**"
+  - "**/benches/**"
+  - "**/fuzz/**"
+
+$ codeql database create <W>/db-cfg --language=rust --build-mode=none --source-root=. --codescanning-config=.github/codeql/codeql-config.yml --overwrite
+Initializing database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg.
+Package install location: /Users/stevemorin/.codeql/packages
+Nothing downloaded.
+Running build command: []
+Running command in /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture: [/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/rust/tools/autobuild.sh]
+[2026-09-09 00:46:00] [build-stderr] Scanning for files in /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture...
+[2026-09-09 00:46:00] [build-stderr] /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg: Indexing files in in /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture...
+[2026-09-09 00:46:00] [build-stderr] Running command in /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture: [/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/rust/tools/index-files.sh, /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg/working/files-to-index8043706776611235205.list]
+Finalizing database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg.
+Running TRAP import for CodeQL database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg...
+Importing TRAP files
+Merging relations
+Finished writing database (relations: 73.45 MiB; string pool: 22.03 MiB).
+TRAP import complete (18.9s).
+Finished zipping source archive (17.91 MiB).
+Successfully created database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg.
+exit=0
+
+$ unzip -l <W>/db-cfg/src.zip | grep -E '\.rs$' — fixture files archived (extraction-time view)
+total .rs archived: 5848
+  fixture files:
+    crates/inner/src/lib.rs
+    docs/snippet.rs
+    examples/example.rs
+    src/lib.rs
+    src/main.rs
+exit=0
+
+$ codeql database analyze <W>/db-cfg --format=sarif-latest --output=<W>/cfg.sarif --rerun   (no query argument: the config's queries key must supply the suite)
+Running queries.
+Resolving data extensions.
+Finished resolving data extensions.
+Loading data extensions.
+Finished loading data extensions.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-020/RegexInjection.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-022/TaintedPath.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-079/XSS.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-089/SqlInjection.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-117/LogInjection.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-295/DisabledCertificateCheck.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-311/CleartextTransmission.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-312/CleartextLogging.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-312/CleartextStorageDatabase.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-319/UseOfHttp.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-327/BrokenCryptoAlgorithm.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-327/WeakSensitiveDataHashing.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-614/InsecureCookie.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-770/UncontrolledAllocationSize.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-798/HardcodedCryptographicValue.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessInvalidPointer.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-918/RequestForgery.ql.
+Shutting down query evaluator.
+Interpreting results.
+CodeQL scanned 5 out of 5 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+Analysis produced the following metric data:
+
+|                            Metric                            | Value |
++--------------------------------------------------------------+-------+
+| Total number of Rust files that were extracted with errors   |     0 |
+| Total number of Rust files that were extracted without error |     5 |
+
+exit=0
+$ python3 /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/sarif-summary.py <W>/cfg.sarif
+rules present in SARIF (rust/*): 27
+  rust/access-after-lifetime-ended
+  rust/access-invalid-pointer
+  rust/cleartext-logging
+  rust/cleartext-storage-database
+  rust/cleartext-transmission
+  rust/disabled-certificate-check
+  rust/hard-coded-cryptographic-value
+  rust/insecure-cookie
+  rust/log-injection
+  rust/non-https-url
+  rust/path-injection
+  rust/regex-injection
+  rust/request-forgery
+  rust/sql-injection
+  rust/summary/lines-of-code
+  rust/summary/lines-of-user-code
+  rust/summary/nodes-at-type-path-length-limit
+  rust/summary/number-of-files-extracted-with-errors
+  rust/summary/number-of-successfully-extracted-files
+  rust/summary/query-sink-counts
+  rust/summary/reduced-summary-statistics
+  rust/summary/summary-statistics
+  rust/telemetry/extraction-information
+  rust/uncontrolled-allocation-size
+  rust/weak-cryptographic-algorithm
+  rust/weak-sensitive-data-hashing
+  rust/xss
+results: 7
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-invalid-pointer  src/lib.rs:25
+  rust/cleartext-logging  src/lib.rs:33
+exit=0

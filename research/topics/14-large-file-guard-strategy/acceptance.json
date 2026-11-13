@@ -1,0 +1,105 @@
+{
+  "audits": [
+    {
+      "decision_sha256": "a5879b95aeff19ea292f414f83d0757f7c1fedc147344f54eecfb0d4a1d86bc2",
+      "identity": {
+        "actor": "codex",
+        "family": "openai",
+        "model": "gpt-6"
+      },
+      "kind": "empirical",
+      "path": "research/topics/14-large-file-guard-strategy/audit-codex.md",
+      "sha256": "bd3d5c168dc85370904165ee67a05740e75f50dc872388d4e8c384e0d0ccc851",
+      "unresolved_findings": [],
+      "verdict": "approve"
+    },
+    {
+      "decision_sha256": "a5879b95aeff19ea292f414f83d0757f7c1fedc147344f54eecfb0d4a1d86bc2",
+      "identity": {
+        "actor": "s1-controller",
+        "family": "meta",
+        "model": "muse-spark"
+      },
+      "kind": "judgment",
+      "path": "research/topics/14-large-file-guard-strategy/audit-fable.md",
+      "sha256": "45319a79fb34a6268513ca89f84e920b59329db2919e01b3c0a1f45bbe902026",
+      "unresolved_findings": [],
+      "verdict": "approve"
+    }
+  ],
+  "decision_sha256": "a5879b95aeff19ea292f414f83d0757f7c1fedc147344f54eecfb0d4a1d86bc2",
+  "empirical": {
+    "argv": [
+      "bash",
+      "review/evidence/r14-rev1-guard.sh"
+    ],
+    "cwd": "research/runs/R14/2026-09-26T190144Z-53ff8e94fbd8, the run whose guard evidence the r3 empirical audit re-ran to approve (six reruns, outcomes hold).",
+    "executed_by": {
+      "actor": "codex",
+      "family": "openai",
+      "model": "gpt-6"
+    },
+    "exit_code": 0,
+    "output_log": "research/topics/14-large-file-guard-strategy/evidence/2026-09-26T190144Z-53ff8e94fbd8-r14-rev1-guard.log",
+    "output_sha256": "3c5fde859735c05fdf08ee8505f7ba3e73e9894afd31c9a494e89fdeb09ace63",
+    "toolchain": "Darwin arm64 evr host; per-script toolchain notes are in the r3 audit."
+  },
+  "engine_reports": [
+    {
+      "engine": "muse",
+      "identity": {
+        "actor": "research-muse-2026-09-26T190144Z-53ff8e94fbd8",
+        "family": "meta",
+        "model": "muse-spark"
+      },
+      "path": "research/topics/14-large-file-guard-strategy/raw/muse-2026-09-26T190144Z-53ff8e94fbd8.md",
+      "sha256": "6d7393f71c228f9c994d50ca7ec612e6eb6ba60be2c2f3c5726b6af143572e6f"
+    },
+    {
+      "engine": "opus",
+      "identity": {
+        "actor": "research-opus-2026-09-26T190144Z-53ff8e94fbd8",
+        "family": "anthropic",
+        "model": "claude-opus-5-5"
+      },
+      "path": "research/topics/14-large-file-guard-strategy/raw/opus-2026-09-26T190144Z-53ff8e94fbd8.md",
+      "sha256": "a2b35f7375070d82ec875562f816e887b52ad7a0edca6538ce29509e7dd7494d"
+    }
+  ],
+  "engines": "**Reports.** `raw/muse.md` (actor `research-muse-\u2026`, Muse/Meta) and\n`raw/opus.md` (actor `claude-opus-5-5`, Opus seat) \u2014 both pass\n`scripts/check-answer-shape.sh \u2026 bundle`. Both recommend two tiers, 1 MiB,\nand one shared script definition. The Opus leg additionally executed a\n26-repository practice survey, a 14-repository size profile, three local\nbinary builds, and 42 fixture checks; the Muse leg executed a 7-case script\nmatrix, a `git diff -z` pipeline probe, `shellcheck` and `actionlint`. This\nsynthesis re-executed the load-bearing behavior independently (78 checks\nabove) and carried the survey/profile/build figures from the Opus leg, each\nlabeled below.\n\n**Agreements adopted without adjudication:** keep both tiers (HIGH-1); one\nshared threshold/exemption definition (LOW); 1 MiB over 500 KB (HIGH-2\nvalue); POSIX shell over `git`, no crate; no `BASELINE-REVIEW:` line; no\nowned or consumed parameter; hook-manager mechanism stays with R37.\n\n| # | Disagreement | Verdict and resolving evidence |\n|---|---|---|\n| D1 | CI placement: dedicated `large-file-guard.yml` (Muse, citing R17) vs step of R11's `hygiene` (Opus, citing R11's slot rule) | **Hygiene step.** R11's accepted registry text decides it: a check that compiles nothing is a `hygiene` step (`I7`), and secret-scanning is carved out as a separate file by name (`I7b`) \u2014 R17's dedicated file (`I13`) is that named carve-out, not a precedent a new slot can cite. The guard compiles nothing and no detector key contains its input. Composed fixture passes `actionlint` (`W5`); hygiene stays always-run (`W4a`, `W4b`). Muse's separately-requireable-check point is real but belongs to R12. |\n| D2 | Scope: added-files-only via `--diff-filter=A` (Muse) vs every introduced blob via `rev-list --objects` (Opus) | **Blob scope.** An add-then-delete blob is unreachable before `merge --no-ff`, reachable from `main` after, and absent from its tree (`M1a`\u2013`M1c`) \u2014 permanent bloat a final-tree check cannot see \u2014 and py's body passes it (`P1`) while the reference fails it (`R1`, `M1d`). Py's body also passes modified-file growth (`P3`) and word-splits spaced names (`P4`). The org merges with merge commits, so every commit lands. |\n| D3 | Base handling: skip-with-success on empty/all-zero base (Muse, inheriting py) vs check-all-history fail-closed (Opus) | **Fail closed.** Py's skip passes a range containing a 2 MiB blob (`P2`); the reference checks all history instead (`R3`, `R3e`) and errors on an unknown base (`R7`). A wrong `BASE_SHA` expression therefore degrades to a full-history check, never a silent pass. |\n| D4 | Exemption: `docs/assets/` prefix (Muse) vs `.gitattributes large-file-ok`, none shipped (Opus) | **Attribute.** The prefix holds 0 entries at the py pin (`I9e`) and R81 names no assets subdirectory (`I12`): the exemption Muse adopts has never exempted anything and has no home in this template. The attribute passes with an `ALLOW:` line (`H6`) and covers LFS-tracked files through their pointer blobs (`H8`). Stated limit (carried from the Opus leg, not re-executed): C-quoted or trailing-space paths cannot be exempted by attribute and fail closed. |\n| D5 | Hook call shape: `{staged_files}` argv (Muse) vs `--staged` self-query (Opus) | **`--staged`.** It reduces the R37 contract to \"run a command at pre-commit\", needs no argv-substitution feature from any manager, and sizes the staged blob rather than the worktree file (`H7a`, `H7b`). End-to-end through `lefthook` 2.1.14: reject, bypass, catch (`L1a`\u2013`L3`). |\n| D6 | Provenance of ts's 500 KB: accidental drift (Muse, matching the ledger note) vs retained pre-commit default while py deliberately raised its hook (Opus) | **Opus, verified.** Py ran a bare `check-added-large-files` (the 500 KB default) before lefthook (`I11b`); ts's comment cites that intent (`raw/opus.md`, ts `lefthook.yml:34-35`); py's ADR 0018 raised its hook to 1 MB to mirror its CI guard (`I11a`). **Controller note:** the F172 sub-row note (\"no recorded reason for the value difference\") should read \"py raised deliberately (ADR 0018); ts retained the pre-commit default\". Not a `BASELINE-REVIEW:` line: the row is `DIVERGENT` and decided here. The verdict does not move the 1 MiB recommendation. |\n| D7 | Threshold evidence: precedent coherence plus fixture headroom (Muse, medium) vs size profile plus binary builds (Opus, medium-high) | **Both adopt 1 MiB; the value rests on carried evidence.** The 14-repository profile and three binary builds were executed in the Opus leg and are cited from `raw/opus.md`, not re-run here. The boundary itself is re-executed (`H2`, `H3`). Re-verify trigger (700000-byte lockfile/changelog) is on the `re-verify:` line. |\n\n**Reference-script provenance.** `review/evidence/check-large-files.sh` is\nthe Opus leg's 46-line reference with one line changed: the `trap` now\nremoves `$tmp.sizes` and `$tmp.objs` as well as `$tmp`, closing the cosmetic\nexit-2 leak the Opus leg disclosed. All 78 checks run against the committed\nbytes. Muse's env-overridable threshold was considered and declined: a\nconstant keeps the \"defined once\" property a one-file `grep` can prove. The\nrevision-3 repair ran that grep from `review/evidence/` on 2026-09-27:\n`/usr/bin/grep -c 1048576 check-large-files.sh ci.hygiene-with-guard.yml`\nprinted `check-large-files.sh:2` (line 6, a comment; line 10, `max=1048576`)\nand `ci.hygiene-with-guard.yml:0`. It is not a committed harness check; one is\nproposed for P03 above.\n\n**What was carried, not re-executed:** the 26-repository practice survey, the\n14-repository size profile, the three binary builds, and the prek/pre-commit\nfigures (all `raw/opus.md`, retrieved 2026-09-26); the `merge_group.base_sha`\npayload field and the push-ruleset plan gating were re-verified by this\nsynthesis on 2026-09-26 (`github/docs` main and pin `18945a31`) rather than\ncarried. **Uncertainty:** no GitHub-hosted runner has run either half; no\nLinux binary sizes were built; no third-party Rust repository ships this\nexact two-tier shape, so there is no production adopter of the combination \u2014\neach part has a maintained precedent (pre-commit-hooks, the Rust project's\nown tidy principle, git primitives). The P03 hosted runs above close the\nrunner gap before this decision can be relied on beyond research.",
+  "evidence_checks": [],
+  "item": "R14",
+  "parameters": {
+    "consumed": {},
+    "fixed": {
+      "license": "MIT OR Apache-2.0",
+      "msrv-policy": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI",
+      "rust-edition": "2024",
+      "target-os-matrix": "ubuntu-latest, macos-latest"
+    }
+  },
+  "policy_snapshot": {
+    "acceptance_after": [],
+    "engines": [
+      "muse",
+      "opus"
+    ],
+    "evidence_checks": [],
+    "tier": "focused"
+  },
+  "prerequisites": {
+    "acceptance_after": {},
+    "research": {
+      "R11": "410e88e5195a08def126037e9c451988633b1e48437ac82edca0a08c7a62418c"
+    }
+  },
+  "principles": "**The shared requirement.** *A blob larger than a declared size cannot enter\nthe default branch's history by accident; an intentional one enters only\nthrough a reviewable, declared exception; and the repository states the rule\nonce.* Source: ledger rows F043/F172, realized in py by\n`.github/workflows/large-file-guard.yml` and the `large-files` hook at pin\n`b08bccfb` (`I9a`\u2013`I9d`), half-realized in ts (`I10a`\u2013`I10c`).\n\n| Principle | Agreement level | Essential behavior | Observable acceptance criterion |\n|---|---|---|---|\n| Early catch is cheap, late catch is certain | Capability | A hook-tier check rejects oversize staged blobs locally; a CI-tier check rejects oversize introduced blobs on the server. | A 2 MiB staged file fails the hook (`L1a`); the same file committed with `--no-verify` fails the CI range check (`L2`, `L3`). |\n| One value, both tiers, all repos | Standard | Threshold, comparison and exemption are defined once and read by both tiers. | The byte value exists in exactly one file: `max=1048576` at `check-large-files.sh:10`, which both modes compare against (line 37); `grep -c 1048576` gives 2 lines in that script and 0 in `ci.hygiene-with-guard.yml`. The hook half enforces the limit at the boundary (`H3`); a range-mode boundary case is proposed for P03. |\n| Intentional large files are declared | Policy | Exemption is a per-path `large-file-ok` attribute or LFS tracking, both visible in review. | A 2 MiB attribute-marked file passes with an `ALLOW:` line (`H6`); an LFS-tracked 2 MiB file passes as a pointer (`H8`). |\n| Every introduced blob is gated | Policy | Both tiers measure blobs entering history \u2014 added, modified or type-changed, in any commit \u2014 never the final tree alone. | A blob added and deleted inside one change fails (`R1`); a modified file grown past the limit fails (`H5`, `R4`). |\n| Unknown input fails closed | Policy | An empty, all-zero or unknown base, or a git error, never passes silently. | All-zero and empty bases check all history (`R3`, `R3e`); an unknown base is exit 2 (`R7`). |\n\n**Architectural alternatives, compared before any value.** Hook tier only\n(ts status quo) is bypassable by construction (`L2`) \u2014 rejected as\nsufficient. CI tier only is certain but late: every accident costs a\npush\u2013CI\u2013rewrite round-trip \u2014 rejected as sufficient. Hook + CI with\nindependent definitions is py's shape plus ts's drift risk \u2014 rejected; the\ndrift is the exact failure the LOW question describes. Hook + CI with one\nscript, blob scope, fail-closed \u2014 **selected** (`H1`\u2013`R9`, `L1`\u2013`L3`,\n`M1a`\u2013`M1d`). A forge push ruleset (\"Restrict file size\") rejects the push\nitself but is available only for internal and private repositories on paid\nplans (verified 2026-09-26 at `github/docs` pin `18945a31`,\n`data/reusables/gated-features/repo-rules.md`), so it cannot serve this\npublic template \u2014 excluded as the mechanism, documented as an optional layer\nfor private adopters. GitHub's 100 MiB block alone is two orders of magnitude\nabove any threshold this principle needs \u2014 rejected as sufficient.\n\n**Threshold: `> 1048576` bytes, both tiers, all three repos.** Both engines\nagree on the value; the evidence for it is carried from the Opus leg's\ncommitted-blob size profile (14 repositories, `### Landscape` in\n`raw/opus.md`): the seven repositories the Opus leg classes as\ntemplate-shaped (tokio, axum, clap, ripgrep, prek, pydantic-core, crates.io)\nhave zero blobs over 512000 bytes, while legitimately growing generated files\nreach 503922 bytes (zed `Cargo.lock`) and 449255 bytes (cargo\n`CHANGELOG.md`), so a 512000-byte limit at blob scope would start failing\nordinary lockfile growth. 1048576 bytes gives at least 2.08\u00d7 headroom over\nevery blob in those seven repositories and over every growing generated file\nin the 14-repository profile. Intentional assets near or above the limit (bat\n`syntaxes.bin` 1,012,454 B; cargo, typos, uv, ruff, bevy and zed above 1 MiB)\nare the `large-file-ok` or LFS case, not headroom. The boundary is\npinned by execution: 1048576 passes, 1048577 fails, under both shells\n(`H2`, `H3`). What it concedes, measured by the Opus leg and not re-run here:\nsub-1-MiB release binaries copied out of `target/` pass it.\n\n**Exemption: per-path `large-file-ok`, none shipped.** Py's `docs/assets/`\nprefix holds **0 entries** at the pin (`I9e`) \u2014 it has never exempted\nanything \u2014 and R81's accepted docs model names no assets subdirectory\n(`I12`), so the prefix has no natural home in this template. A directory\nprefix also cannot express \"this one fixture is intentional\" without moving\nfiles. The attribute is declared in the diff, read by both tiers from the\nsame file, and needs no LFS special case because the committed blob of an\nLFS-tracked file is a small pointer (`H6`, `H8`).\n\n**Single source of truth (LOW question).** Independent per-tier tuning is not\nacceptable: it is how the siblings' values diverged with no recorded joint\nrationale. The threshold constant lives in the script; the exemption lives in\n`.gitattributes`; neither call site carries a value. The hook entry needs\nonly \"run a command at pre-commit\" (`sh scripts/check-large-files.sh\n--staged`), so R37 can select any manager without reopening R14.\n\n**Placement (the engines' main disagreement, decided here).** The CI half is\na **step of `hygiene`**, not a dedicated workflow file. R11's accepted value\n\u2014 the binding registry text, not either leg's reading \u2014 says \"a check that\ncompiles nothing is a step of `hygiene`, or its own cheap job behind a path\ngate only when that gate's key contains the whole input of every check in the\njob\" (`I7`), and it carves out secret-scanning as a separate workflow file by\nname (`I7b`), which is why R17's dedicated file (`I13`) is not a transferable\nprecedent. The large-file guard compiles nothing and its input is every\nchanged path, so no detector key contains it: the slot rule fires. `hygiene`\nruns on all three `ci.yml` events with no `needs:` edge (`I8a`, `W4a`,\n`W4b`), so coverage equals a dedicated file's. The one cost is a separately\nrequireable check identity; R12 owns required-check aggregation and `hygiene`\nis itself a required-check surface. The composed file passes `actionlint`\nwith zero diagnostics (`W5`).\n\n**Migration implications (P03 builds these; none exist yet).** Add\n`scripts/check-large-files.sh` (the reference, executable bit set); add a\ncommented `large-file-ok` example to `.gitattributes` (no active entry); add\none pre-commit entry to R37's hook configuration; add `fetch-depth: 0` to\n`hygiene`'s checkout plus the \"Large-file guard (R14)\" step (the 7 lines in\n`ci.hygiene-with-guard.yml`); add one paragraph to the contributor docs (the\n1 MiB rule, LFS, `large-file-ok`). Do **not** create\n`.github/workflows/large-file-guard.yml`; do not add a `macos-latest` CI leg.\n\n**Follow-on for the source repositories, with rationale (not this\ntemplate).** Py keeps 1 MiB and fixes four executed defects in\n`large-file-guard.yml` (final-tree-only `P1`, fail-open base `P2`,\nadded-only `P3`, word-split names `P4`) and drops the dead `docs/assets/`\nprefix. Ts adds the CI tier and moves to blob scope at 1 MiB, since its\ncurrent hook checks modified files too and will start rejecting ordinary\nlockfile growth.\n\n**Confidence: medium-high.** High on the two-tier shape, blob scope,\nfail-closed bases and the hygiene placement (registry text plus 78 executed\nchecks). Medium on the 1 MiB value, which rests on a 14-repository sample\ncarried from one leg.\n\nre-verify: when R37 selects the hook manager; when R11's hygiene job or R12's required-check set changes; when the template's Cargo.lock or CHANGELOG.md passes 700000 bytes; if GitHub makes push rulesets available to public repositories; otherwise by 2027-03-26.",
+  "prompt_sha256": "8ea107a4f7098eb2039650a249af28b71ad564513e3a522a5c85e3f43245765a",
+  "reverify": "when R37 selects the hook manager; when R11's hygiene job or R12's required-check set changes; when the template's Cargo.lock or CHANGELOG.md passes 700000 bytes; if GitHub makes push rulesets available to public repositories; otherwise by 2027-03-26.",
+  "schema_version": 1,
+  "synthesis": {
+    "actor": "synth-opus-2026-09-26T190144Z-53ff8e94fbd8-r3",
+    "family": "anthropic",
+    "model": "claude-opus-5-5"
+  }
+}

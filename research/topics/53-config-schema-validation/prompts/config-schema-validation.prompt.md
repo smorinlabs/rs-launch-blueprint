@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). Which crate parses/writes the raw TOML bytes is R52's decision, not this item's — design this item's schema types to sit downstream of whatever R52 returns (a parsed value or a directly-deserialized struct).
 - Prior decisions of the TypeScript port that explain the current shape: D-017(4) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — ts chose zod v4 (4.4.3), `safeParse` on the merged config with fail-fast field-level errors, deliberately upgrading from the org's earlier Zod v3 precedent because "Zod 4 is the current stable major (57% smaller, much faster) and erases valibot's size argument, which has no org precedent."
 
+### Baseline review (2026-09-04)
+- F229 (typed config schema with per-key validation, `COMMON → REUSE`) carries an acceptance criterion this item's mechanism must satisfy: validation before use with constrained types or explicit checks, with representative rejected values, because typed deserialization alone accepts values the sources reject (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which crate parses/writes the raw TOML bytes; R52 (`toml-crate`) owns F225/F226 — this item defines the typed schema and validation layer applied to the parsed value, not the parser.
 - Whether an invalid individual config value degrades to a dropped-with-warning key or fails the whole file; R55 (`config-error-tolerance`) owns F238 — this item picks the validation library/mechanism, not its failure-tolerance policy.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R53
 - owns:
 - consumes: R67: error-taxonomy-exit-codes
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R52 (`toml-crate`) — this item's schema validates the value R52's parser produces. R55 (`config-error-tolerance`) decides what happens when this item's validation fails per-key; treat that as open. R56 (`config-secret-policy`) may add a `token` field to this item's schema; treat that as open.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -60,6 +67,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

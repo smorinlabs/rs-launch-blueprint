@@ -1,0 +1,52 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T155123Z-52a17c034dad",
+      "model": "claude-opus-5[1m]",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    },
+    "doxa": {
+      "actor": "research-doxa-2026-09-05T155123Z-52a17c034dad",
+      "model": "all_deep_research: openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80) + perplexity sonar-deep-research + gemini deep-research-preview-04-2026, via doxa-research 3.3.0 and scripts/doxa_no_retry.py, operation research-20260909-001249-fc1fbad6f52f4f42",
+      "family": "openai+perplexity+google",
+      "file": "raw/doxa.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T155123Z-52a17c034dad-r3",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T155123Z-52a17c034dad-r3",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T155123Z-52a17c034dad-r3",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "review/empirical/r01-revision3-checks.sh"
+    ],
+    "cwd": "/private/tmp, which the round-3 empirical audit names as the directory the recorded command was run from. That audit used independent copies under review/evidence/audit-r3-input/ for checks 1, 3 and 4 plus two fresh negative crates for check 2; it also ran a simulated post-publication copy, with research/topics/01-ports-and-adapters-seam/DECISION.md overwritten by revision 3, which exited 0 with byte-identical output. The repository fixture was not changed.",
+    "toolchain": "macOS arm64 with Homebrew Cargo and Rust 1.98.0, as the round-3 audit's `## Rerun` records. The recorded `cargo audit` command exited 1 before scanning because that sandbox cannot acquire the read-only shared advisory-database lock; `cargo audit --db ../advisory-db` against an isolated copy of the same database loaded 1,243 advisories, scanned the same 53 locked packages and exited 0. Six cited sources returned HTTP 200 and the floating `jj` main raw URL returned 404, recorded there as post-retrieval source drift.",
+    "output_log": "review/evidence/audit-ports-and-adapters-seam-r3-rerun.log",
+    "exit_code": 0
+  }
+}

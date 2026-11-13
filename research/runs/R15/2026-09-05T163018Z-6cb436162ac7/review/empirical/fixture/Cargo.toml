@@ -1,0 +1,26 @@
+[package]
+name = "rs-launch-blueprint"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+authors = ["Fixture Author <fixture@example.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/smorinlabs/rs-launch-blueprint"
+description = "Synthetic R15 fixture: a template-press target shaped as library + CLI"
+
+[lib]
+name = "rs_launch_blueprint"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rslbp"
+path = "src/main.rs"
+
+[dependencies]
+
+# Dev-dependencies exist only for tests/press_source.rs (the compensating
+# cargo-metadata cross-check). The TOML crate is R52's decision; this fixture
+# uses `toml` as a placeholder so the check can execute.
+[dev-dependencies]
+serde_json = "1"
+toml = "0.9"

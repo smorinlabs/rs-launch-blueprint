@@ -1,0 +1,62 @@
+# R07 revision-2 fixture — the recommended `on:` block for the contributors-list
+# bot PR workflow, as directed by the owner (docs/port/OWNER-REVIEW.md, section
+# "Wave 0 owner acceptances (recorded from 2026-09-14)", the R07 row): the
+# revision-1 push shape PLUS the monthly backstop the decision itself ranked as
+# runner-up E. Only the `on:` block is R07's decision (F026). The job body is
+# the inherited F060 pattern (smorinlabs/contributors-please-action,
+# mode: pull-request) carried from py-launch-blueprint @ b08bccf
+# .github/workflows/update-contributors.yml. Lines owned by other items are
+# marked so integration does not attribute them to R07:
+#   credential inputs  -> R21 (F061)   permissions style -> R08 (F030)
+#   action pin style   -> R20 (F055)   runs-on indirection -> R09
+name: Update Contributors
+
+on:
+  push:
+    branches: [main]
+    # Loop guard: the bot PR touches only these two generated files, so its
+    # merge matches every pattern and produces no run (GitHub: "When all the
+    # path names match patterns in paths-ignore, the workflow will not run").
+    # Keep in sync with the action's output-file and state-file inputs below.
+    # This filter stays under `push` only: GitHub documents paths/paths-ignore
+    # for push, pull_request and pull_request_target alone, and actionlint
+    # rejects the key under `schedule` (negative control, check 3).
+    paths-ignore:
+      - CONTRIBUTORS.md
+      - .contributors.jsonl
+  schedule:
+    # Monthly backstop. A scheduled run carries no loop risk: it is started by
+    # the clock, never by the bot's own push, so nothing it merges can re-fire
+    # it. Minute 17 rather than 00 per GitHub's high-load advice for `schedule`.
+    - cron: '17 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  contributors-please:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Update contributors
+        uses: smorinlabs/contributors-please-action@v1.3.9
+        with:
+          # Credential source is R21's decision (F061); these are placeholders.
+          app-id: ${{ secrets.CONTRIBUTORS_PLEASE_CLIENT_ID }}
+          private-key: ${{ secrets.CONTRIBUTORS_PLEASE_PRIVATE_KEY }}
+          pat: ${{ secrets.CONTRIBUTORS_PLEASE_PAT }}
+          output-file: CONTRIBUTORS.md
+          state-file: .contributors.jsonl
+          config-file: .contributors.yml
+          mode: pull-request
+          # No [skip ci]: in mode: pull-request it would strand the bot PR
+          # behind main's required checks. Loop protection is paths-ignore.
+          commit-message: "docs: update contributors"

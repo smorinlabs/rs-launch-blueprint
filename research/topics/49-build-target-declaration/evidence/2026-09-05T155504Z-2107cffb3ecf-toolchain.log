@@ -1,0 +1,40 @@
++(eval):6> echo '# R49 empirical check — toolchain and host'
+# R49 empirical check — toolchain and host
++(eval):7> date -u '+retrieved: %Y-%m-%dT%H:%M:%SZ'
+retrieved: 2026-09-10T15:24:28Z
++(eval):8> echo '--- rustc --version'
+--- rustc --version
++(eval):8> rustc --version
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
++(eval):9> echo '--- cargo --version'
+--- cargo --version
++(eval):9> cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
++(eval):10> echo '--- rustup toolchain (if any)'
+--- rustup toolchain (if any)
++(eval):10> rustup show
+Default host: aarch64-apple-darwin
+rustup home:  /Users/stevemorin/.rustup
+
+installed toolchains
+--------------------
+stable-aarch64-apple-darwin (active, default)
+1.91.1-aarch64-apple-darwin
+1.93.0-aarch64-apple-darwin
+1.96.0-aarch64-apple-darwin
+1.97.1-aarch64-apple-darwin
+
+active toolchain
+----------------
+name: stable-aarch64-apple-darwin
+active because: it's the default toolchain
+installed targets:
+  aarch64-apple-darwin
++(eval):11> echo '--- OS'
+--- OS
++(eval):11> sw_vers
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
++(eval):11> uname -a
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64

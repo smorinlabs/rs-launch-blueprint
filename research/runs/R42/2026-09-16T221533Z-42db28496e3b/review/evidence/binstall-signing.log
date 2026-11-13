@@ -1,0 +1,483 @@
+# R42 revision 9 — check 16, first leg: what verifies a prebuilt artifact before it
+# reaches a contributor's PATH? Revision 7 substituted `cargo binstall` for
+# `cargo install --locked` on the owner's licence ruling and proved (check 15) that
+# `--locked` binds only the compile fallback. This leg establishes what, if anything,
+# binds the prebuilt path instead.
+#
+# WHY THIS LEG WAS REWRITTEN FOR REVISION 9. Revision 8's payload PRINTED the status of
+# every critical command and the two `Verified signature` counts and asserted none of
+# them, so a wrong status or a wrong count still left the script exiting zero. That was
+# the round-8 rejection (finding F1) and it was correct. Every claimed control is now an
+# ASSERTION: it prints `ASSERT-OK <name>` or `ASSERT-FAIL <name>`, a failure increments a
+# counter, and a non-zero counter makes the script exit 1. The script also asserts its own
+# assertion COUNT (45), so an assertion that is silently skipped fails the run. `set -e` is
+# deliberately not used — the 7d negative control expects status 76 — and no assertion is
+# evaluated inside `$(...)`, where a subshell would swallow it.
+#
+# THE CONTROLS ARE DEMONSTRATED, NOT ASSERTED. `PERTURB=<name>` substitutes exactly ONE
+# input; the third leg (`evidence/binstall-assertion-controls.log`) runs this script once
+# per control with that substitution and requires the run to exit non-zero AND to print
+# that control's own `ASSERT-FAIL` line. The seven controls of this leg — the tag-pinned
+# `args.rs` hash, the published signing verdict, 7a's zero-count, 7b's fall-through text,
+# 7c's one-count, 7d's status 76 and the unchanged `~/.cargo/bin` listing — were each shown
+# failing that way. An unperturbed run, which is what this log records, must pass.
+#
+# Runs: 2026-09-14T23:01:46Z and 23:01:54Z, which is 2026-09-14 16:01 America/Los_Angeles
+# (the stamps are the mtimes of the two outputs; the script prints no timestamp of its own).
+# The execution recorded below is the FIRST; the second establishes the rerun rule. The
+# third leg ran this script eight more times in the same session — the seven perturbed runs
+# of its section D and a third clean run after them — and its own log records those.
+#
+# Working directory: the run directory. Scratch directory: <scratch>/r42r9/ctl/leg1, outside
+# the repository. This script reads no file inside the repository and writes none, so
+# committing this revision cannot change what it does. Nothing was installed: the v1.23.0
+# release asset is unzipped into the scratch directory and put on PATH for the duration of
+# the script only, every binstall call carries --dry-run, and the listing of ~/.cargo/bin is
+# hashed before and after and the two are ASSERTED EQUAL. That listing hashes to
+# 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed, the same value checks 15
+# and 16 recorded, so this host's tool set is unchanged since those checks. Its User-Agent
+# names the repository by URL and carries no personal contact address.
+#
+# RERUN RULE, stated for both cases.
+# (a) On THIS host: byte-for-byte, except three lines when the rerun uses the SAME scratch
+#     directory — the three `INFO Done in <elapsed>` wall-clock timings in steps 7a, 7b and
+#     7c. That is what the two runs above differed in, and section A of
+#     `evidence/binstall-assertion-controls.log` prints that diff in full and fails if any
+#     differing line is not a timing. A rerun in a DIFFERENT scratch directory adds a fourth
+#     differing line, `command -v cargo-binstall -> …`, carrying that directory's path.
+# (b) On ANY OTHER host: what must match are all 45 assertions and the final line
+#     `CHECK16 RESULT: PASSED` — every exit status (0 throughout, and 76 for the negative
+#     control), every sha256 of a file fetched at the immutable tag v1.23.0, every source
+#     excerpt quoted from those files, the three PRESENT/ABSENT signing verdicts in step 6
+#     (crates.io versions are immutable), the count `7a 'Verified signature' occurrences: 0`,
+#     the count `7c 'Verified signature' occurrences: 1`, and the fall-through to
+#     `cargo install cargo-shear --version 1.13.1 --locked` under --only-signed in step 7b.
+#     These lines carry host or target state and WILL differ:
+#       1. the scratch path, $CARGO_HOME and the resolved `cargo` executable inside the
+#          `Dry-run: running …` and `- <bin> => …` lines.
+#       2. the two `~/.cargo/bin` listing sha256 lines — this host's installed tool set.
+#          The script asserts they equal EACH OTHER; their value is meaningless across hosts.
+#       3. the asset name `cargo-binstall-aarch64-apple-darwin.zip` and the downloaded
+#          binary's sha256 `5e17743f…` — Darwin/arm64 only, and neither is asserted for that
+#          reason. A Linux rerun must edit the asset name to the matching artifact.
+#       4. the target triple inside each WARN line. Note step 7c resolved
+#          `(x86_64-apple-darwin)` on this arm64 host, because cargo-binstall's own release
+#          maps that target to a `zip` artifact; the signature verification is unaffected and
+#          the `Verified signature` line precedes it.
+#       5. the `trusted comment` fields inside 7c's `Verified signature` line — `gh=`, `git=`,
+#          `ts=` and `run=` are the values cargo-bins' release workflow signed into the
+#          artifact for v1.23.0, so they are fixed for that version but would move for
+#          another. The assertion is keyed on `Verified signature for package
+#          'cargo-binstall'` and on the count, not on those fields.
+#
+# WHAT THIS CHECK DOES NOT SHOW. No artifact was installed, so no post-install verification
+# was observed. Nothing here measures how many of the tools the template will actually
+# declare publish a signing key; the three specs below are the ones check 15 already
+# exercised plus cargo-binstall itself. Nothing here was timed.
+#
+# ---8<--- check16.sh ---8<---
+# #!/bin/bash
+# # R42 revision 9 — check 16, first leg: what verifies a prebuilt artifact before it
+# # reaches a contributor's PATH? EVERY claimed control is an ASSERTION: a wrong exit
+# # status, a wrong count or a missing string prints `ASSERT-FAIL <name>` and makes the
+# # script exit 1. `set -e` is deliberately NOT used (two controls expect a non-zero
+# # status by design) and no assertion is evaluated inside `$(...)`, where a subshell
+# # would swallow it. PERTURB substitutes exactly ONE input, so each control can be
+# # shown to discriminate; empty PERTURB is the clean run.
+# set -o pipefail
+# SCRATCH="${SCRATCH:?set SCRATCH}"
+# PERTURB="${PERTURB:-}"
+# UA='rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)'
+# TAG=v1.23.0
+# RAW="https://raw.githubusercontent.com/cargo-bins/cargo-binstall/$TAG"
+# EXPECTED_ASSERTIONS=45
+# PASS=0
+# FAIL=0
+# say() { printf '\n--- %s\n' "$*"; }
+# ok()   { PASS=$((PASS+1)); echo "ASSERT-OK   $*"; }
+# fail() { FAIL=$((FAIL+1)); echo "ASSERT-FAIL $*"; }
+# expect_eq() { # expect_eq <name> <expected> <actual>
+#   if [ "$2" = "$3" ]; then ok "$1 = $3"; else fail "$1 expected [$2] got [$3]"; fi; }
+# expect_has() { # expect_has <name> <fixed-string> <file>
+#   if grep -qF -e "$2" "$3"; then ok "$1"; else fail "$1 missing [$2]"; fi; }
+#
+# # --- the one input each PERTURB value substitutes -----------------------------
+# ARGS_PATH=crates/bin/src/args.rs      # PERTURB=sha      -> a different file at the same tag
+# SPEC_ABSENT_1=cargo-shear@1.13.1      # PERTURB=signing  -> a crate that DOES declare a key
+# SPEC_7A=cargo-shear@1.13.1            # PERTURB=p7a      -> a signed crate
+# SPEC_7B=cargo-shear@1.13.1            # PERTURB=p7b      -> a signed crate
+# SPEC_7C=cargo-binstall@1.23.0         # PERTURB=p7c      -> an unsigned crate
+# SPEC_7D=rs-launch-blueprint-no-such-crate@9.9.9  # PERTURB=p7d -> a crate that resolves
+# AFTER_DIR="$HOME/.cargo/bin"          # PERTURB=cargohome-> a different directory
+# case "$PERTURB" in
+#   '') ;;
+#   sha)       ARGS_PATH=crates/bin/src/main.rs ;;
+#   signing)   SPEC_ABSENT_1=cargo-binstall@1.23.0 ;;
+#   p7a)       SPEC_7A=cargo-binstall@1.23.0 ;;
+#   p7b)       SPEC_7B=cargo-binstall@1.23.0 ;;
+#   p7c)       SPEC_7C=cargo-shear@1.13.1 ;;
+#   p7d)       SPEC_7D=cargo-shear@1.13.1 ;;
+#   cargohome) AFTER_DIR="$SCRATCH/bin" ;;
+#   *) echo "unknown PERTURB=$PERTURB"; exit 2 ;;
+# esac
+# echo "PERTURB=${PERTURB:-<none, clean run>}"
+#
+# get() { # get <path-under-tag> <local-name> <expected-sha256>
+#   local code cstat sum
+#   code=$(curl -sS -H "User-Agent: $UA" -o "$SCRATCH/$2" -w '%{http_code}' "$RAW/$1")
+#   cstat=$?
+#   echo "$2 HTTP $code curl-exit $cstat"
+#   expect_eq "http-$2" "0 200" "$cstat $code"
+#   sum=$(shasum -a 256 "$SCRATCH/$2" | awk '{print $1}')
+#   echo "$2 sha256 $sum"
+#   expect_eq "sha256-$2" "$3" "$sum"
+# }
+# grep_assert() { # grep_assert <name> <file> <grep args...>
+#   local name=$1 file=$2; shift 2
+#   grep -n "$@" "$file"; local g=$?
+#   echo "grep exit=$g"
+#   expect_eq "$name" 0 "$g"
+# }
+#
+# say "1. The signature policy, read in the source at the immutable tag $TAG"
+# get "$ARGS_PATH" args.rs 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+# grep_assert grep-only_signed "$SCRATCH/args.rs" -B6 'pub(crate) only_signed: bool,'
+# grep_assert grep-skip_signatures "$SCRATCH/args.rs" -B7 'pub(crate) skip_signatures: bool,'
+#
+# say "2. What the GitHub-release fetcher does when the crate declares no signing key"
+# get crates/binstalk-fetchers/src/gh_crate_meta.rs gh_crate_meta.rs \
+#   15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+# grep_assert grep-verifier-match "$SCRATCH/gh_crate_meta.rs" -A14 \
+#   'let verifier = match (self.signature_policy, &self.target_data.meta.signing)'
+# grep_assert grep-verified-line "$SCRATCH/gh_crate_meta.rs" -A4 'trace!("validating signature (if any)");'
+# grep_assert grep-gh-is_third_party "$SCRATCH/gh_crate_meta.rs" -A2 'fn is_third_party'
+#
+# say "3. Signing metadata is opt-in per crate — the maintainers' own words"
+# get SIGNING.md SIGNING.md 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+# grep_assert grep-no-autodiscovery "$SCRATCH/SIGNING.md" 'requires adding to the Cargo.toml metadata'
+# grep_assert grep-signing-stanza "$SCRATCH/SIGNING.md" -A3 '^\[package.metadata.binstall.signing\]'
+#
+# say "4. The other prebuilt fetcher, QuickInstall, pins its own key instead"
+# get crates/binstalk-fetchers/src/quickinstall.rs quickinstall.rs \
+#   821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+# grep_assert grep-quickinstall-key "$SCRATCH/quickinstall.rs" -A2 'QUICKINSTALL_SIGN_KEY'
+# grep_assert grep-qi-download-signature "$SCRATCH/quickinstall.rs" -A26 'fn download_signature'
+# grep_assert grep-qi-is_third_party "$SCRATCH/quickinstall.rs" -A2 'fn is_third_party'
+#
+# say "5. Which fetcher the WARN line names, so the log can be read"
+# get crates/binstalk/src/ops/resolve/resolution.rs resolution.rs \
+#   2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+# grep_assert grep-warn-line "$SCRATCH/resolution.rs" -A8 'has been downloaded from'
+#
+# say "6. Do the specs check 15 exercised declare signing in their PUBLISHED Cargo.toml?"
+# for pair in "$SPEC_ABSENT_1 ABSENT" "taplo-cli@0.10.0 ABSENT" "cargo-binstall@1.23.0 PRESENT"; do
+#   spec=${pair% *}; want=${pair#* }
+#   n=${spec%@*}; v=${spec#*@}
+#   code=$(curl -sSL -H "User-Agent: $UA" -o "$SCRATCH/$n-$v.crate" -w '%{http_code}' \
+#     "https://static.crates.io/crates/$n/$n-$v.crate"); cstat=$?
+#   echo "$n-$v.crate HTTP $code curl-exit $cstat"
+#   expect_eq "http-$n-$v.crate" "0 200" "$cstat $code"
+#   tar -xzOf "$SCRATCH/$n-$v.crate" "$n-$v/Cargo.toml" > "$SCRATCH/$n-$v.Cargo.toml"; tstat=$?
+#   echo "tar exit=$tstat"
+#   expect_eq "tar-$n-$v" 0 "$tstat"
+#   if grep -q '^\[package.metadata.binstall.signing\]' "$SCRATCH/$n-$v.Cargo.toml"; then
+#     got=PRESENT; else got=ABSENT; fi
+#   echo "$spec signing: $got"
+#   [ "$got" = PRESENT ] && grep -A3 '^\[package.metadata.binstall.signing\]' "$SCRATCH/$n-$v.Cargo.toml"
+#   expect_eq "signing-verdict-$spec" "$want" "$got"
+# done
+#
+# say "7. Execute both policies against those specs, --dry-run so nothing is installed"
+# BEFORE=$(ls "$HOME/.cargo/bin" | sort | shasum -a 256); echo "~/.cargo/bin listing sha256 before: $BEFORE"
+# mkdir -p "$SCRATCH/bin"
+# code=$(curl -sSL -H "User-Agent: $UA" -o "$SCRATCH/cb.zip" -w '%{http_code}' \
+#   "https://github.com/cargo-bins/cargo-binstall/releases/download/$TAG/cargo-binstall-aarch64-apple-darwin.zip"); cstat=$?
+# echo "asset HTTP $code curl-exit $cstat"
+# expect_eq "http-release-asset" "0 200" "$cstat $code"
+# unzip -o -q -d "$SCRATCH/bin" "$SCRATCH/cb.zip"; ustat=$?
+# echo "unzip exit=$ustat"
+# expect_eq "unzip-release-asset" 0 "$ustat"
+# shasum -a 256 "$SCRATCH/bin/cargo-binstall" | awk '{print "cargo-binstall binary sha256", $1}'
+# export PATH="$SCRATCH/bin:$PATH"
+# echo "command -v cargo-binstall -> $(command -v cargo-binstall)"
+# ver=$(cargo binstall -V); vstat=$?
+# echo "cargo binstall -V -> $ver (exit $vstat)"
+# expect_eq "binstall-version" "0 1.23.0" "$vstat $ver"
+#
+# echo "# 7a. the recipe body exactly as recommended, on an UNSIGNED spec ($SPEC_7A):"
+# cargo binstall --locked --no-confirm --dry-run "$SPEC_7A" > "$SCRATCH/7a.txt" 2>&1; s7a=$?
+# echo "cargo binstall (7a default) exit=$s7a"
+# sed 's/^/  /' "$SCRATCH/7a.txt"
+# expect_eq "7a-status" 0 "$s7a"
+# c7a=$(grep -c 'Verified signature' "$SCRATCH/7a.txt")
+# echo "7a 'Verified signature' occurrences: $c7a"
+# expect_eq "7a-verified-signature-count" 0 "$c7a"
+# expect_has "7a-downloaded-from-github" 'has been downloaded from github.com' "$SCRATCH/7a.txt"
+#
+# echo "# 7b. the same spec with --only-signed, to see what the fail-closed policy does ($SPEC_7B):"
+# cargo binstall --locked --no-confirm --only-signed --dry-run "$SPEC_7B" > "$SCRATCH/7b.txt" 2>&1; s7b=$?
+# echo "cargo binstall (7b --only-signed) exit=$s7b"
+# sed 's/^/  /' "$SCRATCH/7b.txt"
+# expect_eq "7b-status" 0 "$s7b"
+# expect_has "7b-no-signature-present" 'No signature present' "$SCRATCH/7b.txt"
+# expect_has "7b-falls-through-to-cargo-install" \
+#   'cargo install cargo-shear --version 1.13.1 --locked' "$SCRATCH/7b.txt"
+#
+# echo "# 7c. POSITIVE CONTROL: a spec that does declare a signing key, under --only-signed ($SPEC_7C):"
+# cargo binstall --locked --no-confirm --only-signed --dry-run "$SPEC_7C" > "$SCRATCH/7c.txt" 2>&1; s7c=$?
+# echo "cargo binstall (7c --only-signed) exit=$s7c"
+# sed 's/^/  /' "$SCRATCH/7c.txt"
+# expect_eq "7c-status" 0 "$s7c"
+# c7c=$(grep -c 'Verified signature' "$SCRATCH/7c.txt")
+# echo "7c 'Verified signature' occurrences: $c7c"
+# expect_eq "7c-verified-signature-count" 1 "$c7c"
+# expect_has "7c-verified-package-name" \
+#   "Verified signature for package 'cargo-binstall'" "$SCRATCH/7c.txt"
+#
+# echo "# 7d. NEGATIVE CONTROL: a spec that cannot resolve must fail with status 76 ($SPEC_7D):"
+# cargo binstall --locked --no-confirm --dry-run "$SPEC_7D" > "$SCRATCH/7d.txt" 2>&1; s7d=$?
+# echo "cargo binstall (7d negative control) exit=$s7d"
+# tail -3 "$SCRATCH/7d.txt" | sed 's/^/  /'
+# expect_eq "7d-status" 76 "$s7d"
+# expect_has "7d-crate-not-found" 'crate is not found' "$SCRATCH/7d.txt"
+#
+# AFTER=$(ls "$AFTER_DIR" | sort | shasum -a 256); echo "listing sha256 after ($AFTER_DIR): $AFTER"
+# expect_eq "cargo-bin-listing-unchanged" "$BEFORE" "$AFTER"
+#
+# say "Assertion summary"
+# echo "assertions passed: $PASS  failed: $FAIL  total: $((PASS+FAIL))  expected total: $EXPECTED_ASSERTIONS"
+# if [ "$((PASS+FAIL))" != "$EXPECTED_ASSERTIONS" ]; then
+#   echo "ASSERT-FAIL assertion-count expected [$EXPECTED_ASSERTIONS] got [$((PASS+FAIL))]"
+#   FAIL=$((FAIL+1))
+# fi
+# if [ "$FAIL" -ne 0 ]; then echo "CHECK16 RESULT: FAILED ($FAIL assertion(s))"; exit 1; fi
+# echo "CHECK16 RESULT: PASSED"
+# ---8<--- end of check16.sh ---8<---
+PERTURB=<none, clean run>
+
+--- 1. The signature policy, read in the source at the immutable tag v1.23.0
+args.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-args.rs = 0 200
+args.rs sha256 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+ASSERT-OK   sha256-args.rs = 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+407-
+408-    /// Only install packages that are signed
+409-    ///
+410-    /// The default is to verify signatures if they are available, but to allow
+411-    /// unsigned packages as well.
+412-    #[clap(help_heading = "Options", long)]
+413:    pub(crate) only_signed: bool,
+grep exit=0
+ASSERT-OK   grep-only_signed = 0
+416-    ///
+417-    /// The default is to verify signatures if they are available. This option
+418-    /// disables that behaviour entirely, which will also stop downloading
+419-    /// signature files in the first place.
+420-    ///
+421-    /// Note that this is insecure and not recommended outside of testing.
+422-    #[clap(help_heading = "Options", long, conflicts_with = "only_signed")]
+423:    pub(crate) skip_signatures: bool,
+grep exit=0
+ASSERT-OK   grep-skip_signatures = 0
+
+--- 2. What the GitHub-release fetcher does when the crate declares no signing key
+gh_crate_meta.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-gh_crate_meta.rs = 0 200
+gh_crate_meta.rs sha256 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+ASSERT-OK   sha256-gh_crate_meta.rs = 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+301:        let verifier = match (self.signature_policy, &self.target_data.meta.signing) {
+302-            (SignaturePolicy::Ignore, _) | (SignaturePolicy::IfPresent, None) => {
+303-                SignatureVerifier::Noop
+304-            }
+305-            (SignaturePolicy::Require, None) => {
+306-                return Err(FetchError::MissingSignature);
+307-            }
+308-            (_, Some(config)) => {
+309-                let template = match config.file.as_deref() {
+310-                    Some(file) => Template::parse(file)?,
+311-                    None => leon_macros::template!("{ url }.sig"),
+312-                };
+313-                trace!(?template, "parsed signature file template");
+314-
+315-                let sign_url = Context::from_data_with_repo(
+grep exit=0
+ASSERT-OK   grep-verifier-match = 0
+357:        trace!("validating signature (if any)");
+358-        if data_verifier.validate() {
+359-            if let Some(info) = verifier.info() {
+360-                info!(
+361-                    "Verified signature for package '{}': {info}",
+grep exit=0
+ASSERT-OK   grep-verified-line = 0
+404:    fn is_third_party(&self) -> bool {
+405-        false
+406-    }
+grep exit=0
+ASSERT-OK   grep-gh-is_third_party = 0
+
+--- 3. Signing metadata is opt-in per crate — the maintainers' own words
+SIGNING.md HTTP 200 curl-exit 0
+ASSERT-OK   http-SIGNING.md = 0 200
+SIGNING.md sha256 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+ASSERT-OK   sha256-SIGNING.md = 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+6:This feature requires adding to the Cargo.toml metadata: no autodiscovery here!
+grep exit=0
+ASSERT-OK   grep-no-autodiscovery = 0
+22:[package.metadata.binstall.signing]
+23-algorithm = "minisign"
+24-pubkey = "RWRnmBcLmQbXVcEPWo2OOKMI36kki4GiI7gcBgIaPLwvxe14Wtxm9acX"
+25-```
+grep exit=0
+ASSERT-OK   grep-signing-stanza = 0
+
+--- 4. The other prebuilt fetcher, QuickInstall, pins its own key instead
+quickinstall.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-quickinstall.rs = 0 200
+quickinstall.rs sha256 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+ASSERT-OK   sha256-quickinstall.rs = 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+22:const QUICKINSTALL_SIGN_KEY: Cow<'static, str> =
+23-    Cow::Borrowed("RWTdnnab2pAka9OdwgCMYyOE66M/BlQoFWaJ/JjwcPV+f3n24IRTj97t");
+24-const QUICKINSTALL_SUPPORTED_TARGETS_URL: &str =
+--
+126:                            pubkey: QUICKINSTALL_SIGN_KEY,
+127-                            file: None,
+128-                        };
+grep exit=0
+ASSERT-OK   grep-quickinstall-key = 0
+110:    fn download_signature(
+111-        self: Arc<Self>,
+112-    ) -> AutoAbortJoinHandle<Result<SignatureVerifier, FetchError>> {
+113-        AutoAbortJoinHandle::spawn(async move {
+114-            if self.signature_policy == SignaturePolicy::Ignore {
+115-                Ok(SignatureVerifier::Noop)
+116-            } else {
+117-                debug!(url=%self.signature_url, "Downloading signature");
+118-                match Download::new(self.client.clone(), self.signature_url.clone())
+119-                    .into_bytes()
+120-                    .await
+121-                {
+122-                    Ok(signature) => {
+123-                        trace!(?signature, "got signature contents");
+124-                        let config = PkgSigning {
+125-                            algorithm: SigningAlgorithm::Minisign,
+126-                            pubkey: QUICKINSTALL_SIGN_KEY,
+127-                            file: None,
+128-                        };
+129-                        SignatureVerifier::new(&config, &signature)
+130-                    }
+131-                    Err(err) => {
+132-                        if self.signature_policy == SignaturePolicy::Require {
+133-                            error!("Failed to download signature: {err}");
+134-                            Err(FetchError::MissingSignature)
+135-                        } else {
+136-                            debug!("Failed to download signature, skipping verification: {err}");
+grep exit=0
+ASSERT-OK   grep-qi-download-signature = 0
+297:    fn is_third_party(&self) -> bool {
+298-        true
+299-    }
+grep exit=0
+ASSERT-OK   grep-qi-is_third_party = 0
+
+--- 5. Which fetcher the WARN line names, so the log can be read
+resolution.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-resolution.rs = 0 200
+resolution.rs sha256 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+ASSERT-OK   sha256-resolution.rs = 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+125:            "The package {name} v{new_version} ({target}) has been downloaded from {}{}",
+126-            if fetcher.is_third_party() {
+127-                "third-party source "
+128-            } else {
+129-                ""
+130-            },
+131-            fetcher.source_name()
+132-        );
+133-
+grep exit=0
+ASSERT-OK   grep-warn-line = 0
+
+--- 6. Do the specs check 15 exercised declare signing in their PUBLISHED Cargo.toml?
+cargo-shear-1.13.1.crate HTTP 200 curl-exit 0
+ASSERT-OK   http-cargo-shear-1.13.1.crate = 0 200
+tar exit=0
+ASSERT-OK   tar-cargo-shear-1.13.1 = 0
+cargo-shear@1.13.1 signing: ABSENT
+ASSERT-OK   signing-verdict-cargo-shear@1.13.1 = ABSENT
+taplo-cli-0.10.0.crate HTTP 200 curl-exit 0
+ASSERT-OK   http-taplo-cli-0.10.0.crate = 0 200
+tar exit=0
+ASSERT-OK   tar-taplo-cli-0.10.0 = 0
+taplo-cli@0.10.0 signing: ABSENT
+ASSERT-OK   signing-verdict-taplo-cli@0.10.0 = ABSENT
+cargo-binstall-1.23.0.crate HTTP 200 curl-exit 0
+ASSERT-OK   http-cargo-binstall-1.23.0.crate = 0 200
+tar exit=0
+ASSERT-OK   tar-cargo-binstall-1.23.0 = 0
+cargo-binstall@1.23.0 signing: PRESENT
+[package.metadata.binstall.signing]
+algorithm = "minisign"
+pubkey = "RWTfDqVjpjXv39UdqyI00O/XCg8WJfXdWo6V1YR7sYREAiWINtu7VVUY"
+
+ASSERT-OK   signing-verdict-cargo-binstall@1.23.0 = PRESENT
+
+--- 7. Execute both policies against those specs, --dry-run so nothing is installed
+~/.cargo/bin listing sha256 before: 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+asset HTTP 200 curl-exit 0
+ASSERT-OK   http-release-asset = 0 200
+unzip exit=0
+ASSERT-OK   unzip-release-asset = 0
+cargo-binstall binary sha256 5e17743fdc1aeedd3e6982b04f53ee23bc7d5e727454559ab0e2129d15e86188
+command -v cargo-binstall -> /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r9/ctl/leg1/bin/cargo-binstall
+cargo binstall -V -> 1.23.0 (exit 0)
+ASSERT-OK   binstall-version = 0 1.23.0
+# 7a. the recipe body exactly as recommended, on an UNSIGNED spec (cargo-shear@1.13.1):
+cargo binstall (7a default) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+  cargo-binstall:  WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com
+  cargo-binstall:  INFO This will install the following binaries:
+  cargo-binstall:  INFO   - cargo-shear => /Users/stevemorin/.cargo/bin/cargo-shear
+  cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+  cargo-binstall:  INFO Done in 2.316482375s
+ASSERT-OK   7a-status = 0
+7a 'Verified signature' occurrences: 0
+ASSERT-OK   7a-verified-signature-count = 0
+ASSERT-OK   7a-downloaded-from-github
+# 7b. the same spec with --only-signed, to see what the fail-closed policy does (cargo-shear@1.13.1):
+cargo binstall (7b --only-signed) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall: ERROR Failed to download signature: Failed to download from remote: could not GET https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig: HTTP status client error (404 Not Found) for url (https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig)
+  cargo-binstall:  WARN The package cargo-shear v1.13.1 will be installed from source (with cargo)
+  cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install cargo-shear --version 1.13.1 --locked --root /Users/stevemorin/.cargo`
+  cargo-binstall:  INFO Done in 2.136533666s
+ASSERT-OK   7b-status = 0
+ASSERT-OK   7b-no-signature-present
+ASSERT-OK   7b-falls-through-to-cargo-install
+# 7c. POSITIVE CONTROL: a spec that does declare a signing key, under --only-signed (cargo-binstall@1.23.0):
+cargo binstall (7c --only-signed) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-binstall@=1.23.0'
+  cargo-binstall:  INFO resolve: Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25ea559687bec77e281e9b271aa1367b624 ts=2026-09-05T16:59:07.371Z run=33978884356
+  cargo-binstall:  WARN The package cargo-binstall v1.23.0 (x86_64-apple-darwin) has been downloaded from github.com
+  cargo-binstall:  INFO This will install the following binaries:
+  cargo-binstall:  INFO   - cargo-binstall => /Users/stevemorin/.cargo/bin/cargo-binstall
+  cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+  cargo-binstall:  INFO Done in 2.735364375s
+ASSERT-OK   7c-status = 0
+7c 'Verified signature' occurrences: 1
+ASSERT-OK   7c-verified-signature-count = 1
+ASSERT-OK   7c-verified-package-name
+# 7d. NEGATIVE CONTROL: a spec that cannot resolve must fail with status 76 (rs-launch-blueprint-no-such-crate@9.9.9):
+cargo binstall (7d negative control) exit=76
+    │ crate is not found
+    ╰─▶ rs-launch-blueprint-no-such-crate is not found
+  
+ASSERT-OK   7d-status = 76
+ASSERT-OK   7d-crate-not-found
+listing sha256 after (/Users/stevemorin/.cargo/bin): 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+ASSERT-OK   cargo-bin-listing-unchanged = 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+
+--- Assertion summary
+assertions passed: 45  failed: 0  total: 45  expected total: 45
+CHECK16 RESULT: PASSED

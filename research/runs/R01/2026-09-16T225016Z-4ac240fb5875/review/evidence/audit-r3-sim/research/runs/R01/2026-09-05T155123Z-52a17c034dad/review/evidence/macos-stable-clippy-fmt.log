@@ -1,0 +1,60 @@
+# lint and format gate on the fixture, macOS stable 1.98.0
+# date: 2026-09-10T01:11:23Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/empirical/seam_fixture
+$ cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+$ cargo fmt --check
+exit=0
+$ cargo clippy --locked --all-targets -- -D warnings
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+    Checking itoa v1.0.18
+   Compiling libc v0.2.189
+    Checking pin-project-lite v0.2.17
+    Checking futures-core v0.3.34
+   Compiling serde_core v1.0.229
+    Checking bytes v1.12.1
+   Compiling httparse v1.10.1
+    Checking once_cell v1.21.4
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+    Checking log v0.4.34
+    Checking tower-service v0.3.3
+    Checking futures-channel v0.3.34
+    Checking percent-encoding v2.3.2
+    Checking tracing-core v0.1.36
+    Checking futures-task v0.3.34
+    Checking slab v0.4.12
+   Compiling serde_json v1.0.151
+    Checking sync_wrapper v1.0.2
+    Checking httpdate v1.0.3
+    Checking tower-layer v0.3.3
+    Checking atomic-waker v1.1.2
+    Checking smallvec v1.16.0
+    Checking futures-util v0.3.34
+    Checking form_urlencoded v1.2.2
+    Checking ryu v1.0.23
+    Checking memchr v2.8.3
+    Checking mime v0.3.17
+    Checking matchit v0.8.4
+    Checking tracing v0.1.44
+    Checking http v1.5.0
+    Checking http-body v1.1.0
+    Checking http-body-util v0.1.5
+    Checking axum-core v0.5.6
+    Checking socket2 v0.6.5
+    Checking mio v1.2.3
+    Checking serde_path_to_error v0.1.20
+   Compiling syn v3.0.5
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+    Checking tokio v1.53.1
+    Checking serde_urlencoded v0.7.1
+    Checking hyper v1.11.1
+    Checking tower v0.5.3
+    Checking hyper-util v0.1.20
+    Checking axum v0.8.9
+    Checking seam_fixture v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/empirical/seam_fixture)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.32s
+exit=0

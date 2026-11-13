@@ -1,0 +1,46 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T162359Z-3c50443de1e8",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T162359Z-3c50443de1e8",
+      "model": "claude-opus-5[1m]",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-fable-2026-09-05T162359Z-3c50443de1e8",
+    "model": "claude-fable-5-1",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T162359Z-3c50443de1e8",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T162359Z-3c50443de1e8",
+      "model": "claude-fable-5-1",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "run-checks.sh"
+    ],
+    "cwd": "review/empirical-audit (fresh copy of review/empirical); MSRV leg with TOOLCHAIN=1.96.0 RUN_TOOLS=0; Linux leg via limactl shell ubuntu",
+    "toolchain": "rustc 1.98.0; cargo 1.98.0; cargo-semver-checks 0.50.0; MSRV leg rustc 1.96.0; Linux leg rustc 1.98.1 (Ubuntu 25.10 aarch64); macOS 26.4 arm64",
+    "output_log": "review/evidence/audit-public-api-surface-enforcement.log",
+    "exit_code": 0
+  }
+}

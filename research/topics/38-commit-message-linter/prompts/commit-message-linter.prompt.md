@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): target shape is CLI + library + web service (spec §4 D7); `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). That commit messages are linted at commit-msg hook time (F148, `COMMON → REUSE`) is settled; only which tool does it, and its rule config, are open.
 - Prior decisions of the TypeScript port that explain the current shape: D-020(2) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — commitlint 21.x + `@commitlint/config-conventional`, run from lefthook's `commit-msg` stage, with overrides `header-max-length` 50, `body-max-line-length` 72, `type-enum` = the source's list (`feat, fix, docs, style, refactor, test, chore, ci, build, perf`, recommending also admitting `revert`); chosen because gitlint (py's nearest Python-native alternative in the org's broader review) is dormant and Python-only, while commitlint is the org's proof-of-concept precedent and expresses the source's 50/72/type contract as three rule overrides on a current, actively maintained upstream config.
 
+### Baseline review (2026-09-04)
+- F158 (commit-message template file) and F160 (template/linter type-list consistency test) stay `ADOPT` as values derived from this item: the decision must state the `.gitmessage` content that follows the selected `commit-message-convention` and the test adapter that reads the selected linter's configuration (ts `tests/repo-hygiene.test.ts:19-34` imports commitlint's) (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The git hook manager itself — its distribution/install mechanism, what triggers `lefthook install`, and the full-hook-suite CI re-run; R37 (`hook-manager-distribution`) owns F143/F144/F174 — this item picks the commit-msg linter *tool and its rule config*, not the manager that wires the `commit-msg` stage.
 - How the `commit-message-convention` type-enum and length limits this item owns map to changelog sections, or how release-please's own config consumes them; that is R24 (`changelog-section-mapping`)'s decision and the release-please rows F063/F066/F073's concern — this item only defines the enum and limits, not their downstream consumption.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R38
 - owns: commit-message-convention
 - consumes:
+- effort: focused
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 - related (not a registry dependency): R24 (`changelog-section-mapping`) and the release-please configuration (ledger rows F063, F066, F073) consume the `commit-message-convention` parameter this item owns — coordinate the type-enum's naming so it maps cleanly to changelog sections, but do not decide that mapping here. R37 (`hook-manager-distribution`) owns the hook manager wrapping the `commit-msg` stage this item's tool runs inside.
 
@@ -61,6 +68,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

@@ -1,0 +1,14 @@
+crates.io indicatif:
+http=200 bytes=86433
+crates.io indicatif versions:
+http=200 bytes=84311
+GitHub indicatif repository:
+http=200 bytes=6324
+GitHub indicatif open issues search:
+http=422 bytes=316
+RustSec indicatif advisory page:
+http=404 bytes=9379
+Published indicatif 0.18.6 artifact:
+http=200 bytes=70598
+Rust stable channel manifest:
+http=200 bytes=898637

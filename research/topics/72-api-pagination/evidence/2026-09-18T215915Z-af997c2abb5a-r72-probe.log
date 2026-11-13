@@ -1,0 +1,54 @@
+## environment
+host rustc:  rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+host cargo:  cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+floor rustc: rustc 1.96.0 (ac68faa20 2026-05-25)
+sources written (sha256):
+42ba8bd8e791ecc1445f5123d874b40bd854f67b4fc465157415bf5c47faedb5    Cargo.toml
+20a98816aaf39d7ce450d21746a274a7dc39e12a72ffaccf367ed7c279d0773c    src/lib.rs
+b958409db3d91a4a993d9e24bb93781efd25b6cdccbaa591c034d01d3caf28d7    tests/contract.rs
+
+## the dependency the recommendation adds, and where it sits in the tree
+  lines in cargo tree -e normal: 118
+  occurrences of base64 in the normal tree: 1
+PASS E01 base64 appears once: it is a direct dependency and nothing else pulls it in
+PASS E02 the probe resolves axum 0.8.9, the version published R69 selects
+  r72probe v0.0.0 (<scratch>)
+  ├── axum v0.8.9
+  │   ├── axum-core v0.5.6
+
+## the recommended feature selection, asserted on the manifest that built
+PASS E06 the probe builds base64 with default-features = false, features = ["std"]
+
+## build and test on the host toolchain
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+PASS E03 all 15 contract tests pass on the host toolchain
+
+## build and test at the MSRV floor
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+PASS E04 all 15 contract tests pass at the 1.96.0 floor
+
+## the individual behaviours, named
+PASS E05.p01_default_limit_comes_from_state
+PASS E05.p02_over_maximum_limit_is_rejected_422
+PASS E05.p03_zero_limit_is_422
+PASS E05.p04_non_numeric_limit_is_400
+PASS E05.p05_undecodable_cursor_is_400
+PASS E05.p06_cursor_round_trips_and_windows_are_disjoint
+PASS E05.p07_exhausted_and_empty_windows
+PASS E05.p08_items_are_the_plain_domain_type
+PASS E05.p09_no_pagination_headers
+PASS E05.p10_envelope_is_an_object_with_items_plus_continuation
+PASS E05.p11_the_same_extractor_serves_a_second_collection
+PASS E05.p12_keyset_is_stable_under_concurrent_insert_where_offset_is_not
+PASS E05.p13_limit_cannot_be_constructed_out_of_range
+PASS E05.p14_the_route_establishes_the_documented_order
+PASS E05.p15_stream_on_a_non_streaming_route_is_400
+
+## totals
+PASS 20
+FAIL 0
+SKIP 0

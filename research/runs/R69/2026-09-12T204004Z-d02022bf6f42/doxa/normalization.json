@@ -1,0 +1,37 @@
+{
+ "operation_id": "research-20260912-134041-a1150ec8a7594fa0",
+ "kind": "bundle",
+ "providers": {
+  "openai": {
+   "saved_file": "doxa/research-outputs/2026-09-12_134041_all_deep_research_openai_deep-research-prompt-web-framework-stack-r69-bundl.md",
+   "model": "gpt-5.6-sol",
+   "changes": [],
+   "normalized": "doxa-openai.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "perplexity": {
+   "saved_file": "doxa/research-outputs/2026-09-12_134041_all_deep_research_perplexity_deep-research-prompt-web-framework-stack-r69-bundl.md",
+   "model": "sonar-deep-research",
+   "changes": [],
+   "normalized": "doxa-perplexity.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "gemini": {
+   "saved_file": "doxa/research-outputs/2026-09-12_134041_all_deep_research_gemini_deep-research-prompt-web-framework-stack-r69-bundl.md",
+   "model": "deep-research-preview-04-2026",
+   "changes": [],
+   "normalized": "doxa-gemini.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  }
+ },
+ "regrouped": {
+  "file": "doxa.normalized.md",
+  "shape": "FAIL: answer: bundle H5 member field is outside a named member in '### Members'"
+ }
+}

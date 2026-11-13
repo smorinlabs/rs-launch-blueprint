@@ -1,0 +1,51 @@
+0a1
+> fatal: not a git repository (or any of the parent directories): .git
+283,294c284,295
+< 27:    runs-on: ubuntu-latest
+< 37:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+< 40:    runs-on: ${{ matrix.os }}
+< 61:        os: ["ubuntu-latest"]
+< 62:    runs-on: ${{ matrix.os }}
+< 78:        os: ["ubuntu-latest"]
+< 79:    runs-on: ${{ matrix.os }}
+< 96:    runs-on: ubuntu-latest
+< 109:    runs-on: ubuntu-latest
+< 124:    runs-on: ubuntu-latest
+< 138:    runs-on: ubuntu-latest
+< 170:    runs-on: ubuntu-latest
+---
+> 29:    runs-on: ubuntu-latest
+> 39:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+> 42:    runs-on: ${{ matrix.os }}
+> 67:        os: ["ubuntu-latest"]
+> 68:    runs-on: ${{ matrix.os }}
+> 88:        os: ["ubuntu-latest"]
+> 89:    runs-on: ${{ matrix.os }}
+> 104:    runs-on: ubuntu-latest
+> 118:    runs-on: ubuntu-latest
+> 134:    runs-on: ubuntu-latest
+> 150:    runs-on: ubuntu-latest
+> 186:    runs-on: ubuntu-latest
+554,562c555,562
+< -- repository root resolved from this script's location: rs-launch-blueprint-p02-plan
+<   STATUS OK   grep F122/F123 in COMMONALITY.md: exit=0 (expected 0)
+< 128:| F122 | property-based (generative) testing | testing-coverage | py-only | DIVERGENT | R33 | bundle; whether Rust adopts a property-based testing crate (e.g. proptest) — decides F123 |
+< 129:| F123 | CLI golden-snapshot testing | testing-coverage | py-only | DIVERGENT | R33 | bundle |
+<   ASSERT OK   F122 is py-only and DIVERGENT, item R33: /\| F122 \|.*py-only \| DIVERGENT \| R33 \|/ present
+<   ASSERT OK   F123 is py-only and DIVERGENT, item R33: /\| F123 \|.*py-only \| DIVERGENT \| R33 \|/ present
+<   STATUS OK   grep R33 in DIVERGENCE-ANALYSIS.md: exit=0 (expected 0)
+< 143:| R33 property-and-snapshot-testing | item | Hypothesis `@given` round-trip tests (`tests/core/test_properties.py:24`); syrupy CLI `--help` snapshots (`tests/cli/test_help_snapshots.py:36`) | absent both; no decision entry addresses omitting Hypothesis/fast-check or a `.ambr`/`toMatchSnapshot` equivalent | no recorded reason for either; inferred: both patterns are portable (Vitest has native `toMatchSnapshot`, JS has `fast-check`) — ts simply didn't adopt them, not blocked by language | D | pick a Rust property-testing crate (`proptest`/`quickcheck`) and a snapshot crate (`insta`) for parity | yes |
+<   ASSERT OK   the divergence row is cause class D, harmonize yes: /\| D \|.*\| yes \|/ present
+---
+> -- repository root resolved from this script's location: 
+> grep: /docs/port/COMMONALITY.md: No such file or directory
+>   STATUS FAIL grep F122/F123 in COMMONALITY.md: exit=2 (expected 0)
+>   ASSERT FAIL F122 is py-only and DIVERGENT, item R33: /\| F122 \|.*py-only \| DIVERGENT \| R33 \|/ absent
+>   ASSERT FAIL F123 is py-only and DIVERGENT, item R33: /\| F123 \|.*py-only \| DIVERGENT \| R33 \|/ absent
+> grep: /docs/port/DIVERGENCE-ANALYSIS.md: No such file or directory
+>   STATUS FAIL grep R33 in DIVERGENCE-ANALYSIS.md: exit=2 (expected 0)
+>   ASSERT FAIL the divergence row is cause class D, harmonize yes: /\| D \|.*\| yes \|/ absent
+588c588
+< failed assertions: 0
+---
+> failed assertions: 5

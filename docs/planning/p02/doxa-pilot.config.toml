@@ -1,0 +1,39 @@
+# Doxa configuration for the P02 R38 pilot. Pass it with `--config`; it
+# replaces the user configuration layer so the pilot does not depend on
+# ~/.config/doxa. Provider keys resolve from the environment variables
+# OPENAI_API_KEY, PERPLEXITY_API_KEY and GEMINI_API_KEY (names only; values
+# are never recorded). Always launch through scripts/doxa_no_retry.py.
+version = "2.0"
+
+[execution]
+poll_interval = 30
+# Minutes. Gemini Deep Research may run up to 60 minutes; `resume` polls
+# within this window and checkpoints on timeout instead of resubmitting.
+max_wait = 90
+parallel_providers = true
+cancel_upstream_on_interrupt = false
+
+[output]
+include_metadata = true
+
+# Overrides for the builtin all_deep_research mode. Perplexity and Gemini keep
+# the builtin models (sonar-deep-research, deep-research-preview-04-2026). The
+# OpenAI model is pinned here because the builtin default o3-deep-research was
+# shut down by OpenAI on 2026-07-23 (announced 2026-04-22) together with
+# o4-mini-deep-research; the vendor names gpt-5.6-sol as their replacement
+# (https://developers.openai.com/api/docs/deprecations, retrieved 2026-09-05).
+# gpt-5.6-sol carries no "deep-research" substring, so Doxa alone would send it
+# with `tools: []` and an unsupported `temperature`; the launcher
+# scripts/doxa_no_retry.py supplies the shim that fixes both. This user layer
+# deep-merges over the builtin mode (ConfigManager._deep_merge, recursive), so
+# omitting `model` here does not clear it — it silently falls back to the
+# shut-down builtin o3-deep-research. Keep `model` pinned. A `background` key is
+# deliberately absent: Doxa rejects it inside the openai namespace with
+# "Unsupported provider parameter: mode_config.openai.background", and the
+# mode's declared kind = "background" already forces background submission.
+# max_tool_calls is a cost lever for the OpenAI job only; it is not a spending
+# ceiling.
+[modes.all_deep_research.openai]
+model = "gpt-5.6-sol"
+max_tool_calls = 80
+code_interpreter = false

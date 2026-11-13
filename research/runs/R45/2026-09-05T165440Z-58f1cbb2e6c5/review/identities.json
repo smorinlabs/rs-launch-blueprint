@@ -1,0 +1,43 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T165440Z-58f1cbb2e6c5",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T165440Z-58f1cbb2e6c5-r2",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T165440Z-58f1cbb2e6c5-r2",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T165440Z-58f1cbb2e6c5-r2",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": ["bash", "r45-check.sh"],
+    "cwd": "research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence",
+    "toolchain": "curl, gh and git on macOS 26.4 arm64 (Darwin 25.4.0), reading the recommended action's source at its pinned tag, R18's published decision, and both source repositories through their recorded pins. No workflow was enabled, no bot invoked and no template written into any repository.",
+    "output_log": "review/evidence/audit-r45-r2.log",
+    "exit_code": 0
+  }
+}

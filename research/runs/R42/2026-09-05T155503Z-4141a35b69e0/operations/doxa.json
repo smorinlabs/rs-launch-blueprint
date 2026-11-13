@@ -1,0 +1,16 @@
+{
+  "actor": "research-doxa-2026-09-05T155503Z-4141a35b69e0",
+  "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+  "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_0cb2d2a57ff60545006aa1070ef69c87d08fdf7c113ac03c86 running; perplexity job 44059cef-2ccf-4041-bcfe-82e8fdbde710 running; gemini job v1_ChdFUWVoYXVpSEJhN0gxTWtQc0xUOG1BWRIXRVFlaGF1aUhCYTdIMU1rUHNMVDhtQVk running",
+  "at": "2026-09-09T07:13:16Z",
+  "collected_at": "2026-09-09T07:31:10Z",
+  "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+  "operation_id": "research-20260909-001318-a42cc10197234031",
+  "provider": "doxa",
+  "raw": "research/runs/R42/2026-09-05T155503Z-4141a35b69e0/raw/doxa-2594f9973bc7c17cdf448ded71412cb2502b0314ca3e122384eca58fa2478c2e.md",
+  "raw_sha256": "2594f9973bc7c17cdf448ded71412cb2502b0314ca3e122384eca58fa2478c2e",
+  "reason": "op research-20260909-001318-a42cc10197234031 completed 2026-09-09; three provider reports under doxa/research-outputs/ (resume run from the doxa/ cwd); raw = doxa/combined.md (controller-built Doxa combined format); regrouped bundle-shaped raw/doxa.normalized.md passes check-answer-shape; per-provider bodies raw/doxa-<provider>.normalized.md: openai and gemini pass; perplexity lacks the four top-level fields Parameters, Migration implications, Validation strategy and Confidence & re-verify trigger (members complete) \u2014 recorded in doxa/normalization.json; saved-file sha256 prefixes: openai e93ae20b56404852\u2026; perplexity 5c81cdf97086017a\u2026; gemini 4d25688a8781062b\u2026;  usage in operations/doxa-usage.json",
+  "request_id": "fcc55e5b77264320942f58c5a324a1ee",
+  "returned_at": "2026-09-09T07:13:23Z",
+  "state": "succeeded"
+}

@@ -1,0 +1,1 @@
+{"n_all":781,"by_status":{"cancelled":60,"completed":245,"failed":16,"queued":445,"running":15},"newest_created_at":"2026-05-23T16:58:24.229189","operation_id_list_sha256":"17f67eae2728e6190c8e93748583ef2be0164d7860c6bfdcc310e25077d17891","note":"doxa list --all --json on 2026-09-04 before any P02 submission; prompts and IDs deliberately not stored"}

@@ -1,0 +1,114 @@
+=== R55 revision-3 evidence — environment ===
+date (UTC):      2026-09-17T15:19:19Z
+repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+counting binary: /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+uname:           Darwin arm64
+cargo:           cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc:           rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+
+=== D01-D04 — the R53 decision this revision reconciles against ===
+PASS D01: R53 decision pinned at sha256 be59d65bfa7ee087766a315af09c0ba4c93a8fa211927091314c86222cbb9af9
+PASS D02: R53 publishes the per-key loop returning a partial value beside the issue list — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D03a: R53 publishes Issue with the dotted path R55 sanitizes on — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D03b: R53 names the coupling and hands the two questions to R55 — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D03c: R53 states unknown-key detection is free and leaves the policy to R55 — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D03d: R53 hands unknown-key policy to R55 in terms — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D04: R53 adds no crate, so the reconciled R55 stack adds none either — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+
+=== JF-7 — the harness itself: a here-string reaches the counters, a pipeline does not ===
+  pipeline pass=0 fail=0
+  herestring pass=1 fail=1
+PASS JF7: the pipeline form loses both counters and the here-string form keeps both, so this script's gate can trip
+PASS JF7b: /usr/bin/grep counted 4 here-string-fed assert_stream call(s) in this script, one per repaired check
+
+=== JF-2 — the figures revision 1 asserted from artifacts its log did not print ===
+PASS JF2a: /usr/bin/grep counted 20 [[package]] stanzas in revision 1's spike lockfile, the 20-package figure the decision cites
+PASS JF2b: the recorded git archive HEAD rerun of revision 1's check.sh ends with the same summary — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+
+=== JF-3 — the R5.7 half of the Disagreement-5 citation ===
+PASS JF3: R5.7 carries the anti-pattern line revision 1 cited without a check covering it — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+
+=== JF-4 / JF-5 — citations read through the source pins ===
+PASS JF4a: py config.py:127-128 carries the --config collapse docstring — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS JF4b: py config.py:148-150 carries the load_config tolerance docstring — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS JF5a: py config.py:103 is the line returning the discovered-layer warning, not :102 — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS JF5b: ts config.ts:154 is the click.Path(exists=True) parity comment, not :153 — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+
+=== JF-8 / JF-9 — where the R8a gap sits, and the pins revision 2 left off ===
+PASS JF8a: R53's own must-agree table carries the row the silent non-table section does not satisfy — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS JF8b: R53's published loop reaches a section through as_table, so a non-table section skips the body — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS JF9c: R53 verify.sh:649 is the first line of the per-key helper, correcting revision 2's :650-657 to :649-657
+PASS JF9a: /usr/bin/grep counted 3 occurrences of model_config = {"extra": "ignore"} in py settings.py at b08bccfb — all three models tolerate unknown keys
+PASS JF9b: /usr/bin/grep counted 1 z.object declaration and 0 .strict()/.passthrough() calls in ts config.ts:37-41 at cb1cbcb2 — zod strips unknown keys by default
+
+=== D05 — the reconciliation probe, unchanged from revision 2 (built OUTSIDE the repository) ===
+The probe measures R53's published per-key loop against serde_ignored and
+serde_path_to_error on identical inputs. It depends on those two crates
+only in order to measure them; the decision recommends neither.
+warning: field `output` is never read
+  --> src/main.rs:44:5
+   |
+42 | struct FlatConfig {
+   |        ---------- field in this struct
+43 |     #[serde(flatten)]
+44 |     output: OutputSettings,
+   |     ^^^^^^
+   |
+   = note: `FlatConfig` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+--- R1-R3. unknown-key detection: R53's per-key loop vs serde_ignored ---
+R53  partial value: ConfigFile { output: OutputSettings { format: Json, color: Auto, limit: None } }
+R53  issues:        []
+R53  unconsumed:    ["output.colour", "verbose"]
+SI   value:         Some(ConfigFile { output: OutputSettings { format: Json, color: Auto, limit: None } })
+SI   ignored:       ["output.colour", "verbose"]
+SI   error:         ""
+PASS R1 R53's loop reports both the top-level and the nested unknown key: ["output.colour", "verbose"]
+PASS R2 serde_ignored reports the same two keys: ["output.colour", "verbose"]
+PASS R3 the two unknown-key reports are identical: R53=["output.colour", "verbose"] serde_ignored=["output.colour", "verbose"]
+
+--- R4. R53's Issue.path prunes a leaf from the same toml::Table ---
+issues: [Issue { path: "output.format", message: "unknown variant `yaml`, expected `table` or `json`" }]
+after prune: {"output": Table({"limit": Integer(7)})}
+PASS R4 every reported path pruned, siblings survive, second pass is clean: pruned=[true] after=[] limit=Some(7)
+
+--- R5. sanitize per layer -> merge -> one R53 pass ---
+value: ConfigFile { output: OutputSettings { format: Json, color: Auto, limit: Some(2) } }
+warnings: ["ignoring invalid config value project.toml: output.format"]
+PASS R5 the lower layer's valid value survives and the final pass is clean: format=Json issues=[] warnings=["ignoring invalid config value project.toml: output.format"]
+
+--- R6. merge-first (py's order) on the same inputs ---
+value: ConfigFile { output: OutputSettings { format: Table, color: Auto, limit: Some(2) } }
+issues: [Issue { path: "output.format", message: "unknown variant `yaml`, expected `table` or `json`" }]
+PASS R6 merge-first falls back to the default, losing the user layer's value: format=Table issues=[Issue { path: "output.format", message: "unknown variant `yaml`, expected `table` or `json`" }]
+
+--- R7. the key list and serde(flatten) disagree about nesting ---
+R53 over a flattened document: issues=[] unconsumed=["format", "limit"]
+typed flatten deserialize: false
+PASS R7 leaves at a nesting level the key list does not enumerate are reported as unknown, never validated: issues=[] unconsumed=["format", "limit"]
+
+--- R8. a section key that is not a table ---
+as published: value=ConfigFile { output: OutputSettings { format: Table, color: Auto, limit: None } } issues=[] unconsumed=[]
+PASS R8a R53's loop as published reports nothing and returns silent defaults: issues=[] unconsumed=[] value=ConfigFile { output: OutputSettings { format: Table, color: Auto, limit: None } }
+with the repair R55 requires: issues=[Issue { path: "output", message: "invalid type: integer, expected a table" }]
+PASS R8b the repair makes it a localizable value-level fault, prunable, second pass clean: issues=[Issue { path: "output", message: "invalid type: integer, expected a table" }] pruned=true after=[]
+
+ALL R2 PROBE ASSERTIONS PASSED
+PASS D05: /usr/bin/grep counted 9 PASS and 0 FAIL lines, and the final banner is present
+PASS D05a: R53's loop reports the same unknown keys as serde_ignored, at both depths — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D05b: R53's Issue.path addresses a prunable leaf, so no path-tracking crate is needed — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D05c: clause 4 (sanitize per layer, merge, one pass) holds on R53's loop — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D05d: merge-first still loses that value on R53's loop — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D05e: the key list and serde(flatten) must agree about nesting — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D05f: a section key that is not a table is silent under the loop as published — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS D05g: the one-line repair R55 requires restores P2 for that fault — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+Resolved dependency versions in the probe lockfile:
+  name = "serde"	version = "1.0.229"
+  name = "serde_ignored"	version = "0.1.14"
+  name = "serde_path_to_error"	version = "0.1.20"
+  name = "toml"	version = "1.1.6+spec-1.1.0"
+  /usr/bin/grep counted 20 [[package]] stanzas in the probe lockfile
+
+=== summary ===
+PASS=29 FAIL=0 SKIP=0

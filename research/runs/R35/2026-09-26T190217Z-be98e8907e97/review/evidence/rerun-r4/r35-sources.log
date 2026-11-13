@@ -1,0 +1,101 @@
+INFO date_utc=2026-09-28T04:39:59Z
+INFO crates.io cargo-llvm-cov recent_downloads=1675451 downloads=8016351 newest: 0.9.1 2026-09-06T16:20:49.621751Z rust_version=1.87 license=Apache-2.0 OR MIT
+INFO crates.io cargo-tarpaulin recent_downloads=294658 downloads=3051669 newest: 0.37.5 2026-09-27T08:13:55.127691Z rust_version=null license=MIT OR Apache-2.0
+INFO crates.io grcov recent_downloads=180716 downloads=2611218 newest: 0.10.7 2026-03-03T18:28:46.894438Z rust_version=null license=MPL-2.0
+PASS S1a — cargo-llvm-cov newest non-yanked is 0.9.1 created 2026-09-06, rust_version 1.87
+PASS S2a — cargo-tarpaulin newest non-yanked is 0.37.5 created 2026-09-27 with no rust_version declared (revision 4; 0.37.4 of 2026-09-21 until then)
+PASS S3a — grcov newest non-yanked is 0.10.7 created 2026-03-03 under MPL-2.0 (no release in >6 months)
+INFO 90-day ratio cargo-llvm-cov/cargo-tarpaulin = 5.69
+PASS S1b — cargo-llvm-cov 90-day downloads exceed 5x cargo-tarpaulin's (both legs report 5.7x)
+INFO github taiki-e/cargo-llvm-cov stars=1469 archived=false pushed_at=2026-09-06T16:20:44Z
+PASS S4-cargo-llvm-cov — taiki-e/cargo-llvm-cov is not archived
+INFO github taiki-e/cargo-llvm-cov open issues (search total_count)=51
+INFO github xd009642/tarpaulin stars=3021 archived=false pushed_at=2026-09-27T08:12:11Z
+PASS S4-tarpaulin — xd009642/tarpaulin is not archived
+INFO github xd009642/tarpaulin open issues (search total_count)=30
+INFO github mozilla/grcov stars=1367 archived=false pushed_at=2026-09-21T16:23:00Z
+PASS S4-grcov — mozilla/grcov is not archived
+INFO github mozilla/grcov open issues (search total_count)=121
+INFO grcov sampled issues: #1525 #1514 #1512 #1511 #1501 #1491 #1386 #1379 #1374 #1370
+INFO grcov #1525 no maintainer comment
+INFO grcov #1514 no maintainer comment
+INFO grcov #1512 no maintainer comment
+INFO grcov #1511 no maintainer comment
+INFO grcov #1501 no maintainer comment
+INFO grcov #1491 no maintainer comment
+INFO grcov #1386 no maintainer comment
+INFO grcov #1379 no maintainer comment
+INFO grcov #1374 first maintainer response after 11.08 days
+INFO grcov #1370 first maintainer response after 21.23 days
+INFO grcov responsiveness: answered=2 unanswered=8 median_days_over_answered=16.16
+2 8 16.16
+PASS S5a — grcov: at least 6 of its 10 newest issues have no maintainer comment (Opus: 8 of 10; the at-risk signal)
+INFO grcov answered=2 median=16.16
+INFO llvmcov sampled issues: #524 #523 #520 #513 #512 #503 #501 #498 #495 #492
+INFO llvmcov #524 no maintainer comment
+INFO llvmcov #523 first maintainer response after 1.78 days
+INFO llvmcov #520 first maintainer response after 2.59 days
+INFO llvmcov #513 first maintainer response after 11.6 days
+INFO llvmcov #512 no maintainer comment
+INFO llvmcov #503 first maintainer response after 0.01 days
+INFO llvmcov #501 first maintainer response after 2.4 days
+INFO llvmcov #498 no maintainer comment
+INFO llvmcov #495 first maintainer response after 0.05 days
+INFO llvmcov #492 no maintainer comment
+INFO llvmcov responsiveness: answered=6 unanswered=4 median_days_over_answered=2.09
+6 4 2.09
+PASS S5b — cargo-llvm-cov: a majority of its 10 newest issues received a maintainer comment
+INFO cargo-llvm-cov unanswered=4 median=2.09
+INFO rustsec packages/cargo-llvm-cov.html HTTP 404
+PASS S6-cargo-llvm-cov — cargo-llvm-cov has no RustSec package page (HTTP 404 = never advised)
+INFO rustsec packages/cargo-tarpaulin.html HTTP 404
+PASS S6-cargo-tarpaulin — cargo-tarpaulin has no RustSec package page (HTTP 404 = never advised)
+INFO rustsec packages/grcov.html HTTP 200
+PASS S6-grcov — grcov package page exists (one historical advisory)
+PASS S6b — RUSTSEC-2025-0005 lists the patched range >0.8.20, so grcov 0.10.7 is unaffected
+INFO rust-lang/rust#84605 state=open title=Tracking issue for function attribute `#[coverage]`
+PASS S7-84605 — rust-lang/rust#84605 is open
+INFO rust-lang/rust#79649 state=open title=Add support for branch coverage in source-based coverage
+PASS S7-79649 — rust-lang/rust#79649 is open
+INFO rust-lang/rust#79417 state=open title=Rustdoc doctests should have their file/lines remapped when using `-Zinstrument-coverage`
+PASS S7-79417 — rust-lang/rust#79417 is open
+INFO rust-lang/rust#119164 state=open title=Manifest issue with "preview" components
+PASS S7-119164 — rust-lang/rust#119164 is open
+PASS S8a — rustc book names llvm-tools-preview 'the recommended path'
+PASS S8b — rustc book: doc-test coverage needs -Z unstable-options --persist-doctests
+PASS S8c — rustc book: LLVM tools interface not subject to Rust's usual stability guarantees
+INFO rustc-book: 125:-   You can install compatible versions of these tools via the `rustup` component `llvm-tools-preview`. This component is the recommended path, though the specific tools available and their interface is not currently subject to Rust's usual stability guarantees. In this case, you may also find `cargo-binutils` useful as a wrapper around these tools.
+INFO rustc-book: 279:  RUSTDOCFLAGS="-C instrument-coverage -Z unstable-options --persist-doctests target/debug/doctestbins" \
+INFO rustc-book: 284:The `-Z unstable-options --persist-doctests` flag is required, to save the test binaries
+INFO rustc-book: 293:          RUSTDOCFLAGS="-C instrument-coverage -Z unstable-options --persist-doctests target/debug/doctestbins" \
+INFO codecov-action latest release v7.1.1 2026-09-17T00:48:02Z
+PASS S9a — codecov-action README: 'Tokenless uploading is unsupported' (forks to public repos excepted)
+INFO codecov README: 49:- Tokenless uploading is unsupported. However, PRs made from forks to the upstream public repos will support tokenless (e.g. contributors to OSS projects do not need the upstream repo's Codecov token). For details, [see our docs](https://docs.codecov.com/docs/codecov-uploader#supporting-token-less-uploads-for-forks-of-open-source-repos-using-codecov)
+INFO ratatui/ratatui .github/workflows/ci.yml: 1 line(s) naming llvm-cov; fail-under occurrences=0
+PASS S10-ratatui — ratatui/ratatui .github/workflows/ci.yml runs llvm-cov and carries no fail-under gate
+INFO starship/starship .github/workflows/workflow.yml: 3 line(s) naming llvm-cov; fail-under occurrences=0
+PASS S10-starship — starship/starship .github/workflows/workflow.yml runs llvm-cov and carries no fail-under gate
+INFO clap-rs/clap .github/workflows/ci.yml: 3 line(s) naming tarpaulin; fail-under occurrences=0
+PASS S10-clap — clap-rs/clap .github/workflows/ci.yml runs tarpaulin and carries no fail-under gate
+INFO cargo-llvm-cov ci.yml: 57:          - rust: '1.87'
+INFO cargo-llvm-cov ci.yml: 58:          - rust: stable
+INFO cargo-llvm-cov ci.yml: 59:          - rust: beta
+INFO cargo-llvm-cov ci.yml: 60:          - rust: nightly
+INFO cargo-llvm-cov ci.yml: 61:          - rust: nightly
+INFO cargo-llvm-cov ci.yml: 62:            os: macos-latest
+INFO cargo-llvm-cov ci.yml: 63:          - rust: nightly
+INFO cargo-llvm-cov ci.yml: 64:            os: windows-latest
+INFO cargo-llvm-cov ci.yml: 65:          - rust: nightly-i686-pc-windows-msvc
+INFO cargo-llvm-cov ci.yml: 66:            os: windows-latest
+INFO cargo-llvm-cov ci.yml: 67:          - rust: nightly
+INFO cargo-llvm-cov ci.yml: 68:            os: windows-latest
+INFO cargo-llvm-cov ci.yml: 70:          - rust: nightly
+INFO cargo-llvm-cov ci.yml: 71:            os: windows-11-arm
+INFO cargo-llvm-cov ci.yml: 421:          - rust: nightly
+INFO cargo-llvm-cov ci.yml: 422:          # - rust: nightly
+INFO cargo-llvm-cov ci.yml: 423:          #   os: windows-latest
+INFO cargo-llvm-cov ci.yml: 461:            os: ubuntu-22.04
+INFO cargo-llvm-cov ci.yml: 463:            os: ubuntu-22.04
+PASS S11a — cargo-llvm-cov's own CI names a macOS runner
+INFO snapshot digests written to SHA256SUMS-sources (49 files)
+SUMMARY PASS=25 FAIL=0

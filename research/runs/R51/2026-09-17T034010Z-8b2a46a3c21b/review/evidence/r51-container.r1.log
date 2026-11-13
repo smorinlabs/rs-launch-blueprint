@@ -1,0 +1,75 @@
+=== R51 container checks
+date-utc: 2026-09-19T01:17:32Z
+host-os:  Darwin 25.4.0 arm64
+grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+script:   /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/evidence
+PASS  F-Dockerfile.candidate — fixture present
+PASS  F-dockerignore.candidate — fixture present
+PASS  C15a — FROM instructions in the Dockerfile: 3
+PASS  C15b — ARG image pins carrying a 64-hex sha256 digest: 3
+PASS  C15c — FROM instructions resolving through a pinned ARG: 3
+PASS  C15d — HEALTHCHECK is exec form invoking busybox by absolute path
+PASS  C15e — probe wait -T 2 (inside --timeout=3s)
+PASS  C15f — HEALTHCHECK --timeout=3s
+PASS  C15g — R77's container note: bind all interfaces
+PASS  C15h — image does not restate RSLBP_WEB_PORT (R77's default stands)
+PASS  C15i — EXPOSE matches R77's default port
+PASS  C15j — explicit non-root USER
+PASS  C15k — cache mounts serialise concurrent builds
+PASS  C15l — .dockerignore keeps Cargo.lock in the build context
+docker:   29.5.2
+buildx:   github.com/docker/buildx v0.34.0-desktop.1 e655a179805a207c4e98cfbd36e978cd0edfb8f9
+cargo:    cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+platform: linux/arm64
+scratch:  /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r51-container.8o7Tyg
+lockfile:     Updating crates.io index      Locking 54 packages to latest Rust 1.96 compatible versions       Adding matchit v0.8.4 (available: v0.8.6) 
+PASS  C0a — Cargo.lock generated; 58 packages locked
+PASS  C1a — cold build ran a release-profile cargo build
+PASS  C1b — cold build wall time 32 s (timing varies; see the decision's comparison rule)
+PASS  C2a — image Config.User: nonroot:nonroot
+PASS  C2b — image Entrypoint: /usr/local/bin/rslbp-serve
+PASS  C2c — image Healthcheck.Test: CMD /bin/busybox wget --spider -q -T 2 http://127.0.0.1:8000/healthz
+PASS  C2d — image ExposedPorts: 8000/tcp
+PASS  C2e — image env carries R77's container host: RSLBP_WEB_HOST=0.0.0.0
+PASS  C2f — runtime base supplies CA bundle: SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+PASS  C2g — image size 12312852 B (under the 40 MB ceiling the debian-slim alternative exceeds)
+measured-size-main: 12312852
+PASS  C3a — PID 1 UID reported by docker top: 65532
+PASS  C3b — PID 1 command: /usr/local/bin/rslbp-serve
+PASS  C3c — container health status: healthy
+PASS  C3d — health FailingStreak: 0
+PASS  C3e — first health probe exit code: 0
+PASS  C3f — HTTP status from the host against the liveness path: 200
+PASS  C14a — /bin/sh is not executable in the runtime image (positive minimum-content test)
+PASS  C8-sh — sh is absent from the runtime image
+PASS  C8-bash — bash is absent from the runtime image
+PASS  C8-curl — curl is absent from the runtime image
+PASS  C8-wget — wget is absent from the runtime image
+PASS  C6a — container exit code after docker stop (R67's SIGTERM integer): 143
+PASS  C6b — container was not OOM-killed: false
+PASS  C13a — health status when nothing listens on the probed port: unhealthy
+PASS  C13b — FailingStreak reached 2 (>= the 2 retries configured for this run)
+PASS  C13c — failing probe exits 1 (the reference's 'unhealthy' code), not 2
+PASS  C4a — the incremental build recompiled something (2 Compiling lines)
+PASS  C4b — non-workspace crates recompiled after a source-only edit: 0
+measured-wall-incremental-with-mounts: 15s
+PASS  C5a — counterfactual Dockerfile carries no cache mount
+PASS  C5b — without cache mounts the same edit recompiles 50 third-party crates
+measured-wall-incremental-no-mounts: 28s
+PASS  C5c — incremental rebuild is faster with cache mounts (15s < 28s)
+PASS  C7-cc-debian12 — built-in identity: uid=65532(nonroot) gid=65532(nonroot) groups=65532(nonroot)
+PASS  C7-cc-debian13 — built-in identity: uid=65532(nonroot) gid=65532(nonroot) groups=65532(nonroot)
+PASS  C9a — the busybox probe costs 813471 B (under 2 MB)
+measured-size-noprobe: 11499381
+measured-size-busybox-delta: 813471
+PASS  C9b — debian-slim + curl is 40163283 B, +226% over the selected 12312852 B
+measured-size-debian-slim: 40163283
+PASS  C10a — the debian-slim alternative also reaches healthy: healthy
+PASS  C10b — the debian-slim alternative also runs non-root (uid/user 999)
+measured-binary-size: 1271048
+PASS  C11a — highest versioned glibc symbol required by the built binary: GLIBC_2.34
+PASS  C11b — runtime base glibc banner: GNU C Library (Debian GLIBC 2.41-12+deb13u4) stable release version 2.41.
+PASS  C12a — the trixie-built binary on the older cc-debian12 runtime: healthy
+
+grep-version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+SUMMARY: PASS=54 FAIL=0 SKIP=0 TOTAL=54

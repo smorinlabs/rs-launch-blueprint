@@ -1,0 +1,60 @@
+# R77 revision 3 — OVERRIDE-number allocation — 2026-09-19T01:39:40Z
+# /usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+# repository root, fully resolved: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+PASS repository root resolves, with no .. segments left in it
+PASS the resolved root contains no .. segment
+
+## A — the controller allocates OV numbers, and R77 holds OV-04
+PASS the ledger records the collision and the resolution
+PASS the resolution moves allocation to the controller
+PASS the allocation table gives OV-04 to R77 revision 2
+PASS the allocation table renumbers R80 to OV-05
+PASS later items ask the controller rather than searching
+PASS the ledger records R77 revision 2 landing with OV-04
+PASS R80's decision is at revision 3, the renumbering revision
+PASS R80 now records OVERRIDE (OV-05)
+live holders of the literal "OVERRIDE (OV-04)":
+docs/planning/p02/execution-ledger.md
+research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md
+PASS required OV-04 holder present: research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md
+PASS required OV-04 holder present: docs/planning/p02/execution-ledger.md
+PASS no third item claims OV-04 (only this item, the ledger, and optionally R80's renumber note)
+
+## B — revision 2 s OV check was vacuous: demonstrated, not asserted
+unresolved-path search: 2 files matched, 0 survived the revision-2 exclusion
+PASS revision 2's exclusion discarded all 2 matching files — the check could not fail (the defect, reproduced)
+PASS the corrected search sees 1 OV-04 holder(s) outside this item, where revision 2's saw 0
+PASS revision 2's script still contains the vacuous expression, unedited
+PASS the decision records the defect rather than quietly repairing it
+
+## C — revision 1 and revision 2 evidence carried byte-identical
+PASS figures.sh is unchanged (d70b89cdd15898078182f696540bd992be7d17c9ba7262441bc4395d29dd25a6)
+PASS sources.sh is unchanged (a63bb281280bc3d530f7aacf24e3825994f94c2f980db4df7c0041cb9fe05f34)
+PASS probes.sh is unchanged (4af088a3945a2ba47ab7f60ef71f0714fd4075b9f01cfe81606edd45d1b62747)
+PASS fetch-snapshots.sh is unchanged (9c26e9ea96b101e88398b60baf3b709bc3b3e0aae28bfd8d9b77c4442e51c642)
+PASS figures.log is unchanged (493ba961663fbf19d28432610d38ff168558239e074026d02ced7bf28a58f086)
+PASS sources.log is unchanged (455841ce2b0d76cf94d46a5563d3a50a9144e454bf4f5218235ee32c1b3f3923)
+PASS probes.log is unchanged (fe848ea72828e4220f7030caca562c48517f16207565d9b05c6edf2a58672ae7)
+PASS fetch-snapshots.log is unchanged (8eae6a9c2af53ec40384968efed1ed40b16e5d7c7523240336fd7e25c84f5226)
+PASS rerun-diff.log is unchanged (d6b4d0fee8b741eb8850d00c38810ddf832d0c161f6f0d0cc4530e36dd96028a)
+PASS archive-rerun.log is unchanged (b341895ab9f790914d3475f70a34b4aa7aae0c07eaea39100a3f3b7e7ad15d1a)
+PASS revision 2's script still runs, now 90/1/0 against a revision-3 title (PASS=90 FAIL=1 SKIP=0 TOTAL=91)
+PASS its single failure is the revision-2 title check, and nothing else (FAIL H1 is the date-first revision-2 title)
+
+## D — revision-3 document discipline
+PASS H1 is the date-first revision-3 title (# 2026-09-18 — R77 — web-env-settings (crate, Focused) — decision (revision 3))
+PASS no Supersedes section (0)
+PASS exactly one re-verify line (1)
+PASS no owned parameter (0)
+PASS exactly six assumes lines (6)
+PASS the revision history names all three revisions
+PASS the OV-04 ground is now the controller's allocation, not a search
+PASS the substance of revision 2 is declared unmoved
+PASS assumes msrv-policy still byte-identical to docs/port/PARAMETERS.md (142 bytes)
+PASS assumes rust-edition still byte-identical to docs/port/PARAMETERS.md (29 bytes)
+PASS assumes target-os-matrix still byte-identical to docs/port/PARAMETERS.md (56 bytes)
+PASS assumes license still byte-identical to docs/port/PARAMETERS.md (37 bytes)
+PASS assumes web-extra-surface still byte-identical to docs/port/PARAMETERS.md (2668 bytes)
+PASS assumes error-taxonomy-exit-codes still byte-identical to docs/port/PARAMETERS.md (4095 bytes)
+
+PASS=43 FAIL=0 SKIP=0 TOTAL=43

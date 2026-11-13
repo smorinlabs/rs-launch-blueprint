@@ -1,0 +1,6 @@
+retrieved-utc: 2026-09-16T23:55:10Z
+workflow-schema status=200 bytes=354541 content=PASS
+disable-guide status=200 bytes=297827 content=PASS
+workflow-syntax status=200 bytes=2049248 content=PASS
+events-guide status=200 bytes=1069449 content=PASS
+action-readme status=200 bytes=5131 content=PASS

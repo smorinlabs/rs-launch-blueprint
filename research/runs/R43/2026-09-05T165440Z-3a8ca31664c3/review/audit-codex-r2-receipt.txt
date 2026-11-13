@@ -1,0 +1,6 @@
+Approved — revision 2 corrects and properly bounds both issue reports.
+
+- Audit: [audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R43/2026-09-05T165440Z-3a8ca31664c3/review/audit-codex.md), SHA-256 `10a7bcb990c21c80b5b7f0dead238aaab57d2c07c66be92a6822f809dc4e30aa`
+- Rerun: exit `0`; 37/37 assertions passed in [audit-r43-r2.log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R43/2026-09-05T165440Z-3a8ca31664c3/review/evidence/audit-r43-r2.log).
+- The Linux VM was stopped, so I used the requested macOS fallback.
+- No unresolved findings.

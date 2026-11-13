@@ -1,0 +1,15 @@
+#!/bin/zsh
+# usage: register-opus.sh <ITEM> <RUN_ID> — sweep, record submitted+collect for a finished Opus research report, commit.
+set -u
+ITEM=$1; RUN_ID=$2; REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan; cd "$REPO" || exit 9
+SP=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad
+d=$REPO/research/runs/$ITEM/$RUN_ID; rel=research/runs/$ITEM/$RUN_ID
+runner() { uv run --offline --no-project --no-python-downloads --no-cache python3 scripts/research_runner.py --json "$@"; }
+[[ -s $d/raw/opus.md ]] || { echo "$ITEM: no opus report"; exit 2; }
+zsh "$SP/sweep-token.sh" "$d" || exit 3
+sha=$(shasum -a 256 "$d/raw/opus.md" | cut -d' ' -f1); op="agent:research-opus-$RUN_ID:${sha:0:16}"
+runner run submitted "$ITEM" --run-id "$RUN_ID" --provider opus --actor "research-opus-$RUN_ID" --model claude-opus-5 --operation-id "$op" --actual-provider claude-agent-tool --actual-model claude-opus-5 > /dev/null || { echo "$ITEM: submitted refused"; exit 5; }
+runner run collect "$ITEM" --run-id "$RUN_ID" --provider opus --actor "research-opus-$RUN_ID" --model claude-opus-5 --state succeeded --raw-file raw/opus.md > /dev/null || { echo "$ITEM: collect refused"; exit 6; }
+h3=$(/usr/bin/grep -c '^### ' "$d/raw/opus.md"); st=$(python3 -c "import json;print(json.load(open('$d/manifest.json'))['state'])")
+git add -- "$rel/raw" "$rel/manifest.json" "$rel/operations"
+printf 'chore(research): collect the %s Opus research report\n\nOpus claude-opus-5 report %s, %s H3 headings (/usr/bin/grep -c), operation %s; token sweep clean; run state now %s.\n\nClaude-Session: https://claude.ai/code/session_01ULEUr6b17aZ6iTpWjPGtWM\n' "$ITEM" "${sha:0:8}" "$h3" "$op" "$st" | git commit -q -F - -- "$rel/raw" "$rel/manifest.json" "$rel/operations" && echo "$ITEM opus registered: ${sha:0:8} state=$st commit=$(git log --oneline -1 | cut -c1-7)"

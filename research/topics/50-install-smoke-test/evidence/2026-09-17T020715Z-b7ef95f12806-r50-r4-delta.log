@@ -1,0 +1,86 @@
+==============================================================
+R50 install-smoke-test — revision-4 delta evidence
+==============================================================
+
+--- Identity — toolchain and host ---------------------------
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+just 1.57.0
+Darwin arm64
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
+repo root:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+run dir:    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R50/2026-09-17T020715Z-b7ef95f12806
+scratch:    <SCRATCH>
+
+--- Phase J — R60 fixes --version; R22 still open ------------
+PASS r60/decision-exists (research/topics/60-cli-parsing-framework/DECISION.md)
+PASS r60/ac2-byte-identical (/usr/bin/grep -c -F matched 1 line(s) for produce byte-identical output)
+PASS r60/ac2-one-line-format (/usr/bin/grep -c -F matched 1 line(s) for exactly one line matching)
+PASS r60/ac2-no-leading-v (/usr/bin/grep -c -F matched 1 line(s) for no leading `v`)
+PASS r60/version-from-cargo-pkg-version (/usr/bin/grep -c -F matched 1 line(s) for from `CARGO_PKG_VERSION`)
+PASS r60/version-mirrors-manifest (/usr/bin/grep -c -F matched 1 line(s) for which mirrors the manifest)
+PASS r60/published-commit-recorded (/usr/bin/grep -c -F matched 1 line(s) for commit 1bc131d)
+PASS r60/resolved-in-run-snapshot (/usr/bin/grep -c -F matched 1 line(s) for | resolved |)
+PASS r60/bin-name-from-r49 (/usr/bin/grep -c -F matched 1 line(s) for name rslbp)
+PASS r22/open-in-live-index (/usr/bin/grep -c -F matched 1 line(s) for | open |)
+
+--- Phase K — R11 resolved; web step vacuous -----------------
+PASS r11/resolved-in-live-index (/usr/bin/grep -c -F matched 1 line(s) for | resolved |)
+PASS r11/registry-names-install-smoke (/usr/bin/grep -c -F matched 1 line(s) for R50's one ubuntu-latest job)
+PASS r11/registry-web-leg-is-step (/usr/bin/grep -c -F matched 1 line(s) for whose web leg is a step conditioned on the web output)
+PASS r11/web-equals-code (/usr/bin/grep -c -F matched 3 line(s) for `web` now equals `code`)
+PASS r11/step-condition-always-true (/usr/bin/grep -c -F matched 1 line(s) for R50's step-level condition is always true)
+PASS r11/reverify-names-web-flag (/usr/bin/grep -c -F matched 1 line(s) for the controller acting on the flag that `web` now equals `code`)
+PASS r11/reverify-names-r50 (/usr/bin/grep -c -F matched 1 line(s) for R50 revising its revision 2)
+PASS r11/open-in-run-snapshot (/usr/bin/grep -c -F matched 1 line(s) for | open |)
+PASS r11/acceptance-artifact-exists (research/topics/11-ci-workflow-job-structure/acceptance.json)
+PASS r11/registry-adds-no-packed-content-gate (count 0)
+
+--- Phase L — DIVERGENCE-ANALYSIS rows for F221/F222 ---------
+PASS div/item-row-circumstantial (/usr/bin/grep -c -F matched 1 line(s) for inferred: circumstantial)
+PASS div/item-harmonize-partly (/usr/bin/grep -c -F matched 1 line(s) for | partly |)
+PASS div/f221-harmonize-yes (/usr/bin/grep -c -F matched 1 line(s) for | yes |)
+PASS div/f221-no-stated-reason (/usr/bin/grep -c -F matched 1 line(s) for no stated reason ts left it local-only)
+PASS div/f222-harmonize-no (/usr/bin/grep -c -F matched 1 line(s) for | no |)
+PASS div/yes-definition (/usr/bin/grep -c -F matched 1 line(s) for Harmonize = yes (22 items))
+PASS div/one-value-for-three (/usr/bin/grep -c -F matched 1 line(s) for one value for all three repos)
+PASS div/r50-note (/usr/bin/grep -c -F matched 1 line(s) for R50: item-level class is A)
+
+--- Phase M — AC4 equality on a fixture ---------------------
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging r50spike v0.4.2 (<SCRATCH>/eq)
+    Packaged <N> files, <SIZE> (918B compressed)
+PASS eq/package/exit (exit 0)
+PASS eq/package/crate-archive-exists (target/package/r50spike-0.4.2.crate)
+  Installing r50spike v0.4.2 (<SCRATCH>/eq-extract/r50spike-0.4.2)
+   Compiling r50spike v0.4.2 (<SCRATCH>/eq-extract/r50spike-0.4.2)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+  Installing <SCRATCH>/eq-root/bin/rslbpspike
+   Installed package `r50spike v0.4.2 (<SCRATCH>/eq-extract/r50spike-0.4.2)` (executable `rslbpspike`)
+warning: be sure to add `<SCRATCH>/eq-root/bin` to your PATH to be able to run the installed binaries
+PASS eq/install/exit (exit 0)
+PASS eq/install/binary-is-executable (<SCRATCH>/eq-root/bin/rslbpspike)
+PASS eq/install/exactly-one-binary-installed (count 1)
+rslbpspike 0.4.2
+PASS eq/run/exit (exit 0)
+PASS eq/run/stdout-is-one-line (count 1)
+PASS eq/run/stdout-equals-binary-name-and-manifest-version (rslbpspike 0.4.2)
+PASS eq/run/stdout-carries-no-leading-v (count 0)
+PASS eq/manifest-version-is-0.4.2 (/usr/bin/grep -c -F matched 1 line(s) for version = "0.4.2")
+PASS eq/no-install-into-cargo-home (no $CARGO_HOME/bin/rslbpspike)
+
+--- Phase N — OV-13 census; override shape ------------------
+PASS ov/no-OV-13-declaration-outside-this-run (count 0)
+PASS ov/ledger-released-OV-13 (/usr/bin/grep -c -F matched 1 line(s) for OV-13)
+PASS ov/agents-shape-override (/usr/bin/grep -c -F matched 1 line(s) for OVERRIDE (OV-nn))
+PASS ov/agents-shape-argument (/usr/bin/grep -c -F matched 1 line(s) for **Argument:**)
+PASS ov/agents-shape-options (/usr/bin/grep -c -F matched 1 line(s) for **Options:**)
+PASS safety/no-cargo-publish-invocation-in-this-script (count 0)
+
+==============================================================
+r50-r4-delta: all assertions passed
+==============================================================

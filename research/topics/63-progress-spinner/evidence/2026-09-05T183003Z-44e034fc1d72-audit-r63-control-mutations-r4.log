@@ -1,0 +1,6 @@
+unclassified mutation: placed=[] unclassified=1 violations=0
+line deletion: line-count 1072 vs 1071 classified=0 unclassified=1 violations=1
+V out-of-position: placed=[('V-live-figure', 202)] unclassified=0 violations=1
+H out-of-position: placed=[('H-host-identity', 202)] unclassified=0 violations=1
+V in-position: placed=[('V-live-figure', 1066)] unclassified=0 violations=0
+H in-position: placed=[('H-host-identity', 8)] unclassified=0 violations=0

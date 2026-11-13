@@ -1,0 +1,90 @@
+# Published-crate source reads at pinned versions — retrieved 2026-09-09
+$ curl -L https://static.crates.io/crates/signal-hook/signal-hook-0.4.4.crate
+b2a0c28ca5908dbdbcd52e6fdaa00358ab88637f8ab33e1f188dd510eb44b53d  /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/src6bKD/signal-hook.crate
+$ curl -L https://static.crates.io/crates/inquire/inquire-0.9.4.crate
+6654738b8024300cf062d04a1c13c10c8e2cea598ec1c47dc9b6641159429756  /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/src6bKD/inquire.crate
+
+## signal-hook 0.4.4 — flag::register signature and default features
+$ grep -n 'pub fn register' -A 8 signal-hook-0.4.4/src/flag.rs
+153:pub fn register(signal: c_int, flag: Arc<AtomicBool>) -> Result<SigId, Error> {
+154-    // We use SeqCst for two reasons:
+155-    // * Signals should not come very often, so the performance does not really matter.
+156-    // * We promise the order of actions, but setting different atomics with Relaxed or similar
+157-    //   would not guarantee the effective order.
+158-    unsafe { low_level::register(signal, move || flag.store(true, Ordering::SeqCst)) }
+159-}
+160-
+161-/// Registers an action to set the flag to the given value whenever the signal arrives.
+162:pub fn register_usize(signal: c_int, flag: Arc<AtomicUsize>, value: usize) -> Result<SigId, Error> {
+163-    unsafe { low_level::register(signal, move || flag.store(value, Ordering::SeqCst)) }
+164-}
+165-
+166-/// Terminate the application on a signal if the given condition is true.
+167-///
+168-/// This can be used for different use cases. One of them (with the condition being always true) is
+169-/// just unconditionally terminate on the given signal.
+170-///
+--
+186:pub fn register_conditional_shutdown(
+187-    signal: c_int,
+188-    status: c_int,
+189-    condition: Arc<AtomicBool>,
+190-) -> Result<SigId, Error> {
+191-    let action = move || {
+192-        if condition.load(Ordering::SeqCst) {
+193-            low_level::exit(status);
+194-        }
+--
+217:pub fn register_conditional_default(
+218-    signal: c_int,
+219-    condition: Arc<AtomicBool>,
+220-) -> Result<SigId, Error> {
+221-    // Verify we know about this particular signal.
+222-    low_level::signal_name(signal).ok_or_else(|| Error::from_raw_os_error(EINVAL))?;
+223-    let action = move || {
+224-        if condition.load(Ordering::SeqCst) {
+225-            let _ = low_level::emulate_default_handler(signal);
+
+$ sed -n '/^\[features\]/,/^\[/p' signal-hook-0.4.4/Cargo.toml
+[features]
+channel = []
+default = [
+    "channel",
+    "iterator",
+]
+extended-siginfo = [
+    "channel",
+    "iterator",
+    "extended-siginfo-raw",
+]
+extended-siginfo-raw = ["cc"]
+iterator = ["channel"]
+
+[lib]
+$ grep -n 'rust-version\|^edition\|^license' signal-hook-0.4.4/Cargo.toml
+13:edition = "2018"
+14:rust-version = "1.66"
+46:license = "MIT OR Apache-2.0"
+
+## inquire 0.9.4 — typed cancellation variants
+$ grep -n 'OperationCanceled\|OperationInterrupted\|pub enum InquireError' -A 3 inquire-0.9.4/src/error.rs
+12:pub enum InquireError {
+13-    /// The input device is not a TTY, which means that enabling raw mode
+14-    /// on the terminal in order to listen to input events is not possible.
+15-    NotTTY,
+--
+25:    OperationCanceled,
+26-
+27-    /// The operation was interrupted by the user after they
+28-    /// pressed Ctrl+C.
+--
+33:    OperationInterrupted,
+34-
+35-    /// Error while executing IO operations.
+36-    Custom(CustomUserError),
+--
+83:            InquireError::OperationCanceled => f.write_str("Operation was canceled by the user"),
+84:            InquireError::OperationInterrupted => {
+85-                f.write_str("Operation was interrupted by the user")
+86-            }
+87-            InquireError::Custom(err) => write!(f, "User-provided error: {}", err),

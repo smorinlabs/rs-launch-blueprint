@@ -12,6 +12,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Current owner context (later clarification, 2026-09-04): FastAPI was selected for Python and Hono for TypeScript on ecosystem merits. The pinned TypeScript snapshot above predates that web direction; it is not evidence that Hono is implemented there. Research Rust on its own merits while preserving the shared web-example principles.
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): We should look at Hono because that's what we've settled upon, and tRPC as the equivalent for the TypeScript repo should be added. We should copy the same architectural principles and patterns, and have equivalents for a base there. We need to find the equivalent for Rust as a specific research item.
 
+### Baseline review (2026-09-04)
+- F331 (router registry) was reclassified `DIVERGENT` under this item: compare native router composition before accepting a registry list, keeping explicit, straightforward resource registration as acceptance behavior. F304's optional OTel boundary belongs to R58's `logging-pipeline-contract` inside the `web` surface this item sets (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The specific features layered on top of the chosen framework once it exists — the error envelope (R70 owns F305/F306), OpenAPI generation (R71 owns F307/F312/F332/F333), pagination (R72 owns F310/F311), idempotency replay (R73 owns F313-F315), rate limiting (R74 owns F316/F323), middleware ordering/request-id/access-log/security headers (R75 owns F317-F321/F327), CORS (R76 owns F322), typed env settings (R77 owns F324), OpenTelemetry (R78 owns F325), Prometheus metrics (R79 owns F326), health probe endpoints (R80 owns F328/F329), and the production container image (R51) — this item decides only the framework/server crate stack, the Cargo feature-gate shape, the config-injection mechanism, and the process entrypoint they all sit inside.
 - Whether the web service ships as an optional Cargo feature at all; ledger row F017 (area `workspace-architecture`) already answered `ADOPT` with no research item — this item decides which framework fills that feature, not whether the feature exists.
@@ -21,6 +24,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R69
 - owns: web-extra-surface
 - consumes: R01: http-transport-injection-seam
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): `web-extra-surface`'s value (this item's `owns` parameter) is consumed by R11 (`ci-workflow-job-structure`, CI job and skip-gating structure), R32 (`test-harness-and-execution`, test tiers), R37 (`hook-manager-distribution`, hook wiring for the OpenAPI snapshot check), R51 (`container-image`), R58 (`logging-pipeline-architecture`, shared logging pipeline profiles), and R71/R82/R83/R84 (the OpenAPI and docs gates) — the Parameters field of this item's answer must state a value precise enough for all of them to consume directly: whether the surface exists as a named Cargo feature, that feature's name, and what crates/capabilities it gates. R01 (`ports-and-adapters-seam`) decides the driven-I/O seam's shape (F001, `http-transport-injection-seam`); this item's web adapter must wire through whichever shape R01 lands on — treat R01's choice as open, do not block on it.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -66,6 +73,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -76,7 +89,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

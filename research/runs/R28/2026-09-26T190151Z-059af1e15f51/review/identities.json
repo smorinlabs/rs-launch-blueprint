@@ -1,0 +1,46 @@
+{
+ "audits": {
+  "empirical": {
+   "actor": "codex-empirical-r28-r3c",
+   "family": "anthropic",
+   "file": "review/audit-codex.r3c.md",
+   "model": "claude-opus-5-5"
+  },
+  "judgment": {
+   "actor": "s1-controller",
+   "family": "meta",
+   "file": "review/audit-fable.r3c.md",
+   "model": "muse-spark"
+  }
+ },
+ "empirical": {
+  "argv": [
+   "bash",
+   "review/evidence/r28-autofix.sh"
+  ],
+  "cwd": "research/runs/R28/2026-09-26T190151Z-059af1e15f51, the run whose evidence the r3 empirical audit reran from research/runs/R28/2026-09-26T190151Z-059af1e15f51/review/evidence/ with fresh output to /tmp/r28-emp-r3/ scratch only. The argv above is the audit primary rerun (bash r28-autofix.sh, exit 0; fresh 5/0/0 equals committed 5/0/0; cmp differs in run-local bytes only \u2014 CARGO_HOME line 2, mktemp scratch names, cargo timings, scratch commit hash \u2014 with identical verdict lines). The audit also ran r28-editor-config.sh (exit 0, 6/6), r28-floor.sh (exit 0, 5/5), r28-inputs.sh (exit 0, 157/157, byte-identical), r28-lint-table.sh (exit 0, 13/13), r28-live-figures.sh (exit 0, 7/7), r28-ruff-fix-default.sh (exit 0, 2/2), r28-sources.sh (exit 0, 10/10) and r28-test-relaxation.sh (exit 0, 11/11), all differing only in run-local bytes with identical verdict lines. Total 216 PASS, 0 FAIL, 0 SKIP. The output log named below is the committed r28-autofix log whose verdict lines the fresh rerun reproduced identical.",
+  "exit_code": 0,
+  "output_log": "review/evidence/r28-autofix.log",
+  "toolchain": "macOS arm64 (Darwin 25.4.0), CARGO_HOME=/tmp/cargo-s38-R28-emp (private; committed logs show /tmp/cargo-s9-R28), as the r3 empirical audit states; nothing under review/evidence/ written."
+ },
+ "engine_reports": {
+  "muse": {
+   "actor": "research-muse-2026-09-26T190151Z-059af1e15f51",
+   "family": "meta",
+   "file": "raw/muse.md",
+   "model": "muse-spark"
+  },
+  "opus": {
+   "actor": "research-opus-2026-09-26T190151Z-059af1e15f51",
+   "family": "anthropic",
+   "file": "raw/opus.md",
+   "model": "claude-opus-5-5"
+  }
+ },
+ "evidence_checks": {},
+ "synthesis": {
+  "actor": "synth-opus-2026-09-26T190151Z-059af1e15f51-r3",
+  "family": "anthropic",
+  "model": "claude-opus-5-5"
+ }
+}

@@ -1,0 +1,20 @@
+R46 revision-6 empirical-audit evidence
+actor: audit-codex-2026-09-05T160304Z-5cba7fe96ae4-r6
+model: gpt-5.6-terra
+family: openai
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4
+
+The revision-6 empirical check records exactly two commands. Per the owner
+ruling that P02 is research only, no acceptance/checker harness, fixture, or
+pre-existing revision-6 script was executed by this auditor.
+
+COMMAND: rustc --version
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+EXIT: 0
+
+COMMAND: cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+EXIT: 0
+
+RESULT: PASS
+The command output and zero exits match review/DECISION.md:150-152.

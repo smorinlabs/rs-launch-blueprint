@@ -1,0 +1,23 @@
+
+===== 0. Setup =====
+run-utc 2026-09-15T08:13:23Z
+scratch copy /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r19-negctl.ah9XOI
+tampered: appended "# rust-version" to cargo/lib/dependabot/cargo/update_checker.rb
+
+===== 1. Run the checker against the tampered copy =====
+checker exit status 1
+FAIL  snapshot does not re-derive the pin's blob shas (21 read, 1 defective)
+FAIL  3b the literal rust-version occurs 1 time(s) under cargo/lib — the claim is wrong
+failed assertions: 2
+
+===== 2. Assertions about the failure =====
+PASS  the checker exits 1 when its snapshot is tampered with
+PASS  the blob-sha integrity check caught the edit
+PASS  the zero-occurrence check caught the inserted key
+PASS  exactly 2 assertions failed — no other check is coupled to this edit
+
+===== 3. The committed snapshot is untouched =====
+PASS  the committed snapshot still passes its own checker
+
+===== SUMMARY =====
+failed assertions: 0

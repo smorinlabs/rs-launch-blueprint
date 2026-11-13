@@ -1,0 +1,9 @@
+Written [raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R43/2026-09-05T165440Z-3a8ca31664c3/raw/codex.md).
+
+SHA-256: `77b76cf4c2faaf8f8f0a7d174b2c175cf6db9c4e8a49556236955bde50d52035`
+
+10 H3 fields; 3 members; 45 member fields.
+
+Emitted `BASELINE-REVIEW:` for F198 and F199; no `CONFLICT:`.
+
+Unverified: installed Cursor, Devin/Windsurf, and Claude Code client behavior.

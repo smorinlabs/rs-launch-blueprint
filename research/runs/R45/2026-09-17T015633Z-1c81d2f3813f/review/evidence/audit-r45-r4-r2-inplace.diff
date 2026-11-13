@@ -1,0 +1,51 @@
+--- review/evidence/r18-trigger-phrase-pin.log	2026-09-10 16:00:48
++++ review/evidence/audit-r45-r4-r2-inplace.log	2026-09-16 16:59:59
+@@ -1,5 +1,5 @@
+ # r18-trigger-phrase-pin.log
+-captured: 2026-09-10T23:00:33Z
++captured: 2026-09-16T23:59:56Z
+ host toolchain:
+   rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+   cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+@@ -8,19 +8,19 @@
+ working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+ 
+ === C1 — R18 claim 2: review lane trigger types (no 'synchronize') ===
+-11:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | `vars.ENABLE_CLAUDE_REVIEW == 'true'` **and** `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == 
++38:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | **preflight `if:`** — `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == false` (revision 3). **`
+ --- R18's own statement of the consequence (DECISION.md:316) ---
+-6. **Bundle or two independent decisions?** `doxa-openai` argues independence; `opus` supplies the only actual *argument* either way, and it is a design coupling: dropping `synchronize` removes automatic re-review after a fix-up push, and the replacement is a write-access user typing `@claude please re-review`, which is F052. **That argument holds only if `synchronize` is dropped** — if P03 restores it, the bundling 
++|---|---|---|
+ --- assistant lane events (DECISION.md:12) ---
+-| `.github/workflows/claude.yml` | `issue_comment: [created]`, `pull_request_review_comment: [created]`, `issues: [opened, assigned]`, `pull_request_review: [submitted]` | `vars.ENABLE_CLAUDE_ASSISTAN
+ 
++
+ === C2 — R18 claim 1: which vendor bots R18 configures ===
+ grep -n -ci over R18/DECISION.md:
+-  coderabbit   hits=1
++  coderabbit   hits=2
+   greptile     hits=0
+   cubic        hits=0
+ --- the only hit, DECISION.md:96 ---
+-| C. Hosted third-party review app (PR-Agent as a service, CodeRabbit as an app) | a GitHub App installed on the repository | No | Rejected on the same fit ground, plus a second vendor relationship. |
++**What must agree; what may vary.** What must agree across `py`, `ts` and `rs` is the **guard contract**, because it is simultaneously a security property and a correctness property and is ecosystem-neutral. It has four clauses, and clause (a) is scoped at revision 3 to the lane it actually binds:
+ 
+ === C3 — action.yml trigger_phrase input at the pin R18 names (v1.0.220 = 19dda84776b3518d98b8798e591daee763049ed3) ===
+ GET repos/anthropics/claude-code-action/contents/action.yml?ref=19dda84776b3518d98b8798e591daee763049ed3 -> 23689 bytes
+@@ -113,12 +113,12 @@
+ .greptile/rules.md
+ 
+ === C8 — Greptile's currently documented handle (both raws assert @greptileai; not load-bearing) ===
+-GET https://www.greptile.com/docs/llms-full.txt -> 371153 bytes
+-  @greptileai occurrences:   40
++GET https://www.greptile.com/docs/llms-full.txt -> 381431 bytes
++  @greptileai occurrences:   39
+   @greptile-apps occurrences: 0
+ 238:  * **Re-trigger button** — Click "Re-trigger Greptile" in the footer to re-run a review without tagging @greptileai
+-1165:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
+-1192:    * `skipReview: "AUTOMATIC"` - Skips automatic reviews, only triggers via `@greptileai`
++1388:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
++1852:    * Force refresh: Create PR with `@greptileai review`
+ 
+ === end of checks ===
+ 

@@ -1,0 +1,80 @@
+# R59 check P — dependency trees
+run (UTC): 2026-09-28T20:01:39Z
+host: Darwin 25.4.0 arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+
+file-rotate 0.8.0 normal package set:
+adler2 v2.0.1
+cfg-if v1.0.5
+chrono v0.4.45
+core-foundation-sys v0.8.7
+crc32fast v1.5.2
+file-rotate v0.8.0
+flate2 v1.1.10
+iana-time-zone v0.1.65
+miniz_oxide v0.9.1
+num-traits v0.2.19
+simd-adler32 v0.3.10
+
+tracing-subscriber 0.3.23 (features fmt,std,registry,ansi,json) normal package set:
+cfg-if v1.0.5
+itoa v1.0.18
+lazy_static v1.5.0
+memchr v2.8.3
+nu-ansi-term v0.50.3
+once_cell v1.21.4
+serde v1.0.229
+serde v1.0.229 (*)
+serde_core v1.0.229
+serde_json v1.0.151
+sharded-slab v0.1.7
+thread_local v1.1.10
+tracing-core v0.1.36
+tracing-core v0.1.36 (*)
+tracing-serde v0.2.0
+tracing-subscriber v0.3.23
+zmij v1.0.23
+
+tracing-appender 0.2.5 normal package set:
+cfg-if v1.0.5
+crossbeam-channel v0.5.17
+crossbeam-utils v0.8.23
+deranged v0.5.8
+itoa v1.0.18
+lazy_static v1.5.0
+memchr v2.8.3
+nu-ansi-term v0.50.3
+num-conv v0.2.2
+once_cell v1.21.4
+powerfmt v0.2.0
+proc-macro2 v1.0.107
+proc-macro2 v1.0.107 (*)
+quote v1.0.47
+quote v1.0.47 (*)
+serde v1.0.229
+serde v1.0.229 (*)
+serde_core v1.0.229
+serde_json v1.0.151
+sharded-slab v0.1.7
+symlink v0.1.0
+syn v3.0.6
+thiserror v2.0.21
+thiserror-impl v2.0.21 (proc-macro)
+thread_local v1.1.10
+time v0.3.55
+time-core v0.1.9
+tracing-appender v0.2.5
+tracing-core v0.1.36
+tracing-core v0.1.36 (*)
+tracing-serde v0.2.0
+tracing-subscriber v0.3.23
+unicode-ident v1.0.26
+zmij v1.0.23
+PASS P01 — file-rotate direct normal deps are chrono + flate2 (plus itself) — expected=[chrono,file-rotate,flate2] actual=[chrono,file-rotate,flate2]
+PASS P02 — file-rotate package set incl. itself — expected=[11] actual=[11]
+PASS P03 — flate2 is compiled although Compression::None is used (no feature gate) — expected=[1] actual=[1]
+PASS P04 — file-rotate packages not already in tracing-subscriber's set (its added cost) — expected=[yes] actual=[yes]
+file-rotate-only packages: adler2,chrono,core-foundation-sys,crc32fast,file-rotate,flate2,iana-time-zone,miniz_oxide,num-traits,simd-adler32
+PASS P05 — the owned RotatingFile adds no package (probe src/lib.rs imports std only) — expected=[0] actual=[0]
+
+SUMMARY: 5 checks, 0 failed, 0 skipped

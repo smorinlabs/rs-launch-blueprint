@@ -1,0 +1,51 @@
+R41 lockfile-freshness-check — revision-8 documentary audit
+auditor: audit-codex-2026-09-05T160304Z-1e904d50d29e-r8
+model: gpt-5.6-terra
+date read: 2026-09-10
+cwd: research/runs/R41/2026-09-05T160304Z-1e904d50d29e
+
+Scope: read-only audit of review/DECISION.md revision 8. Under the 2026-09-10
+owner ruling, P02 records and verifies research; P03 implements and proves the
+template. The fixture, harness, Cargo commands, and Linux VM leg were not
+rerun. No raw/fixture-r41 tree, target/, node_modules/, tools/, or vendored
+tree was listed recursively.
+
+Commands and results:
+- shasum -a 256 review/DECISION.md
+  efc7614a4bcdb2b253a7537730daff0b44b3e9568da36b81324f1beb14f3f1ea
+- git show 20efd06:research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/DECISION.md | shasum -a 256
+  cba3a5625bf36d32b76a305f9348cd06d6826c1efbb71139aa21582e66d00401
+- git show c68d5da:review/DECISION.md | shasum -a 256
+  e64b5af78b3206af22a422d50a5acdcd2d29a5c837c5ec5b7c25211daf843edd
+- git diff -U0 c68d5da^ c68d5da -- review/DECISION.md
+  seven changed hunks. They cover the heading, provenance/attribution records,
+  command-list wording, revision history, and source provenance. This matches
+  audit r7's F1: revision 7 made the F1 correction, three further attribution
+  corrections, and one archived-audit-path correction.
+- git diff -U0 08bffc5^ 08bffc5 -- review/DECISION.md
+  six changed hunks. They are title plus the self-description, execution-scope,
+  revision-history, and source-provenance statements described by revision 8.
+  The two statements named by audit r7 F1 and the six further statements listed
+  by revision 8 are all covered; no design or evidence claim is changed.
+- SHA-256 comparisons of revisions 6, 7, and 8:
+  recommendation-through-parameters: e663bdcfd196f45748c1964c7dcdda3060e2be9a37ab01e1cefd91681da91726
+  findings-through-parameters: 21629afc3c6eb15c31f4501594301f8d8f474101a3136c37d934b76e9ec07114
+  remaining-uncertainty/P03 validation list: 6c03ff90d56aa300a5ffb1642470ef18e2967cd5912e7a886a2e47919ff00cc7
+  Each digest is identical for all three revisions.
+- shasum -a 256 raw/codex.md raw/evidence-terra-r3.md
+  edcb7e58848a4c074114ac7f7ba03cc4b9b4114ed51031129b311cde7c00504f  raw/codex.md
+  5b10b6715711f93b8ec98f80abbc0dc4d5288d63ccf6bf5dbe439fab97cccb53  raw/evidence-terra-r3.md
+- retained execution provenance:
+  r5 macOS acceptance starts 2026-09-10T01:09:01Z.
+  r5 Linux acceptance starts 2026-09-10T01:10:38Z.
+  r3 warm timing starts 2026-09-09T06:40:24Z.
+  r3 cold timing starts 2026-09-09T06:40:49Z.
+  audit r5 rerun hash: 3734526b625f07b2f2718ad417153fa9666fe076cb7632f533547224a9257ac1.
+  audit r5 result: summary: PASS=436 FAIL=0 RECORD=76; RESULT: PASS.
+
+Result: approve. Revision 8 accurately reconciles the prior documentary
+defects. It does not claim implementation, a new run, or proof beyond the
+retained evidence. The P03 validation list remains correctly unproven research
+scope, rather than a defect in this P02 decision.
+
+Audit process exit code: 0 (record comparison completed; no harness rerun).

@@ -1,0 +1,8 @@
+# R15 empirical scratch: virtual environments, working copies and build output
+# are recreated by run-checks.sh and are never committed or enumerated.
+/venv/
+/venv-linux/
+/work-*/
+/target-*/
+/fixture/target/
+/fixture/.venv/

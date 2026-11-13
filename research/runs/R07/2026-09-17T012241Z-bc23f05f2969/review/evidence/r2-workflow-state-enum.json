@@ -1,0 +1,67 @@
+{
+  "source": "https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28",
+  "retrieved": "2026-09-16 UTC (2026-09-15 local) by the R07 revision-2 synthesizer (HTTP 200, 359400 bytes)",
+  "extraction": "the `Workflow` response schema embedded in the page, cut out by brace balance and re-serialised",
+  "workflow_schema": {
+    "title": "Workflow",
+    "description": "A GitHub Actions workflow",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "node_id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "path": {
+        "type": "string"
+      },
+      "state": {
+        "type": "string",
+        "enum": [
+          "active",
+          "deleted",
+          "disabled_fork",
+          "disabled_inactivity",
+          "disabled_manually"
+        ]
+      },
+      "created_at": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "updated_at": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "url": {
+        "type": "string"
+      },
+      "html_url": {
+        "type": "string"
+      },
+      "badge_url": {
+        "type": "string"
+      },
+      "deleted_at": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "required": [
+      "id",
+      "node_id",
+      "name",
+      "path",
+      "state",
+      "url",
+      "html_url",
+      "badge_url",
+      "created_at",
+      "updated_at"
+    ]
+  }
+}

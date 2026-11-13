@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-07-31T07:08:44.037441Z",
+  "downloads": 5658682,
+  "license": "MIT",
+  "name": "axum-prometheus",
+  "num": "0.10.1",
+  "recent_downloads": 1388212,
+  "rust_version": "1.75"
+}

@@ -1,0 +1,12 @@
+recommended loaded entries: 11
+recommended loaded scoped entry: null
+recommended strategy entries: 11
+recommended strategy scoped entry: null
+recommended hidden-only lines: 1
+recommended hidden-only changelogEmpty: true
+scope-routed loaded entries: 12
+scope-routed loaded scoped entry: {"type":"chore","scope":"deps","section":"Dependencies"}
+scope-routed strategy entries: 12
+scope-routed strategy scoped entry: {"type":"chore","scope":"deps","section":"Dependencies"}
+scope-routed hidden-only lines: 6
+scope-routed hidden-only changelogEmpty: false

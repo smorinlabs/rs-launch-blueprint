@@ -1,0 +1,31 @@
+--- review/evidence/r60-snapshot-provenance-r4.log	2026-09-14 16:20:25
++++ review/evidence/audit-r60-snapshot-provenance-r4-r8.log	2026-09-16 16:00:02
+@@ -28,11 +28,15 @@
+ PASS  C1 py-b08bccfb-cli-commands-projects.py.txt equals the bytes at its pinned URL
+ e6fc59ac8c8ebb66d4d9c87fffe3e1931bb81693e26f498b510940c9add76a01  py-b08bccfb-cli-commands-__init__.py.txt (refetched)
+ PASS  C1 py-b08bccfb-cli-commands-__init__.py.txt equals the bytes at its pinned URL
+-anonymous fetch of src/router.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+-PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
++anonymous fetch of src/router.ts in smorinlabs/ts-launch-blueprint: HTTP 200
++FAIL  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
++      wanted: 404
++      got: 200
+ UNVERIFIABLE-HERE  ts-cb1cbcb2-src-router.ts.txt — private origin; the committed snapshot is the evidence of record
+-anonymous fetch of src/commands/projects.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+-PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
++anonymous fetch of src/commands/projects.ts in smorinlabs/ts-launch-blueprint: HTTP 200
++FAIL  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
++      wanted: 404
++      got: 200
+ UNVERIFIABLE-HERE  ts-cb1cbcb2-src-commands-projects.ts.txt — private origin; the committed snapshot is the evidence of record
+ d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  r60-decision-r1.md (from git history)
+ PASS  C1 r60-decision-r1.md equals the git object MANIFEST.txt names
+@@ -44,6 +48,6 @@
+ newest published commit touching cli-design-standard.md: fb30a591c267a7ec1130ba4cda679eaee494b9d7
+ PASS  C2a the newest commit for that path is still the pinned one
+ 
+-CHECKS RUN: 17   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2
++CHECKS RUN: 17   FAILURES: 2   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2
+ NOTE: UNVERIFIABLE-HERE entries have no public remote by design; each one's privacy was itself checked above.
+-RESULT: no snapshot contradicts its recorded source
++RESULT: FAILED

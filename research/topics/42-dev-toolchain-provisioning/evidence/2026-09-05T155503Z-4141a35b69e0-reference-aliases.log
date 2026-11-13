@@ -1,0 +1,285 @@
+# R42 revision 2 — Cargo aliases in the four surveyed reference repositories. Run 2026-09-10T06:03:32Z
+--- GET https://raw.githubusercontent.com/oxc-project/oxc/HEAD/.cargo/config.toml -> HTTP 200
+[alias]
+# Do not append `--` or it will break IDEs
+ck = "check --all-features --all-targets --locked"
+lint = "clippy --all-targets --all-features"
+# Skip `tasks/website` due to linker errors with `oxlint`
+codecov = "llvm-cov --workspace --ignore-filename-regex tasks --exclude website"
+coverage = "run -p oxc_coverage --profile coverage --"
+benchmark = "bench -p oxc_benchmark"
+minsize = "run -p oxc_minsize --profile coverage --"
+allocs = "run -p oxc_track_memory_allocations --profile coverage --"
+lint-timings = "run -p oxc_track_linter_timings --profile coverage --"
+rule = "run -p rulegen"
+lintgen = "run -p oxc_linter_codegen"
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[target.i686-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[target.aarch64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[target.'cfg(target_os = "windows")']
+rustflags = [
+  # Disables linking against the default Universal C Runtime (libucrt.lib). This prevents conflicts if another CRT library is linked manually.
+  "-C",
+  "link-args=/NODEFAULTLIB:libucrt.lib",
+  # Manually adds ucrt.lib (the Universal CRT) as a default library to link against, replacing the one you just excluded above.
+  # This ensures consistent linking when multiple CRTs might be available.
+  "-C",
+  "link-args=/DEFAULTLIB:ucrt.lib",
+]
+
+# LLD linker is currently broken for us, opt out.
+# https://blog.rust-lang.org/2025/09/18/Rust-1.90.0/#what-s-in-1-90-0-stable
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "linker-features=-lld"]
+--- GET https://raw.githubusercontent.com/oxc-project/oxc/HEAD/.cargo/config -> HTTP 404
+--- GET https://raw.githubusercontent.com/biomejs/biome/HEAD/.cargo/config.toml -> HTTP 200
+[alias]
+biome-cli             = "run -p biome_cli --release --"
+biome-cli-dev         = "run -p biome_cli --"
+codegen               = "run -p xtask_codegen --"
+codegen-bindings      = "run -p xtask_codegen --features schema -- bindings"
+codegen-configuration = "run -p xtask_codegen --features configuration -- configuration"
+# updates a newly created crate
+codegen-license       = "run -p xtask_codegen --features license -- license"
+codegen-migrate       = "run -p xtask_codegen --features configuration -- migrate-eslint"
+codegen-schema        = "run -p xtask_codegen --features schema -- schema"
+contributors          = "run -p xtask_contributors --"
+coverage              = "run -p xtask_coverage --profile=release-with-debug --"
+documentation         = """
+    doc \
+    -p biome_*formatter \
+    -p biome_control_flow \
+    -p biome_analyze \
+    -p biome_*analyze \
+    -p biome_*_syntax \
+    -p biome_*_factory \
+    -p biome_diagnostics \
+    -p biome_service \
+    -p biome_cli \
+    -p biome_console \
+    -p biome_*parser \
+    -p biome_text_edit \
+    -p biome_text_size \
+    -p biome_js_semantic \
+    -p biome_markup \
+    -p biome_rowan
+    -p biome_string_case \
+    -p biome_configuration \
+    --no-deps
+"""
+format                = "fmt --all --verbose"
+lint                  = "clippy --workspace --all-features --all-targets -- --deny warnings"
+new-crate             = "run -p xtask_codegen -- new-crate"
+
+[profile.release]
+lto = true
+
+# getrandom 0.3 (pulled in by boa_engine) requires an explicit backend on wasm,
+# in addition to its `wasm_js` cargo feature (enabled in biome_js_runtime).
+[target.wasm32-unknown-unknown]
+rustflags = [
+  "--cfg",
+  'getrandom_backend="wasm_js"',
+  # Match biome_react_compiler's native 64 MiB stack budget for recursion.
+  "-C",
+  "link-arg=-zstack-size=67108864",
+]
+--- GET https://raw.githubusercontent.com/biomejs/biome/HEAD/.cargo/config -> HTTP 404
+--- GET https://raw.githubusercontent.com/casey/just/HEAD/.cargo/config.toml -> HTTP 404
+--- GET https://raw.githubusercontent.com/casey/just/HEAD/.cargo/config -> HTTP 404
+--- GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/HEAD/.cargo/config.toml -> HTTP 404
+--- GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/HEAD/.cargo/config -> HTTP 404
+
+# justfile alias-shaped invocation lines (cargo <name> where <name> is not a built-in subcommand)
+--- oxc-project/oxc/justfile (HTTP 200)
+wrapper-prefix lines (mise exec|cargo bin|nix develop|flox activate):
+  (none) grep exit=1
+cargo <sub> lines:
+19:  cargo binstall watchexec-cli cargo-insta typos-cli cargo-shear@1.13.1 -y
+40:  cargo lintgen
+49:# Run cargo check
+51:  cargo ck {{args}}
+55:  cargo test --all-features {{args}}
+60:  CARGO_BUILD_WARNINGS=deny cargo lint {{args}}
+64:  $Env:CARGO_BUILD_WARNINGS='deny'; cargo lint {{args}}
+69:  cargo fmt
+74:  RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --document-private-items --all-features {{args}}
+78:  $Env:RUSTDOCFLAGS='-D warnings'; cargo doc --no-deps --document-private-items --all-features {{args}}
+82:  cargo clippy --fix --allow-staged --no-deps
+93:  just watch "'cargo check; cargo clippy'"
+100:  cargo run -p oxc_{{tool}} --example {{tool}} -- {{args}}
+104:  cargo benchmark
+108:  cargo benchmark --bench {{args}} --no-default-features --features {{ if args == "linter" { "linter" } else { "compiler" } }}
+114:  cargo coverage
+115:  cargo run -p oxc_transform_conformance -- --exec
+119:  cargo coverage -- {{args}}
+123:  cargo run -p oxc_coverage --profile coverage -- estree {{args}}
+126:  cargo run -p oxc_coverage --profile coverage -- estree_tokens {{args}}
+130:  cargo codecov --html
+141:  cargo run -p oxc_ast_tools || { cargo run -p oxc_ast_tools --no-default-features && cargo run -p oxc_ast_tools; }
+144:  try { cargo run -p oxc_ast_tools } catch { cargo run -p oxc_ast_tools --no-default-features; cargo run -p oxc_ast_tools }
+175:  cargo test -p oxc_lexer {{args}}
+179:  cargo test -p oxc_lexer {{_lexer-simd}} {{args}}
+183:  cargo run -p oxc_coverage --profile coverage --features lexer -- lexer {{args}}
+187:  cargo run -p oxc_coverage --profile coverage {{_lexer-simd}} --features lexer -- lexer {{args}}
+192:  CARGO_BUILD_WARNINGS=deny cargo clippy -p oxc_lexer -p oxc_coverage --all-targets --all-features {{args}}
+196:  $Env:CARGO_BUILD_WARNINGS='deny'; cargo clippy -p oxc_lexer -p oxc_coverage --all-targets --all-features {{args}}
+206:  cargo build -p oxlint --release --features allocator
+210:  just watch 'cargo run -p oxlint -- --disable-nested-config {{args}}'
+229:  cargo run -p rulegen {{name}} {{plugin}}
+236:  cargo run -p rulegen {{name}} {{plugin}} --update-tests
+263:  cargo build -p oxfmt --release --features allocator
+267:  just watch 'cargo run -p oxfmt -- {{args}}'
+287:  cargo run -p oxc_transform_conformance -- --exec {{args}}
+298:  cargo minsize
+303:  cargo allocs
+307:  cargo lint-timings
+312:  cargo minsize --compress-only pr
+--- biomejs/biome/justfile (HTTP 200)
+wrapper-prefix lines (mise exec|cargo bin|nix develop|flox activate):
+  (none) grep exit=1
+cargo <sub> lines:
+14:	cargo install cargo-binstall
+15:	cargo binstall cargo-insta wasm-opt cargo-deny
+16:	cargo binstall wasm-bindgen-cli --version 0.2.117
+21:	cargo install cargo-binstall --force
+22:	cargo binstall cargo-insta wasm-opt cargo-deny --force
+23:	cargo binstall wasm-bindgen-cli --version 0.2.117 --force
+27:  cargo run -p xtask_codegen -- all
+40:  cargo run -p xtask_codegen --features schema -- bindings
+44:  cargo run -p xtask_codegen --features schema -- schema
+57:  cargo run -p xtask_codegen -- analyzer
+61:  cargo run -p xtask_codegen --features xtask_codegen/external_data -- css-baseline
+65:  cargo run -p xtask_codegen --features xtask_codegen/external_data -- css-keywords
+69:  cargo run -p xtask_codegen --features xtask_codegen/external_data -- module-replacements
+72:  cargo run -p xtask_codegen --features configuration -- configuration
+76:  cargo run -p xtask_codegen --features configuration -- migrate-eslint
+80:  cargo run -p xtask_codegen -- formatter {{args}}
+83:  cargo run -p xtask_codegen --features global_types -- global-types
+93:  cargo build --lib --target wasm32-unknown-unknown -p biome_wasm
+101:  cargo build --lib --target wasm32-unknown-unknown --release -p biome_wasm
+114:  cargo build --lib --target wasm32-unknown-unknown -p biome_wasm --features unstable
+122:  cargo build --lib --target wasm32-unknown-unknown --release -p biome_wasm
+135:  cargo build --lib --target wasm32-unknown-unknown -p biome_wasm
+143:  cargo build --lib --target wasm32-unknown-unknown --release -p biome_wasm {{args}}
+156:  cargo run -p xtask_codegen -- grammar {{args}}
+160:  RUSTDOCFLAGS='-D warnings' cargo documentation
+164:  cargo run -p xtask_codegen -- new-lintrule --kind=js --category=lint --name={{rulename}}
+169:  cargo run -p xtask_codegen -- new-lintrule --kind=js --category=assist --name={{rulename}}
+174:  cargo run -p xtask_codegen -- new-lintrule --kind=json --category=lint --name={{rulename}}
+179:  cargo run -p xtask_codegen -- new-lintrule --kind=json --category=assist --name={{rulename}}
+184:  cargo run -p xtask_codegen -- new-lintrule --kind=css --category=lint --name={{rulename}}
+189:  cargo run -p xtask_codegen -- new-lintrule --kind=css --category=assist --name={{rulename}}
+194:  cargo run -p xtask_codegen -- new-lintrule --kind=graphql --category=lint --name={{rulename}}
+199:  cargo run -p xtask_codegen -- new-lintrule --kind=graphql --category=assist --name={{rulename}}
+204:  cargo run -p xtask_codegen -- new-lintrule --kind=markdown --category=lint --name={{rulename}}
+209:  cargo run -p xtask_codegen -- new-lintrule --kind=markdown --category=assist --name={{rulename}}
+214:  cargo run -p xtask_codegen -- new-lintrule --kind=html --category=lint --name={{rulename}}
+219:  cargo run -p xtask_codegen -- new-lintrule --kind=html --category=assist --name={{rulename}}
+224:  cargo run -p xtask_codegen -- new-lintrule --kind=html-vue --category=lint --name={{rulename}}
+229:  cargo run -p xtask_codegen -- move-rule --group={{group}} --name={{rulename}}
+230:  cargo run -p xtask_codegen -- analyzer
+--- casey/just/justfile (HTTP 200)
+wrapper-prefix lines (mise exec|cargo bin|nix develop|flox activate):
+  (none) grep exit=1
+cargo <sub> lines:
+9:  cargo watch --clear --exec '{{ args }}'
+19:  cargo lclippy --all --all-targets --all-features -- --deny warnings
+20:  cargo fmt --all -- --check
+21:  cargo update --locked --package just
+25:  cargo lrun
+33:  cargo lbuild
+37:  cargo fmt --all
+46:  cargo lrun -- --man > man/just.1
+54:  cargo doc --all --open
+68:  cargo lrun --package action-versions
+72:  cargo outdated -R
+90:  cargo publish
+110:  cargo install -f just
+117:  cargo install cargo-limit
+118:  cargo install cargo-watch
+119:  cargo install --locked mdbook@0.4.52
+120:  cargo install --locked mdbook-linkcheck@0.7.7
+136:  cargo lrun -- quine
+169:  cargo lrun --package generate-book
+175:  cargo ltest constants::tests::readme_table -- --nocapture
+224:  cargo lbuild
+--- cargo-bins/cargo-binstall/justfile (HTTP 200)
+wrapper-prefix lines (mise exec|cargo bin|nix develop|flox activate):
+  (none) grep exit=1
+cargo <sub> lines:
+53:# cargo compile options
+253:    cargo test --no-run --target {{target}}
+254:    cargo nextest run --target {{target}} --no-tests=pass {{cargo-nextest-additional-args}}
+255:    cargo test --doc --target {{target}}
+263:    cargo doc --no-deps --workspace
+266:    cargo fmt --all -- --check
+271:    cargo run -p cargo-binstall --features clap-markdown unused-crate-name --markdown-help > HELP.md
+279:# This is a workaround for the cargo nightly option `-Z avoid-dev-deps`
+319:# read from deps because sometimes cargo doesn't copy the pdb to the output folder
+
+=== S8. which justfile lines invoke a Cargo alias, per repository (files fetched above) ===
+# biome justfile lines invoking one of its .cargo/config.toml aliases:
+160:  RUSTDOCFLAGS='-D warnings' cargo documentation
+234:	cargo format
+332:# Alias for `cargo lint`, it runs clippy on the whole codebase
+334:  cargo lint
+# oxc justfile lines invoking one of its aliases:
+40:  cargo lintgen
+51:  cargo ck {{args}}
+60:  CARGO_BUILD_WARNINGS=deny cargo lint {{args}}
+64:  $Env:CARGO_BUILD_WARNINGS='deny'; cargo lint {{args}}
+104:  cargo benchmark
+108:  cargo benchmark --bench {{args}} --no-default-features --features {{ if args == "linter" { "linter" } else { "compiler" } }}
+114:  cargo coverage
+119:  cargo coverage -- {{args}}
+130:  cargo codecov --html
+298:  cargo minsize
+303:  cargo allocs
+307:  cargo lint-timings
+312:  cargo minsize --compress-only pr
+314:  cargo minsize --compress-only main
+# rustup-component subcommands used across the four:
+oxc.justfile:69:  cargo fmt
+oxc.justfile:82:  cargo clippy --fix --allow-staged --no-deps
+oxc.justfile:93:  just watch "'cargo check; cargo clippy'"
+oxc.justfile:192:  CARGO_BUILD_WARNINGS=deny cargo clippy -p oxc_lexer -p oxc_coverage --all-targets --all-features {{args}}
+oxc.justfile:196:  $Env:CARGO_BUILD_WARNINGS='deny'; cargo clippy -p oxc_lexer -p oxc_coverage --all-targets --all-features {{args}}
+just.justfile:20:  cargo fmt --all -- --check
+just.justfile:37:  cargo fmt --all
+binstall.justfile:266:    cargo fmt --all -- --check
+# crates.io-plugin subcommands used across the four:
+binstall.justfile:254:    cargo nextest run --target {{target}} --no-tests=pass {{cargo-nextest-additional-args}}
+biome.justfile:15:	cargo binstall cargo-insta wasm-opt cargo-deny
+biome.justfile:16:	cargo binstall wasm-bindgen-cli --version 0.2.117
+biome.justfile:22:	cargo binstall cargo-insta wasm-opt cargo-deny --force
+biome.justfile:23:	cargo binstall wasm-bindgen-cli --version 0.2.117 --force
+biome.justfile:332:# Alias for `cargo lint`, it runs clippy on the whole codebase
+biome.justfile:334:  cargo lint
+just.justfile:9:  cargo watch --clear --exec '{{ args }}'
+just.justfile:19:  cargo lclippy --all --all-targets --all-features -- --deny warnings
+just.justfile:25:  cargo lrun
+just.justfile:33:  cargo lbuild
+just.justfile:46:  cargo lrun -- --man > man/just.1
+just.justfile:68:  cargo lrun --package action-versions
+just.justfile:72:  cargo outdated -R
+just.justfile:136:  cargo lrun -- quine
+just.justfile:169:  cargo lrun --package generate-book
+just.justfile:175:  cargo ltest constants::tests::readme_table -- --nocapture
+just.justfile:224:  cargo lbuild
+oxc.justfile:19:  cargo binstall watchexec-cli cargo-insta typos-cli cargo-shear@1.13.1 -y
+oxc.justfile:40:  cargo lintgen
+oxc.justfile:60:  CARGO_BUILD_WARNINGS=deny cargo lint {{args}}
+oxc.justfile:64:  $Env:CARGO_BUILD_WARNINGS='deny'; cargo lint {{args}}
+oxc.justfile:68:  -cargo shear --fix --check-test-targets # remove all unused dependencies
+oxc.justfile:307:  cargo lint-timings
+oxc.justfile:366:  cargo binstall cargo-autoinherit
+# casey/just's cargo-limit binary targets (gh api repos/cargo-limit/cargo-limit/contents/src/bin):
+cargo-lbench cargo-lbuild cargo-lcheck cargo-lclippy cargo-ldoc cargo-lfix cargo-lrun cargo-lrustc cargo-lrustdoc cargo-ltest cargo-lzigbuild (+ ll* variants)

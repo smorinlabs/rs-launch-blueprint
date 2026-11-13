@@ -1,0 +1,47 @@
+{
+ "crate": {
+  "downloads": 8352881,
+  "id": "mini-moka",
+  "max_version": "0.10.3",
+  "name": "mini-moka",
+  "recent_downloads": 1531658,
+  "repository": "https://github.com/moka-rs/mini-moka"
+ },
+ "versions": [
+  {
+   "created_at": "2024-01-08T00:26:35.702669Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.10.3",
+   "rust_version": "1.61",
+   "yanked": false
+  },
+  {
+   "created_at": "2023-08-13T02:35:43.184338Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.10.2",
+   "rust_version": "1.61",
+   "yanked": false
+  },
+  {
+   "created_at": "2023-07-10T06:56:35.367762Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.10.1",
+   "rust_version": "1.61",
+   "yanked": false
+  },
+  {
+   "created_at": "2022-11-18T11:46:13.778882Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.10.0",
+   "rust_version": "1.51",
+   "yanked": false
+  },
+  {
+   "created_at": "2022-11-07T12:29:42.130185Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.9.6",
+   "rust_version": "1.51",
+   "yanked": false
+  }
+ ]
+}

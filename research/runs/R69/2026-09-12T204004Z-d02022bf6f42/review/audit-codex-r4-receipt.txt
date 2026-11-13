@@ -1,0 +1,5 @@
+Audit: [review/audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-codex.md), SHA-256 `3e5b831739adc1003c9234868b52cb63289f8a6846e127b12b86eec5d6bb45e3`  
+Decision binding: `1814883d3d4b83333ea145c6dae0e02d86ba058b46b512c4bdfeac00afca23c3`  
+Verdict: reject.  
+Reruns: all six recorded checks exited 0; evidence: [audit-codex-r4.log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-codex-r4.log).  
+Finding: the empty-`CARGO_HOME` yanked control emits 54 errors, not the asserted 55.

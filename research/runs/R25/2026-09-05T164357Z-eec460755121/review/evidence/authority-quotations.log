@@ -1,0 +1,44 @@
+# R25 — verbatim quotations from the authoritative sources this decision attributes rules to (retrieved 2026-09-09)
+# working directory: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/docs  (session scratchpad)
+# fetch: curl -sSL -A 'rs-launch-blueprint-p02-R25-synthesizer' <url>   (HTML pages tag-stripped locally before quoting)
+
+## https://doc.rust-lang.org/cargo/reference/semver.html
+  > This guide uses the terms “major” and “minor” assuming this relates to a “1.0.0” release or later. Initial development releases starting with “0.y.z” can treat changes in “y” as a major release, and “z” as a minor release. “0.0.z” releases are always major changes. This is because Cargo uses the convention that only changes in the left-most non-zero component are considered incompatible.
+
+## https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+  > Versions are considered compatible if their left-most non-zero major/minor/patch component is the same. This is different from SemVer which considers all pre-1.0.0 packages to be incompatible.
+  > Caret requirements are the default version requirement strategy.
+  > 0.2.3 := >=0.2.3, <0.3.0
+  > 0.0.3 := >=0.0.3, <0.0.4
+
+## https://semver.org/
+  > Major version zero (0.y.z) is for initial development. Anything MAY change at any time. The public API SHOULD NOT be considered stable. Version 1.0.0 defines the public API.
+  > How do I know when to release 1.0.0? If your software is being used in production, it should probably already be 1.0.0. If you have a stable API on which users have come to depend, you should be 1.0.0. If you’re worrying a lot about backward compatibility, you should probably already be 1.0.0. D
+
+## https://raw.githubusercontent.com/rust-lang/api-guidelines/master/src/necessities.md  (C-STABLE, verbatim)
+  > ## Public dependencies of a stable crate are stable (C-STABLE)
+  > 
+  > A crate cannot be stable (>=1.0.0) without all of its public dependencies being
+  > stable.
+  > 
+  > Public dependencies are crates from which types are used in the public API of
+  > the current crate.
+  > 
+
+## https://raw.githubusercontent.com/release-plz/release-plz/main/website/docs/config.md  (features_always_increment_minor, verbatim)
+  > #### The `features_always_increment_minor` field
+  > 
+  > - If `true`, feature commits will always bump the minor version, even in 0.x releases.
+  > - If `false` (default), feature commits will only bump the minor version starting with 1.x releases.
+  > 
+  > :::warning
+  > This option violates the Cargo SemVer
+  > [rules](https://doc.rust-lang.org/cargo/reference/semver.html) because the transition from
+  > `0.x` to `0.(x+1)` is used for breaking changes.
+  > Instead, new features for `0.x` should bump the version from `0.x.y` to `0.x.(y+1)`.
+  > :::
+
+# Note on attribution: the '0.y-as-major' rule quoted above is CARGO's stated convention, and the Cargo Book itself
+# records that it departs from Semantic Versioning 2.0.0 ('This is different from SemVer which considers all
+# pre-1.0.0 packages to be incompatible.'). semver.org grants no compatibility band below 1.0.0 at all.
+# C-STABLE is an item in the Rust API Guidelines checklist (a Library Team publication), not a toolchain rule.

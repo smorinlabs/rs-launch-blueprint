@@ -1,0 +1,59 @@
+== E5 practice-check — 2026-09-27T04:09:34Z (UTC)
+SOURCE tokio-rs/axum/examples/request-id/src/main.rs @ 97def9590aaea9c70f8156f2438d1da6ebcfaf68
+AXUM-REQUEST-ID 12:    trace::TraceLayer,
+AXUM-REQUEST-ID 15:use tracing::{info, info_span};
+AXUM-REQUEST-ID 36:        .set_x_request_id(MakeRequestUuid)
+AXUM-REQUEST-ID 38:            TraceLayer::new_for_http().make_span_with(|request: &Request<_>| {
+AXUM-REQUEST-ID 43:                    Ok(request_id) => info_span!("http_request", request_id),
+AXUM-REQUEST-ID 44:                    Err(_) => info_span!("http_request", request_id = ?request_id),
+AXUM-REQUEST-ID 49:        .propagate_x_request_id();
+SOURCE tokio-rs/axum/examples/graceful-shutdown/src/main.rs @ 57e24559051bd0df2104c70c9a63732ab2ec71bd
+AXUM-GRACEFUL 15:use tower_http::timeout::TimeoutLayer;
+AXUM-GRACEFUL 37:        .route("/slow", get(|| sleep(Duration::from_secs(5))))
+AXUM-GRACEFUL 43:            TimeoutLayer::with_status_code(StatusCode::REQUEST_TIMEOUT, Duration::from_secs(10)),
+SOURCE rust-lang/crates.io/src/middleware.rs @ 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+CRATESIO-MIDDLEWARE 4:mod common_headers;
+CRATESIO-MIDDLEWARE 8:pub mod log_request;
+CRATESIO-MIDDLEWARE 25:use tower_http::catch_panic::CatchPanicLayer;
+CRATESIO-MIDDLEWARE 27:use tower_http::timeout::{RequestBodyTimeoutLayer, TimeoutLayer};
+CRATESIO-MIDDLEWARE 37:    // reasons. The type signatures of the `ServiceBuilder` were approaching
+CRATESIO-MIDDLEWARE 43:    let middlewares_1 = tower::ServiceBuilder::new()
+CRATESIO-MIDDLEWARE 47:        .layer(from_fn(log_request::log_requests))
+CRATESIO-MIDDLEWARE 48:        .layer(CatchPanicLayer::new())
+CRATESIO-MIDDLEWARE 59:    let middlewares_2 = tower::ServiceBuilder::new()
+CRATESIO-MIDDLEWARE 70:        .layer(from_fn(common_headers::add_common_headers))
+CRATESIO-MIDDLEWARE 88:        .layer(TimeoutLayer::with_status_code(
+CRATESIO-MIDDLEWARE 89:            StatusCode::REQUEST_TIMEOUT,
+CRATESIO-MIDDLEWARE 90:            Duration::from_secs(30),
+CRATESIO-MIDDLEWARE 92:        .layer(RequestBodyTimeoutLayer::new(Duration::from_secs(30)))
+SOURCE rust-lang/crates.io/src/middleware/common_headers.rs @ 87751195f01f3fc5026f3eaf6c30954ea447102d
+CRATESIO-HEADERS 40:    headers.insert(header::STRICT_TRANSPORT_SECURITY, v("max-age=31536000"));
+CRATESIO-HEADERS 49:        headers.insert(header::X_CONTENT_TYPE_OPTIONS, v("nosniff"));
+CRATESIO-HEADERS 50:        headers.insert(header::X_FRAME_OPTIONS, v("SAMEORIGIN"));
+SOURCE rust-lang/crates.io/Cargo.toml @ 985aae3b53c5b6d5e814ec916e116fc3f3203740
+CRATESIO-CARGO 83:axum = { version = "=0.8.9", features = ["macros", "matched-path"] }
+CRATESIO-CARGO 169:tower-http = { version = "=0.7.1", features = ["add-extension", "fs", "catch-panic", "timeout", "compression-full"] }
+SOURCE tower-rs/tower-http/.github/workflows/CI.yml @ 20bc935bd3f9b71b44e4aa82a3f1550687e6abfa
+TOWER-HTTP-CI 19:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 29:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 42:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 52:    - name: cargo hack check
+TOWER-HTTP-CI 55:      run: cargo hack check --each-feature --no-dev-deps --workspace
+TOWER-HTTP-CI 58:    # Test against the stable, beta, and nightly Rust toolchains on ubuntu-latest.
+TOWER-HTTP-CI 60:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 75:  test-os:
+TOWER-HTTP-CI 82:        os: [macos-latest, windows-latest]
+TOWER-HTTP-CI 91:  test-msrv:
+TOWER-HTTP-CI 93:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 114:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 127:        cargo hack --remove-dev-deps
+TOWER-HTTP-CI 134:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 167:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 177:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 187:    runs-on: ubuntu-latest
+TOWER-HTTP-CI 202:    runs-on: ubuntu-latest
+UNSAFE tower-http-0.7.1 crate_attr=#![deny(unsafe_code)] unsafe_sites=1
+UNSAFE tracing-0.1.44 crate_attr=none unsafe_sites=7
+UNSAFE uuid-1.26.1 crate_attr=none unsafe_sites=15
+UNSAFE axum-0.8.9 crate_attr=none unsafe_sites=0
+== end

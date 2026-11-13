@@ -1,0 +1,194 @@
+{
+ "crate": {
+  "downloads": 670171877,
+  "id": "tower",
+  "max_version": "0.5.3",
+  "name": "tower",
+  "recent_downloads": 174508765,
+  "repository": "https://github.com/tower-rs/tower"
+ },
+ "versions": [
+  {
+   "created_at": "2026-01-12T18:43:05.227461Z",
+   "license": "MIT",
+   "num": "0.5.3",
+   "rust_version": "1.64.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2024-12-11T13:26:44.329531Z",
+   "license": "MIT",
+   "num": "0.5.2",
+   "rust_version": "1.64.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2024-09-09T14:27:22.350400Z",
+   "license": "MIT",
+   "num": "0.5.1",
+   "rust_version": "1.64.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2024-08-13T16:54:05.251667Z",
+   "license": "MIT",
+   "num": "0.5.0",
+   "rust_version": "1.64.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2022-06-17T19:45:12.713535Z",
+   "license": "MIT",
+   "num": "0.4.13",
+   "rust_version": "1.49.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2022-02-16T22:59:43.399564Z",
+   "license": "MIT",
+   "num": "0.4.12",
+   "rust_version": "1.49.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2021-11-18T19:40:30.756907Z",
+   "license": "MIT",
+   "num": "0.4.11",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-10-19T19:56:47.783603Z",
+   "license": "MIT",
+   "num": "0.4.10",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-10-14T07:12:56.521562Z",
+   "license": "MIT",
+   "num": "0.4.9",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2021-05-28T20:18:57.141721Z",
+   "license": "MIT",
+   "num": "0.4.8",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-04-27T20:01:52.158702Z",
+   "license": "MIT",
+   "num": "0.4.7",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-02-27T13:02:56.075Z",
+   "license": "MIT",
+   "num": "0.4.6",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-02-10T23:14:01.381097Z",
+   "license": "MIT",
+   "num": "0.4.5",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-01-20T15:31:34.959846Z",
+   "license": "MIT",
+   "num": "0.4.4",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-01-13T21:21:39.651683Z",
+   "license": "MIT",
+   "num": "0.4.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-01-11T17:19:36.578217Z",
+   "license": "MIT",
+   "num": "0.4.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-01-07T23:27:44.519147Z",
+   "license": "MIT",
+   "num": "0.4.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-01-07T22:35:41.175534Z",
+   "license": "MIT",
+   "num": "0.4.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-01-18T03:53:45.739372Z",
+   "license": "MIT",
+   "num": "0.3.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-12-19T23:18:30.544026Z",
+   "license": "MIT",
+   "num": "0.3.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-10-01T01:07:18.418982Z",
+   "license": "MIT",
+   "num": "0.3.0-alpha.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-09-14T16:49:29.921884Z",
+   "license": "MIT",
+   "num": "0.3.0-alpha.1a",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-09-11T20:45:57.843670Z",
+   "license": "MIT",
+   "num": "0.3.0-alpha.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-07-19T18:54:12.381896Z",
+   "license": "MIT",
+   "num": "0.1.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-04-27T05:29:59.862630Z",
+   "license": "MIT",
+   "num": "0.1.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2016-12-23T17:20:31.319203Z",
+   "license": "MIT",
+   "num": "0.0.1",
+   "rust_version": null,
+   "yanked": false
+  }
+ ]
+}

@@ -1,0 +1,32 @@
+# R69 evidence: a MANIFEST probe for the `web-extra-surface` feature shape.
+#
+# There is no template code here and none is being written. `src/lib.rs` and the
+# gated binary are empty stubs; their only purpose is to make this manifest
+# resolvable so the feature's dependency cost, its resolved MSRV and its
+# `required-features` target gating are observable. Nothing in this package
+# builds, wires or runs the recommended web surface.
+#
+# The base dependency set is deliberately EMPTY, so the package counts below are
+# the feature's OWN cost (a delta), not a reproduction of any engine's absolute
+# "base tree" figure, which depends on that engine's unrelated base dependencies.
+[package]
+name = "r69_feature_shape"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+publish = false
+
+[features]
+web = ["dep:axum", "dep:tokio"]
+
+[dependencies]
+axum  = { version = "0.8.9",  optional = true }
+tokio = { version = "1.53.1", optional = true, features = ["rt-multi-thread", "net", "signal", "macros", "time", "sync"] }
+
+[dev-dependencies]
+tower = "0.5.3"
+
+[[bin]]
+name = "probe-serve"
+path = "src/bin/probe-serve.rs"
+required-features = ["web"]

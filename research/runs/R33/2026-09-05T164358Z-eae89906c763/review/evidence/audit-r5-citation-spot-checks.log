@@ -1,0 +1,14 @@
+citation spot checks: 2026-09-15
+1 crates.io proptest 1.11.0
+1.11.0 MIT OR Apache-2.0 1.85 2021
+2 crates.io insta 1.48.0
+1.48.0 Apache-2.0 1.66.0 2021
+3 crates.io cargo-insta 1.48.0
+1.48.0 Apache-2.0 1.66.0 2021
+4 proptest upstream Cargo.toml
+rust-version = "1.86"
+5 insta upstream Cargo.toml
+license = "Apache-2.0"
+default = ["colors"]
+6 insta CLI documentation
+The default is <code>ignore</code>

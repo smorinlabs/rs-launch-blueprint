@@ -1,0 +1,15 @@
+[package]
+name = "r55-spike"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+toml = "1"
+serde_path_to_error = "0.1.20"
+serde_ignored = "0.1.14"
+
+[[bin]]
+name = "r55-spike"
+path = "src/main.rs"

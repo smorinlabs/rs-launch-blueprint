@@ -1,1 +1,14 @@
 .DS_Store
+__pycache__/
+research/runs/.locks/
+**/target/
+research/runs/*/*/raw/*-transcript.txt
+research/runs/*/*/review/*-transcript.txt
+research/runs/*/*/raw/fixture-*/
+research/runs/**/tools/
+research/runs/**/node_modules/
+research/runs/**/.work/
+research/runs/**/vendor/
+research/runs/**/*.crate
+research/runs/**/*.tar.gz
+research/runs/**/*.tgz

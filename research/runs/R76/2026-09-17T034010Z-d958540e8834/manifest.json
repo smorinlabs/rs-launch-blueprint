@@ -1,0 +1,187 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T03:40:10Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T03:40:10Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+      "at": "2026-09-18T22:21:06Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+        "at": "2026-09-18T22:21:06Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "a70ef26928174f91a16962bbde34453e",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+      "at": "2026-09-18T22:31:18Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-18T22:21:06Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T034010Z-d958540e8834:c2792a6957df5b84",
+        "provider": "opus",
+        "request_id": "a70ef26928174f91a16962bbde34453e",
+        "returned_at": "2026-09-18T22:31:18Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+      "at": "2026-09-18T22:31:18Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-18T22:21:06Z",
+        "collected_at": "2026-09-18T22:31:18Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T034010Z-d958540e8834:c2792a6957df5b84",
+        "provider": "opus",
+        "raw": "research/runs/R76/2026-09-17T034010Z-d958540e8834/raw/opus-c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4.md",
+        "raw_sha256": "c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4",
+        "reason": "",
+        "request_id": "a70ef26928174f91a16962bbde34453e",
+        "returned_at": "2026-09-18T22:31:18Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-21T23:06:20Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+          "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "95610e37f5fda4b2e987b3191e9a913abd4d2dc9b8e4686aa51970a1ff355457",
+          "registry": "6b6887f96798af3588743b8727854606534eebfbbb5dc3062549638e6ebe91cb"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus"
+        ],
+        "previous_tier": "focused",
+        "reason": "muse bulk substitution (owner decision Q5.A 2026-09-21)",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-17T034010Z-d958540e8834",
+      "at": "2026-09-21T23:06:56Z",
+      "operation": {
+        "actor": "research-muse-2026-09-17T034010Z-d958540e8834",
+        "at": "2026-09-21T23:06:56Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "0ba3d92b4c3b4a50b843110a4facbb00",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-09-28T02:59:20Z",
+      "migration": {
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+          "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+          "policy": "ed5042be86ee5cec4bba6c7fa330dc731addb026a67cca087b75ca7bc37bea6c",
+          "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "99e9acacbe3b7bb78fde07c93d74748b7a6dfb9e04db23be0ee7f4a18f96c61d",
+          "registry": "e82053f11aed9fa4ae16f9a2026452670b43def56e36bea9bb9b808bb3c2102e"
+        },
+        "reason": "Q23 batch-3: prompt couplings declared (consumes R69:web-extra-surface, R67:error-taxonomy-exit-codes, mirroring published R77 whose DECISION assumes the identical 6-param set); re-frozen, DECISION bytes unchanged"
+      },
+      "state": "partial"
+    },
+    {
+      "at": "2026-09-28T02:59:46Z",
+      "publication": {
+        "acceptance_sha256": "e064241bcd1a172fc0c0faaab281c2ef64b47e4a7326632fbc30f8443efcc6e2",
+        "decision_sha256": "c732bf24633eb386db07c186324af00a74c7d43f9932e4327c519a37aa40d641",
+        "transaction": "6db25ee60a1d4396af6a2c055c5c14cd"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+    "parameters_semantic": "35a28f6a18eabdb4b87b6db24c5d93263229180d4ba1d7def614c6545c2a3316",
+    "parameters_semantic_file": "5e9213e554e6d8c3b70038a0ab93be8e80ae86c59f3d3bc0aed52b3ae70c7b9d",
+    "policy": "fd746cb86e545023aed589b9d0c4db7125673a62849181ac898db56a5fa3545c",
+    "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
+    "prerequisites": "a8b22b207e92edae87b9164fa992ce4ef734315a013be5ee18ab419122c2a871",
+    "prompt": "f61436981599b2fe561f4fbd30907b6a39dd6c11d6d6119b0668fb09c5b39e15",
+    "registry": "11ab683b21ff456f044441a51e58898303431ff2d2686658f110adcbd5cbe53e"
+  },
+  "item": "R76",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "muse": {
+      "actor": "research-muse-2026-09-17T034010Z-d958540e8834",
+      "at": "2026-09-21T23:06:56Z",
+      "model": "muse-spark",
+      "provider": "muse",
+      "request_id": "0ba3d92b4c3b4a50b843110a4facbb00",
+      "state": "submitting"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+      "actual_model": "claude-opus-5",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-18T22:21:06Z",
+      "collected_at": "2026-09-18T22:31:18Z",
+      "model": "claude-opus-5",
+      "operation_id": "agent:research-opus-2026-09-17T034010Z-d958540e8834:c2792a6957df5b84",
+      "provider": "opus",
+      "raw": "research/runs/R76/2026-09-17T034010Z-d958540e8834/raw/opus-c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4.md",
+      "raw_sha256": "c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4",
+      "reason": "",
+      "request_id": "a70ef26928174f91a16962bbde34453e",
+      "returned_at": "2026-09-18T22:31:18Z",
+      "state": "succeeded"
+    }
+  },
+  "prompt_source": "research/topics/76-cors-middleware/prompts/cors-middleware.prompt.md",
+  "publication": {
+    "acceptance_sha256": "e064241bcd1a172fc0c0faaab281c2ef64b47e4a7326632fbc30f8443efcc6e2",
+    "decision_sha256": "c732bf24633eb386db07c186324af00a74c7d43f9932e4327c519a37aa40d641",
+    "transaction": "6db25ee60a1d4396af6a2c055c5c14cd"
+  },
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "muse",
+    "opus"
+  ],
+  "run_id": "2026-09-17T034010Z-d958540e8834",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "focused",
+  "updated_at": "2026-09-28T02:59:46Z"
+}

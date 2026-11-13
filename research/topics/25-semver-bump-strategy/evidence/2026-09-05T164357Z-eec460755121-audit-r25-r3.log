@@ -1,0 +1,376 @@
+# R25 revision-3 focused empirical audit
+# actor: audit-codex-2026-09-05T164357Z-eec460755121-r3
+# date: 2026-09-10T14:40:23Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121
+# scope: rerun only revision-3 changed release-please claims and the fixed-parameter byte comparison; VM intentionally not started because the task requires light host use.
+
+## Toolchain
++ node --version
+v26.5.0
++ npm --version
+12.0.1
++ command -v limactl
+/opt/homebrew/bin/limactl
+
+## Pinned authoritative sources
++ curl -fsSL -A R25-audit-r3 https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/README.md
+status=0 path=README.md bytes=13015
++ curl -fsSL -A R25-audit-r3 https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/schemas/config.json
+status=0 path=schemas/config.json bytes=20617
++ curl -fsSL -A R25-audit-r3 https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/manifest.ts
+status=0 path=src/manifest.ts bytes=62902
++ curl -fsSL -A R25-audit-r3 https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/docs/manifest-releaser.md
+status=0 path=docs/manifest-releaser.md bytes=25825
++ curl -fsSL -A R25-audit-r3 https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/strategies/rust.ts
+status=0 path=src/strategies/rust.ts bytes=5378
++ curl -fsSL -A R25-audit-r3 https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/strategies/base.ts
+status=0 path=src/strategies/base.ts bytes=25805
++ curl -fsSL -A R25-audit-r3 https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/versioning-strategies/default.ts
+status=0 path=src/versioning-strategies/default.ts bytes=4223
+
+## Vocabulary and division of labour excerpts
++ sed -n '11,41p' /private/tmp/r25-audit-r3-clean.veDRpe/README.md
+It does so by parsing your
+git history, looking for [Conventional Commit messages](https://www.conventionalcommits.org/),
+and creating release PRs.
+
+It does not handle publication to package managers or handle complex branch
+management.
+
+## What's a Release PR?
+
+Rather than continuously releasing what's landed to your default branch,
+release-please maintains Release PRs:
+
+<img width="400" src="/screen.png">
+
+These Release PRs are kept up-to-date as additional work is merged. When you're
+ready to tag a release, simply merge the release PR. Both squash-merge and
+merge commits work with Release PRs.
+
+When the Release PR is merged, release-please takes the following steps:
+
+1. Updates your changelog file (for example `CHANGELOG.md`), along with other language specific files (for example `package.json`).
+2. Tags the commit with the version number
+3. Creates a GitHub Release based on the tag
+
+You can tell where the Release PR is in its lifecycle by the status label on the
+PR itself:
+
+- `autorelease: pending` is the initial state of the Release PR before it is merged
+- `autorelease: tagged` means that the Release PR has been merged and the release has been tagged in GitHub
+- `autorelease: snapshot` is a special state for snapshot version bumps
+- `autorelease: published` means that a GitHub release has been published based on the Release PR (_release-please does not automatically add this tag, but we recommend it as a convention for publication tooling_).
++ sed -n '780,799p' /private/tmp/r25-audit-r3-clean.veDRpe/src_manifest.ts
+          releasePullRequest.version &&
+          isPublishedVersion(strategy, releasePullRequest.version)
+        ) {
+          const versionsMap: VersionsMap = new Map();
+          versionsMap.set(path, releasePullRequest.version);
+          releasePullRequest.updates.push({
+            path: this.manifestPath,
+            createIfMissing: false,
+            updater: new ReleasePleaseManifest({
+              version: releasePullRequest.version,
+              versionsMap,
+            }),
+          });
+        }
+        newReleasePullRequests.push({
+          path,
+          config,
+          pullRequest: releasePullRequest,
+        });
+      }
++ rg -n -C 2 'include-v-in-tag|bump-minor-pre-major|bump-patch-for-minor-pre-major|initial-version|release-as' /private/tmp/r25-audit-r3-clean.veDRpe/schemas_config.json
+13-          "type": "string"
+14-        },
+15:        "bump-minor-pre-major": {
+16-          "description": "Breaking changes only bump semver minor if version < 1.0.0",
+17-          "type": "boolean"
+18-        },
+19:        "bump-patch-for-minor-pre-major": {
+20-          "description": "Feature changes only bump semver patch if version < 1.0.0",
+21-          "type": "boolean"
+--
+51-          }
+52-        },
+53:        "release-as": {
+54-          "description": "[DEPRECATED] Override the next version of this package. Consider using a `Release-As` commit instead.",
+55-          "type": "string"
+--
+87-          "type": "boolean"
+88-        },
+89:        "include-v-in-tag": {
+90-          "description": "When tagging a release, include `v` in the tag. Defaults to `true`.",
+91-          "type": "boolean"
+--
+251-          "type": "boolean"
+252-        },
+253:        "initial-version": {
+254-          "description": "Releases the initial library with a specified version",
+255-          "type": "string"
+--
+470-    "sequential-calls": true,
+471-    "release-type": true,
+472:    "bump-minor-pre-major": true,
+473:    "bump-patch-for-minor-pre-major": true,
+474-    "versioning": true,
+475-    "changelog-sections": true,
+476:    "release-as": true,
+477-    "skip-github-release": true,
+478-    "skip-changelog": true,
+--
+485-    "extra-label": true,
+486-    "include-component-in-tag": true,
+487:    "include-v-in-tag": true,
+488-    "include-v-in-release-name": true,
+489-    "changelog-type": true,
+--
+500-    "version-file": true,
+501-    "snapshot-label": true,
+502:    "initial-version": true,
+503-    "exclude-paths": true,
+504-    "component-no-space": false
++ sed -n '383,389p' /private/tmp/r25-audit-r3-clean.veDRpe/docs_manifest-releaser.md
+## Manifest
+
+At a minimum, a manifest file must exist at the tip of the `--target-branch`.
+It can be empty when release-please is run for the first time but it must exist.
+Manually editing the manifest is only appropriate in the bootstrap case outlined
+above. release-please will record a new version into the manifest file for each
+package it is configured to release.
++ sed -n '67,105p' /private/tmp/r25-audit-r3-clean.veDRpe/docs_manifest-releaser.md
+The resulting PR will assume a default starting version for your package
+(currently 0.1.0 for "node") and will collect all the commits (in the history
+of the default/configured branch) to parse out conventional commits for
+changelog generation.
+
+If that is not the desired behavior for your first release PR, read on!
+
+#### Bootstrapping
+
+There are two items to consider when running release-please for the first time:
+1. which commit to start at (i.e. how much to include in your next changelog entry)
+2. what version release-please should propose in this first release PR
+
+##### Starting commit
+
+You can add a top level `"bootstrap-sha": <full sha value>` key/value entry to
+the config which will cause release-please to stop there for collecting
+changelog commits (so choose one commit earlier than the first commit you want
+to include). Note: once a release-please generated PR has been merged,
+this config value will be ignored for all subsequent runs and can be removed.
+
+##### Initial Version
+
+The simplest way to tell release-please the current version for a package
+it has never released before is to manually add an entry into
+`.release-please-manifest.json`. This change should be made directly on the
+default/configured branch or on a separate, user-created branch/PR which is then
+merged into the default/configured branch.
+
+```js
+{
+  "path/to/pkg": "1.1.1"
+}
+
+```
+release-please will now use "1.1.1" as the last-released/current version for
+"path/to/pkg" and suggest the next version according to conventional commits it
+has found since the last merged release PR (or "bootstrap-sha" if this is the
+first run).
++ sed -n '128,138p' /private/tmp/r25-audit-r3-clean.veDRpe/src_strategies_rust.ts
+    });
+
+    return updates;
+  }
+
+  protected initialReleaseVersion(): Version {
+    return Version.parse('0.1.0');
+  }
+
+  async getDefaultPackageName(): Promise<string | undefined> {
+    const packageManifest = await this.getPackageManifest();
++ sed -n '754,791p' /private/tmp/r25-audit-r3-clean.veDRpe/src_strategies_base.ts
+   * Override this to handle the initial version of a new library.
+   */
+  protected initialReleaseVersion(): Version {
+    if (this.initialVersion) {
+      return Version.parse(this.initialVersion);
+    }
+
+    return Version.parse('1.0.0');
+  }
+
+  /**
+   * Adds a given file path to the strategy path.
+   * @param {string} file Desired file path.
+   * @returns {string} The file relative to the strategy.
+   * @throws {Error} If the file path contains relative pathing characters, i.e. ../, ~/
+   */
+  protected addPath(file: string) {
+    // There is no strategy path to join, the strategy is at the root, or the
+    // file is at the root (denoted by a leading slash or tilde)
+    if (!this.path || this.path === ROOT_PROJECT_PATH || file.startsWith('/')) {
+      file = file.replace(/^\/+/, '');
+    }
+    // Otherwise, the file is relative to the strategy path
+    else {
+      file = `${this.path.replace(/\/+$/, '')}/${file}`;
+    }
+    // Ensure the file path does not escape the workspace
+    if (/((^|\/)\.{1,2}|^~|^\/*)+\//.test(file)) {
+      throw new Error(`illegal pathing characters in path: ${file}`);
+    }
+    // Strip any trailing slashes and return
+    return file.replace(/\/+$/, '');
+  }
+}
++ sed -n '1,75p' /private/tmp/r25-audit-r3-clean.veDRpe/src_versioning-strategies_default.ts
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import {
+  VersioningStrategy,
+  MinorVersionUpdate,
+  VersionUpdater,
+  MajorVersionUpdate,
+  PatchVersionUpdate,
+  CustomVersionUpdate,
+} from '../versioning-strategy';
+import {ConventionalCommit} from '../commit';
+import {Version} from '../version';
+import {logger as defaultLogger, Logger} from '../util/logger';
+
+export interface DefaultVersioningStrategyOptions {
+  bumpMinorPreMajor?: boolean;
+  bumpPatchForMinorPreMajor?: boolean;
+  logger?: Logger;
+}
+
+/**
+ * This is the default VersioningStrategy for release-please. Breaking
+ * changes should bump the major, features should bump the minor, and other
+ * significant changes should bump the patch version.
+ */
+export class DefaultVersioningStrategy implements VersioningStrategy {
+  readonly bumpMinorPreMajor: boolean;
+  readonly bumpPatchForMinorPreMajor: boolean;
+  protected logger: Logger;
+  /**
+   * Create a new DefaultVersioningStrategy
+   * @param {DefaultVersioningStrategyOptions} options Configuration options
+   * @param {boolean} options.bumpMinorPreMajor If the current version is less than 1.0.0,
+   *   then bump the minor version for breaking changes
+   * @param {boolean} options.bumpPatchForMinorPreMajor If the current version is less than
+   *   1.0.0, then bump the patch version for features
+   */
+  constructor(options: DefaultVersioningStrategyOptions = {}) {
+    this.bumpMinorPreMajor = options.bumpMinorPreMajor === true;
+    this.bumpPatchForMinorPreMajor = options.bumpPatchForMinorPreMajor === true;
+    this.logger = options.logger ?? defaultLogger;
+  }
+
+  /**
+   * Given the current version of an artifact and a list of commits,
+   * return a VersionUpdater that knows how to bump the version.
+   *
+   * This is useful for chaining together versioning strategies.
+   *
+   * @param {Version} version The current version
+   * @param {ConventionalCommit[]} commits The list of commits to consider
+   * @returns {VersionUpdater} Updater for bumping the next version.
+   */
+  determineReleaseType(
+    version: Version,
+    commits: ConventionalCommit[]
+  ): VersionUpdater {
+    // iterate through list of commits and find biggest commit type
+    let breaking = 0;
+    let features = 0;
+    for (const commit of commits) {
+      const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+      if (releaseAs) {
+
+## Direct pinned-package bump probe
++ npm --prefix /private/tmp/r25-audit-r3-clean.veDRpe/rp --cache /private/tmp/r25-audit-r3-clean.veDRpe/npm-cache install --ignore-scripts --no-audit --no-fund release-please@17.11.2
+
+added 162 packages in 7s
+npm notice
+npm notice New patch version of npm available! 12.0.1 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
++ node (DefaultVersioningStrategy, 4 configurations x 3 starts x 3 commits)
+release-please version: 17.11.2
+A both true | 0.1.0 | fix: | 0.1.1
+A both true | 0.1.0 | feat: | 0.1.1
+A both true | 0.1.0 | feat!: | 0.2.0
+A both true | 0.1.3 | fix: | 0.1.4
+A both true | 0.1.3 | feat: | 0.1.4
+A both true | 0.1.3 | feat!: | 0.2.0
+A both true | 1.0.0 | fix: | 1.0.1
+A both true | 1.0.0 | feat: | 1.1.0
+A both true | 1.0.0 | feat!: | 2.0.0
+C neither | 0.1.0 | fix: | 0.1.1
+C neither | 0.1.0 | feat: | 0.2.0
+C neither | 0.1.0 | feat!: | 1.0.0
+C neither | 0.1.3 | fix: | 0.1.4
+C neither | 0.1.3 | feat: | 0.2.0
+C neither | 0.1.3 | feat!: | 1.0.0
+C neither | 1.0.0 | fix: | 1.0.1
+C neither | 1.0.0 | feat: | 1.1.0
+C neither | 1.0.0 | feat!: | 2.0.0
+D minor only | 0.1.0 | fix: | 0.1.1
+D minor only | 0.1.0 | feat: | 0.2.0
+D minor only | 0.1.0 | feat!: | 0.2.0
+D minor only | 0.1.3 | fix: | 0.1.4
+D minor only | 0.1.3 | feat: | 0.2.0
+D minor only | 0.1.3 | feat!: | 0.2.0
+D minor only | 1.0.0 | fix: | 1.0.1
+D minor only | 1.0.0 | feat: | 1.1.0
+D minor only | 1.0.0 | feat!: | 2.0.0
+E patch only | 0.1.0 | fix: | 0.1.1
+E patch only | 0.1.0 | feat: | 0.1.1
+E patch only | 0.1.0 | feat!: | 1.0.0
+E patch only | 0.1.3 | fix: | 0.1.4
+E patch only | 0.1.3 | feat: | 0.1.4
+E patch only | 0.1.3 | feat!: | 1.0.0
+E patch only | 1.0.0 | fix: | 1.0.1
+E patch only | 1.0.0 | feat: | 1.1.0
+E patch only | 1.0.0 | feat!: | 2.0.0
+
+## Fixed-parameter byte comparison
++ expected (docs/port/PARAMETERS.md)
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
++ actual (review/DECISION.md)
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
++ diff -u expected actual
+parameter-diff-exit=0 (character-for-character match)
+
+## Verdict evidence
+Vocabulary: README assigns merge to repository, then tags and GitHub Release to release-please; README excludes package-manager publication.
+Empty-manifest claim: docs require a manifest file at the target-branch tip and allow it to be empty on the first run; manifest updater records createIfMissing:false; Rust initial version is 0.1.0; BaseStrategy uses it when there is no latest release.
+Corrected behavior: manifest documentation says first PR collects all commits and identifies bootstrap-sha; direct package probe matches the decision table.
+Rerun exit=0
+
+## Finding derived from the rerun
+The direct probe above evaluates the same seeded baseline that DECISION.md calls an already-released 0.1.0. Under the recommended two flags, a breaking feat!: from 0.1.0 produces 0.2.0, not 0.1.1. Therefore the source establishes only that the seed is treated as the previous released/current version and that the next version depends on subsequent conventional commits; it does not establish an unconditional first Release PR or released version of 0.1.1.

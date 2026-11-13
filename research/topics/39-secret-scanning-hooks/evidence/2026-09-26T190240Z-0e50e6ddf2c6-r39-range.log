@@ -1,0 +1,169 @@
+== env
+gitleaks: /opt/homebrew/bin/gitleaks 8.30.1
+git version 2.50.1 (Apple Git-155)
+bash: 5.3.20(1)-release
+Darwin arm64
+run at 2026-09-27T02:23:54Z
+== R1 happy path: feature branch with upstream, leak on HEAD — both forms block
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 47.3ms
+    | 7:23PM WRN leaks found: 1
+PASS R1a  py-shape (base @{u}) -> exit 1  (expected=1 observed=1)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 50ms
+    | 7:23PM WRN leaks found: 1
+PASS R1b  direct -> exit 1  (expected=1 observed=1)
+== R2 push of a non-HEAD branch: 'git push origin other' while on clean main
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 52.6ms
+    | 7:23PM INF no leaks found
+PASS R2a  py-shape scans main's @{u}..HEAD -> exit 0 (fail open)  (expected=0 observed=0)
+PASS R2b  py-shape commits scanned  (expected=0 observed=0)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 2 commits scanned.
+    | 7:23PM INF scanned ~120 bytes (120 bytes) in 52.3ms
+    | 7:23PM WRN leaks found: 2
+PASS R2c  direct -> exit 1  (expected=1 observed=1)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 28.2ms
+    | 7:23PM INF no leaks found
+PASS R2d  real push, py-shape hook -> push exit 0  (expected=0 observed=0)
+PASS R2e  remote received the leaking branch  (expected=present observed=present)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 2 commits scanned.
+    | 7:23PM INF scanned ~120 bytes (120 bytes) in 33.5ms
+    | 7:23PM WRN leaks found: 2
+    | error: failed to push some refs to '/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r39-0FPMNM/origin.git'
+PASS R2f  real push, direct hook -> push non-zero  (expected=nonzero observed=nonzero)
+PASS R2g  remote did not receive the branch  (expected=absent observed=absent)
+== R3 new branch with no upstream, pushing HEAD — @{u} absent, py-shape falls back
+    | fatal: no upstream configured for branch 'fresh'
+PASS R3a  @{u} on a new branch -> exit 128  (expected=128 observed=128)
+    | INFO: no upstream; falling back to origin/HEAD
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 45.9ms
+    | 7:23PM WRN leaks found: 1
+PASS R3b  py-shape falls back to origin/HEAD -> exit 1  (expected=1 observed=1)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 3 commits scanned.
+    | 7:23PM INF scanned ~180 bytes (180 bytes) in 46.5ms
+    | 7:23PM WRN leaks found: 3
+PASS R3c  direct -> exit 1  (expected=1 observed=1)
+== R4 first push to an empty remote: no remote-tracking refs at all
+    | WARN: no upstream, origin/HEAD or origin/main; skipping range scan
+PASS R4a  py-shape with no refs -> WARN skip, exit 0 (fail open)  (expected=0 observed=0)
+PASS R4b  py-shape printed the skip warning  (expected=yes observed=yes)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 3 commits scanned.
+    | 7:23PM INF scanned ~100 bytes (100 bytes) in 54ms
+    | 7:23PM WRN leaks found: 1
+PASS R4c  direct scans whole local history -> exit 1  (expected=1 observed=1)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 3 commits scanned.
+    | 7:23PM INF scanned ~100 bytes (100 bytes) in 36.8ms
+    | 7:23PM WRN leaks found: 1
+    | error: failed to push some refs to '/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r39-0FPMNM/empty.git'
+PASS R4d  real first push, direct hook -> push non-zero  (expected=nonzero observed=nonzero)
+PASS R4e  empty remote still has no main  (expected=absent observed=absent)
+== R5 nothing unpushed -> empty set passes
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 57.7ms
+    | 7:23PM INF no leaks found
+PASS R5a  direct, nothing unpushed -> exit 0  (expected=0 observed=0)
+PASS R5b  direct commits scanned  (expected=0 observed=0)
+== R6 a stash holding a token is not scanned (refs/stash is outside --branches/--tags)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 97.2ms
+    | 7:23PM INF no leaks found
+PASS R6  direct with a leaking stash -> exit 0  (expected=0 observed=0)
+== R7 detached HEAD: HEAD in the expression is what covers it
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 60.2ms
+    | 7:23PM INF no leaks found
+PASS R7a  without HEAD -> 0 commits  (expected=0 observed=0)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 69.6ms
+    | 7:23PM WRN leaks found: 1
+PASS R7b  with HEAD -> 1 commit  (expected=1 observed=1)
+PASS R7c  with HEAD -> exit 1  (expected=1 observed=1)
+== R8 an unpushed local tag on otherwise-deleted work is scanned (--tags)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 75.5ms
+    | 7:23PM WRN leaks found: 1
+PASS R8  direct with leaking local tag -> exit 1  (expected=1 observed=1)
+== R9 remediation: leak buried under a later commit, then dropped
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 2 commits scanned.
+    | 7:23PM INF scanned ~75 bytes (75 bytes) in 31.4ms
+    | 7:23PM WRN leaks found: 1
+    | error: failed to push some refs to '/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r39-0FPMNM/origin.git'
+PASS R9a  push with buried leak -> non-zero  (expected=nonzero observed=nonzero)
+PASS R9b  leak commit dropped: commits on rem beyond main  (expected=1 observed=1)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~15 bytes (15 bytes) in 29ms
+    | 7:23PM INF no leaks found
+PASS R9c  push after history rewrite -> exit 0  (expected=0 observed=0)
+PASS R9d  remote now has rem  (expected=present observed=present)
+== R10 fail closed: gitleaks absent from PATH during a real push
+    | .git/hooks/pre-push: line 2: exec: gitleaks: not found
+    | error: failed to push some refs to '/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r39-0FPMNM/origin.git'
+PASS R10a  push with scanner missing -> non-zero  (expected=nonzero observed=nonzero)
+PASS R10b  hook reported command not found  (expected=yes observed=yes)
+PASS R10c  remote did not receive nobin  (expected=absent observed=absent)
+== R11 accepted cost: a leak on an unrelated unpushed branch blocks a clean push
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 2 commits scanned.
+    | 7:23PM INF scanned ~74 bytes (74 bytes) in 28.5ms
+    | 7:23PM WRN leaks found: 1
+    | error: failed to push some refs to '/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r39-0FPMNM/origin.git'
+PASS R11a  direct hook blocks the clean push (over-scan)  (expected=nonzero observed=nonzero)
+== R12 runner-up: stdin-exact hook (githooks(5) '<local-ref> <local-sha> <remote-ref> <remote-sha>')
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~14 bytes (14 bytes) in 29.4ms
+    | 7:23PM INF no leaks found
+PASS R12a  stdin-exact: clean push not blocked by the other branch  (expected=0 observed=0)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 27.6ms
+    | 7:23PM WRN leaks found: 1
+    | error: failed to push some refs to '/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r39-0FPMNM/origin.git'
+PASS R12b  stdin-exact: leaking branch blocked  (expected=nonzero observed=nonzero)
+PASS R12c  remote did not receive wip  (expected=absent observed=absent)
+== R13 fail open if the scan target is not the repository (hand-off to R37)
+    | 7:23PM ERR [git] fatal: not a git repository (or any of the parent directories): .git
+    | 7:23PM ERR error="stderr is not empty"
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 45.1ms
+    | 7:23PM INF no leaks found
+PASS R13a  gitleaks git outside a repository -> exit 0  (expected=0 observed=0)
+PASS R13b  outside a repository -> 0 commits  (expected=0 observed=0)
+== R14 timing on this scratch repo (host figure, not a benchmark)
+    | real 0.05
+== R15 residual gap: a commit already on ANY remote-tracking ref is excluded, a second remote included
+    | 
+PASS R15a  leak pushed to the fork with hooks bypassed  (expected=0 observed=0)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 27.2ms
+    | 7:23PM INF no leaks found
+PASS R15b  direct hook: push to origin of a commit already on fork/forked -> exit 0 (0 commits scanned)  (expected=0 observed=0)
+PASS R15c  origin received the leaking branch  (expected=present observed=present)
+    | 7:23PM INF Unknown SCM platform. Use --platform to include links in findings. host=
+    | 7:23PM INF 1 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 47.2ms
+    | 7:23PM WRN leaks found: 1
+PASS R15d  narrowed to --remotes=origin (the hook's $1) -> exit 1  (expected=1 observed=1)
+
+TOTAL PASS=41 FAIL=0

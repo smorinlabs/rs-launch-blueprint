@@ -1,0 +1,119 @@
+INFO scratch copy of fixture/ at /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r32-timeout.RGjOvJ; CARGO_TARGET_DIR=/tmp/cargo-s13-R32-target/r32-timeout
+INFO rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew); cargo-nextest 0.9.146 (8af696ddc 2026-09-21)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO   ────────────
+INFO    Nextest run ID 57c3fb3b-9549-4303-a062-b865b59c9046 with nextest profile: gemini-form
+INFO       Starting 1 test across 5 binaries (7 tests skipped)
+INFO           SLOW [>  1.000s] (───) rs-launch-blueprint::hang sleeps_three_seconds
+INFO           SLOW [>  2.000s] (───) rs-launch-blueprint::hang sleeps_three_seconds
+INFO           SLOW [>  3.000s] (───) rs-launch-blueprint::hang sleeps_three_seconds
+INFO           PASS [   3.009s] (1/1) rs-launch-blueprint::hang sleeps_three_seconds
+INFO   ────────────
+INFO        Summary [   3.011s] 1 test run: 1 passed (1 slow), 7 skipped
+INFO gemini-form run took 4.11s, exit 0
+PASS E3a — slow-timeout = "1s" alone (Gemini leg's form): a 3 s test still passes, exit 0
+PASS E3b — ... and is only marked SLOW
+PASS E3b2 — ... the summary counts it passed and slow, not failed
+PASS E3c — ... then reported PASS
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO   ────────────
+INFO    Nextest run ID 3b83f6df-4ff9-4a69-bdb5-1ece7591af88 with nextest profile: terminate-probe
+INFO       Starting 1 test across 5 binaries (7 tests skipped)
+INFO           SLOW [>  1.000s] (───) rs-launch-blueprint::hang never_returns
+INFO    TERMINATING [>  2.000s] (───) rs-launch-blueprint::hang never_returns
+INFO        TIMEOUT [   2.004s] (1/1) rs-launch-blueprint::hang never_returns
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO   
+INFO       (test timed out)
+INFO   
+INFO     Cancelling due to test failure: 
+INFO   ────────────
+INFO        Summary [   2.006s] 1 test run: 0 passed, 1 timed out, 7 skipped
+INFO        TIMEOUT [   2.004s] (1/1) rs-launch-blueprint::hang never_returns
+INFO   error: test run failed
+INFO terminate-probe run took 2.18s, exit 100
+PASS E3d — period 1s x terminate-after 2: the hung test fails the run (non-zero exit)
+PASS E3e — ... reported TIMEOUT
+PASS E3f — ... within 10 s wall clock (2 s cap + SIGTERM handling)
+PASS E3g — ... and its spawned child 'sleep 50373' is gone (process-group termination)
+INFO running the committed default profile (period 30s, terminate-after 2) against the hang test; expect ~60 s
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+INFO   ────────────
+INFO    Nextest run ID d13ec9ef-32f3-4d1e-a7f1-09fe5ffe55b8 with nextest profile: default
+INFO       Starting 1 test across 5 binaries (7 tests skipped)
+INFO           SLOW [> 30.000s] (───) rs-launch-blueprint::hang never_returns
+INFO    TERMINATING [> 60.000s] (───) rs-launch-blueprint::hang never_returns
+INFO        TIMEOUT [  60.003s] (1/1) rs-launch-blueprint::hang never_returns
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO   
+INFO       (test timed out)
+INFO   
+INFO     Cancelling due to test failure: 
+INFO   ────────────
+INFO        Summary [  60.004s] 1 test run: 0 passed, 1 timed out, 7 skipped
+INFO        TIMEOUT [  60.003s] (1/1) rs-launch-blueprint::hang never_returns
+INFO   error: test run failed
+INFO default-profile run took 60.22s, exit 100
+PASS E3h — committed config: the hung test fails the run
+PASS E3i — ... marked SLOW at the 30 s period first
+PASS E3j — ... then TIMEOUT
+PASS E3k — ... between 60 s and 75 s wall clock (py's timeout = 60)
+PASS E3l — ... child 'sleep 50373' gone
+INFO ci-profile inheritance: shrink the committed default to period 1s x terminate-after 1, then run under --profile ci
+PASS E3p0 — the committed default cap was shrunk for this check
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+INFO   ────────────
+INFO    Nextest run ID 39a7ddf3-ce34-42ac-b556-6912a8a91353 with nextest profile: ci
+INFO       Starting 1 test across 5 binaries (7 tests skipped)
+INFO    TERMINATING [>  1.000s] (───) rs-launch-blueprint::hang never_returns
+INFO        TIMEOUT [   1.001s] (1/1) rs-launch-blueprint::hang never_returns
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO   
+INFO       (test timed out)
+INFO   
+INFO   ────────────
+INFO        Summary [   1.002s] 1 test run: 0 passed, 1 timed out, 7 skipped
+INFO        TIMEOUT [   1.001s] (1/1) rs-launch-blueprint::hang never_returns
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO   
+INFO       (test timed out)
+INFO   
+INFO   error: test run failed
+INFO ci-profile hang run took 1.20s, exit 100
+PASS E3p — the run used nextest profile ci
+PASS E3q — profile ci inherits default's terminating slow-timeout: the hang fails the run
+PASS E3r — ... reported TIMEOUT at the shrunk 1 s cap
+PASS E3s — ... child 'sleep 50373' gone
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+INFO   ────────────
+INFO    Nextest run ID 902a2dc6-335f-4f7f-a329-5d4f4ee7a152 with nextest profile: ci
+INFO       Starting 1 test across 5 binaries (7 tests skipped)
+INFO           PASS [   1.220s] (1/1) rs-launch-blueprint::cli slow::large_config_round_trip
+INFO   ────────────
+INFO        Summary [   1.221s] 1 test run: 1 passed, 7 skipped
+PASS E3t — profile ci inherits the slow:: override: the 1.2 s slow test passes under the 1 s default
+INFO stable libtest: the same hang under cargo test, observed for 15 s
+PASS E3m — cargo test is still running the hung test after 15 s (no per-test timeout)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+INFO        Running tests/hang.rs (/tmp/cargo-s13-R32-target/r32-timeout/debug/deps/hang-00d35335d957dfaf)
+INFO   
+INFO   running 1 test
+INFO   error: test failed, to rerun pass `--test hang`
+INFO   
+INFO   Caused by:
+INFO     process didn't exit successfully: `/tmp/cargo-s13-R32-target/r32-timeout/debug/deps/hang-00d35335d957dfaf never_returns` (signal: 15, SIGTERM: termination signal)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+INFO        Running tests/hang.rs (/tmp/cargo-s13-R32-target/r32-timeout/debug/deps/hang-00d35335d957dfaf)
+INFO   error: the option `Z` is only accepted on the nightly compiler
+INFO   error: test failed, to rerun pass `--test hang`
+PASS E3n — libtest --ensure-time is rejected on stable (exit 101)
+PASS E3o — ... because -Z is nightly-only
+RESULT PASS=22 FAIL=0

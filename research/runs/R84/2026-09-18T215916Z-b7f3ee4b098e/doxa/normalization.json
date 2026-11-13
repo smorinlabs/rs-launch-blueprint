@@ -1,0 +1,36 @@
+{
+ "operation_id": "research-20260918-152036-285cea386b6f444c",
+ "kind": "crate",
+ "providers": {
+  "openai": {
+   "saved_file": "doxa/research-outputs/2026-09-18_152036_all_deep_research_openai_deep-research-prompt-openapi-typed-client-generati.md",
+   "model": "gpt-5.6-sol",
+   "changes": [],
+   "normalized": "doxa-openai.normalized.md",
+   "shape": "OK: validation passed",
+   "content_lines_missing_from_regrouped": 0
+  },
+  "perplexity": {
+   "saved_file": "doxa/research-outputs/2026-09-18_152036_all_deep_research_perplexity_deep-research-prompt-openapi-typed-client-generati.md",
+   "model": "sonar-deep-research",
+   "changes": [],
+   "normalized": "doxa-perplexity.normalized.md",
+   "shape": "OK: validation passed",
+   "content_lines_missing_from_regrouped": 0
+  },
+  "gemini": {
+   "saved_file": "doxa/research-outputs/2026-09-18_152036_all_deep_research_gemini_deep-research-prompt-openapi-typed-client-generati.md",
+   "model": "deep-research-preview-04-2026",
+   "changes": [
+    "'## Sources' -> H3"
+   ],
+   "normalized": "doxa-gemini.normalized.md",
+   "shape": "OK: validation passed",
+   "content_lines_missing_from_regrouped": 0
+  }
+ },
+ "regrouped": {
+  "file": "doxa.normalized.md",
+  "shape": "OK: validation passed"
+ }
+}

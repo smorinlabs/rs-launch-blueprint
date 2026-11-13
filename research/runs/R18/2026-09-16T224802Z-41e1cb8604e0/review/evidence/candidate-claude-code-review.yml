@@ -1,0 +1,43 @@
+# LINT FIXTURE ONLY — not a shipped workflow.
+# P02 is research; P03 builds the template. This file exists so `actionlint`
+# can decide whether the recommended configuration in review/DECISION.md is
+# syntactically valid and whether `vars` is legal in a job-level `if:`.
+# It deliberately lives under research/runs/.../review/evidence/, never under
+# .github/workflows/, so GitHub Actions never loads it.
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  claude-review:
+    # `vars` is one of the four contexts available to jobs.<job_id>.if
+    # (github, needs, vars, inputs); `secrets` is not. Unset in a fresh
+    # template fork, so the job is SKIPPED rather than failing.
+    if: >-
+      vars.ENABLE_CLAUDE_REVIEW == 'true'
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.pull_request.user.type != 'Bot'
+      && github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1.0.220
+        with:
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
+          plugins: 'code-review@claude-code-plugins'
+          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }} --comment'

@@ -1,0 +1,134 @@
+# R18 empirical audit r7
+# actor: audit-codex-2026-09-06T043454Z-6f31d86e5b7d-r7
+# model: gpt-5.6-terra
+# decision sha256: c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e
+# source cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d
+# fixture copies and all execution scratch files: /private/tmp/r18-r7.*
+
+## Linux attempt
+
+$ command -v limactl
+/opt/homebrew/bin/limactl
+$ limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; <R6-8-to-R6-10 probe>'
+instance `ubuntu` is stopped, run `limactl start ubuntu` to start the instance
+exit=1
+$ limactl start ubuntu
+Using the existing instance `ubuntu`
+Starting the instance `ubuntu` with internal VM driver `qemu`
+unlinkat /Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted
+exit=1
+# The VM could not be started by this sandbox. The following is the same
+# isolated fixture probe on macOS; no repository file was modified.
+
+## Copy, toolchain, lint, and protected fixture regions
+
+$ shasum -a 256 review/DECISION.md /private/tmp/r18-r7.bXFyJe/DECISION.md
+c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e  review/DECISION.md
+c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e  /private/tmp/r18-r7.bXFyJe/DECISION.md
+exit=0
+$ uname -srm
+Darwin 25.4.0 arm64
+exit=0
+$ actionlint --version | head -n1
+1.7.12
+exit=0
+$ actionlint candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+exit=0
+$ grep -c '^ *uses: anthropics/claude-code-action@v1.0.220$' candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:1
+candidate-claude.r5.yml:1
+exit=0
+$ grep -c 'outputs.credential != ' candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:0
+candidate-claude.r5.yml:0
+exit=1  # expected zero-match exit from grep -c
+$ awk '/^name: / {seen=1} seen' candidate-claude-code-review.r5.yml | grep -c "type != 'Bot'"
+2
+exit=0
+$ awk '/^name: / {seen=1} seen' candidate-claude.r5.yml | grep -c "type != 'Bot'"
+5
+exit=0
+$ git diff --unified=0 728fa82^ 728fa82 -- <each r5 fixture> | rg '^[+-][^+-]'
++#   AND IF THE CREDENTIAL IS ALREADY THERE, NOBODY ACCEPTS ANYTHING: a
++#   repository that already holds ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN
++#   as a secret for any other purpose gets this lane live on the next
++#   qualifying event with no act of acceptance taken and nothing printed — the
++#   notice below fires only when NO credential is found — so everything listed
++#   here is accepted by default rather than by choice.
+# The six additions occur above `name:` in each fixture. Therefore each YAML
+# body from `name:` onward is byte-identical to its pre-JA-06 form.
+
+## R6-10 reproduction
+
+$ awk 'NR>=136 && NR<=160 {sub(/^          /, ""); print}' candidate-claude-code-review.r5.yml > /private/tmp/r18-r7.bXFyJe/detect-step.sh
+exit=0
+$ diff -u <(sed -n '136,160p' candidate-claude-code-review.r5.yml | cut -c11-) /private/tmp/r18-r7.bXFyJe/detect-step.sh
+exit=0
+$ env -i PATH="$PATH" HOME="$HOME" GITHUB_OUTPUT=<empty-output> GITHUB_STEP_SUMMARY=<empty-summary> bash detect-step.sh
+exit=0
+GITHUB_OUTPUT=credential=none
+stdout=::notice title=Claude review not configured::No Claude credential is set, so the review job is skipped. This is not an error.
+notice_lines=1
+step-summary bytes=544
+real-job positive predicate (static || federation)=false
+
+$ env -i PATH="$PATH" HOME="$HOME" ANTHROPIC_API_KEY=present-before-workflow GITHUB_OUTPUT=<empty-output> GITHUB_STEP_SUMMARY=<empty-summary> bash detect-step.sh
+exit=0
+GITHUB_OUTPUT=credential=static
+stdout=Claude credential shape detected: static
+notice_lines=0
+notice grep exit=1  # expected zero-match exit from grep -c
+step-summary bytes=0
+real-job positive predicate (static || federation)=true
+
+$ sed -n '145p;160p' candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+if [ "${shape}" = none ]; then
+fi
+if [ "${shape}" = none ]; then
+fi
+exit=0
+
+## Decision integrity and publisher history
+
+$ PYTHONPATH=/Users/stevemorin/c/rs-launch-blueprint-p02-plan/scripts python3 -c '<write revision-5 DECISION.md to a private temporary file; research_runner.check_history(temp, current_bytes)>'
+check_history=pass
+exit=0
+$ compare JA-06 commit 728fa82^..728fa82 for protected regions
+supersedes=unchanged
+assumes=unchanged
+residual_a=unchanged
+residual_b=unchanged
+residual_c=unchanged
+exit=0
+# residual_a is the runner-up third condition; residual_b is fact (3); and
+# residual_c is fact (4), matching protected-regions-r6.log P5.
+
+## Citation spot checks
+
+$ curl -L -sS -o action.yml -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/action.yml
+200  # 23689 bytes; credential input names found 8 times
+$ curl -L -sS -o workload-identity.ts -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/base-action/src/workload-identity.ts
+200  # 7448 bytes; "API key/OAuth token takes precedence" found once
+$ curl -L -sS -o section-using-jobs-in-a-workflow-needs.md -w '%{http_code}' https://raw.githubusercontent.com/github/docs/main/data/reusables/actions/jobs/section-using-jobs-in-a-workflow-needs.md
+200  # 1407 bytes; the skipped-dependency rule found once
+$ curl -L -sS -o issue-1068.json -w '%{http_code}' https://api.github.com/repos/anthropics/claude-code-action/issues/1068
+200  # 7371 bytes; state=open found once
+$ curl -L -sS -o tag-v1.0.220.json -w '%{http_code}' https://api.github.com/repos/anthropics/claude-code-action/git/ref/tags/v1.0.220
+200  # 399 bytes; object sha 020e931323e467e00b803ad64e03410d3796b8f7
+$ curl -L -sS -o release-v1.0.220.json -w '%{http_code}' https://api.github.com/repos/anthropics/claude-code-action/releases/tags/v1.0.220
+200  # 2279 bytes; tag_name=v1.0.220
+$ curl -L -sS -o workflow-syntax.md -w '%{http_code}' https://raw.githubusercontent.com/github/docs/main/content/actions/writing-workflows/workflow-syntax-for-github-actions.md
+404  # 14 bytes; volatile GitHub Docs source-path drift, not contrary evidence
+
+## Disclosed corrections checked
+
+- The preflight description says output is visible on `shape = none` only and
+  names one ordinary-log line on every other branch.
+- The pre-existing-credential paragraph identifies lines 145-160 in both
+  fixtures; direct `sed` output above confirms the current branch endpoints.
+- Both fixture adopter headers contain the pre-existing-credential case.
+- U2/B4 includes the opposite pre-existing-static runtime assertion, and U19
+  records the preflight-only actor-trust architecture as recommended for P03,
+  deliberately not implemented in the fixtures.
+
+# END

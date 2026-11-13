@@ -1,0 +1,302 @@
+# R42 revision 9 — check 16, third leg: DEMONSTRATE that each control the other two legs
+# claim actually discriminates. This leg exists because of the round-8 rejection. The
+# auditor's finding F1 was that check 16's payloads printed the status of every critical
+# command instead of asserting it, so nothing the decision called a failure control could
+# make the script fail. Revision 9 converts every one of them into an assertion — and a
+# control asserted to be capable of failing, without a run showing it fail, is exactly the
+# defect that rejection names. So each control is shown failing here.
+#
+# METHOD. For every control, the owning leg is run once with exactly ONE input substituted
+# (`PERTURB=<name>`), and the run must (a) exit non-zero and (b) print that control's own
+# `ASSERT-FAIL <name>` line. Exit status alone is not discrimination — a rate-limited fetch
+# would also exit non-zero — so the named line is required too, and any run whose output
+# carries a 403/429/rate-limit marker is reported VOID rather than counted as a control
+# that fired. Thirteen controls are demonstrated, seven in the first leg and six in the
+# second. Each leg is also run CLEAN before and after, which both proves the unperturbed
+# script passes and, by diffing the two clean runs, asserts the rerun rule each leg's log
+# states instead of leaving it as a claim.
+#
+# WHAT THIS LEG FOUND AND THE OTHER LOGS RECORD. Section B0 asserts that all eight files
+# check 16 reads are byte-identical at tags v1.22.0 and v1.23.0. Revision 8's one-file tree
+# control therefore did not separate those two releases; it authenticates content, not a
+# release number. The second leg now hashes all eight files and the perturbation used is
+# v1.21.0, whose `args.rs` differs.
+#
+# Run once, 2026-09-14T23:03:07Z, which is 2026-09-14 16:03 America/Los_Angeles (the stamp
+# is the output's mtime; the script prints no timestamp of its own). It drives nineteen
+# executions of the other two legs, so it is the slowest artifact here.
+#
+# Working directory: the run directory. Scratch directory: <scratch>/r42r9/ctl, outside the
+# repository; `LEG1` and `LEG2` name the two leg scripts, which default to `./check16.sh`
+# and `./check16b.sh` in the current directory. Extract all three payloads from these three
+# logs into one directory, `chmod +x` them, and this script drives the other two. Nothing is
+# read from or written to the repository, so committing this revision cannot change what it
+# does.
+#
+# RERUN RULE. On any host: every `ASSERT-OK` line and the final `CONTROLS RESULT: PASSED`
+# must reproduce, as must the thirteen `ASSERT-FAIL` lines quoted from the perturbed runs
+# and the `8 of 8` identity count in section B0. What varies is the three `INFO Done in`
+# wall-clock timings printed inside section A's leg-1 diff: this leg gives both clean runs
+# one scratch directory, so no path line appears in that diff. The assertion is that no
+# differing line falls outside the rule, not that the diff is a fixed string.
+#
+# WHAT THIS LEG DOES NOT SHOW. That the perturbed inputs are the only ones that would fire
+# each control — a control shown to discriminate on one substitution is not proved to
+# discriminate on every possible one. And it demonstrates the scripts, not the subject:
+# nothing here bears on what cargo-binstall verifies, which is the other two legs' business.
+#
+# ---8<--- check16-controls.sh ---8<---
+# #!/bin/bash
+# # R42 revision 9 — check 16, third leg: DEMONSTRATE that every control the other two
+# # legs claim actually discriminates. For each control it runs the owning leg once with
+# # exactly ONE input substituted (PERTURB=<name>) and requires the run to (a) exit
+# # non-zero and (b) print that control's own `ASSERT-FAIL <name>` line. Exit status
+# # alone is not discrimination — a rate-limited fetch would also exit non-zero — so the
+# # named line is required too, and any run whose output carries a 403/429/rate-limit
+# # marker is reported VOID rather than counted as a control that fired.
+# # Each leg is also run CLEAN twice: it must pass, and the two clean runs must differ
+# # only in the lines the rerun rule allows.
+# set -o pipefail
+# SCRATCH="${SCRATCH:?set SCRATCH}"
+# LEG1="${LEG1:-./check16.sh}"
+# LEG2="${LEG2:-./check16b.sh}"
+# OUT="$SCRATCH/controls"; mkdir -p "$OUT"
+# PASS=0; FAIL=0; VOID=0
+# say() { printf '\n--- %s\n' "$*"; }
+# ok()   { PASS=$((PASS+1)); echo "ASSERT-OK   $*"; }
+# bad()  { FAIL=$((FAIL+1)); echo "ASSERT-FAIL $*"; }
+#
+# run_clean() { # run_clean <leg-script> <tag> <n>
+#   PERTURB= SCRATCH="$SCRATCH/$2" bash "$1" > "$OUT/$2-clean$3.txt" 2>&1
+#   echo "$?"
+# }
+# # demo <leg-script> <leg-tag> <perturb> <expected ASSERT-FAIL text>
+# demo() {
+#   local script=$1 tag=$2 perturb=$3 want=$4 status
+#   PERTURB="$perturb" SCRATCH="$SCRATCH/$tag" bash "$script" > "$OUT/$tag-$perturb.txt" 2>&1
+#   status=$?
+#   echo "PERTURB=$perturb -> exit $status"
+#   if grep -qEi 'HTTP (403|429)|rate limit|Too Many Requests' "$OUT/$tag-$perturb.txt"; then
+#     VOID=$((VOID+1)); echo "VOID $tag/$perturb — the run hit a transport limit; not counted"
+#     return
+#   fi
+#   if [ "$status" -ne 0 ]; then ok "$tag/$perturb exits non-zero ($status)"
+#   else bad "$tag/$perturb exited 0 — the control did not fail the script"; fi
+#   grep -F -e "ASSERT-FAIL $want" "$OUT/$tag-$perturb.txt" | sed 's/^/    /'
+#   if grep -qF -e "ASSERT-FAIL $want" "$OUT/$tag-$perturb.txt"; then
+#     ok "$tag/$perturb names its own control [$want]"
+#   else
+#     bad "$tag/$perturb did not print [ASSERT-FAIL $want]"
+#   fi
+# }
+#
+# say "A. Both legs pass CLEAN, twice, and the reruns obey the stated rerun rule"
+# mkdir -p "$SCRATCH/leg1" "$SCRATCH/leg2"
+# s=$(run_clean "$LEG1" leg1 1); echo "leg1 clean run 1 exit $s"
+# if [ "$s" = 0 ]; then ok "leg1-clean-1 exit 0"; else bad "leg1-clean-1 exit $s"; fi
+# s=$(run_clean "$LEG1" leg1 2); echo "leg1 clean run 2 exit $s"
+# if [ "$s" = 0 ]; then ok "leg1-clean-2 exit 0"; else bad "leg1-clean-2 exit $s"; fi
+# s=$(run_clean "$LEG2" leg2 1); echo "leg2 clean run 1 exit $s"
+# if [ "$s" = 0 ]; then ok "leg2-clean-1 exit 0"; else bad "leg2-clean-1 exit $s"; fi
+# s=$(run_clean "$LEG2" leg2 2); echo "leg2 clean run 2 exit $s"
+# if [ "$s" = 0 ]; then ok "leg2-clean-2 exit 0"; else bad "leg2-clean-2 exit $s"; fi
+#
+# echo "# leg 1: two clean runs in one scratch may differ ONLY in 'INFO Done in' timings"
+# diff "$OUT/leg1-clean1.txt" "$OUT/leg1-clean2.txt" > "$OUT/leg1.diff"
+# echo "leg1 clean diff:"; sed 's/^/    /' "$OUT/leg1.diff"
+# stray=$(grep -E '^[<>]' "$OUT/leg1.diff" | grep -cv 'INFO Done in')
+# echo "leg1 differing lines that are not timings: $stray"
+# if [ "$stray" = 0 ]; then ok "leg1-rerun-rule (only 'INFO Done in' lines differ)"
+# else bad "leg1-rerun-rule: $stray differing line(s) outside the rule"; fi
+#
+# echo "# leg 2: two clean runs in one scratch must be byte-identical"
+# diff "$OUT/leg2-clean1.txt" "$OUT/leg2-clean2.txt" > "$OUT/leg2.diff"
+# lines=$(wc -l < "$OUT/leg2.diff" | tr -d ' ')
+# echo "leg2 clean diff lines: $lines"
+# if [ "$lines" = 0 ]; then ok "leg2-rerun-rule (byte-identical)"
+# else bad "leg2-rerun-rule: $lines differing line(s)"; sed 's/^/    /' "$OUT/leg2.diff"; fi
+#
+# say "B0. Why the tree control's perturbation is tag v1.21.0 and not the adjacent v1.22.0"
+# # The control authenticates the CONTENT each finding rests on, not a release number.
+# # This is asserted, not claimed: every one of the eight files it hashes is byte-identical
+# # at v1.22.0 and v1.23.0, so v1.22.0 would not fire it — and no finding of check 16 would
+# # differ there either. v1.21.0's args.rs does differ, so that is the perturbation used.
+# UA='rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)'
+# SAME=0
+# for pair in \
+#   "crates/bin/src/args.rs 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783" \
+#   "crates/binstalk-fetchers/src/gh_crate_meta.rs 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2" \
+#   "crates/binstalk-fetchers/src/quickinstall.rs 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7" \
+#   "crates/binstalk/src/ops/resolve/resolution.rs 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2" \
+#   "SIGNING.md 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9" \
+#   "crates/binstalk-registry/src/common.rs c90aa6122d2a0e4c7cbad56ac8cd7fff11a69ea40fc533bebd2b53aa58379f8e" \
+#   "crates/binstalk-downloader/src/download.rs f752cef42feee3d7b18063ce054314cfcebf016998e5fdfec627491aca64c8d5" \
+#   "crates/binstalk-fetchers/src/signing.rs 9a4995c71b0fff73b44a8975f7a75dbff825cdf1d0f8924cf110860bbbff43ba"; do
+#   f=${pair% *}; want=${pair#* }
+#   got=$(curl -sS -H "User-Agent: $UA" \
+#     "https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.22.0/$f" | shasum -a 256 | awk '{print $1}')
+#   if [ "$got" = "$want" ]; then SAME=$((SAME+1)); verdict=same; else verdict=DIFFERENT; fi
+#   echo "v1.22.0 $f -> $verdict"
+# done
+# echo "files byte-identical at v1.22.0 and v1.23.0: $SAME of 8"
+# if [ "$SAME" = 8 ]; then ok "v1.22.0-content-identical (so the control need not, and does not, separate those two tags)"
+# else bad "v1.22.0-content-identical expected [8] got [$SAME]"; fi
+# # v1.21.0's args.rs, the perturbation actually used, must NOT match.
+# got=$(curl -sS -H "User-Agent: $UA" \
+#   "https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.21.0/crates/bin/src/args.rs" | shasum -a 256 | awk '{print $1}')
+# echo "v1.21.0 crates/bin/src/args.rs sha256 $got"
+# if [ "$got" != 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783 ]; then
+#   ok "v1.21.0-content-differs (a tree the control must reject)"
+# else bad "v1.21.0-content-differs: v1.21.0 args.rs matches v1.23.0, so it is not a perturbation"; fi
+#
+# say "B. Leg 2's controls, each shown failing when its input is perturbed"
+# demo "$LEG2" leg2 tree    'tree-control-crates/bin/src/args.rs'
+# demo "$LEG2" leg2 dvcount 'dv-file-count'
+# demo "$LEG2" leg2 dupsite 'sha256digest-construction-sites'
+# demo "$LEG2" leg2 poscntl 'paired-positive-control'
+# demo "$LEG2" leg2 blake3  'paired-negative-control'
+# demo "$LEG2" leg2 sweep   'digest-sweep-status'
+#
+# say "C. Leg 2 still passes clean after the tree-editing perturbations were restored"
+# s=$(run_clean "$LEG2" leg2 3); echo "leg2 clean run 3 exit $s"
+# if [ "$s" = 0 ]; then ok "leg2-clean-3 exit 0 (restore is complete)"; else bad "leg2-clean-3 exit $s"; fi
+# diff "$OUT/leg2-clean1.txt" "$OUT/leg2-clean3.txt" > "$OUT/leg2-restore.diff"
+# lines=$(wc -l < "$OUT/leg2-restore.diff" | tr -d ' ')
+# echo "leg2 post-restore diff lines: $lines"
+# if [ "$lines" = 0 ]; then ok "leg2-restore-identical"
+# else bad "leg2-restore: $lines differing line(s)"; sed 's/^/    /' "$OUT/leg2-restore.diff"; fi
+#
+# say "D. Leg 1's controls, each shown failing when its input is perturbed"
+# demo "$LEG1" leg1 sha       'sha256-args.rs'
+# demo "$LEG1" leg1 signing   'signing-verdict-cargo-binstall@1.23.0 expected [ABSENT] got [PRESENT]'
+# demo "$LEG1" leg1 p7a       '7a-verified-signature-count'
+# demo "$LEG1" leg1 p7b       '7b-falls-through-to-cargo-install'
+# demo "$LEG1" leg1 p7c       '7c-verified-signature-count'
+# demo "$LEG1" leg1 p7d       '7d-status'
+# demo "$LEG1" leg1 cargohome 'cargo-bin-listing-unchanged'
+#
+# say "E. Leg 1 still passes clean after every perturbation"
+# s=$(run_clean "$LEG1" leg1 3); echo "leg1 clean run 3 exit $s"
+# if [ "$s" = 0 ]; then ok "leg1-clean-3 exit 0"; else bad "leg1-clean-3 exit $s"; fi
+#
+# say "Control summary"
+# echo "controls demonstrated: 13 (7 in leg 1, 6 in leg 2)"
+# echo "assertions passed: $PASS  failed: $FAIL  void: $VOID  total: $((PASS+FAIL))"
+# if [ "$VOID" -ne 0 ]; then echo "CONTROLS RESULT: INCOMPLETE ($VOID void run(s))"; exit 2; fi
+# if [ "$FAIL" -ne 0 ]; then echo "CONTROLS RESULT: FAILED ($FAIL assertion(s))"; exit 1; fi
+# echo "CONTROLS RESULT: PASSED — every control fails the script when its input is wrong"
+# ---8<--- end of check16-controls.sh ---8<---
+
+--- A. Both legs pass CLEAN, twice, and the reruns obey the stated rerun rule
+leg1 clean run 1 exit 0
+ASSERT-OK   leg1-clean-1 exit 0
+leg1 clean run 2 exit 0
+ASSERT-OK   leg1-clean-2 exit 0
+leg2 clean run 1 exit 0
+ASSERT-OK   leg2-clean-1 exit 0
+leg2 clean run 2 exit 0
+ASSERT-OK   leg2-clean-2 exit 0
+# leg 1: two clean runs in one scratch may differ ONLY in 'INFO Done in' timings
+leg1 clean diff:
+    185c185
+    <   cargo-binstall:  INFO Done in 2.316482375s
+    ---
+    >   cargo-binstall:  INFO Done in 1.375889291s
+    199c199
+    <   cargo-binstall:  INFO Done in 2.136533666s
+    ---
+    >   cargo-binstall:  INFO Done in 1.974393625s
+    211c211
+    <   cargo-binstall:  INFO Done in 2.735364375s
+    ---
+    >   cargo-binstall:  INFO Done in 1.969888625s
+leg1 differing lines that are not timings: 0
+ASSERT-OK   leg1-rerun-rule (only 'INFO Done in' lines differ)
+# leg 2: two clean runs in one scratch must be byte-identical
+leg2 clean diff lines: 0
+ASSERT-OK   leg2-rerun-rule (byte-identical)
+
+--- B0. Why the tree control's perturbation is tag v1.21.0 and not the adjacent v1.22.0
+v1.22.0 crates/bin/src/args.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/gh_crate_meta.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/quickinstall.rs -> same
+v1.22.0 crates/binstalk/src/ops/resolve/resolution.rs -> same
+v1.22.0 SIGNING.md -> same
+v1.22.0 crates/binstalk-registry/src/common.rs -> same
+v1.22.0 crates/binstalk-downloader/src/download.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/signing.rs -> same
+files byte-identical at v1.22.0 and v1.23.0: 8 of 8
+ASSERT-OK   v1.22.0-content-identical (so the control need not, and does not, separate those two tags)
+v1.21.0 crates/bin/src/args.rs sha256 2e77dce1e9848bcfba5b921870d9917b49c7f4132cac5e07763c8495010f0788
+ASSERT-OK   v1.21.0-content-differs (a tree the control must reject)
+
+--- B. Leg 2's controls, each shown failing when its input is perturbed
+PERTURB=tree -> exit 1
+ASSERT-OK   leg2/tree exits non-zero (1)
+    ASSERT-FAIL tree-control-crates/bin/src/args.rs expected [4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783] got [2e77dce1e9848bcfba5b921870d9917b49c7f4132cac5e07763c8495010f0788]
+ASSERT-OK   leg2/tree names its own control [tree-control-crates/bin/src/args.rs]
+PERTURB=dvcount -> exit 1
+ASSERT-OK   leg2/dvcount exits non-zero (1)
+    ASSERT-FAIL dv-file-count expected [3] got [1]
+ASSERT-OK   leg2/dvcount names its own control [dv-file-count]
+PERTURB=dupsite -> exit 1
+ASSERT-OK   leg2/dupsite exits non-zero (1)
+    ASSERT-FAIL sha256digest-construction-sites expected [1] got [2]
+ASSERT-OK   leg2/dupsite names its own control [sha256digest-construction-sites]
+PERTURB=poscntl -> exit 1
+ASSERT-OK   leg2/poscntl exits non-zero (1)
+    ASSERT-FAIL paired-positive-control expected [0 1] got [1 0]
+ASSERT-OK   leg2/poscntl names its own control [paired-positive-control]
+PERTURB=blake3 -> exit 1
+ASSERT-OK   leg2/blake3 exits non-zero (1)
+    ASSERT-FAIL paired-negative-control expected [1] got [0]
+ASSERT-OK   leg2/blake3 names its own control [paired-negative-control]
+PERTURB=sweep -> exit 1
+ASSERT-OK   leg2/sweep exits non-zero (1)
+    ASSERT-FAIL digest-sweep-status expected [1] got [0]
+ASSERT-OK   leg2/sweep names its own control [digest-sweep-status]
+
+--- C. Leg 2 still passes clean after the tree-editing perturbations were restored
+leg2 clean run 3 exit 0
+ASSERT-OK   leg2-clean-3 exit 0 (restore is complete)
+leg2 post-restore diff lines: 0
+ASSERT-OK   leg2-restore-identical
+
+--- D. Leg 1's controls, each shown failing when its input is perturbed
+PERTURB=sha -> exit 1
+ASSERT-OK   leg1/sha exits non-zero (1)
+    ASSERT-FAIL sha256-args.rs expected [4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783] got [87bcbe2f57cd66c37407cb6407a1864cad2e3178d39b7cb3674c5b428c840cd9]
+ASSERT-OK   leg1/sha names its own control [sha256-args.rs]
+PERTURB=signing -> exit 1
+ASSERT-OK   leg1/signing exits non-zero (1)
+    ASSERT-FAIL signing-verdict-cargo-binstall@1.23.0 expected [ABSENT] got [PRESENT]
+ASSERT-OK   leg1/signing names its own control [signing-verdict-cargo-binstall@1.23.0 expected [ABSENT] got [PRESENT]]
+PERTURB=p7a -> exit 1
+ASSERT-OK   leg1/p7a exits non-zero (1)
+    ASSERT-FAIL 7a-verified-signature-count expected [0] got [1]
+ASSERT-OK   leg1/p7a names its own control [7a-verified-signature-count]
+PERTURB=p7b -> exit 1
+ASSERT-OK   leg1/p7b exits non-zero (1)
+    ASSERT-FAIL 7b-falls-through-to-cargo-install missing [cargo install cargo-shear --version 1.13.1 --locked]
+ASSERT-OK   leg1/p7b names its own control [7b-falls-through-to-cargo-install]
+PERTURB=p7c -> exit 1
+ASSERT-OK   leg1/p7c exits non-zero (1)
+    ASSERT-FAIL 7c-verified-signature-count expected [1] got [0]
+ASSERT-OK   leg1/p7c names its own control [7c-verified-signature-count]
+PERTURB=p7d -> exit 1
+ASSERT-OK   leg1/p7d exits non-zero (1)
+    ASSERT-FAIL 7d-status expected [76] got [0]
+ASSERT-OK   leg1/p7d names its own control [7d-status]
+PERTURB=cargohome -> exit 1
+ASSERT-OK   leg1/cargohome exits non-zero (1)
+    ASSERT-FAIL cargo-bin-listing-unchanged expected [01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -] got [9409fb25ecfdc3df4bc5ed51ecc82713f773d650969bcdd1cf578644e5a4152d  -]
+ASSERT-OK   leg1/cargohome names its own control [cargo-bin-listing-unchanged]
+
+--- E. Leg 1 still passes clean after every perturbation
+leg1 clean run 3 exit 0
+ASSERT-OK   leg1-clean-3 exit 0
+
+--- Control summary
+controls demonstrated: 13 (7 in leg 1, 6 in leg 2)
+assertions passed: 37  failed: 0  void: 0  total: 37
+CONTROLS RESULT: PASSED — every control fails the script when its input is wrong

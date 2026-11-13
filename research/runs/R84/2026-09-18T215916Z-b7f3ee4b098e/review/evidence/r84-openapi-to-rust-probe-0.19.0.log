@@ -1,0 +1,75 @@
+R84 openapi-to-rust probe (revision 4)
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+fixture: fixtures/api-3.1.json, openapi 3.1.0, sha256 d0837b989cc0aa4e3a9fbfb69842da0b68f494cbde25251d21243fe7b4676f51
+host: Darwin arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+just: just 1.57.0
+
+PASS  T01 the installed tool reports 'openapi-to-rust 0.19.0'
+PASS  T02 'generate --help' offers --check, the staleness gate the drift discussion relies on
+PASS  T03 direct-mode generation from the OpenAPI 3.1.0 fixture exits 0
+      emitted: REQUIRED_DEPS.toml client.rs mod.rs types.rs 
+PASS  T04 the output is a MODULE tree (mod.rs client.rs types.rs REQUIRED_DEPS.toml) and no Cargo.toml
+PASS  T05 REQUIRED_DEPS.toml names reqwest 0.13 with default features off and rustls on
+      pub async fn ops_healthz
+      pub async fn projects_get_project
+      pub async fn projects_list_projects
+      pub fn api
+      pub fn is_api_error
+      pub fn is_client_error
+      pub fn is_retryable
+      pub fn is_retryable
+      pub fn is_server_error
+      pub fn new
+      pub fn problem_details
+      pub fn serialization_error
+      pub fn with_api_key
+      pub fn with_base_url
+      pub fn with_header
+      pub fn with_headers
+      pub fn with_max_response_body_bytes
+PASS  T06 curated operationIds become ops_healthz / projects_list_projects / projects_get_project
+PASS  T07 every generated operation is async: of the methods returning ApiOpError, async=3 sync=0
+PASS  T08 'just client-rust' exits 0 and prints its completion line
+PASS  T09 the recipe's package declares edition 2024, rust-version 1.96 and an empty [workspace] table
+PASS  T10 no hand-written Rust file: every .rs file under clients/rust carries the generator's own header
+PASS  T11 the generated package compiles on the current stable toolchain (1.98.1)
+PASS  T12 the generated package compiles on the 1.96.0 floor (msrv-policy: stable 1.98 minus 2)
+PASS  T13 the template root is untouched: cargo metadata lists exactly one workspace member, the root package
+PASS  T14 tokio IS in the generated client's normal tree (reqwest -> hyper), which is why it stays outside the workspace
+PASS  T15 the template root's normal tree has no tokio at all after the recipe ran
+PASS  T16 regeneration is deterministic: two recipe runs produce byte-identical trees (target/ and Cargo.lock excluded)
+PASS  T17 --check on freshly generated output exits 0
+PASS  T18 --check exits non-zero once the snapshot gains an operation the output lacks (rc=1)
+PASS  T19 --check exits non-zero once a generated file is hand-edited (rc=1)
+PASS  T20 with every operationId removed, generation still exits 0 (no hard failure, unlike progenitor)
+      fallback name: get_healthz
+      fallback name: get_v1_projects
+      fallback name: get_v1_projects_project_id
+PASS  T21 the fallback names are method_path derived: get_healthz, get_v1_projects, get_v1_projects_project_id
+PASS  T22 the generated client contains 0 lines with the token 'unsafe' (counted: 0)
+PASS  R01 [http_client] timeout_seconds is accepted but inert: output for 30 s and for 1 s is byte-identical
+PASS  R02 the generated client builds its reqwest client with reqwest::Client::new() and no .timeout(...) call
+PASS  R11 R12.7 (static): the Problem body is parsed only inside the 404u16 arm of a match on the status code
+PASS  R12 R12.6 (static): each of the 3 operations drops a caller's Accept header and sets Accept: application/json
+PASS  R13 R12.1/R12.2 (static): the recipe's client installs no retry middleware, so it never retries on its own
+      DEFAULT_UNKNOWN_FIELD=accepted
+      DEFAULT_UNKNOWN_STATE=rejected unknown variant `suspended`, expected `active` or `archived` at line 1 column 44
+      RECIPE_UNKNOWN_VALUES=accepted state=Custom("suspended") visibility=Custom("internal")
+      RT_200=typed id=p1 state=Custom("suspended") visibility=Custom("internal")
+      RT_404_PROBLEM=api status=404 typed_status404=true
+      RT_404_NON_PROBLEM=api status=404 typed_none=true parse_error_some=true body=upstream proxy says no
+      RT_ACCEPT_SENT=application/json
+      RT_CALLER_DEADLINE=elapsed
+PASS  R03 R12.4 unknown response FIELD: the default output ignores it
+PASS  R04 R12.4 unknown ENUM VALUE, default output: a plain 'enum' schema renders closed and rejects 'suspended'
+PASS  R05 R12.4 with the recipe's [extensible_enums] entry AND the anyOf-open Visibility, both unknown values are kept
+PASS  R06 end to end over HTTP: the 200 body with an unknown field and two unknown values deserializes into the typed Project
+PASS  R07 R12.7 a problem+json 404 is branched on status and parsed into the typed Status404(Problem)
+PASS  R08 R12.7 a text/plain 404 from 'infrastructure' still surfaces as status 404 with the raw body, typed=None, parse_error kept
+PASS  R09 R12.6 DEPARTS (SHOULD): even with a caller-supplied Accept, only 'application/json' reaches the server — OVERRIDE (OV-11)
+PASS  R10 R12.3 is met by the caller: tokio::time::timeout around a call to a never-answering listener elapses
+PASS  AU01 cargo audit over the generated client's resolved lockfile reports no vulnerability
+
+PASS=36 FAIL=0 SKIP=0 TOTAL=36

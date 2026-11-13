@@ -1,0 +1,212 @@
+# R67 revision-2 empirical audit — error-and-exit-code-contract
+# Actor: audit-codex-2026-09-05T155124Z-2271e140a7ef-r2
+# Model: gpt-5.6-terra; family: openai
+# Audit date: 2026-09-09
+# Scope: research decision audit only. No Rust source was added to the fixture.
+
+## Input identity
+
+$ shasum -a 256 review/DECISION.md
+530fe209e3f5d052e4cd754711936b22778a8831bf2c2f3795e1811fc0e0a4f3  review/DECISION.md
+
+$ find review/empirical/rslb-contract -maxdepth 4 -type f -print | sort
+review/empirical/rslb-contract/.gitignore
+review/empirical/rslb-contract/Cargo.toml
+review/empirical/rslb-contract/crates/rslb-cli/Cargo.toml
+review/empirical/rslb-contract/crates/rslb-core/Cargo.toml
+
+The fixture contains exactly three `Cargo.toml` files and no Rust source. Cargo
+cannot load target-less packages, so E13 and E14 used byte-identical copies in
+temporary directories with empty target stubs. The fixture itself was never
+given a target, lockfile, or source file.
+
+## E13 — Linux fixture-copy resolution
+
+$ limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; rustc --version; cargo --version'
+rustc 1.98.1 (48a229cea 2026-09-01)
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+
+$ sha256sum fixture manifests before copy
+88a297764f7e3fc892f6017819d24fa3a63782930e2e3f41e5848a7a9f36f5f8  Cargo.toml
+6c781855be41af8cfb60c61adc127013c9bdc7b972cb94a061e1a1d066a51792  crates/rslb-core/Cargo.toml
+eebf385d456a4b6b72b3feb852e5d2da1016ee9dd01dec9ff0e36a554d3e9434  crates/rslb-cli/Cargo.toml
+
+$ sha256sum copied manifests
+88a297764f7e3fc892f6017819d24fa3a63782930e2e3f41e5848a7a9f36f5f8  Cargo.toml
+6c781855be41af8cfb60c61adc127013c9bdc7b972cb94a061e1a1d066a51792  crates/rslb-core/Cargo.toml
+eebf385d456a4b6b72b3feb852e5d2da1016ee9dd01dec9ff0e36a554d3e9434  crates/rslb-cli/Cargo.toml
+
+$ cargo generate-lockfile
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+exit=0
+
+$ cargo tree -e normal
+rslb-cli v0.1.0
+├── anyhow v1.0.104
+├── rslb-core v0.1.0
+│   └── thiserror v2.0.20
+│       └── thiserror-impl v2.0.20 (proc-macro)
+│           ├── proc-macro2 v1.0.107
+│           ├── quote v1.0.47
+│           └── syn v3.0.5
+├── serde_json v1.0.151
+│   ├── itoa v1.0.18
+│   ├── memchr v2.8.3
+│   ├── serde_core v1.0.229
+│   └── zmij v1.0.23
+└── signal-hook v0.4.4
+    ├── libc v0.2.189
+    └── signal-hook-registry v1.4.8
+        └── errno v0.3.14
+exit=0
+
+$ cargo tree -d
+warning: nothing to print.
+exit=0
+
+$ cargo metadata --format-version 1 | jq -r '[.packages[] | select(.source != null) | select(.rust_version != null) | .rust_version] | sort_by(split(".") | map(tonumber)) | .[]'
+1.26
+1.56
+1.61
+1.65
+1.66
+1.68
+1.71
+
+$ cargo metadata --format-version 1 | jq -r '[.packages[] | select(.source != null) | select(.rust_version != null) | .rust_version] | sort_by(split(".") | map(tonumber)) | last'
+1.71
+
+$ cargo tree -e normal | grep -F etcetera
+exit=1 (expected: no `etcetera` dependency)
+
+$ sha256sum fixture manifests after resolution
+88a297764f7e3fc892f6017819d24fa3a63782930e2e3f41e5848a7a9f36f5f8  Cargo.toml
+6c781855be41af8cfb60c61adc127013c9bdc7b972cb94a061e1a1d066a51792  crates/rslb-core/Cargo.toml
+eebf385d456a4b6b72b3feb852e5d2da1016ee9dd01dec9ff0e36a554d3e9434  crates/rslb-cli/Cargo.toml
+
+E13 result: reproduced. The fixture lock operation reports 20 externally locked
+packages, `cargo tree -d` reports no duplicate resolution, the normal tree does
+not contain `etcetera`, and the maximum dependency `rust-version` is 1.71.
+
+## E14 — advisory scan and inverse control
+
+The Linux VM did not provide `cargo-audit`. The host's installed `cargo-audit`
+0.22.1 was run against a newly cloned, temporary RustSec advisory database. The
+tool was invoked as `cargo-audit audit`, which is the binary's direct equivalent
+of the recorded `cargo audit` subcommand. The warning below is only an inability
+to lock the sandbox's read-only shared crates.io cache; it did not prevent the
+lockfile vulnerability scan.
+
+$ /Users/stevemorin/.cargo/bin/cargo-audit audit --db /private/tmp/r67-rustsec-db --no-fetch
+      Loaded 1243 security advisories (from /private/tmp/r67-rustsec-db)
+warning: couldn't open crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+exit=0
+
+$ sed -i '' 's/anyhow = "1.0.104"/anyhow = "=1.0.102"/' <temporary-control>/crates/rslb-cli/Cargo.toml
+$ cargo generate-lockfile
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+      Adding anyhow v1.0.102 (available: v1.0.104)
+exit=0
+
+$ /Users/stevemorin/.cargo/bin/cargo-audit audit --db /private/tmp/r67-rustsec-db --no-fetch
+      Loaded 1243 security advisories (from /private/tmp/r67-rustsec-db)
+warning: couldn't open crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+Crate:     anyhow
+Version:   1.0.102
+Warning:   unsound
+Title:     Unsoundness in `Error::downcast_mut()`
+ID:        RUSTSEC-2026-0190
+Dependency tree:
+anyhow 1.0.102
+└── rslb-cli 0.1.0
+exit=0
+
+E14 result: reproduced. The recommended lockfile has no findings. The control,
+which changes only the `anyhow` requirement, reports `RUSTSEC-2026-0190`; the
+`>= 1.0.103` floor is therefore load-bearing.
+
+## Revision-2 evidence-log integrity
+
+$ git diff --numstat 433bfdb^ 433bfdb -- review/evidence/dependency-resolution.log
+188  0  review/evidence/dependency-resolution.log
+
+$ git diff --exit-code 433bfdb^ 433bfdb -- review/empirical/rslb-contract
+exit=0
+
+The revision-2 commit adds only lines to `dependency-resolution.log`. Its first
+new line follows the prior final `exit=0` and begins the dated
+`CONTINUATION — 2026-09-10 — E13/E14 RERUN FOR REVISION 2` header. The preceding
+one-package observation remains byte-for-byte retained, identifies its added
+`etcetera = "0.11.0"`, and is honestly limited to whether a wider single-package
+set co-resolved. The continuation identifies the three-manifest fixture as the
+source of the decision's figures. No fixture manifest changed in revision 2.
+
+## E1–E12 cited-log support and direct citation spot checks
+
+The cited evidence logs contain the command/result material claimed by their
+corresponding empirical rows: E1 has 12 crate API blocks and 24 HTTP-200 markers;
+E2 has 11 repository API records with star, archival, and push fields; E3 has
+five issue-search calls and five numeric results; E4/E5 contain the package-page
+and advisory-db controls plus `RUSTSEC-2026-0190`; E6/E7 contain the published
+crate interfaces; E8/E9 contain the pinned Rust-source and authority anchors;
+E10 contains R6.1, R7.6–R7.8, R8.2, and R9.6; E11 contains `EX_USAGE`,
+`EX_CONFIG`, and `EX__MAX`; and E12 contains the reference manifests and
+ripgrep's `ExitCode`/`BrokenPipe` branch.
+
+Five direct `curl` spot checks independently confirmed the cited sources:
+
+$ curl -w '%{http_code}' https://rustsec.org/packages/{anyhow,thiserror,signal-hook,ctrlc,inquire}.html
+anyhow 200
+thiserror 404
+signal-hook 404
+ctrlc 404
+inquire 404
+
+$ curl -w '%{http_code}' https://api.github.com/repos/RustSec/advisory-db/contents/crates/{anyhow,thiserror,signal-hook,ctrlc,inquire}
+anyhow 200; thiserror 404; signal-hook 404; ctrlc 404; inquire 404
+The `anyhow` page and directory listing name `RUSTSEC-2026-0190`. This confirms
+that E4's zero-advisory conclusion rests on both paired controls, not a bare 404.
+
+$ curl ctrlc-3.5.2.crate; grep 'pub fn set_handler' -A2 src/lib.rs
+pub fn set_handler<F>(user_handler: F) -> Result<(), Error>
+where
+    F: FnMut() + 'static + Send,
+The source says the `termination` feature sends SIGINT, SIGTERM, and SIGHUP to
+that handler. This supports E6 only as an interface observation.
+
+$ curl signal-hook-0.4.4.crate; grep 'pub fn register' -A5 src/flag.rs
+pub fn register(signal: c_int, flag: Arc<AtomicBool>) -> Result<SigId, Error> {
+    unsafe { low_level::register(signal, move || flag.store(true, Ordering::SeqCst)) }
+}
+
+$ curl inquire-0.9.4.crate; grep 'OperationCanceled\|OperationInterrupted' src/error.rs
+OperationCanceled,
+OperationInterrupted,
+These are interface observations only. They do not demonstrate signal delivery,
+prompt interruption, EPIPE handling, stream flushing, or destructor behavior.
+
+$ curl rust-lang/rust/1.96.0/library/std/src/process.rs; grep process_exitcode, termination_trait_lib, and 'impl From<u8> for ExitCode'
+`ExitCode`, `Termination`, and `From<u8> for ExitCode` are marked stable since 1.61.0.
+
+$ curl cgit.freebsd.org/src/plain/include/sysexits.h; grep EX_USAGE EX_CONFIG EX__MAX
+#define EX_USAGE 64
+#define EX_CONFIG 78
+#define EX__MAX 78
+
+$ curl BurntSushi/ripgrep/master/crates/core/main.rs; grep BrokenPipe around fn main
+fn main() -> ExitCode {
+    ... ErrorKind::BrokenPipe ... return ExitCode::from(0);
+}
+
+## Scope assessment
+
+`review/DECISION.md` now states that the proposal executed no template runtime
+behavior on any platform. It records AC1–AC8 and the associated signal, prompt,
+crash-record, append-only, and build-size checks as unproven P03 work with
+specified proof. That is correct under the 2026-09-10 research-only ruling; it
+is not a missing implementation finding. E6 and E7 are explicitly labelled
+source-interface findings, and E4 explicitly states its paired-control limit.

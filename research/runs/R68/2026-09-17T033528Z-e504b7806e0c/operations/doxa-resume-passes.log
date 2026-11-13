@@ -1,0 +1,4 @@
+pass 1  started 2026-09-17T151006Z  ended 2026-09-17T151014Z  exit 0
+  states: openai completed, perplexity completed, gemini completed
+  newly completed: openai, perplexity, gemini
+  terminal: yes (all three completed in one pass; no further pass needed; the checkpoint `status` view still read "running" for all three immediately before this pass)

@@ -1,0 +1,111 @@
+== env
+gitleaks: /opt/homebrew/bin/gitleaks 8.30.1
+git version 2.50.1 (Apple Git-155)
+bash: 5.3.20(1)-release
+Darwin arm64
+run at 2026-09-27T02:23:53Z
+== S1 staged token blocks
+    | Finding:     const T: &str = "REDACTED";
+    | Secret:      REDACTED
+    | RuleID:      github-pat
+    | Entropy:     4.921928
+    | File:        lib.rs
+    | Line:        1
+    | Fingerprint: lib.rs:github-pat:1
+    | 
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 39.6ms
+    | 7:23PM WRN leaks found: 1
+PASS S1a  staged token -> exit 1  (expected=1 observed=1)
+PASS S1b  finding names rule github-pat  (expected=yes observed=yes)
+PASS S1c  --redact: token absent from output  (expected=absent observed=absent)
+== S2 deprecated py verb 'protect --staged' still runs at 8.30.1
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 31.2ms
+    | 7:23PM WRN leaks found: 1
+PASS S2  protect --staged on staged token -> exit 1  (expected=1 observed=1)
+== S3 unstaged-only secret is not seen (index, not worktree)
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~0 bytes (0) in 30.5ms
+    | 7:23PM INF no leaks found
+PASS S3  worktree-only token -> exit 0  (expected=0 observed=0)
+== S4 partially staged: clean version staged, token only in worktree
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~25 bytes (25 bytes) in 32.4ms
+    | 7:23PM INF no leaks found
+PASS S4  clean index, dirty worktree -> exit 0  (expected=0 observed=0)
+== S5 staged token then scrubbed from worktree is still caught (index read)
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 31.6ms
+    | 7:23PM WRN leaks found: 1
+PASS S5  dirty index, clean worktree -> exit 1  (expected=1 observed=1)
+== S6 inline gitleaks:allow on a deliberate fake
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~78 bytes (78 bytes) in 31.7ms
+    | 7:23PM INF no leaks found
+PASS S6  gitleaks:allow line -> exit 0  (expected=0 observed=0)
+== S7 real 'git commit' through a plain .git/hooks/pre-commit running the line
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 29.4ms
+    | 7:23PM WRN leaks found: 1
+PASS S7a  commit with staged token -> non-zero  (expected=nonzero observed=nonzero)
+PASS S7b  no commit created  (expected=2 observed=2)
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~14 bytes (14 bytes) in 21.5ms
+    | 7:23PM INF no leaks found
+PASS S7c  clean commit -> exit 0  (expected=0 observed=0)
+PASS S7d  clean commit created  (expected=3 observed=3)
+== S8 --config beats a developer's GITLEAKS_CONFIG (B5)
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 30.3ms
+    | 7:23PM INF no leaks found
+PASS S8a  env override, no --config -> exit 0 (repo file silently bypassed)  (expected=0 observed=0)
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~60 bytes (60 bytes) in 31.3ms
+    | 7:23PM WRN leaks found: 1
+PASS S8b  env override, explicit --config -> exit 1  (expected=1 observed=1)
+== S9 fail closed: missing config file
+    | 7:23PM FTL unable to load gitleaks config, err: open does-not-exist.toml: no such file or directory
+PASS S9  missing --config file -> exit 1  (expected=1 observed=1)
+== S10 fail closed: unknown flag
+    | Error: unknown flag: --no-such-flag
+    | Usage:
+    |   gitleaks git [flags] [repo]
+    | 
+    | Flags:
+    |   -h, --help              help for git
+    |       --log-opts string   git log options
+    |       --platform string   the target platform used to generate links (github, gitlab)
+    |       --pre-commit        scan using git diff
+    |       --staged            scan staged commits (good for pre-commit)
+    | 
+    | Global Flags:
+    |   -b, --baseline-path string          path to baseline with issues that can be ignored
+    |   -c, --config string                 config file path
+    |                                       order of precedence:
+    |                                       1. --config/-c
+    |                                       2. env var GITLEAKS_CONFIG
+    |                                       3. env var GITLEAKS_CONFIG_TOML with the file content
+    |                                       4. (target path)/.gitleaks.toml
+    |                                       If none of the four options are used, then gitleaks will use the default config
+    |       --diagnostics string            enable diagnostics (http OR comma-separated list: cpu,mem,trace). cpu=CPU prof, mem=memory prof, trace=exec tracing, http=serve via net/http/pprof
+    |       --diagnostics-dir string        directory to store diagnostics output files when not using http mode (defaults to current directory)
+    |       --enable-rule strings           only enable specific rules by id
+    |       --exit-code int                 exit code when leaks have been encountered (default 1)
+    |   -i, --gitleaks-ignore-path string   path to .gitleaksignore file or folder containing one (default ".")
+    |       --ignore-gitleaks-allow         ignore gitleaks:allow comments
+    |   -l, --log-level string              log level (trace, debug, info, warn, error, fatal) (default "info")
+    |       --max-archive-depth int         allow scanning into nested archives up to this depth (default "0", no archive traversal is done)
+    |       --max-decode-depth int          allow recursive decoding up to this depth (default 5)
+    |       --max-target-megabytes int      files larger than this will be skipped
+    |       --no-banner                     suppress banner
+    |       --no-color                      turn off color for verbose output
+    |       --redact uint[=100]             redact secrets from logs and stdout. To redact only parts of the secret just apply a percent value from 0..100. For example --redact=20 (default 100%)
+    |   -f, --report-format string          output format (json, csv, junit, sarif, template)
+    |   -r, --report-path string            report file (use "-" for stdout)
+    |       --report-template string        template file used to generate the report (implies --report-format=template)
+    |       --timeout int                   set a timeout for gitleaks commands in seconds (default "0", no timeout is set)
+    |   -v, --verbose                       show verbose output from scan
+PASS S10  unknown flag -> exit 126  (expected=126 observed=126)
+
+TOTAL PASS=16 FAIL=0

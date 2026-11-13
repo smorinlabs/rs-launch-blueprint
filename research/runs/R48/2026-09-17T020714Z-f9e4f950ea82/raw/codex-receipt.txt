@@ -1,0 +1,5 @@
+Output: [raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R48/2026-09-17T020714Z-f9e4f950ea82/raw/codex.md)  
+SHA-256: `b5bf972561edcbd2f4c282d502a2cf7a2fe8d9b78becd0c162424c4ea9693a13`  
+H3 fields: 10  
+CONFLICT: none. BASELINE-REVIEW: none.  
+Unverified: RustSec endpoints returned 404; resolved-tree MSRV, two-OS tests, benchmarks, and `httpmock` issue responsiveness were not run.

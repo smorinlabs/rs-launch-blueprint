@@ -1,0 +1,1088 @@
+== identity and decision binding ==
+a64addcff304770e9c114d05d974da4aaa9395e9095dff2f86823a45a29dfcfe  review/DECISION.md
+expected: a64addcff304770e9c114d05d974da4aaa9395e9095dff2f86823a45a29dfcfe
+== revision-6-to-current decision diff ==
+diff exit: 1
+unified hunk count: 5
+--- /private/tmp/r69-audit-r7.NKP3Pv/r6.md	2026-09-16 15:54:13
++++ review/DECISION.md	2026-09-16 15:47:50
+@@ -1,7 +1,87 @@
+-# R69 web-framework-stack — decision (revision 6, 2026-09-16)
++# R69 web-framework-stack — decision (revision 7, 2026-09-16)
+ 
+-**Revision note (revision 6). No owned value moves, and the reason is a finding rather than
+-caution.** Revision 6 rewrites revision 5 (sha256
++**Revision note (revision 7). Prose only: one judgment finding, three locations, and neither
++the recommendation nor any owned value moves.** Revision 7 rewrites revision 6 (sha256
++`d4d6a8d2a3297a6db488580142de6d651f33b8109e9023994f6cb9f5ecfd6a17`) in place. No revision of
++this decision has been published, so there is still no `## Supersedes`. The one
++`- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to revisions
++2, 3, 4, 5 and 6**, and so are the recommendation, every version pin, every exclusion, every
++fitness-gate answer including gate 1's `inapplicable` row, the R67 exit contract and the request
++to R67, the CLI Design Standard's R4.1 required global core, the H2 set, and every evidence
++script, cited log and committed snapshot. **No evidence file is added, edited or replaced.**
++Check 6, `review/empirical/parameters-check.sh`, asserts only on lines beginning `- assumes `,
++`- owns ` and `## `, none of which this revision touches; it was nevertheless re-run against
++this file as a confirmation, exited `0`, and its output `diff`s **empty** against the cited
++`review/evidence/parameters-check-r2.log`, which is therefore left unchanged rather than
++superseded by an r7 copy of the same bytes. Checks 1 through 5, and `yanked-control-r5.sh`,
++read no part of this file.
++
++Revision 6 was **approved** by the round-6 empirical audit (`review/audit-codex.md`, actor
++`audit-codex-2026-09-12T204004Z-d02022bf6f42-r6`, model `gpt-5.6-terra`, family openai, verdict
++`approve`, `unresolved-findings: none`) and **rejected** by the round-6 judgment audit
++(`review/audit-fable.md`, actor `audit-fable-2026-09-12T204004Z-d02022bf6f42-r6`, model
++`claude-opus-5`, family anthropic) on **one** finding — that audit records JF-1, JF-2 and JF-3
++as closed and marks its three observations explicitly as *not* findings. Revision 7 answers the
++one finding and changes nothing else:
++
++- **JF-4** — *"the decision states twice, as present fact, that the CLI parser its serve
++  binary's required global core is parsed with is still R60's open choice, and keys a
++  `re-verify:` trigger on that selection — but R60's parser selection (`clap` 4.6.6, derive
++  API) was owner-accepted on 2026-09-15 as W0-R60, one day before revision 6, so the statement
++  is false and the trigger has already fired"*. Repaired at the three locations the finding
++  names, cited by **revision 6's line numbers**: the flag-surface paragraph of
++  `### Principles and implementation` (**line 908**) and the global-core row of the unproven
++  table (**line 2105**), each of which now quotes revision 6's wording, labels it superseded by
++  the acceptance, and states the accepted fact in its place; and the `re-verify:` line (**line
++  1378**), whose R60 clause is **replaced, not deleted**, because a watchable event remains.
++
++**The accepted fact, cited rather than asserted.** `docs/port/OWNER-ACCEPTANCES.md` records
++`R60 | 7 | 67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2 | accept |
++2026-09-15 | W0-R60 option A; clap 4.6.6 derive, clap_complete 4.6.9, dependency-free build.rs;
++OV-01 refused per the 2026-09-14 ruling; first publication pending`. R60's parser is therefore
++**selected and owner-accepted, and unpublished as yet** — a pair of states this decision's own
++vocabulary already keeps apart, since it cites R49 as having selected alternative A1 while
++labelling that revision unpublished. Read on **2026-09-16**, together with
++`research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md`, whose current revision 8
++still selects `clap` 4.6.6 with the `derive` API and `clap_complete` 4.6.9. **No clap feature
++set beyond `derive` is transcribed anywhere in this decision**, deliberately: R60 revision 8 is
++still moving that set, and nothing here reads it. Only the `derive` API is named, because it is
++part of what the owner accepted. **The design consequence does not move, and the accepted answer
++strengthens it** — `clap` is a non-optional dependency of the package for the CLI binary, so the
++serve binary reuses it, the `web` feature adds no parser crate, and check 2's measured 12 → 52
++package delta stands by construction.
++
++**The `re-verify:` R60 clause is replaced, not deleted, and narrowed to what is still
++watchable.** *"when R60 selects the CLI parser the serve binary's global core is parsed with"*
++names an event that occurred on 2026-09-15. What remains worth watching is the gap between the
++accepted text and the published one — R60's file has already moved after its acceptance — so the
++clause now reads, in full and unbackticked as that line is written, "when R60's published
++decision moves off its owner-accepted clap 4.6.6 derive selection for the CLI binary the serve
++binary's global core is parsed with". Every other clause on that line is byte-identical, which
++a `diff` of the line shows rather than a count.
++
++**Mechanical enumeration, run before any edit and re-run after it.** Two `/usr/bin/grep -n`
++passes over this file: one for `R60`, and a separate case-insensitive one for `parser`, so that
++a sentence about the parser's state which never says "R60" could not escape. The union, by
++revision 6's line numbers, is **469, 894, 895, 908, 1244, 1378, 1382, 1835, 2105**. **Edited:
++908, 1378, 2105.** **Deliberately left byte-identical, each with its ground:** 469, which sits
++inside the retained revision-2 note and records what revision 2 did, which is still true; 894
++and 895, which attribute who binds a behavior ("help layout is R60's parser") rather than
++asserting a selection state; 1244, the migration table's `src/bin/<app>-serve.rs` row, and 1382,
++the `- owns web-extra-surface` line, which share the wording *"the parser crate R60 selects for
++the CLI binary"* — wording the round-6 judgment audit ruled "survives the correction verbatim",
++true of a selected parser exactly as of an unselected one, and inside an owned value that 19
++consumers read and check 6 validates; and 1835, which is an evidence script's JSON parser and
++has nothing to do with R60. Both passes were re-run against the edited file: outside this note,
++every hit is one of those nine locations at its shifted line number, and no new hit appeared
++anywhere else. The `**Sources.**` paragraph is **not** extended, on the revision brief's
++explicit instruction that no other sentence changes; the two files revision 7 read are named in
++this note instead.
++
++**Revision note (revision 6), retained as the record of that revision. It was approved by the
++round-6 empirical audit and rejected by the round-6 judgment audit on JF-4 alone, which the
++revision-7 note above repairs; its body is retained verbatim and nothing else in it is
++withdrawn.** Revision 6 rewrites revision 5 (sha256
+ `0fc0ed8a9c4a6daac900e23524c1c3ba0ef1707aeb44833c0ca2b2b57eb4cf4c`) in place. No revision of
+ this decision has been published, so there is still no `## Supersedes`. The one
+ `- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to
+@@ -489,7 +569,9 @@
+ this item's raws, audits, revisions or their audits, 2026-09-15; revision 6 by a sixth fresh
+ Claude Opus 5 context that produced none of this item's raws, audits, revisions or their
+ audits, 2026-09-16, folding in the owner-supplied reference architecture under owner decision
+-11; run
++11; revision 7 by a seventh fresh Claude Opus 5 context that produced none of this item's raws,
++audits, revisions or their audits, 2026-09-16, repairing the round-6 judgment audit's single
++finding and nothing else; run
+ `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
+ Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
+ the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
+@@ -904,10 +986,18 @@
+ deletes and confirms nothing. Every *service* knob — host, port, log format, drain deadline —
+ remains an environment variable, as py's `__main__.py` has it and as R77 will name them; the
+ standard's R5.1 precedence (flag > env > config > default) is satisfied vacuously where no flag
+-exists for a knob. This adds **no crate to the `web` feature**, on a condition rather than
+-as a present fact: the parser is R60's open choice, and whichever crate R60 selects for the CLI
+-binary is a non-optional dependency of the package, so the serve binary reuses it instead of
+-introducing one. Check 2's measured 12 → 52 package delta stands unchanged **by construction,
++exists for a knob. This adds **no crate to the `web` feature**. Revision 6 put that on a
++condition — *"on a condition rather than as a present fact: the parser is R60's open choice, and
++whichever crate R60 selects for the CLI binary is a non-optional dependency of the package"* —
++and **that wording is superseded by the owner's acceptance of R60**: `docs/port/OWNER-ACCEPTANCES.md`
++records R60 revision 7, sha256
++`67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2`, accepted on **2026-09-15**
++as "W0-R60 option A; `clap` 4.6.6 derive, `clap_complete` 4.6.9, dependency-free `build.rs`",
++with first publication pending. So the parser is **selected, and unpublished as yet**, not open:
++`clap` 4.6.6 with its `derive` API is a non-optional dependency of the package for the CLI
++binary, and the serve binary parses R4.1's core with it instead of introducing one. The design
++consequence is the one revision 6 stated, and the accepted answer strengthens rather than
++weakens it. Check 2's measured 12 → 52 package delta stands unchanged **by construction,
+ not by re-measurement** — a non-optional dependency appears in both counts, so it cancels out
+ of the delta that is the feature's marginal cost. The CLI binary keeps its own flags. A `serve` subcommand on the existing
+ CLI binary is the ranked runner-up shape, rejected as primary because it would put `tokio` and
+@@ -1375,7 +1465,7 @@
+ **unpublished**, for its selected alternative A1) and R67's published `## Parameters` block for
+ the envelope shape named under *Minimal realistic endpoint*.
+ 
+-re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60 selects the CLI parser the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
++re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60's published decision moves off its owner-accepted clap 4.6.6 derive selection for the CLI binary the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
+ 
+ ## Parameters
+ 
+@@ -2102,7 +2192,7 @@
+ | `build_router(state)` is the only constructor, and a handler asking for an unregistered substate fails to compile | **Partly proven.** The state bound itself is verified (check 1); the compile-failure demonstration is not. | A `compile_fail` doctest in the template showing a handler requesting a substate `AppState` has no `FromRef` impl for, and asserting the error. |
+ | The entrypoint drains in-flight work on SIGTERM and exits **143** within the configured window, exits **130** on the SIGINT path, and exits **1** when a request never completes | **Unproven.** The enabling fact — axum supplies no deadline — is read at source (check 3); the three behaviors are not exercised, and neither is the signal-kind threading the exit integers need. R67's own unproven list carries the same item ("*The web surface's `SIGTERM` drain to 143* … only the exit integer is shared, so the risk is low but the path is unbuilt"). | Three template tests: one that begins a slow request, sends SIGTERM, and asserts both the response completing and exit **143** inside the window; its SIGINT twin asserting exit **130**; and one with a permanently blocked request asserting the `GracefulShutdownTimedOut` branch and exit **1**. The opus raw reports a passing test for the unbounded-drain half only, and names no exit code. |
+ | The serve binary's shutdown future reports **which** signal fired, so `main` can map 130 versus 143 | **Unproven, and not implementable as the recorded snippet is written** — it takes `S: Future<Output = ()>`. The enabling fact is the two-source mechanism already recorded under F338: `tokio::signal::ctrl_c()` and `tokio::signal::unix::signal(SignalKind::terminate())` are separate listeners selected over, as the reference implementation does (`src/bin/crates-io/server.rs` at `3df99c2`, asserted in `assert-figures.log` section F as "selects over SIGTERM via tokio::signal::unix"). **No check in this run asserts that the two futures are distinguishable at the type level**; that is why this row exists. | A template test asserting the two integers (row above), which fails if the signal kind is erased; P03 threads the kind (or R67's `Exit` value) out of `shutdown_signal()` instead of `()`. |
+-| The serve binary satisfies the CLI Design Standard's required global core | **Unproven.** The rule and its scope are read at the standard (R4.1, its header scope line, Appendix A's "§4 … unchanged"); no binary exists to run, and R60 has not selected the parser. | The R9.14 conformance fixture named under *Validation strategy*: `<app>-serve --help` and `<app>-serve -V` each printing to stdout and exiting `0`, `-V` printing the single `<app>-serve <semver>` line R4.6 fixes, and the four remaining core options accepted. |
++| The serve binary satisfies the CLI Design Standard's required global core | **Unproven.** The rule and its scope are read at the standard (R4.1, its header scope line, Appendix A's "§4 … unchanged"); no binary exists to run, and the R9.14 conformance fixture has not been written. *(Revision 6 gave the second ground as "**R60 has not selected the parser**"; that wording is superseded by the owner's acceptance of R60 revision 7 on 2026-09-15 — `clap` 4.6.6 with the `derive` API, recorded in `docs/port/OWNER-ACCEPTANCES.md`, publication pending — and the row stays unproven on the grounds that remain true.)* | The R9.14 conformance fixture named under *Validation strategy*: `<app>-serve --help` and `<app>-serve -V` each printing to stdout and exiting `0`, `-V` printing the single `<app>-serve <semver>` line R4.6 fixes, and the four remaining core options accepted. |
+ | The stack compiles and tests on both `target-os-matrix` legs and at the MSRV floor | **Unproven.** Only the macOS host at rustc 1.98.0 was exercised here; the Linux leg and the 1.96 leg were not. | The template's CI matrix (R11): `cargo test --workspace --locked --features web` on `ubuntu-latest` and `macos-latest`, plus a `cargo check` leg pinned to the declared `rust-version`. |
+ | The web feature's wall-clock build cost and binary size | **Unproven and not measured here** — measuring them honestly means building the recommendation. The opus raw's figures (5.69 s → 9.28 s wall, 7.12 s → 25.61 s user CPU, release binary 2,001,600 bytes / 1,574,392 stripped) are engine-reported. Only the dependency-count half (12 → 52 packages) is reproduced here. | A timed clean and incremental build of the real template on each CI runner, and `cargo build --release` plus a size measurement of the stripped serve binary. |
+ | The dev recipe serves with console-formatted logs and restarts on a source edit | **Unproven, and blocked on R58.** The tool's capabilities are verified (check 5); the recipe's behavior is not, because the environment variable's name and semantics are R58's and unpublished. | Once R58 publishes: `just serve` answering `GET /healthz` with console-formatted logs on stderr, a source edit producing one restart, and the same binary outside the recipe emitting the production structured profile. |
+== parameters preservation ==
+revision-6 exact owns-line count: 1
+current exact owns-line count: 1
+1473:- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+1474:- assumes rust-edition = 2024
+1475:- assumes target-os-matrix = ubuntu-latest, macos-latest
+1476:- assumes license = MIT OR Apache-2.0
+1477:- assumes http-transport-injection-seam = trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92
+7:| msrv-policy | fixed | owner | stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI | minimum supported Rust version rule; every crate item is gated on it (§7.6) |
+8:| rust-edition | fixed | owner | 2024 | Cargo edition for every workspace member |
+9:| target-os-matrix | fixed | owner | ubuntu-latest, macos-latest | CI runners; every tool must run on all of them |
+10:| license | fixed | owner | MIT OR Apache-2.0 | repository license; candidate crates must be compatible (§7.6) |
+11:| http-transport-injection-seam | researched | R01 | trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92 | the shape of the driven-I/O seam that fakes are injected through (trait object, generic bound, or an injected client value); consumed by R48 (mock crates), R32 (test tiers) and R69 (web adapter wiring) |
+15:| build-tool-output-shape | researched | R49 | no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rslbp, a different string from the package name rs-launch-blueprint, so cargo install rs-launch-blueprint installs the command rslbp and integration tests resolve it through CARGO_BIN_EXE_rslbp; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's | where cargo build artifacts land and what the binary and library targets are named; consumed by R22 (version accessor), R32 (built-binary test tier) and R68 (release binary artifacts) |
+24:- **msrv-policy** — chosen: (a) `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`.
+28:- **rust-edition** — chosen: (a) `2024`.
+32:- **target-os-matrix** — chosen: (b) `ubuntu-latest, macos-latest`.
+36:- **license** — chosen: (b) `MIT OR Apache-2.0`.
+39:  - Departure: **yes — owner override.** Dual MIT OR Apache-2.0 is the Rust ecosystem default and adds Apache-2.0's explicit patent grant for any crate consumed as a library. Cost if wrong: none for crate compatibility (every MIT-compatible crate is also compatible with the dual license); the repo `LICENSE` file must be updated to match — tracked for the ship task (Task 18).
+parameters in-place exit: 0
+decision: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+registry: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
+OK   the five expected '- assumes' lines are present and no others
+OK   msrv-policy: byte-identical to the registry (118 bytes)
+OK   rust-edition: byte-identical to the registry (4 bytes)
+OK   target-os-matrix: byte-identical to the registry (27 bytes)
+OK   license: byte-identical to the registry (17 bytes)
+OK   http-transport-injection-seam: byte-identical to the registry (763 bytes)
+OK   exactly one '- owns' line, for web-extra-surface (2638 bytes)
+OK   owns value contains no backticks
+OK   owns value contains no a markdown link
+OK   owns value contains no a double space
+OK   owns value has no leading or trailing whitespace
+OK   control: a deliberately altered value compares unequal
+OK   H2 sections are exactly ## Decision, ## Parameters, ## Empirical check, ## Engines
+parameters-check rc=0
+parameters in-place log diff exit: 0
+== owner acceptance and path changes ==
+55:| R60 | 7 | `67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2` | accept | 2026-09-15 | W0-R60 option A; `clap` 4.6.6 derive, `clap_complete` 4.6.9, dependency-free `build.rs`; OV-01 refused per the 2026-09-14 ruling; first publication pending |
+M	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-codex-r6-ended.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-codex-r6-exit.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-codex-r6-receipt.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-codex-r6-started.txt
+M	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-codex.md
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-codex.r5.md
+M	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-fable.md
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-fable.r1.md
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/audit-fable.r6.md
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-head-archive-path.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-head-archive.diff
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-head-archive.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-inplace.diff
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-inplace.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-mutation-path.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-mutation-status.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-mutation-workspace-path.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-mutation.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r6-status.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-r6-live-fetch.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-r6-live-path.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-r6-live-status.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-r6-live.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-parameters-check-r6.diff
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-parameters-check-r6.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-r6-decision-diff.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-r6-empirical-section.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-retained-evidence-r6-status.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-retained-evidence-r6.log
+ .../review/DECISION.md                             | 110 ++++-
+ .../review/audit-codex-r6-ended.txt                |   1 +
+ .../review/audit-codex-r6-exit.txt                 |   1 +
+ .../review/audit-codex-r6-receipt.txt              |   5 +
+ .../review/audit-codex-r6-started.txt              |   1 +
+ .../review/audit-codex.md                          |  23 +-
+ .../review/audit-codex.r5.md                       |  27 +
+ .../review/audit-fable.md                          | 363 ++++++--------
+ .../review/audit-fable.r1.md                       | 235 +++++++++
+ .../review/audit-fable.r6.md                       | 289 +++++++++++
+ ...-owner-reference-check-r6-head-archive-path.txt |   1 +
+ ...udit-owner-reference-check-r6-head-archive.diff |   0
+ ...audit-owner-reference-check-r6-head-archive.log |  92 ++++
+ .../audit-owner-reference-check-r6-inplace.diff    |   0
+ .../audit-owner-reference-check-r6-inplace.log     |  92 ++++
+ ...udit-owner-reference-check-r6-mutation-path.txt |   1 +
+ ...it-owner-reference-check-r6-mutation-status.txt |   3 +
+ ...-reference-check-r6-mutation-workspace-path.txt |   1 +
+ .../audit-owner-reference-check-r6-mutation.log    |  92 ++++
+ .../audit-owner-reference-check-r6-status.txt      |   5 +
+ .../audit-owner-reference-r6-live-fetch.log        |  19 +
+ .../audit-owner-reference-r6-live-path.txt         |   1 +
+ .../audit-owner-reference-r6-live-status.txt       |   2 +
+ .../evidence/audit-owner-reference-r6-live.log     |  13 +
+ .../review/evidence/audit-parameters-check-r6.diff |   0
+ .../review/evidence/audit-parameters-check-r6.log  |  16 +
+ .../review/evidence/audit-r6-decision-diff.txt     | 542 +++++++++++++++++++++
+ .../review/evidence/audit-r6-empirical-section.txt | 433 ++++++++++++++++
+ .../evidence/audit-retained-evidence-r6-status.txt |   3 +
+ .../review/evidence/audit-retained-evidence-r6.log |  25 +
+ 30 files changed, 2157 insertions(+), 239 deletions(-)
+3e4c086 docs(research): revise R69 to revision 7 answering JF-4
+ .../review/DECISION.md                             | 103 +++++++++++++++++++--
+ 1 file changed, 93 insertions(+), 10 deletions(-)
+1187133 docs(research): correct two counts and one quotation in R69's revision-7 note
+ .../review/DECISION.md                             | 33 +++++++++++++---------
+ 1 file changed, 20 insertions(+), 13 deletions(-)
+== owner-reference checker in place ==
+owner-reference in-place exit: 0
+R69 revision 6 — owner-reference primary-source check
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+jq binary: /opt/homebrew/bin/jq
+snapshot dir: <run>/review/evidence/snapshots/r6 (committed; written by fetch-owner-reference-r6.sh)
+snapshots retrieved at: 2026-09-16T22:12:37Z
+network: NOT used by this script; every assertion reads a committed snapshot
+OK   snapshot crates-axum-versions.json                       present
+OK   snapshot crates-axum-test.json                           present
+OK   snapshot gh-axum-issue-3809.json                         present
+OK   snapshot gh-axum-issue-3003.json                         present
+OK   snapshot gh-axum-pr-3745.json                            present
+OK   snapshot gh-axum-pr-3819.json                            present
+OK   snapshot gcp-cloudrun-container-contract.txt             present
+OK   snapshot cargo-specifying-dependencies.txt               present
+
+== A. axum's published releases (document TL;DR and Key Finding 1; row 1) ==
+OK   axum newest non-yanked num                               0.8.9
+OK   axum newest non-yanked yanked flag                       false
+OK   axum registry max_version                                0.8.9
+OK   axum registry max_stable_version                         0.8.9
+OK   axum registry newest_version                             0.8.9
+OK   axum published versions >= 0.9                           0
+OK   axum published version count                             94
+OK   axum newest non-yanked rust_version                      1.80
+note: the decision's recommended pin 0.8.9 and its gate-2 figure 1.80 are unchanged by this check.
+
+== B. Cargo's default version-requirement rule (row 1: caret vs an = pin) ==
+OK   cargo book: 0.2.3 := >=0.2.3, <0.3.0                     present
+OK   cargo book: caret is the default strategy                present
+OK   cargo book: bare version == caret                        present
+OK   cargo book: HTTP 200                                     present
+consequence: a bare "0.8.9" is >=0.8.9, <0.9.0 and already cannot resolve to 0.9.
+
+== C. the axum-0.9 state as tokio-rs/axum records it (row 1) ==
+OK   axum#3809 state                                          closed
+OK   axum#3809 is a pull request                              false
+OK   axum#3809 comment count                                  1
+OK   axum#3809 commenter                                      mladedav
+OK   axum#3809 commenter association                          COLLABORATOR
+OK   axum#3809 the no-timeline sentence                       present
+OK   axum#3809 its qualifier                                  present
+OK   axum#3745 state                                          closed
+OK   axum#3745 merged                                         false
+OK   axum#3745 merged_at                                      null
+OK   axum#3745 proposed bump                                  0.8.9 -> 0.9.0
+OK   axum#3745 breaks fn serve                                present
+OK   axum#3745 breaks trait Serve                             present
+OK   axum#3745 breaks WithGracefulShutdown                    present
+OK   axum#3819 state                                          open
+OK   axum#3819 milestone                                      0.9
+OK   axum#3819 moves axum::serve                              present
+consequence: the unreleased 0.9 line's recorded breaking changes land on axum::serve and
+             WithGracefulShutdown - the exact API this item's F338 mechanism uses.
+
+== D. axum-test, the document's C12 pick (row 5) ==
+OK   axum-test newest non-yanked (this item's field rule)     22.0.0-rc.1
+OK   axum-test newest STABLE version                          21.1.0
+OK   axum-test registry max_stable_version                    21.1.0
+OK   axum-test 18.0.0 requires axum                           ^0.8.4
+OK   axum-test 18.3.0 requires axum                           ^0.8.7
+OK   axum-test 18.7.0 requires axum                           ^0.8.8
+OK   axum-test 21.1.0 requires axum                           ^0.8.9
+OK   axum-test 21.1.0 declared rust-version                   1.89
+consequence: the document's 'axum-test 18 (requires axum >= 0.8.7)' is true only from
+             18.3.0 onward - 18.0.0 declares ^0.8.4 - and the 18 line is three majors
+             behind the registry's current 21.1.0, which declares ^0.8.9.
+
+== E. Google's Cloud Run container runtime contract (row 4) ==
+OK   cloud run: HTTP 200                                      present
+OK   cloud run: effective URL                                 present
+OK   cloud run: SERVICES 10-second sentence, verbatim         present
+OK   cloud run: JOBS sentence, which is NOT the services one  present
+consequence: on Cloud Run a drain deadline must be strictly under 10 s measured FROM THE
+             SIGTERM, which is a datum for R77's default and is meaningful only under this
+             item's clock-starts-at-the-signal rule.
+
+== F. axum issue #3003, the WebSocket graceful-shutdown hazard (row 4) ==
+OK   axum#3003 state                                          open
+OK   axum#3003 is a pull request                              false
+OK   axum#3003 reported against version                       axum 0.7.4
+OK   axum#3003 title                                          present
+OK   axum#3003 the claim the document cites                   present
+consequence: the hazard is real and unfixed; it belongs to a later WebSocket layer, for
+             which this programme has no P02 item. Nothing in this decision changes.
+
+== G. control — the same absence test applied to a string that IS present ==
+OK   control (expected to report a present string)            control correctly reports 0.8.9 present (1 hit)
+reading: section A asserts the >= 0.9 set is empty. This control applies the same
+         membership test to 0.8.9, which the same snapshot field does contain, so the
+         emptiness assertion above is capable of failing.
+
+owner-reference-check-r6 rc=0
+owner-reference in-place log diff exit: 0
+owner-reference in-place SKIP/FAIL count: 0
+== clean git archive ==
+OK archive contains no .git
+a64addcff304770e9c114d05d974da4aaa9395e9095dff2f86823a45a29dfcfe  /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+== owner-reference checker from clean archive ==
+owner-reference archive exit: 0
+R69 revision 6 — owner-reference primary-source check
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+jq binary: /opt/homebrew/bin/jq
+snapshot dir: <run>/review/evidence/snapshots/r6 (committed; written by fetch-owner-reference-r6.sh)
+snapshots retrieved at: 2026-09-16T22:12:37Z
+network: NOT used by this script; every assertion reads a committed snapshot
+OK   snapshot crates-axum-versions.json                       present
+OK   snapshot crates-axum-test.json                           present
+OK   snapshot gh-axum-issue-3809.json                         present
+OK   snapshot gh-axum-issue-3003.json                         present
+OK   snapshot gh-axum-pr-3745.json                            present
+OK   snapshot gh-axum-pr-3819.json                            present
+OK   snapshot gcp-cloudrun-container-contract.txt             present
+OK   snapshot cargo-specifying-dependencies.txt               present
+
+== A. axum's published releases (document TL;DR and Key Finding 1; row 1) ==
+OK   axum newest non-yanked num                               0.8.9
+OK   axum newest non-yanked yanked flag                       false
+OK   axum registry max_version                                0.8.9
+OK   axum registry max_stable_version                         0.8.9
+OK   axum registry newest_version                             0.8.9
+OK   axum published versions >= 0.9                           0
+OK   axum published version count                             94
+OK   axum newest non-yanked rust_version                      1.80
+note: the decision's recommended pin 0.8.9 and its gate-2 figure 1.80 are unchanged by this check.
+
+== B. Cargo's default version-requirement rule (row 1: caret vs an = pin) ==
+OK   cargo book: 0.2.3 := >=0.2.3, <0.3.0                     present
+OK   cargo book: caret is the default strategy                present
+OK   cargo book: bare version == caret                        present
+OK   cargo book: HTTP 200                                     present
+consequence: a bare "0.8.9" is >=0.8.9, <0.9.0 and already cannot resolve to 0.9.
+
+== C. the axum-0.9 state as tokio-rs/axum records it (row 1) ==
+OK   axum#3809 state                                          closed
+OK   axum#3809 is a pull request                              false
+OK   axum#3809 comment count                                  1
+OK   axum#3809 commenter                                      mladedav
+OK   axum#3809 commenter association                          COLLABORATOR
+OK   axum#3809 the no-timeline sentence                       present
+OK   axum#3809 its qualifier                                  present
+OK   axum#3745 state                                          closed
+OK   axum#3745 merged                                         false
+OK   axum#3745 merged_at                                      null
+OK   axum#3745 proposed bump                                  0.8.9 -> 0.9.0
+OK   axum#3745 breaks fn serve                                present
+OK   axum#3745 breaks trait Serve                             present
+OK   axum#3745 breaks WithGracefulShutdown                    present
+OK   axum#3819 state                                          open
+OK   axum#3819 milestone                                      0.9
+OK   axum#3819 moves axum::serve                              present
+consequence: the unreleased 0.9 line's recorded breaking changes land on axum::serve and
+             WithGracefulShutdown - the exact API this item's F338 mechanism uses.
+
+== D. axum-test, the document's C12 pick (row 5) ==
+OK   axum-test newest non-yanked (this item's field rule)     22.0.0-rc.1
+OK   axum-test newest STABLE version                          21.1.0
+OK   axum-test registry max_stable_version                    21.1.0
+OK   axum-test 18.0.0 requires axum                           ^0.8.4
+OK   axum-test 18.3.0 requires axum                           ^0.8.7
+OK   axum-test 18.7.0 requires axum                           ^0.8.8
+OK   axum-test 21.1.0 requires axum                           ^0.8.9
+OK   axum-test 21.1.0 declared rust-version                   1.89
+consequence: the document's 'axum-test 18 (requires axum >= 0.8.7)' is true only from
+             18.3.0 onward - 18.0.0 declares ^0.8.4 - and the 18 line is three majors
+             behind the registry's current 21.1.0, which declares ^0.8.9.
+
+== E. Google's Cloud Run container runtime contract (row 4) ==
+OK   cloud run: HTTP 200                                      present
+OK   cloud run: effective URL                                 present
+OK   cloud run: SERVICES 10-second sentence, verbatim         present
+OK   cloud run: JOBS sentence, which is NOT the services one  present
+consequence: on Cloud Run a drain deadline must be strictly under 10 s measured FROM THE
+             SIGTERM, which is a datum for R77's default and is meaningful only under this
+             item's clock-starts-at-the-signal rule.
+
+== F. axum issue #3003, the WebSocket graceful-shutdown hazard (row 4) ==
+OK   axum#3003 state                                          open
+OK   axum#3003 is a pull request                              false
+OK   axum#3003 reported against version                       axum 0.7.4
+OK   axum#3003 title                                          present
+OK   axum#3003 the claim the document cites                   present
+consequence: the hazard is real and unfixed; it belongs to a later WebSocket layer, for
+             which this programme has no P02 item. Nothing in this decision changes.
+
+== G. control — the same absence test applied to a string that IS present ==
+OK   control (expected to report a present string)            control correctly reports 0.8.9 present (1 hit)
+reading: section A asserts the >= 0.9 set is empty. This control applies the same
+         membership test to 0.8.9, which the same snapshot field does contain, so the
+         emptiness assertion above is capable of failing.
+
+owner-reference-check-r6 rc=0
+owner-reference archive log diff exit: 0
+owner-reference archive SKIP/FAIL count: 0
+== parameters checker from clean archive ==
+parameters archive exit: 0
+decision: /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+registry: /private/tmp/r69-audit-r7.NKP3Pv/archive/docs/port/PARAMETERS.md
+OK   the five expected '- assumes' lines are present and no others
+OK   msrv-policy: byte-identical to the registry (118 bytes)
+OK   rust-edition: byte-identical to the registry (4 bytes)
+OK   target-os-matrix: byte-identical to the registry (27 bytes)
+OK   license: byte-identical to the registry (17 bytes)
+OK   http-transport-injection-seam: byte-identical to the registry (763 bytes)
+OK   exactly one '- owns' line, for web-extra-surface (2638 bytes)
+OK   owns value contains no backticks
+OK   owns value contains no a markdown link
+OK   owns value contains no a double space
+OK   owns value has no leading or trailing whitespace
+OK   control: a deliberately altered value compares unequal
+OK   H2 sections are exactly ## Decision, ## Parameters, ## Empirical check, ## Engines
+parameters-check rc=0
+parameters archive raw log diff exit: 1
+--- /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/parameters-check-r2.log	2026-09-16 15:53:43
++++ /private/tmp/r69-audit-r7.NKP3Pv/parameters-archive.log	2026-09-16 15:54:15
+@@ -1,5 +1,5 @@
+-decision: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+-registry: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
++decision: /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
++registry: /private/tmp/r69-audit-r7.NKP3Pv/archive/docs/port/PARAMETERS.md
+ OK   the five expected '- assumes' lines are present and no others
+ OK   msrv-policy: byte-identical to the registry (118 bytes)
+ OK   rust-edition: byte-identical to the registry (4 bytes)
+parameters archive normalized log diff exit: 0
+parameters archive SKIP/FAIL count: 0
+== five live citation availability spot checks ==
+https://crates.io/api/v1/crates/axum -> http=403 effective=https://crates.io/api/v1/crates/axum
+https://api.github.com/repos/tokio-rs/axum/issues/3809 -> http=200 effective=https://api.github.com/repos/tokio-rs/axum/issues/3809
+https://api.github.com/repos/tokio-rs/axum/pulls/3745 -> http=200 effective=https://api.github.com/repos/tokio-rs/axum/pulls/3745
+https://cloud.google.com/run/docs/container-contract -> http=200 effective=https://docs.cloud.google.com/run/docs/container-contract
+https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html -> http=200 effective=https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+== audit summary ==
+Every individual checker exit code, log diff result, and SKIP/FAIL count appears above.
+The archive parameters raw diff is expected to contain only absolute archive paths; normalization tests the substantive output.
+temporary archive retained at: /private/tmp/r69-audit-r7.NKP3Pv
+
+== remaining decision empirical checks from the clean archive ==
+
+-- check 1: review/empirical/state-bound-check.sh --
+exit: 0
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64
+
+==================================================================
+case: positive   expect: expect-pass
+------------------------------------------------------------------
+
+exit=0
+OK: built clean, no diagnostics
+==================================================================
+case: neg-by-value   expect: expect-fail
+------------------------------------------------------------------
+error[E0277]: the trait bound `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>: Clone` is not satisfied
+  --> src/main.rs:23:31
+   |
+23 |     assert_axum_state_bound::<ErasedProjectsService>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+   |
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:18:35
+   |
+18 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                   ^^^^^ required by this bound in `assert_axum_state_bound`
+help: consider annotating `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>` with `#[derive(Clone)]`
+   |
+ 9 + #[derive(Clone)]
+10 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `r69_state_bound_neg_by_value` (bin "r69_state_bound_neg_by_value") due to 1 previous error
+exit=101
+OK: failed to compile, and the diagnostic contains: the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort
+==================================================================
+case: neg-no-supertraits   expect: expect-fail
+------------------------------------------------------------------
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+  --> src/main.rs:14:31
+   |
+14 |     assert_axum_state_bound::<std::sync::Arc<ErasedProjectsService>>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+   |
+   = help: the trait `Sync` is not implemented for `(dyn ProjectsPort + 'static)`
+   = note: required for `Arc<(dyn ProjectsPort + 'static)>` to implement `Sync`
+note: required because it appears within the type `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+  --> src/main.rs:7:12
+   |
+ 7 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |            ^^^^^^^^^^^^^^^
+   = note: required for `Arc<ProjectsService<Arc<(dyn ProjectsPort + 'static)>>>` to implement `Send`
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:11:43
+   |
+11 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                           ^^^^ required by this bound in `assert_axum_state_bound`
+
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be sent between threads safely
+  --> src/main.rs:14:31
+   |
+14 |     assert_axum_state_bound::<std::sync::Arc<ErasedProjectsService>>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `(dyn ProjectsPort + 'static)` cannot be sent between threads safely
+   |
+   = help: the trait `Send` is not implemented for `(dyn ProjectsPort + 'static)`
+   = note: required for `Arc<(dyn ProjectsPort + 'static)>` to implement `Sync`
+note: required because it appears within the type `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+  --> src/main.rs:7:12
+   |
+ 7 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |            ^^^^^^^^^^^^^^^
+   = note: required for `Arc<ProjectsService<Arc<(dyn ProjectsPort + 'static)>>>` to implement `Send`
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:11:43
+   |
+11 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                           ^^^^ required by this bound in `assert_axum_state_bound`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `r69_state_bound_neg_no_supertraits` (bin "r69_state_bound_neg_no_supertraits") due to 2 previous errors
+exit=101
+OK: failed to compile, and the diagnostic contains: the trait `Sync` is not implemented for `(dyn ProjectsPort
+
+state-bound-check rc=0
+log diff exit: 0
+SKIP lines: 0
+FAIL lines: 0
+
+-- check 2: review/evidence/feature-shape-check-r4.sh --
+exit: 0
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64 / macOS 26.4
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+manifest floor: rust-version = rust-version = "1.96"
+probe dir: <feature-shape> (absolute paths are normalised in this log)
+classified line class: '    Blocking waiting for file lock on ...' (cargo's package-cache/build-directory contention notice) is deleted by norm; it is the only one
+
+== 1. feature OFF: cargo tree -e normal ==
+r69_feature_shape v0.0.0 (<feature-shape>)
+exit=0
+OK: ' axum v' absent
+OK: ' tokio v' absent
+OK: ' hyper v' absent
+OK: ' tower v' absent
+distinct packages in the NON-DEV base tree: 1  (base deps are deliberately empty, so this is the root alone)
+
+== 2. feature ON: cargo tree -e normal --features web ==
+r69_feature_shape v0.0.0 (<feature-shape>)
+├── axum v0.8.9
+│   ├── axum-core v0.5.6
+│   │   ├── bytes v1.12.1
+│   │   ├── futures-core v0.3.34
+│   │   ├── http v1.5.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── itoa v1.0.18
+│   │   ├── http-body v1.1.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── http v1.5.0 (*)
+│   │   ├── http-body-util v0.1.5
+│   │   │   ├── bytes v1.12.1
+│   │   │   ├── futures-core v0.3.34
+│   │   │   ├── http v1.5.0 (*)
+│   │   │   ├── http-body v1.1.0 (*)
+│   │   │   └── pin-project-lite v0.2.17
+│   │   ├── mime v0.3.17
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── sync_wrapper v1.0.2
+│   │   ├── tower-layer v0.3.3
+│   │   ├── tower-service v0.3.3
+│   │   └── tracing v0.1.44
+│   │       ├── log v0.4.34
+│   │       ├── pin-project-lite v0.2.17
+│   │       └── tracing-core v0.1.36
+│   │           └── once_cell v1.21.4
+│   ├── bytes v1.12.1
+│   ├── form_urlencoded v1.2.2
+│   │   └── percent-encoding v2.3.2
+│   ├── futures-util v0.3.34
+│   │   ├── futures-core v0.3.34
+│   │   ├── futures-task v0.3.34
+│   │   ├── pin-project-lite v0.2.17
+│   │   └── slab v0.4.12
+│   ├── http v1.5.0 (*)
+│   ├── http-body v1.1.0 (*)
+│   ├── http-body-util v0.1.5 (*)
+│   ├── hyper v1.11.1
+│   │   ├── atomic-waker v1.1.2
+  ... (full tree truncated for readability; counts below)
+exit=0
+OK: found ' axum v'
+OK: found ' tokio v'
+OK: found ' hyper v'
+OK: found ' tower v'
+OK: found 'axum v0.8.9'
+OK: found 'tokio v1.53.1'
+distinct packages in the NON-DEV tree with the feature on: 51
+the feature's own non-dev dependency cost: 50 packages
+
+== 3. the feature's own dependency cost (unique packages, cargo metadata) ==
+cargo metadata packages, feature off: 4
+cargo metadata packages, feature on : 55
+NOTE: cargo metadata resolves dev-dependencies too, so these are not the
+      cargo-tree -e normal numbers; the comparable figure is the delta.
+
+== 4. non-dev resolved tree: highest declared rust-version (gate 2, resolved tree) ==
+once_cell 1.21.4  rust-version=1.65  license=MIT OR Apache-2.0
+tracing 0.1.44  rust-version=1.65.0  license=MIT
+tracing-core 0.1.36  rust-version=1.65.0  license=MIT
+itoa 1.0.18  rust-version=1.68  license=MIT OR Apache-2.0
+socket2 0.6.5  rust-version=1.70  license=MIT OR Apache-2.0
+futures-channel 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+futures-task 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+futures-util 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+mio 1.2.3  rust-version=1.71  license=MIT
+proc-macro2 1.0.107  rust-version=1.71  license=MIT OR Apache-2.0
+quote 1.0.47  rust-version=1.71  license=MIT OR Apache-2.0
+ryu 1.0.23  rust-version=1.71  license=Apache-2.0 OR BSL-1.0
+serde_derive 1.0.229  rust-version=1.71  license=MIT OR Apache-2.0
+serde_json 1.0.151  rust-version=1.71  license=MIT OR Apache-2.0
+syn 3.0.5  rust-version=1.71  license=MIT OR Apache-2.0
+tokio 1.53.1  rust-version=1.71  license=MIT
+tokio-macros 2.7.2  rust-version=1.71  license=MIT
+unicode-ident 1.0.24  rust-version=1.71  license=(MIT OR Apache-2.0) AND Unicode-3.0
+windows-link 0.2.1  rust-version=1.71  license=MIT OR Apache-2.0
+windows-sys 0.61.2  rust-version=1.71  license=MIT OR Apache-2.0
+zmij 1.0.23  rust-version=1.71  license=MIT
+log 0.4.34  rust-version=1.71.0  license=MIT OR Apache-2.0
+axum-core 0.5.6  rust-version=1.78  license=MIT
+axum 0.8.9  rust-version=1.80  license=MIT
+r69_feature_shape 0.0.0  rust-version=1.96  license=none
+(the probe package's own rust-version, 1.96, IS the floor and is excluded)
+highest declared rust-version among the DEPENDENCIES: 1.80
+OK: found 'axum 0.8.9  rust-version=1.80'
+dependencies declaring no rust-version at all: 9
+OK: 1.80 is inside the 1.96 floor
+control: a floor this tree does NOT satisfy must be reported as a failure
+OK: the same test rejects a 1.70 floor, so it can fail
+
+== 5. does tower arrive transitively through axum? (settles dev-dep vs gated runtime dep) ==
+tower v0.5.3
+└── axum v0.8.9
+    └── r69_feature_shape v0.0.0 (<feature-shape>)
+OK: found 'axum v0.8.9'
+-> tower is already in the non-dev tree via axum; a DIRECT tower entry is
+   needed only to bring tower::ServiceExt into scope in tests, so it belongs
+   under [dev-dependencies], not inside the web feature.
+
+== 6. the serve binary target is gated by required-features (cargo metadata) ==
+{"name":"r69_feature_shape","kind":["lib"],"rf":null}
+{"name":"probe-serve","kind":["bin"],"rf":["web"]}
+OK: found '"name":"probe-serve"'
+OK: found '"rf":["web"]'
+OK: found '"name":"r69_feature_shape","kind":["lib"],"rf":null'
+
+== 7. behavioral confirmation: with no features, no serve binary is produced ==
+build exit=0
+OK: target/debug/probe-serve: No such file or directory
+
+== 8. advisories against the resolved lockfile (cargo audit, PINNED advisory database, ISOLATED CARGO_HOME) ==
+pinned advisory-db repo   : https://github.com/RustSec/advisory-db.git
+pinned advisory-db commit : b50980aad8b8f14f77e25a97b32dd94bf008b0af
+expected advisories loaded: 1243
+isolated CARGO_HOME       : <isolated-cargo-home> (mktemp -d under ${TMPDIR}; contains only audit.toml and bin/cargo-audit)
+isolated audit.toml       : [yanked] enabled = false 
+  -> with [yanked] enabled = false, cargo-audit 0.22.1 src/auditor.rs:115-167 takes its
+     'else { None }' arm: CachedIndex::open and CachedIndex::fetch are never called, so no
+     crates.io index is read, no ~/.cargo/.package-cache lock is taken, and the round-3
+     audit's "couldn't open crates.io index" warning cannot be emitted.
+  -> cost, stated: this scan does not report yanked crates. Yanked status is a mutable
+     crates.io attribute, not part of the pinned corpus; no claim in the decision rests on
+     it, and P03's live CI covers it.
+cargo-audit-audit 0.22.1
+advisory-db obtained from : network (clone lives under ${TMPDIR}, never inside the run directory)
+advisory-db HEAD          : b50980aad8b8f14f77e25a97b32dd94bf008b0af
+OK: the checked-out advisory-db commit is the pinned one
+      Loaded 1243 security advisories (from <pinned-advisory-db>)
+    Scanning Cargo.lock for vulnerabilities (55 crate dependencies)
+cargo-audit exit=0
+OK: the pinned database loaded exactly 1243 advisories
+OK: the scan covered the 55-crate resolved lockfile
+control: the advisory-count assertion must be able to fail
+OK: the same assertion rejects a count of 99999, so it can fail
+OK: 'couldn't open crates.io index' is absent from the scan output
+OK: 'couldn't check if the package is yanked' is absent from the scan output
+control: the warning-absence test must be able to fail
+OK: the same absence test reports a line that IS present, so it can fail
+normalised cargo-audit output lines: 2
+OK: the scan emitted exactly the 2 expected lines and nothing else
+
+== 9. second probe, base = R01's published crate members (serde + serde_json) ==
+Why: the opus raw reports base=13 / --features web=52 non-dev packages.
+An empty base cannot reproduce that, so this probe carries R01's members.
+feature OFF = 12 non-dev packages; feature ON = 52; delta = 40
+OK: the feature-on tree is 52 packages, matching the opus report exactly
+NOTE: base is 12 here vs the opus report's 13; that probe carried one further
+      base dependency this one does not. The delta is 40 here, 39 there.
+
+feature-shape (sections 1-7, 9, deterministic): rc_shape=0
+advisory scan (section 8, pinned input, isolated CARGO_HOME): rc_audit=0
+feature-shape-check-r4 rc=0
+log diff exit: 0
+SKIP lines: 0
+FAIL lines: 0
+
+-- check 3: review/empirical/assert-figures.sh --
+exit: 0
+sources absent -- fetching them (immutable coordinates, so this reproduces)
+snapshot retrieved-at: 2026-09-13T07:57:55Z
+field rules (prompt, Required evidence): crates.io crate.recent_downloads
+and crate.downloads; the newest non-yanked /versions entry for num,
+created_at, rust_version and license; the GitHub repos endpoint for
+stargazers_count, archived and pushed_at; the search endpoint's
+total_count for open issues, never open_issues_count.
+
+GATE 1 (licence compatibility) IS NOT ASSERTED ANYWHERE IN THIS SCRIPT.
+Owner ruling 2026-09-12 (Q7.B) makes it inapplicable to every dependency
+and tool. Licences are printed below as published metadata, not as a gate.
+
+### A. the three recommended compiled members
+OK   axum newest non-yanked = 0.8.9
+OK   axum rust_version = 1.80
+OK   axum archived = false
+OK   tokio newest non-yanked = 1.53.1
+OK   tokio rust_version = 1.71
+OK   tokio archived = false
+OK   tower newest non-yanked = 0.5.3
+OK   tower rust_version = 1.64.0
+  axum   90-day=114795000 all-time=466425972 released=2026-04-14T07:55:20.258398Z stars=27100 pushed=2026-09-11T19:28:52Z open-issues=34 licence=MIT
+  tokio  90-day=222551461 all-time=961082746 released=2026-07-20T17:06:09.996426Z stars=33136 pushed=2026-09-13T06:37:03Z open-issues=316 licence=MIT
+  tower  90-day=169723285 all-time=656241115 released=2026-01-12T18:43:05.227461Z stars=4293 pushed=2026-06-22T13:58:59Z open-issues=69 licence=MIT
+  reverse dependencies: axum 8598, tokio 72187
+
+### B. the dev-reload sub-field -- the one answer the licence ruling changes
+OK   bacon newest non-yanked = 3.25.0
+OK   bacon rust_version (gate 2: PASS) = 1.85
+OK   bacon archived = false
+OK   bacon licence (reported, NOT gated) = AGPL-3.0
+OK   watchexec-cli newest non-yanked = 2.7.2
+OK   watchexec-cli rust_version (gate 2: FAIL, none declared) = null
+OK   cargo-watch newest non-yanked = 8.5.3
+OK   cargo-watch rust_version (gate 2: PASS -- it is excluded on MAINTENANCE, not a gate) = 1.75.0
+OK   cargo-watch archived (the maintenance exclusion) = true
+OK   cargo-watch README at tag v8.5.3 carries the maintainer's own end-of-life notice
+OK   that notice names Bacon as a recommended successor
+  bacon         90-day=21763 all-time=328857 released=2026-08-23T16:21:08.727147Z licence=AGPL-3.0
+  watchexec-cli 90-day=8702 all-time=659914 released=2026-09-06T04:28:41.425571Z licence=Apache-2.0
+  cargo-watch   90-day=174663 all-time=1970345 released=2024-10-02T08:38:09.256209Z licence=CC0-1.0
+  repos: bacon stars=3410 pushed=2026-09-12T19:26:10Z issues=47 | watchexec stars=7180 pushed=2026-09-07T15:11:55Z issues=31 | cargo-watch stars=2861 pushed=2025-01-14T14:57:47Z
+  bacon CI runners (Canop/bacon .github/workflows/tests.yml @ tag v3.25.0):
+         runs-on: ubuntu-latest
+         runs-on: ubuntu-latest
+OK   bacon CI names no macOS runner -- gate 4's macOS leg is closed instead by the executed cargo install in bacon-install-check.log
+
+### C. framework candidates -- gate 2 (declared MSRV), answered before popularity
+    floor = 1.96 (stable 1.98.x minus two minors)
+  actix-web    newest=4.15.0             released=2026-08-21T19:31:31.356389Z  rust_version=1.88     licence=MIT OR Apache-2.0
+  warp         newest=0.4.3              released=2026-05-04T19:33:48.290142Z  rust_version=null     licence=MIT
+  poem         newest=3.1.12             released=2025-07-28T04:39:14.775671Z  rust_version=1.85     licence=MIT OR Apache-2.0
+  salvo        newest=0.96.0             released=2026-08-27T01:10:25.881378Z  rust_version=1.94     licence=Apache-2.0
+  rocket       newest=0.5.1              released=2024-05-23T20:35:24.403919Z  rust_version=1.64     licence=MIT OR Apache-2.0
+  ntex         newest=4.0.0-beta.10      released=2026-09-12T13:33:34.498468Z  rust_version=1.95     licence=MIT OR Apache-2.0
+  xitca-web    newest=0.8.3              released=2026-08-29T05:45:37.596691Z  rust_version=1.98     licence=Apache-2.0
+  pavex        newest=0.2.10             released=2025-11-10T08:07:56.165138Z  rust_version=null     licence=Apache-2.0
+  viz          newest=0.11.0             released=2025-11-17T08:59:42.522292Z  rust_version=null     licence=MIT
+  tide         newest=0.17.0-beta.1      released=2021-12-06T20:13:27.242719Z  rust_version=null     licence=MIT OR Apache-2.0
+  loco-rs      newest=1.1.0              released=2026-08-16T07:20:05.314328Z  rust_version=1.94     licence=Apache-2.0
+  dropshot     newest=0.17.1             released=2026-06-02T17:01:56.874507Z  rust_version=1.85     licence=Apache-2.0
+OK   warp declares no rust_version (gate 2 FAIL) = null
+OK   viz declares no rust_version (gate 2 FAIL) = null
+OK   pavex declares no rust_version (gate 2 FAIL) = null
+OK   tide declares no rust_version (gate 2 FAIL) = null
+OK   xitca-web rust_version is above the 1.96 floor (gate 2 FAIL) = 1.98
+OK   actix-web rust_version (gate 2 pass; excluded on fit) = 1.88
+OK   salvo rust_version (gate 2 pass; excluded on MSRV-policy fit) = 1.94
+OK   poem rust_version (gate 2 pass; excluded on maintenance) = 1.85
+  rocket MSRV: the gemini raw says 1.89.0, the opus raw says 1.64 -- the registry settles it:
+OK   rocket rust_version = 1.64
+  rocket last release 2024-05-23T20:35:24.403919Z, repo pushed_at 2025-12-28T18:27:39Z -- the maintenance exclusion
+  poem   last release 2025-07-28T04:39:14.775671Z, repo pushed_at 2026-08-03T02:01:09Z, open issues 179
+  ntex   newest non-yanked is a prerelease: 4.0.0-beta.10 -- the opus raw cited 3.12.3 / 1.88
+  tide   newest non-yanked is 0.17.0-beta.1 (2021-12-06T20:13:27.242719Z) -- the opus raw cited 0.16.0 (2021-01-29)
+
+### D. gate 3, advisories (RustSec package pages)
+OK   rustsec/packages/axum.html status (404 = no advisory) = 404
+OK   rustsec/packages/tower.html status (404 = no advisory) = 404
+OK   rustsec/packages/bacon.html status (404 = no advisory) = 404
+OK   rustsec/packages/watchexec-cli.html status (404 = no advisory) = 404
+OK   rustsec/packages/tokio.html status (page exists) = 200
+    historic advisory ids listed: RUSTSEC-2021-0072 RUSTSEC-2021-0124 RUSTSEC-2023-0001 RUSTSEC-2023-0005 RUSTSEC-2025-0023
+OK   rustsec/packages/hyper.html status (page exists) = 200
+    historic advisory ids listed: RUSTSEC-2016-0002 RUSTSEC-2017-0002 RUSTSEC-2020-0008 RUSTSEC-2021-0020 RUSTSEC-2021-0078 RUSTSEC-2021-0079 RUSTSEC-2022-0022
+  the decisive check is executed, not read: cargo audit over the resolved
+  --features web lockfile is check 8 of feature-shape-check.log.
+
+### E. gate 4, platform CI read from the upstream workflow at each pinned tag
+  axum  (tag axum-v0.8.9):  runs-on: ubuntu-24.04 
+OK   axum CI names no macOS runner -- a gate 4 gap, closed for this version only by this run's macOS resolve-and-build
+  tokio (tag tokio-1.53.1): macos-latest ubuntu-latest windows-latest 
+OK   tokio CI covers ubuntu-latest
+OK   tokio CI covers macos-latest
+
+### F. the reference implementation, rust-lang/crates.io at commit 3df99c2
+OK   pins axum =0.8.9
+OK   pins tokio =1.53.1
+OK   uses edition 2024, this template's fixed rust-edition
+OK   builds its router with .with_state(state) -- the F330 mechanism
+OK   router.rs has no ROUTERS registry and no registration loop -- the F331 finding holds
+OK   serves with axum::serve(..).with_graceful_shutdown(..)
+OK   selects over SIGTERM via tokio::signal::unix
+OK   awaits the serve future directly -- the drain is NOT wrapped in a timeout
+OK   the only Duration in that file is a metrics logging interval, not a drain deadline
+OK   axum's own graceful-shutdown example at tag axum-v0.8.9 also handles SIGTERM
+
+### G. published-artifact facts this decision rests on
+OK   axum's state-carrying impl<S> Router<S> is bounded S: Clone + Send + Sync + 'static
+OK   with_state is what turns a Router<S> into a Router<S2> -- no state, no service
+OK   axum documents FromRef substates on one State type
+OK   the graceful drain awaits close_tx.closed()
+OK   occurrences of 'timeout' or 'deadline' in axum src/serve/mod.rs (the drain is unbounded) = 0
+OK   axum::serve exists only with the tokio feature plus http1 or http2
+OK   axum declares [lints.rust] unsafe_code = "forbid"
+OK   occurrences of 'unsafe' in axum src/ = 0
+  axum default features: form,http1,json,matched-path,original-uri,query,tokio,tower-log,tracing
+OK   tokio default = [] -- every feature is opted into explicitly
+OK   tokio feature 'signal' does NOT enable sync
+OK   tokio feature 'net' does NOT enable sync
+OK   tokio feature 'rt-multi-thread' does NOT enable sync
+OK   tokio feature 'time' does NOT enable sync
+OK   tokio feature 'macros' does NOT enable sync
+OK   tokio 'sync' is its own leaf feature, so it must be listed explicitly
+OK   bacon declared rust-version in its published manifest = 1.85
+OK   watchexec-cli rust-version lines in its published manifest (gate 2 FAIL) = 0
+OK   bacon ships a run-long job that restarts on change (kill_then_restart)
+OK   that job captures the child's stdout
+OK   bacon's DEFAULT job interruption on unix is SIGKILL -- so a bacon.toml 'kill' override is required for a dev restart to run the production drain
+OK   in --headless mode bacon prints the child's stdout/stderr straight to the terminal, not into a TUI pane
+OK   bacon plumbs its --features flag into the cargo command
+OK   arguments after -- are appended to the job's command tokens
+OK   the -j argument is stored as settings.arg_job (src/conf/settings.rs)
+OK   the initial job is settings.arg_job, falling back to default_job (src/jobs/job_stack.rs)
+OK   references to 'headless' in bacon src/cli/mod.rs (all of them screen setup, none job selection) = 4
+OK   headless only guards the alternate-screen setup around tui::app::run -- it does not touch job selection
+
+### H. control -- an assertion that MUST report FAIL, proving these checks can fail
+FAIL deliberate control (expected to FAIL): expected '0.0.0-not-a-real-version', got '0.8.9'
+  -> the line above must read FAIL. If it reads OK, the harness is broken
+     and every OK above is worthless.
+
+assertions passed: 75   failures: 1 (exactly 1 expected: the control)
+assert-figures rc=0
+log diff exit: 1
+--- /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/assert-figures.log	2026-09-16 15:53:43
++++ /private/tmp/r69-audit-r7.NKP3Pv/check-3.log	2026-09-16 15:54:51
+@@ -1,3 +1,4 @@
++sources absent -- fetching them (immutable coordinates, so this reproduces)
+ snapshot retrieved-at: 2026-09-13T07:57:55Z
+ field rules (prompt, Required evidence): crates.io crate.recent_downloads
+ and crate.downloads; the newest non-yanked /versions entry for num,
+SKIP lines: 0
+FAIL lines: 10
+
+-- check 4: review/empirical/issue-responsiveness.sh --
+exit: 0
+snapshot retrieved-at: 2026-09-13T07:57:55Z
+rule: prompt table: 10 most recently opened issues; first comment whose author_association is OWNER/MEMBER/COLLABORATOR, excluding bots and the issue author
+
+=== tokio-rs/axum ===
+window: 2026-06-16T08:01:59Z -> 2026-09-07T08:48:42Z
+  #3880    opened 2026-09-07T08:48:42Z by mladedav               first maintainer response: NONE
+  #3878    opened 2026-09-04T18:53:24Z by mladedav               first maintainer response: NONE
+  #3846    opened 2026-07-25T19:17:33Z by Darckfast              first maintainer response: 2026-07-26T20:15:42Z (1.04 days)
+  #3834    opened 2026-07-14T01:13:21Z by m-novotny              first maintainer response: NONE
+  #3832    opened 2026-07-11T22:10:30Z by hgiesel                first maintainer response: 2026-07-12T07:55:05Z (0.41 days)
+  #3826    opened 2026-07-09T04:43:05Z by bardiharborow          first maintainer response: 2026-07-09T06:45:24Z (0.08 days)
+  #3817    opened 2026-07-05T13:47:13Z by DarkFenX               first maintainer response: NONE
+  #3814    opened 2026-07-01T07:10:18Z by mladedav               first maintainer response: NONE
+  #3809    opened 2026-06-26T06:54:31Z by halo-space             first maintainer response: 2026-06-30T19:49:47Z (4.54 days)
+  #3799    opened 2026-06-16T08:01:59Z by breard-r               first maintainer response: 2026-06-16T11:26:16Z (0.14 days)
+  -> answered: 5   unanswered: 5   median days to first maintainer response (answered only): 0.41
+
+=== Canop/bacon ===
+window: 2026-02-17T18:30:46Z -> 2026-08-24T07:07:07Z
+  #460     opened 2026-08-24T07:07:07Z by PuercoPop              first maintainer response: 2026-08-24T09:05:20Z (0.08 days)
+  #458     opened 2026-08-22T19:24:30Z by kpbaks                 first maintainer response: 2026-08-22T19:47:11Z (0.02 days)
+  #450     opened 2026-07-24T11:42:53Z by Axlefublr              first maintainer response: 2026-07-24T12:01:36Z (0.01 days)
+  #449     opened 2026-07-24T11:08:59Z by Axlefublr              first maintainer response: NONE
+  #447     opened 2026-07-22T19:34:39Z by narpfel                first maintainer response: NONE
+  #446     opened 2026-07-22T18:42:00Z by narpfel                first maintainer response: 2026-07-22T18:45:32Z (0.00 days)
+  #443     opened 2026-05-17T22:14:16Z by c-git                  first maintainer response: NONE
+  #438     opened 2026-03-18T21:44:31Z by marcospb19             first maintainer response: 2026-03-19T07:33:50Z (0.41 days)
+  #437     opened 2026-02-27T17:09:56Z by c-git                  first maintainer response: 2026-02-27T17:27:47Z (0.01 days)
+  #435     opened 2026-02-17T18:30:46Z by narpfel                first maintainer response: 2026-02-18T18:40:17Z (1.01 days)
+  -> answered: 7   unanswered: 3   median days to first maintainer response (answered only): 0.02
+
+=== tokio-rs/tokio ===
+window: 2026-08-27T08:17:23Z -> 2026-09-09T16:05:23Z
+  #8437    opened 2026-09-09T16:05:23Z by Daksh14                first maintainer response: NONE
+  #8434    opened 2026-09-08T19:11:21Z by marcbowes              first maintainer response: 2026-09-09T08:36:28Z (0.56 days)
+  #8433    opened 2026-09-08T17:19:04Z by glaziermag             first maintainer response: 2026-09-09T08:37:58Z (0.64 days)
+  #8429    opened 2026-09-07T14:41:03Z by botirkhaltaev          first maintainer response: 2026-09-07T14:46:03Z (0.00 days)
+  #8423    opened 2026-09-07T06:23:01Z by rifuki                 first maintainer response: NONE
+  #8411    opened 2026-09-05T08:38:11Z by Darksonn               first maintainer response: NONE
+  #8409    opened 2026-09-04T18:00:10Z by dfoxfranke             first maintainer response: 2026-09-04T18:06:55Z (0.00 days)
+  #8406    opened 2026-09-04T04:13:37Z by coremail-cyt           first maintainer response: 2026-09-04T12:05:26Z (0.33 days)
+  #8399    opened 2026-08-29T00:30:11Z by carllerche             first maintainer response: 2026-08-29T13:25:05Z (0.54 days)
+  #8395    opened 2026-08-27T08:17:23Z by Rachit2323             first maintainer response: 2026-08-27T09:00:21Z (0.03 days)
+  -> answered: 7   unanswered: 3   median days to first maintainer response (answered only): 0.33
+
+controls -- these assertions must be able to fail:
+OK   an empty comment list yields no maintainer response
+OK   the issue author, a bot and a non-maintainer are all excluded
+issue-responsiveness rc=0
+log diff exit: 0
+SKIP lines: 0
+FAIL lines: 0
+
+-- check 5: review/empirical/bacon-install-check.sh --
+exit: 0
+host: Darwin arm64; rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+== 1. cargo install bacon --version 3.25.0 --locked ==
+    Finished `release` profile [optimized] target(s) in 2m 02s
+  Installing /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/toolcheck/bin/bacon
+   Installed package `bacon v3.25.0` (executable `bacon`)
+warning: be sure to add `/private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/toolcheck/bin` to your PATH to be able to run the installed binaries
+exit=0
+== 2. the installed binary reports the pinned version ==
+bacon 3.25.0
+exit=0
+== 3. --list-jobs: the effective job set in a project with NO bacon.toml ==
+┌──────────┬────────────────────────────────────────────────────────────┐
+│   job    │command                                                     │
+├──────────┼────────────────────────────────────────────────────────────┤
+│  check   │cargo check                                                 │
+│check-all │cargo check --all-targets                                   │
+│  clippy  │cargo clippy                                                │
+│clippy-all│cargo clippy --all-targets                                  │
+│   doc    │cargo doc --no-deps                                         │
+│ doc-open │cargo doc --no-deps --open                                  │
+│    ex    │cargo run --example                                         │
+│ nextest  │cargo nextest run --hide-progress-bar --failure-output final│
+│ pedantic │cargo clippy -- -W clippy::pedantic                         │
+│   run    │cargo run                                                   │
+│ run-long │cargo run                                                   │
+│   test   │cargo test                                                  │
+└──────────┴────────────────────────────────────────────────────────────┘
+default job: check
+OK: 'run-long' is a default job, so no bacon.toml is needed to reach it
+== 4. the two flags F339's recipe depends on exist ==
+OK: --headless present
+OK: --features present
+│        │--headless                 │Run without user interface: just run the │
+│        │                           │default job on change                    │
+== 5. control: a flag that does not exist must NOT be reported present ==
+OK: absent flag reported absent (the assertion can fail)
+bacon-install-check rc=0
+log diff exit: 1
+--- /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/bacon-install-check.log	2026-09-16 15:53:43
++++ /private/tmp/r69-audit-r7.NKP3Pv/check-5.log	2026-09-16 15:56:54
+@@ -1,7 +1,9 @@
+ host: Darwin arm64; rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+ == 1. cargo install bacon --version 3.25.0 --locked ==
+-     Ignored package `bacon v3.25.0` is already installed, use --force to override
+-warning: be sure to add `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/toolcheck/bin` to your PATH to be able to run the installed binaries
++    Finished `release` profile [optimized] target(s) in 2m 02s
++  Installing /private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/toolcheck/bin/bacon
++   Installed package `bacon v3.25.0` (executable `bacon`)
++warning: be sure to add `/private/tmp/r69-audit-r7.NKP3Pv/archive/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/toolcheck/bin` to your PATH to be able to run the installed binaries
+ exit=0
+ == 2. the installed binary reports the pinned version ==
+ bacon 3.25.0
+SKIP lines: 0
+FAIL lines: 0
+
+-- check r5-control: review/evidence/yanked-control-r5.sh --
+exit: 0
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64 / macOS 26.4
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+probe dir: <feature-shape> (absolute paths are normalised in this log)
+classified line class: '    Blocking waiting for file lock on ...' is deleted by norm; it is the only one
+
+== 1. the lockfile arithmetic that explains 55 vs 54 ==
+Cargo.lock [[package]] entries            : 55
+Cargo.lock entries with a registry source : 54
+OK: the lockfile holds 55 packages, the figure cargo-audit's 'Scanning' line reports
+OK: 54 of them carry a crates.io registry source, so only those can be looked up
+
+== 2. the isolated, UNPOPULATED CARGO_HOME with the yanked lookup at its default ==
+isolated CARGO_HOME       : <isolated-cargo-home> (mktemp -d under ${TMPDIR})
+isolated CARGO_HOME holds : bin bin/cargo-audit 
+OK: no audit.toml, so cargo-audit 0.22.1 keeps its default [yanked] enabled = true
+cargo-audit-audit 0.22.1
+
+== 3. the pinned advisory database ==
+pinned advisory-db repo   : https://github.com/RustSec/advisory-db.git
+pinned advisory-db commit : b50980aad8b8f14f77e25a97b32dd94bf008b0af
+advisory-db obtained from : network (clone lives under ${TMPDIR}, never inside the run directory)
+advisory-db HEAD          : b50980aad8b8f14f77e25a97b32dd94bf008b0af
+OK: the checked-out advisory-db commit is the pinned one
+
+== 4. the rejected variant, run ==
+      Loaded 1243 security advisories (from <pinned-advisory-db>)
+    Scanning Cargo.lock for vulnerabilities (55 crate dependencies)
+error: couldn't check if the package is yanked: not found: No such crate in crates.io index: atomic-waker
+error: couldn't check if the package is yanked: not found: No such crate in crates.io index: axum
+  ... (the per-crate error lines are counted, not printed in full; the full set is
+      reproduced by the crate-name comparison in section 5)
+error: couldn't check if the package is yanked: not found: No such crate in crates.io index: zmij
+cargo-audit exit=0
+OK: the pinned database loaded exactly 1243 advisories
+OK: the scan reported 55 crate dependencies
+
+== 5. THE COUNT revision 4 got wrong, asserted ==
+yanked-error-lines (/usr/bin/grep -cF): 54
+OK: the variant printed exactly 54 'couldn't check if the package is yanked' lines
+control: the count assertion must be able to fail
+OK: the same test rejects 55, the figure revision 4 stated, so it can fail
+why the two figures differ, checked against the lockfile rather than asserted in prose:
+names extracted from the error lines : 54
+registry-sourced names in Cargo.lock : 54
+OK: the looked-up crates are exactly the lockfile's registry-sourced packages (diff empty)
+lockfile packages NOT looked up      : r69_feature_shape
+OK: the single package the yanked lookup skips is the root PATH package, which has no
+    crates.io source; 55 - 1 = 54 is the whole of the difference
+
+yanked-control-r5 rc=0
+log diff exit: 0
+SKIP lines: 0
+FAIL lines: 0
+
+== crates.io retry with explicit repository user agent ==
+crates.io axum: http=200 effective=https://crates.io/api/v1/crates/axum

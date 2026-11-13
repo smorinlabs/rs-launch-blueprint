@@ -1,0 +1,13 @@
+PASS A0 actionlint version is 1.7.12 at /opt/homebrew/bin/actionlint
+PASS A0b shellcheck is on PATH at /Users/stevemorin/.local/bin/shellcheck, so actionlint's shellcheck integration is active on every run: block
+PASS A1 the candidate fixture exists at review/evidence/ci.candidate.yml
+INFO fixture sha256=f2d5efe252d9ef37a484c51239b5128e1713d2e6bf537c61b544fc436a24be1b lines=195
+PASS A2 CONTROL: actionlint exits 0 with no diagnostic on the unmutated candidate
+PASS A3 the linted file declares exactly the six job ids check hygiene install-smoke msrv-floor plan workflow-lint
+PASS NC1 mutation applied; actionlint exit=1 and the diagnostic contains 'property "codee" is not defined in object type' - a misspelled relayed output name is type-checked against the producing job's declared outputs:, so a renamed key cannot silently disable a gate
+PASS NC2 mutation applied; actionlint exit=0 with 0 diagnostic line(s) - THE FINDING: actionlint does NOT reject the fail-open negated predicate, so the positive-predicate rule must travel in prose to R12, R13 and every other consumer
+PASS NC3 mutation applied; actionlint exit=1 and the diagnostic contains 'context "secrets" is not allowed here' - a job-level if: cannot read secrets, which is why a credential gate is a preflight JOB - the same structural device as this item's detector job
+PASS NC4 mutation applied; actionlint exit=1 and the diagnostic contains 'which does not exist in this workflow' - the needs graph itself is checked, so a job renamed out from under a gate fails the lint
+PASS NC5 mutation applied; actionlint exit=0 with 0 diagnostic line(s) - actionlint does NOT reject a detector body without pipefail either, so the detector's own set -euo pipefail is a design rule this toolchain does not enforce
+
+PASS=10 FAIL=0 SKIP=0 TOTAL=10

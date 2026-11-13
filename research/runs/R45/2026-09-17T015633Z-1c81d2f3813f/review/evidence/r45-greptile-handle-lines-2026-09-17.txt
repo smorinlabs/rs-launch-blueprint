@@ -1,0 +1,38 @@
+238:  * **Re-trigger button** — Click "Re-trigger Greptile" in the footer to re-run a review without tagging @greptileai
+1388:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
+1852:    * Force refresh: Create PR with `@greptileai review`
+1908:  4. **Force trigger:** Comment `@greptileai review this`
+2051:Essential guide for developers using Greptile: trigger reviews with @greptileai, train the AI with reactions, ask follow-up questions, and troubleshoot issues.
+2060:@greptileai
+2066:@greptileai check for memory leaks
+2067:@greptileai review the database queries
+2068:@greptileai is this thread-safe?
+2072:  If `@greptileai` doesn't trigger a review, check:
+2085:@greptileai review this draft
+2095:@greptileai are there code improvements I can make?
+2107:@greptileai can you explain the code in this file?
+2119:@greptileai can you create a test for this file?
+2149:@greptileai This is intentional - we use sync calls here 
+2156:@greptileai you missed a null check on line 45
+2172:  **Fix:** Comment `@greptileai` to force a review
+2229:| Failed    | 😕    | Tag `@greptileai` to retry |
+2303:  You can request a specific diagram type by replying to the review or tagging `@greptileai` — for example, "generate a class diagram for this PR".
+2398:  **Fix:** Comment `@greptileai` to trigger manually
+3938:@greptileai review this draft before I make it official
+3959:@greptileai review this RFC for completeness
+3960:@greptileai does this architecture match our existing patterns?
+3961:@greptileai what edge cases am I missing in this design?
+3995:@greptileai このコードの問題を日本語で説明してください
+4011:@greptileai check this PR for security vulnerabilities
+4012:@greptileai review authentication flow for common attack vectors
+4013:@greptileai are there any SQL injection risks here?
+4034:@greptileai review only the API changes
+4035:@greptileai focus on the database queries
+4036:@greptileai check the error handling in src/services/
+4050:| Get early feedback on draft | `@greptileai review this draft`              |
+4062:Don't tag `@greptile` or `@greptileai`. Greptile ignores other comments. In a Greptile review thread, tag your teammate — Greptile usually stays out, but may reply or react with 👍.
+4080:    `@greptileai check for memory leaks` gets better results than just `@greptileai review`.
+4128:@greptileai We don't enforce this in test files
+9308:  You can trigger a code review manually by tagging **@greptileai** with a comment. This is helpful for reviewing older PRs from before Greptile was integrated.
+9944:* Mark PR as "Ready for review" or comment `@greptileai` to trigger
+9958:2. **Test manual trigger** - Comment `@greptileai` on a PR

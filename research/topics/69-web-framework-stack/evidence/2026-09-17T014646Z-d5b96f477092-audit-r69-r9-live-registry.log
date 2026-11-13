@@ -1,0 +1,22 @@
+curl binary: /usr/bin/curl
+jq binary: /opt/homebrew/bin/jq
+endpoint 1: tokio version metadata
+curl: (56) The requested URL returned error: 403
+http_status=403 effective_url=https://crates.io/api/v1/crates/tokio/1.53.1
+jq: error: Could not open file /private/tmp/r69-r9-live-registry.IGJzmS/tokio.json: No such file or directory
+endpoint 2: tokio dependencies
+curl: (56) The requested URL returned error: 403
+http_status=403 effective_url=https://crates.io/api/v1/crates/tokio/1.53.1/dependencies
+jq: error: Could not open file /private/tmp/r69-r9-live-registry.IGJzmS/tokio-deps.json: No such file or directory
+endpoint 3: axum-extra 0.12.6 version metadata
+curl: (56) The requested URL returned error: 403
+http_status=403 effective_url=https://crates.io/api/v1/crates/axum-extra/0.12.6
+jq: error: Could not open file /private/tmp/r69-r9-live-registry.IGJzmS/axum-extra.json: No such file or directory
+endpoint 4: axum-extra crate summary
+curl: (56) The requested URL returned error: 403
+http_status=403 effective_url=https://crates.io/api/v1/crates/axum-extra
+jq: error: Could not open file /private/tmp/r69-r9-live-registry.IGJzmS/axum-extra-crate.json: No such file or directory
+endpoint 5: axum-extra dependencies
+curl: (56) The requested URL returned error: 403
+http_status=403 effective_url=https://crates.io/api/v1/crates/axum-extra/0.12.6/dependencies
+jq: error: Could not open file /private/tmp/r69-r9-live-registry.IGJzmS/axum-extra-deps.json: No such file or directory

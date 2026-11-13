@@ -1,0 +1,324 @@
+
+===== 0. Toolchain and environment =====
+run-utc 2026-09-13T07:28:21Z
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+git version 2.50.1 (Apple Git-155)
+gh version 2.98.0 (2026-08-20)
+cwd      /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+evidence /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R19/2026-09-06T043454Z-33c81db94a3b/review/evidence
+script sha256 494e545185064ac9e550912b43a63580814a48d52f6783a64ac243c896583c1b
+
+===== 1. Snapshot integrity: every file is content-addressed by the pin's own tree =====
+PASS  tree.tsv lists 21 blobs at pin 1abafc5ca0900334fd970832e9ef43f2afc78233
+verified 21 blob(s), 0 defect(s)
+PASS  all 21 snapshot files re-derive their recorded git blob sha
+PASS  the snapshot directory holds tree.tsv and exactly those 21 files, nothing else
+
+===== 2. CLAIM: Cargo never supplies a language version, so no candidate is filtered on MSRV =====
+--- 2a. cargo's update checker calls latest_version with NO argument ---
+73:            latest_version_finder.latest_version
+PASS  2a update_checker.rb calls latest_version_finder.latest_version with no language_version: argument
+PASS  2a the string language_version does not occur anywhere in cargo's update_checker.rb
+--- 2b. the parameter it therefore takes by default ---
+33:        def latest_version(language_version: nil)
+PASS  2b cargo's LatestVersionFinder#latest_version defaults language_version to nil
+--- 2c. what nil does in the shared filter cargo inherits ---
+224:      def filter_unsupported_versions(releases, language_version)
+225-        filtered = releases.filter_map do |release|
+226-          language_requirement = release.language&.requirement
+227-          next release unless language_version
+228-          next release unless language_requirement
+229-          next unless language_requirement.satisfied_by?(language_version)
+230-
+PASS  2c filter_unsupported_versions returns every release unchanged when language_version is nil
+
+===== 3. CLAIM: the manifest key rust-version is never read; the rust_version method is rustc =====
+--- 3a. cargo's file parser: rust_version shells out to rustc ---
+84:      def rust_version
+85-        @rust_version ||= T.let(
+86-          begin
+87-            version = SharedHelpers.run_shell_command("rustc --version")
+88-            version.match(/rustc\s*(\d+\.\d+(.\d+)*)/)&.captures&.first
+89-          end,
+90-          T.nilable(String)
+91-        )
+92-      end
+PASS  3a file_parser.rb#rust_version reports the RUNNER's rustc version, not Cargo.toml's rust-version key
+--- 3b. zero occurrences of the hyphenated manifest key across all 20 cargo/lib files ---
+corpus: 20 ruby files, 207445 bytes, 0 hit(s) for rust-version
+PASS  3b the literal rust-version occurs 0 times under cargo/lib at the pin
+--- 3c. non-vacuity control: the same corpus and the same grep DO find known strings ---
+control hits: BumpVersionsIfNecessary in 2 file(s), cargo_pre_1_0_type in 1 file(s)
+PASS  3c the corpus is 20 files / >100 kB and the control strings are found — the zero in 3b is not vacuous
+
+===== 4. REFINEMENT: the candidate's published MSRV is recorded and then never consulted =====
+63:              rust_version: T.cast(release["rust"], T.nilable(String))
+209:              requirement: language_requirement(rust_version)
+PASS  4 crates.io's per-release rust field IS captured as PackageLanguage#requirement — recorded, then bypassed by the nil in 2a-2c
+
+===== 5. The two pinned reads re-verified against the live pin (transport failure FAILS) =====
+commit echo: 1abafc5ca0900334fd970832e9ef43f2afc78233  2026-09-10T14:52:23Z
+PASS  5a the pin exists and resolves to itself
+tree truncated: false
+PASS  5b the pin's recursive tree is complete (truncated=false), so the file list below is exhaustive
+PASS  5c the live pin serves exactly the 21 path/blob-sha pairs committed in tree.tsv
+
+===== 6. CORROBORATION: issue #5423, a mutable record snapshotted at retrieval =====
+retrieved 2026-09-13T07:26:38Z
+{"comments":7,"created_at":"2022-07-26T14:08:50Z","html_url":"https://github.com/dependabot/dependabot-core/issues/5423","number":5423,"state":"open","title":"Take `rust-version` into account when updating lock file / manifest","updated_at":"2026-01-05T16:18:52Z"}
+
+issue-5423.json sha256 b1adeb33094873f684b92d3f1ba04f37e20218d67032a5851026bcc9f093f74b
+PASS  6a the committed snapshot is the recorded one
+PASS  6b the snapshot records #5423 open, filed 2022-07-26, titled for rust-version
+LIVE  GET https://api.github.com/repos/dependabot/dependabot-core/issues/5423 (retrieved 2026-09-13T07:28:24Z) — this line is not byte-for-byte reproducible
+live: {"comments":7,"created_at":"2022-07-26T14:08:50Z","number":5423,"state":"open","updated_at":"2026-01-05T16:18:52Z"}
+PASS  6c the live record's IMMUTABLE fields still match the snapshot (state/updated_at/comments may drift and are not asserted)
+
+===== SUMMARY =====
+failed assertions: 0
+
+===== SCRIPT SOURCE =====
+#!/usr/bin/env bash
+# R19 dependabot-config-shape — pinned evidence for the MSRV / `rust-version` claim
+# (the claim the main check's section 5f used to carry as an unasserted live read).
+#
+# Reads only files committed under this directory plus two GET requests at a
+# literal commit sha. It creates nothing, writes nothing, and installs nothing.
+# Run it from anywhere: it locates its own directory.
+#
+#   bash research/runs/R19/2026-09-06T043454Z-33c81db94a3b/review/evidence/r19-check-5f.sh
+#
+# Every check below asserts on CONTENT. A transport failure is a FAIL, never a
+# NOTE: fail-open reads are the defect this script exists to remove.
+set -uo pipefail
+
+FAILS=0
+pass() { printf 'PASS  %s\n' "$1"; }
+fail() { printf 'FAIL  %s\n' "$1"; FAILS=$((FAILS+1)); }
+hdr()  { printf '\n===== %s =====\n' "$1"; }
+live() { printf 'LIVE  %s (retrieved %s) — this line is not byte-for-byte reproducible\n' "$1" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"; }
+
+E="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DBC_SHA=1abafc5ca0900334fd970832e9ef43f2afc78233
+SNAP="$E/dependabot-core-1abafc5c"
+CARGO_LIB="$SNAP/cargo/lib"
+ISSUE="$E/issue-5423.json"
+ISSUE_SHA256=b1adeb33094873f684b92d3f1ba04f37e20218d67032a5851026bcc9f093f74b
+UA='rs-launch-blueprint-research (https://github.com/smorinlabs/rs-launch-blueprint)'
+
+# Bounded retry. Three attempts, then FAIL — never a note, never a silent skip.
+GH_OUT=''
+gh_try() {
+  local i
+  for i in 1 2 3; do
+    if GH_OUT=$(gh api -H "User-Agent: $UA" "$@" 2>&1); then return 0; fi
+    sleep 3
+  done
+  return 1
+}
+
+hdr "0. Toolchain and environment"
+date -u '+run-utc %Y-%m-%dT%H:%M:%SZ'
+uname -a
+git --version
+gh --version | head -1
+printf 'cwd      %s\n' "$(pwd)"
+printf 'evidence %s\n' "$E"
+printf 'script sha256 %s\n' "$(shasum -a 256 < "${BASH_SOURCE[0]}" | cut -d' ' -f1)"
+
+hdr "1. Snapshot integrity: every file is content-addressed by the pin's own tree"
+# A git blob sha IS the content address of the bytes. Re-deriving it offline with
+# `git hash-object` proves each committed file is exactly what commit 1abafc5c
+# holds at that path — the snapshot is bound to the pin, not merely dated.
+ROWS=$(wc -l < "$SNAP/tree.tsv" | tr -d ' ')
+if [ "$ROWS" = "21" ]; then
+  pass "tree.tsv lists 21 blobs at pin $DBC_SHA"
+else
+  fail "tree.tsv lists $ROWS blobs, expected 21"
+fi
+BAD=0; SEEN=0
+while IFS=$'\t' read -r p s; do
+  SEEN=$((SEEN+1))
+  if [ ! -f "$SNAP/$p" ]; then
+    printf '  MISSING %s\n' "$p"; BAD=$((BAD+1)); continue
+  fi
+  h=$(git hash-object -t blob "$SNAP/$p")
+  if [ "$h" != "$s" ]; then
+    printf '  MISMATCH %s  %s != %s\n' "$p" "$h" "$s"; BAD=$((BAD+1))
+  fi
+done < "$SNAP/tree.tsv"
+printf 'verified %s blob(s), %s defect(s)\n' "$SEEN" "$BAD"
+if [ "$SEEN" -eq 21 ] && [ "$BAD" -eq 0 ]; then
+  pass "all 21 snapshot files re-derive their recorded git blob sha"
+else
+  fail "snapshot does not re-derive the pin's blob shas ($SEEN read, $BAD defective)"
+fi
+EXTRA=$(cd "$SNAP" && find . -type f ! -name tree.tsv | sed 's|^\./||' | LC_ALL=C sort \
+        | comm -23 - <(cut -f1 "$SNAP/tree.tsv" | LC_ALL=C sort))
+if [ -z "$EXTRA" ]; then
+  pass "the snapshot directory holds tree.tsv and exactly those 21 files, nothing else"
+else
+  printf '%s\n' "$EXTRA"; fail "snapshot directory holds files absent from tree.tsv"
+fi
+
+hdr "2. CLAIM: Cargo never supplies a language version, so no candidate is filtered on MSRV"
+UC="$CARGO_LIB/dependabot/cargo/update_checker.rb"
+LVF="$CARGO_LIB/dependabot/cargo/update_checker/latest_version_finder.rb"
+PLVF="$SNAP/common/lib/dependabot/package/package_latest_version_finder.rb"
+
+echo "--- 2a. cargo's update checker calls latest_version with NO argument ---"
+grep -n 'latest_version_finder\.latest_version$' "$UC"
+if grep -qE '^ *latest_version_finder\.latest_version$' "$UC"; then
+  pass "2a update_checker.rb calls latest_version_finder.latest_version with no language_version: argument"
+else
+  fail "2a bare latest_version_finder.latest_version call not found in update_checker.rb"
+fi
+if grep -q 'language_version' "$UC"; then
+  grep -n 'language_version' "$UC"
+  fail "2a update_checker.rb mentions language_version after all — re-read the call site"
+else
+  pass "2a the string language_version does not occur anywhere in cargo's update_checker.rb"
+fi
+
+echo "--- 2b. the parameter it therefore takes by default ---"
+grep -n 'def latest_version(language_version: nil)' "$LVF"
+grep -qF 'def latest_version(language_version: nil)' "$LVF" \
+  && pass "2b cargo's LatestVersionFinder#latest_version defaults language_version to nil" \
+  || fail "2b latest_version(language_version: nil) not found in cargo's latest_version_finder.rb"
+
+echo "--- 2c. what nil does in the shared filter cargo inherits ---"
+grep -n 'def filter_unsupported_versions(releases, language_version)' -A6 "$PLVF"
+Q=0
+grep -qF 'def filter_unsupported_versions(releases, language_version)' "$PLVF" || Q=1
+grep -qF 'next release unless language_version' "$PLVF" || Q=1
+if [ "$Q" -eq 0 ]; then
+  pass "2c filter_unsupported_versions returns every release unchanged when language_version is nil"
+else
+  fail "2c the shared MSRV filter does not read as quoted — the mechanism claim must be restated"
+fi
+
+hdr "3. CLAIM: the manifest key rust-version is never read; the rust_version method is rustc"
+FP="$CARGO_LIB/dependabot/cargo/file_parser.rb"
+echo "--- 3a. cargo's file parser: rust_version shells out to rustc ---"
+grep -n 'def rust_version' -A8 "$FP"
+if grep -A8 'def rust_version' "$FP" | grep -qF 'SharedHelpers.run_shell_command("rustc --version")'; then
+  pass "3a file_parser.rb#rust_version reports the RUNNER's rustc version, not Cargo.toml's rust-version key"
+else
+  fail "3a file_parser.rb#rust_version does not read as a rustc --version shell-out"
+fi
+
+echo "--- 3b. zero occurrences of the hyphenated manifest key across all 20 cargo/lib files ---"
+HITS=$(grep -rn 'rust-version' "$CARGO_LIB" | wc -l | tr -d ' ')
+grep -rn 'rust-version' "$CARGO_LIB"
+FILES=$(find "$CARGO_LIB" -type f -name '*.rb' | wc -l | tr -d ' ')
+BYTES=$(find "$CARGO_LIB" -type f -name '*.rb' -exec cat {} + | wc -c | tr -d ' ')
+printf 'corpus: %s ruby files, %s bytes, %s hit(s) for rust-version\n' "$FILES" "$BYTES" "$HITS"
+if [ "$HITS" = "0" ]; then
+  pass "3b the literal rust-version occurs 0 times under cargo/lib at the pin"
+else
+  fail "3b the literal rust-version occurs $HITS time(s) under cargo/lib — the claim is wrong"
+fi
+
+echo "--- 3c. non-vacuity control: the same corpus and the same grep DO find known strings ---"
+# Without this, a zero above could mean an empty corpus or a broken path.
+C1=$(grep -rl 'BumpVersionsIfNecessary' "$CARGO_LIB" | wc -l | tr -d ' ')
+C2=$(grep -rl 'cargo_pre_1_0_type'      "$CARGO_LIB" | wc -l | tr -d ' ')
+printf 'control hits: BumpVersionsIfNecessary in %s file(s), cargo_pre_1_0_type in %s file(s)\n' "$C1" "$C2"
+if [ "$FILES" = "20" ] && [ "$BYTES" -gt 100000 ] && [ "$C1" -ge 1 ] && [ "$C2" -ge 1 ]; then
+  pass "3c the corpus is 20 files / >100 kB and the control strings are found — the zero in 3b is not vacuous"
+else
+  fail "3c control failed: corpus $FILES files / $BYTES bytes, controls $C1 and $C2"
+fi
+
+hdr "4. REFINEMENT: the candidate's published MSRV is recorded and then never consulted"
+PDF="$CARGO_LIB/dependabot/cargo/package/package_details_fetcher.rb"
+grep -nF 'rust_version: T.cast(release["rust"]' "$PDF"
+grep -n 'requirement: language_requirement(rust_version)' "$PDF"
+Q=0
+grep -qF 'rust_version: T.cast(release["rust"]' "$PDF" || Q=1
+grep -qF 'requirement: language_requirement(rust_version)' "$PDF" || Q=1
+if [ "$Q" -eq 0 ]; then
+  pass "4 crates.io's per-release rust field IS captured as PackageLanguage#requirement — recorded, then bypassed by the nil in 2a-2c"
+else
+  fail "4 package_details_fetcher.rb does not record release['rust'] as quoted"
+fi
+
+hdr "5. The two pinned reads re-verified against the live pin (transport failure FAILS)"
+if gh_try "repos/dependabot/dependabot-core/commits/$DBC_SHA" --jq '.sha + "  " + .commit.committer.date'; then
+  printf 'commit echo: %s\n' "$GH_OUT"
+  [ "${GH_OUT%% *}" = "$DBC_SHA" ] \
+    && pass "5a the pin exists and resolves to itself" \
+    || fail "5a the pin did not resolve to itself"
+else
+  printf '%s\n' "$GH_OUT"
+  fail "5a could not read the pinned commit after 3 attempts"
+fi
+
+KEEP_JQ='.tree[]
+  | select(.type=="blob")
+  | select((.path|startswith("cargo/lib/"))
+           or .path=="common/lib/dependabot/package/package_latest_version_finder.rb")
+  | [.path,.sha] | @tsv'
+if gh_try "repos/dependabot/dependabot-core/git/trees/$DBC_SHA?recursive=1" --jq '.truncated'; then
+  printf 'tree truncated: %s\n' "$GH_OUT"
+  [ "$GH_OUT" = "false" ] \
+    && pass "5b the pin's recursive tree is complete (truncated=false), so the file list below is exhaustive" \
+    || fail "5b the pin's recursive tree came back truncated — the 20-file corpus cannot be called exhaustive"
+else
+  printf '%s\n' "$GH_OUT"
+  fail "5b could not read the pinned tree after 3 attempts"
+fi
+if gh_try "repos/dependabot/dependabot-core/git/trees/$DBC_SHA?recursive=1" --jq "$KEEP_JQ"; then
+  if diff <(printf '%s\n' "$GH_OUT" | LC_ALL=C sort) "$SNAP/tree.tsv"; then
+    pass "5c the live pin serves exactly the 21 path/blob-sha pairs committed in tree.tsv"
+  else
+    fail "5c the live pin's tree differs from the committed tree.tsv"
+  fi
+else
+  printf '%s\n' "$GH_OUT"
+  fail "5c could not re-read the pinned tree after 3 attempts"
+fi
+
+hdr "6. CORROBORATION: issue #5423, a mutable record snapshotted at retrieval"
+# This is NOT a pinned source and is not presented as one. GitHub issues have no
+# ref; the snapshot plus its recorded retrieval time is what makes the citation
+# reproducible, and the assertions below are on the snapshot's bytes.
+printf 'retrieved %s\n' "$(cat "$E/issue-5423.retrieved")"
+cat "$ISSUE"; echo
+H=$(shasum -a 256 < "$ISSUE" | cut -d' ' -f1)
+printf 'issue-5423.json sha256 %s\n' "$H"
+[ "$H" = "$ISSUE_SHA256" ] \
+  && pass "6a the committed snapshot is the recorded one" \
+  || fail "6a issue-5423.json sha256 is $H, expected $ISSUE_SHA256"
+Q=0
+grep -qF '"number":5423' "$ISSUE" || Q=1
+grep -qF '"created_at":"2022-07-26T14:08:50Z"' "$ISSUE" || Q=1
+grep -qF '"title":"Take `rust-version` into account when updating lock file / manifest"' "$ISSUE" || Q=1
+grep -qF '"state":"open"' "$ISSUE" || Q=1
+if [ "$Q" -eq 0 ]; then
+  pass "6b the snapshot records #5423 open, filed 2022-07-26, titled for rust-version"
+else
+  fail "6b the snapshot does not carry the quoted fields"
+fi
+live "GET https://api.github.com/repos/dependabot/dependabot-core/issues/5423"
+if gh_try repos/dependabot/dependabot-core/issues/5423 --jq '{number,state,created_at,updated_at,comments}'; then
+  printf 'live: %s\n' "$GH_OUT"
+  Q=0
+  printf '%s' "$GH_OUT" | grep -qF '"number":5423' || Q=1
+  printf '%s' "$GH_OUT" | grep -qF '"created_at":"2022-07-26T14:08:50Z"' || Q=1
+  if [ "$Q" -eq 0 ]; then
+    pass "6c the live record's IMMUTABLE fields still match the snapshot (state/updated_at/comments may drift and are not asserted)"
+  else
+    fail "6c the live record's immutable fields do not match the snapshot"
+  fi
+else
+  printf '%s\n' "$GH_OUT"
+  fail "6c could not read issue #5423 live after 3 attempts"
+fi
+
+hdr "SUMMARY"
+printf 'failed assertions: %s\n' "$FAILS"
+hdr "SCRIPT SOURCE"
+cat "${BASH_SOURCE[0]}"
+[ "$FAILS" -eq 0 ] || exit 1
+exit 0

@@ -1,0 +1,51 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-16T22:15:33Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-16T22:15:33Z",
+      "state": "ready"
+    },
+    {
+      "at": "2026-09-16T22:25:40Z",
+      "publication": {
+        "acceptance_sha256": "a3732b422e672ddc8793d69cb2b494eafb0579a4232e9c54f0017c2a8bf9eb93",
+        "decision_sha256": "a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c",
+        "transaction": "7fd09fadc4334413b97e5be21b8ef3ea"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "ac892cb5dc2aa4605b968e9fcc67110c324a36b241996c6bb057f046877c5aa3",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "ae1d5ecef557c83e47b322d1505100ea6c7248347ae1215dc88f35496f208cc2",
+    "registry": "6afabb2782c7f450b90dca014d071b840cda4c1bce1f4f233c4d66b72b58a1ca"
+  },
+  "item": "R42",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/42-dev-toolchain-provisioning/prompts/dev-toolchain-provisioning.prompt.md",
+  "publication": {
+    "acceptance_sha256": "a3732b422e672ddc8793d69cb2b494eafb0579a4232e9c54f0017c2a8bf9eb93",
+    "decision_sha256": "a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c",
+    "transaction": "7fd09fadc4334413b97e5be21b8ef3ea"
+  },
+  "remaining_budget": "USD 0.00 (carried-forward republication; no provider submission)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-16T221533Z-42db28496e3b",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "deep",
+  "updated_at": "2026-09-16T22:25:40Z"
+}

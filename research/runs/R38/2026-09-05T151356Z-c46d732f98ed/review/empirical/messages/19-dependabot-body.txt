@@ -1,0 +1,7 @@
+build(deps): bump serde_json from 1.0.140 to 1.0.145 in the cargo group
+
+Bumps the cargo group with 1 update in the / directory: [serde_json](https://github.com/serde-rs/json).
+
+Updates `serde_json` from 1.0.140 to 1.0.145
+- [Release notes](https://github.com/serde-rs/json/releases)
+- [Commits](https://github.com/serde-rs/json/compare/v1.0.140...v1.0.145)

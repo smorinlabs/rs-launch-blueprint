@@ -1,0 +1,38 @@
+== rustup 1.29.1 (d95a37b6a 2026-08-13); host Darwin 25.4.0 arm64
+== installed toolchains: stable-aarch64-apple-darwin (active, default);1.91.1-aarch64-apple-darwin;1.93.0-aarch64-apple-darwin;1.96-aarch64-apple-darwin;1.96.0-aarch64-apple-darwin;1.97.1-aarch64-apple-darwin;
+
+== C4.1 exact pins that are installed with both components: the file is honoured
+    channel="1.93.0": active=[1.93.0-aarch64-apple-darwin (overridden by 'exact-1.93.0/rust-toolchain.toml')] fmt=[rustfmt 1.8.0-stable (254b59607d 2026-01-19)] clippy=[clippy 0.1.93 (254b59607d 2026-01-19)] installed=[clippy-aarch64-apple-darwin rustfmt-aarch64-apple-darwin ]
+  PASS channel "1.93.0" + profile minimal + [rustfmt, clippy]: override active, both components present (R42's presence test passes)
+  PASS channel "1.93.0": cargo fmt --all --check exit=0
+    channel="1.96": active=[1.96-aarch64-apple-darwin (overridden by 'exact-1.96/rust-toolchain.toml')] fmt=[rustfmt 1.9.0-stable (31fca3adb2 2026-06-26)] clippy=[clippy 0.1.96 (31fca3adb2 2026-06-26)] installed=[clippy-aarch64-apple-darwin rustfmt-aarch64-apple-darwin ]
+  PASS channel "1.96" + profile minimal + [rustfmt, clippy]: override active, both components present (R42's presence test passes)
+  PASS channel "1.96": cargo fmt --all --check exit=0
+
+== C4.2 channel = "stable" resolves to whatever this machine last installed as stable
+    channel="stable": active=[stable-aarch64-apple-darwin (overridden by 'stable/rust-toolchain.toml')] rustc=[rustc 1.94.0 (4a4ef493e 2026-03-02)] fmt=[rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)]
+  PASS "stable" here is rustc 1.94.0 — four minor releases behind the 1.98.1 release (see r27-figures.log F1); the same file names a different toolchain on each machine
+
+== C4.3 the recommended value channel = "1.98.1" is not installed under rustup here
+    error: toolchain '1.98.1-aarch64-apple-darwin' is not installed
+  PASS 1.98.1 pin fails closed with RUSTUP_AUTO_INSTALL=0 (exit=1): the value itself is not exercised on this host
+
+== C4.4 PATH hazard (R42's): Homebrew's cargo-fmt ahead of the rustup proxy ignores the file
+    in a dir pinning 1.93.0 with /opt/homebrew/bin first: fmt=[rustfmt 1.9.0]; rustup still reports [1.93.0-aarch64-apple-darwin (overridden by 'exact-1.93.0/rust-toolchain.toml')]
+  PASS the pin is bypassed when a non-rustup cargo-fmt resolves first (rustup build would print 1.8.0-stable)
+
+== C4.5 does the rustfmt build change the output? (RFC 2437's promise for default options)
+    1.93.0 [rustfmt 1.8.0-stable (254b59607d 2026-01-19)]: formatted sha256 a251383e89c8906f
+    stable [rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)]: formatted sha256 a251383e89c8906f
+    1.96 [rustfmt 1.9.0-stable (31fca3adb2 2026-06-26)]: formatted sha256 a251383e89c8906f
+    homebrew [rustfmt 1.9.0]: formatted sha256 a251383e89c8906f
+  PASS byte-identical output from rustfmt 1.8.0 (two builds) and 1.9.0 (two builds) under the recommended file
+
+== C4.6 what else the channel carries: clippy's lint set, per toolchain (cargo clippy -- -W help)
+    1.93.0 [clippy 0.1.93 (254b59607d 2026-01-19)]: clippy lints=806; warn-by-default=410
+    stable [clippy 0.1.94 (4a4ef493e3 2026-03-02)]: clippy lints=811; warn-by-default=408
+    1.96 [clippy 0.1.96 (31fca3adb2 2026-06-26)]: clippy lints=819; warn-by-default=414
+    warn-by-default lints in 1.96.1 that 1.94.0 lacks: 6 — clippy::disallowed-fields clippy::manual-checked-ops clippy::manual-noop-waker clippy::manual-option-zip clippy::manual-pop-if clippy::manual-take 
+  PASS the channel changes clippy's default warn set between 1.94.0 and 1.96.1 (a -D warnings step can turn red with no repository change)
+
+== summary: 9 checks, 9 pass, 0 fail

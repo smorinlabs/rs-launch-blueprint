@@ -1,0 +1,45 @@
+{
+  "audits": {
+    "empirical": {
+      "actor": "claude",
+      "model": "claude-opus-5-5",
+      "family": "anthropic",
+      "file": "review/audit-claude.r6.md"
+    },
+    "judgment": {
+      "actor": "fable",
+      "model": "claude-opus-5-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.r6.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "review/evidence/r10-pinned-sources.sh"
+    ],
+    "cwd": "research/runs/R10/2026-09-17T020715Z-b3b67fdb5328 (r6 audit reran pinned-sources + live-figures to /tmp; pinned-sources 60/0/0 is the primary record)",
+    "exit_code": 0,
+    "output_log": "review/evidence/r10-pinned-sources.log",
+    "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew), cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) (r6 empirical audit rerun)"
+  },
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-17T020715Z-b3b67fdb5328",
+      "family": "openai",
+      "file": "raw/codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-17T020715Z-b3b67fdb5328",
+      "family": "anthropic",
+      "file": "raw/opus.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-17T020715Z-b3b67fdb5328-r6",
+    "family": "anthropic",
+    "model": "claude-opus-5-5"
+  }
+}

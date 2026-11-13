@@ -1,0 +1,58 @@
+--- review/evidence/r5-rerun-2026-09-15.log	2026-09-15 00:03:57
++++ review/evidence/audit-property-and-snapshot-testing-r5.log	2026-09-15 01:04:35
+@@ -3 +3 @@
+--- run at 2026-09-15T07:00:43Z
++-- run at 2026-09-15T08:04:03Z
+@@ -14 +14 @@
+--- run at 2026-09-15T07:00:43Z
++-- run at 2026-09-15T08:04:03Z
+@@ -23 +23 @@
+--- run at 2026-09-15T07:00:43Z
++-- run at 2026-09-15T08:04:03Z
+@@ -82 +82 @@
+--- run at 2026-09-15T07:00:56Z
++-- run at 2026-09-15T08:04:17Z
+@@ -86 +86 @@
+-  proptest: recent_downloads=47309421 downloads=187076323 reverse_deps=10515
++  proptest: recent_downloads=47309421 downloads=187076323 reverse_deps=10516
+@@ -130,2 +130,2 @@
+-  RATIO live proptest/quickcheck reverse-deps = 6.8412 -> 6.8x  (10515 / 1537)
+-  FLOOR live proptest/quickcheck reverse-deps > 5.0 : OK  (6.8412)
++  RATIO live proptest/quickcheck reverse-deps = 6.8419 -> 6.8x  (10516 / 1537)
++  FLOOR live proptest/quickcheck reverse-deps > 5.0 : OK  (6.8419)
+@@ -141 +141 @@
+--- run at 2026-09-15T07:01:06Z
++-- run at 2026-09-15T08:04:28Z
+@@ -252 +252 @@
+--- run at 2026-09-15T07:01:06Z
++-- run at 2026-09-15T08:04:29Z
+@@ -275 +275 @@
+--- run at 2026-09-15T07:01:08Z
++-- run at 2026-09-15T08:04:31Z
+@@ -325 +325 @@
+--- run at 2026-09-15T07:01:09Z
++-- run at 2026-09-15T08:04:33Z
+@@ -421 +421 @@
+--- run at 2026-09-15T07:01:10Z
++-- run at 2026-09-15T08:04:33Z
+@@ -435 +435 @@
+--- run at 2026-09-15T07:01:10Z
++-- run at 2026-09-15T08:04:34Z
+@@ -456 +456 @@
+--- run at 2026-09-15T07:01:11Z
++-- run at 2026-09-15T08:04:34Z
+@@ -472 +472 @@
+--- run at 2026-09-15T07:01:11Z
++-- run at 2026-09-15T08:04:34Z
+@@ -533 +533 @@
+--- run at 2026-09-15T07:01:11Z
++-- run at 2026-09-15T08:04:35Z
+@@ -560 +560 @@
+--- run at 2026-09-15T07:01:11Z
++-- run at 2026-09-15T08:04:35Z
+@@ -586 +586 @@
+--- run at 2026-09-15T07:01:11Z
++-- run at 2026-09-15T08:04:35Z
+@@ -598 +598 @@
+--- run at 2026-09-15T07:01:11Z
++-- run at 2026-09-15T08:04:35Z

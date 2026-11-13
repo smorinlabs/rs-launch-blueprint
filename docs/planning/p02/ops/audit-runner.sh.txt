@@ -1,0 +1,40 @@
+#!/bin/zsh
+# Serial Codex audit runner that TOLERATES APPENDS (reconstructed 2026-09-17 after a scratchpad wipe;
+# same contract as the 2026-09-13 version). Re-reads the jobs file each cycle and runs the first job
+# with no done-marker. A job is marked done ONLY when the audit produced an audit file binding the
+# decision hash. Bounded to 8 hours. Audits may run beside ONE research job (gate counts wrapper jobs).
+set -u
+SP=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad
+REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+JOBS=$SP/audit-jobs.tsv
+DONE=$SP/audit-done.txt
+FAILED=$SP/audit-failed.txt
+touch "$DONE" "$FAILED"
+[[ -f $SP/codex-audit-rN.sh ]] || { echo "FATAL: $SP/codex-audit-rN.sh is missing; refusing to run"; exit 2; }
+for cycle in {1..960}; do
+  n=$(pgrep -f "codex-research.sh|codex-audit-rN.sh" | wc -l | tr -d " "); if [[ ${n:-0} -ge 2 ]]; then sleep 30; continue; fi
+  picked=""
+  while IFS=$'\t' read -r ITEM RUN N DESC REVCTX NOTES; do
+    [[ -z "${ITEM:-}" ]] && continue
+    grep -Fxq "$ITEM r$N" "$DONE" && continue
+    grep -Fxq "$ITEM r$N" "$FAILED" && continue
+    picked="yes"
+    echo "$(date -u +%H:%M:%SZ) START $ITEM r$N"
+    zsh $SP/codex-audit-rN.sh "$ITEM" "$RUN" "$N" "$DESC" "$REVCTX" "$NOTES" > $SP/$ITEM-audit-r$N.out 2>&1
+    rc=$?
+    d=$REPO/research/runs/$ITEM/$RUN
+    want=$(shasum -a 256 "$d/review/DECISION.md" 2>/dev/null | cut -d' ' -f1)
+    got=$(sed -n 's/^decision-sha256: //p' "$d/review/audit-codex.md" 2>/dev/null | head -1)
+    if [[ $rc -eq 0 && -n "$want" && "$got" == "$want" ]]; then
+      echo "$ITEM r$N" >> "$DONE"
+      v=$(sed -n 's/^verdict: //p' "$d/review/audit-codex.md" | head -1)
+      echo "$(date -u +%H:%M:%SZ) DONE  $ITEM r$N verdict=$v"
+    else
+      echo "$ITEM r$N" >> "$FAILED"
+      echo "$(date -u +%H:%M:%SZ) FAIL  $ITEM r$N exit=$rc bound='$got' expected='$want' -- see $SP/$ITEM-audit-r$N.out"
+    fi
+    break
+  done < "$JOBS"
+  [[ -z "$picked" ]] && sleep 30
+done
+echo "$(date -u +%H:%M:%SZ) runner window ended"

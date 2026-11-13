@@ -1,0 +1,7 @@
+date-utc: 2026-09-27T00:50:58Z
+PASS M0 baseline-exit — 0
+PASS M1 mutated-exit — 1
+PASS M2 EA-1-census-ignores-later-audit — 3
+PASS M3 EA-3-exactly-the-edited-pins-fail — PA12.11 PA13.4 
+PASS M4 EA-3-failure-count — CHECK_FAILURES=2
+CHECK_FAILURES=0

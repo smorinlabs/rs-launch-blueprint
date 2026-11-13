@@ -1,0 +1,7 @@
+# R49 round-8 citation spot checks via curl
+ASSERT ok   https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/manifest.md contains A minimized `Cargo.lock` is automatically included.
+ASSERT ok   https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/commands/cargo-package.md contains generated unless the `--exclude-lockfile` flag is used
+ASSERT FAIL https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/cargo-targets.md missing corresponds to the filename of the artifact that will be generated
+ASSERT ok   https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/environment-variables.md contains CARGO_BIN_EXE_<name>
+ASSERT ok   https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/build-cache.md contains target/release/
+RESULT one or more citation assertions failed

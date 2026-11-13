@@ -1,0 +1,28 @@
+# R15 empirical check — leg=host — 2026-09-09T07:04:38Z
+# os: Darwin 25.4.0 arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+# rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) | cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+# floor: rustc 1.96.0 (ac68faa20 2026-05-25) | cargo 1.96.0 (30a34c682 2026-05-25)
+# uv: uv 0.11.29 (901092ee1 2026-07-15 aarch64-apple-darwin) | press: press 4.0.1
+# python: Python 3.13.14
+--- the three run: lines from .github/workflows/press-verify.yml
+30:        run: |
+31-          uv venv --python 3.13
+32-          uv pip sync press/requirements.txt
+33-          uv run press verify
+$ uv venv --python 3.13
+Using CPython 3.13.14
+Creating virtual environment at: .venv
+Activate with: source .venv/bin/activate
+exit=0
+$ uv pip sync press/requirements.txt
+Resolved 1 package in 1ms
+Installed 1 package in 6ms
+ + template-press==4.0.1
+exit=0
+$ uv run press verify
+verified: no identity leftovers survived the hermetic self-press (clean over the scanned set).
+exit=0
+CASE workflow-lines exit=0 expect=0
+$ git status --porcelain (.venv is ignored; tree unchanged)
+(end)

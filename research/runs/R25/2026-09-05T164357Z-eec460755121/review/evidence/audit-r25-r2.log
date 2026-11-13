@@ -1,0 +1,231 @@
+# R25 revision 2 — empirical audit rerun (2026-09-10)
+# Actor: audit-codex-2026-09-05T164357Z-eec460755121-r2
+# Model: gpt-5.6-terra
+# Scope: P02 research only. No template, release configuration, or CI workflow was created.
+
+## Environment
+
+$ limactl shell ubuntu -- bash -lc 'source $HOME/.cargo/env; rustc --version; cargo --version; command -v node || true; command -v npm || true'
+rustc 1.98.1 (48a229cea 2026-09-01)
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+
+$ command -v node; command -v npm
+/Users/stevemorin/.local/share/mise/shims/node
+/Users/stevemorin/.local/share/mise/shims/npm
+
+The Linux VM has Rust but no Node or npm on its command path. The Cargo check ran in the VM;
+the Node-dependent release-please and npm registry checks ran on macOS with isolated `/private/tmp`
+directories. The VM emitted a harmless `limactl` Rosetta-detection warning before each invocation.
+
+## Check 7 — npm registry, independently rerun
+
+$ npm view ts-launch-blueprint@0.1.1 version dist.tarball --json --cache <isolated>
+npm error code E404
+npm error 404 No match found for version 0.1.1
+{
+  "error": {
+    "code": "E404",
+    "summary": "No match found for version 0.1.1"
+  }
+}
+exit=1
+
+$ npm view ts-launch-blueprint versions --json --cache <isolated>
+[
+  "0.0.1",
+  "0.1.3"
+]
+exit=0
+
+$ curl -fsSL https://registry.npmjs.org/ts-launch-blueprint | node <field extractor>
+{
+  "name": "ts-launch-blueprint",
+  "versions": ["0.0.1", "0.1.3"],
+  "latest": "0.1.3",
+  "time": {
+    "0.0.1": "2026-07-21T13:49:58.319Z",
+    "0.1.3": "2026-07-22T03:40:53.945Z"
+  },
+  "zero": {
+    "0.0.1": {"repository": null, "publisher": "smorin"},
+    "0.1.3": {
+      "repository": {"type": "git", "url": "git+https://github.com/smorinlabs/ts-launch-blueprint.git"},
+      "publisher": "GitHub Actions"
+    }
+  }
+}
+exit=0
+
+Reading: the current npm packument establishes registry publications `0.0.1` and `0.1.3` only.
+It independently confirms that `0.1.0`, `0.1.1`, and `0.1.2` are not registry versions; it does not
+turn a Git commit or tag into a publication.
+
+## TypeScript history and correction-capture integrity
+
+$ git -C /Users/stevemorin/c/ts-launch-blueprint log --oneline --all -- .release-please-manifest.json
+bdffd16 chore(release): publish v0.1.4
+0e6a3d7 chore(release): publish v0.1.3
+1ec682f chore(release): publish v0.1.2
+bdc7567 chore(release): publish v0.1.1
+19ff9b5 feat: add release-please + npm publish pipeline
+
+$ git -C /Users/stevemorin/c/ts-launch-blueprint tag --list | sort -V
+ts-launch-blueprint-v0.1.1
+v0.1.2
+v0.1.3
+
+$ git diff --no-ext-diff c5c6318^ c5c6318 -- review/evidence/registry-and-source-repos.log
+@@ -58,3 +58,20 @@
+   Reading: py adopted release-please already at 1.0.0, so both pre-major flags would have been unreachable code there.
++
++############################################################################
++# CORRECTION APPENDED 2026-09-10 (revision 2). The line above that reads
++#   "Reading: ts seeded the manifest at 0.1.0 and its FIRST release-please release was v0.1.1
++#    — 0.1.0 was never published."
++# overstates what the commands in this log show. `git log` on .release-please-manifest.json
++# establishes a RELEASE COMMIT (bdc7567). It does not establish a Git tag and it does not
++# establish a registry publication.
++# ...
++# The original capture above is left byte-for-byte intact; nothing in it is rewritten.
++############################################################################
+
+Reading: the revision-2 commit appends 17 lines after the original final line; it does not alter
+the original capture's bytes. The history command proves the release commit, the tag command proves
+the listed tags, and the npm check separately proves registry contents.
+
+## Pinned release-please source and flag correction
+
+$ for file in schemas/config.json src/versioning-strategies/default.ts src/strategies/rust.ts src/strategies/base.ts src/manifest.ts docs/manifest-releaser.md; do curl -sS -o <tmp> -w '%{http_code}\n' https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/$file; done
+schemas/config.json 200
+src/versioning-strategies/default.ts 200
+src/strategies/rust.ts 200
+src/strategies/base.ts 200
+src/manifest.ts 200
+docs/manifest-releaser.md 200
+
+$ node <source assertions>
+bump-minor-pre-major: Breaking changes only bump semver minor if version < 1.0.0
+bump-patch-for-minor-pre-major: Feature changes only bump semver patch if version < 1.0.0
+base latest branch: true
+base empty branch: true
+manifest backfill: true
+manifest uses releasedVersions: true
+docs calls seed last-released: true
+breaking flag branch: true
+feature flag branch: true
+
+$ sed -n '128,138p' <v17.11.2/src/strategies/rust.ts>
+  protected initialReleaseVersion(): Version {
+    return Version.parse('0.1.0');
+  }
+
+$ sed -n '708,724p' <v17.11.2/src/manifest.ts>
+    // backfill latest release tags from manifest
+    for (const path in this.repositoryConfig) {
+      const latestRelease = releasesByPath[path];
+      if (
+        !latestRelease &&
+        this.releasedVersions[path] &&
+        this.releasedVersions[path].toString() !== '0.0.0'
+      ) {
+        const version = this.releasedVersions[path];
+
+Reading: at the pinned tool version, `bump-minor-pre-major` governs breaking commits and
+`bump-patch-for-minor-pre-major` governs feature commits. This confirms that the binding prompt
+reverses the flags and that DECISION.md corrects it accurately. `BaseStrategy.buildNewVersion`
+bumps a latest release but otherwise returns `initialReleaseVersion`; Rust returns `0.1.0`; and
+Manifest treats a present manifest entry as a prior released version. Those source facts, not the
+TypeScript registry history, support the empty-manifest recommendation. The first real Release PR
+remains explicitly unproven and assigned to P03.
+
+## Release-please arithmetic rerun
+
+$ npm --prefix <isolated>/probe --cache <isolated>/npmcache install release-please@17.11.2
+added 162 packages in 6s
+
+$ node <probe importing release-please/build/src/versioning-strategies/default and version>
+both { fix: '0.1.4', feat: '0.1.4', breaking: '0.2.0' }
+minor_only { fix: '0.1.4', feat: '0.2.0', breaking: '0.2.0' }
+patch_only { fix: '0.1.4', feat: '0.1.4', breaking: '1.0.0' }
+neither { fix: '0.1.4', feat: '0.2.0', breaking: '1.0.0' }
+post1 { fix: '1.0.1', feat: '1.1.0', breaking: '2.0.0' }
+exit=0
+
+Reading: the fresh package probe matches the decision's table at `0.1.3` and `1.0.0`.
+
+## Cargo resolver rerun in the Linux VM
+
+$ source $HOME/.cargo/env; cargo new --lib --vcs none probe-lib; cargo new --bin --vcs none probe-bin
+[package]
+name = "probe-lib"
+version = "0.1.0"
+edition = "2024"
+[package]
+name = "probe-bin"
+version = "0.1.0"
+edition = "2024"
+
+$ cargo generate-lockfile  # bitflags = "0.9.0"
+Adding bitflags v0.9.1 (available: v2.13.2)
+
+$ cargo generate-lockfile  # bitflags = "1.0.0"
+Adding bitflags v1.3.2 (available: v2.13.2)
+
+$ cargo generate-lockfile  # axum = { version = "0.7.0", default-features = false }
+Adding axum v0.7.9 (available: v0.8.9)
+exit=0
+
+The first three throwaway resolver manifests lacked a target and Cargo correctly rejected them.
+After adding `src/lib.rs` to each throwaway package, the recorded `cargo generate-lockfile` checks
+above exited 0. This fixture correction is outside the repository and does not change the observed
+resolver result.
+
+## Citation spot check
+
+$ curl -sSL -o /dev/null -w '%{http_code} %{url_effective}\n' <each source>
+200 https://doc.rust-lang.org/cargo/reference/semver.html
+200 https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+200 https://semver.org/
+200 https://raw.githubusercontent.com/rust-lang/api-guidelines/master/src/necessities.md
+200 https://raw.githubusercontent.com/release-plz/release-plz/main/website/docs/config.md
+
+$ curl -sSL https://raw.githubusercontent.com/release-plz/release-plz/main/website/docs/config.md | rg -n -C 2 'features_always_increment_minor|violates the Cargo SemVer|0\\.x\\.y'
+252:#### The `features_always_increment_minor` field
+254:- If `true`, feature commits will always bump the minor version, even in 0.x releases.
+258:This option violates the Cargo SemVer
+260:`0.x` to `0.(x+1)` is used for breaking changes.
+261:Instead, new features for `0.x` should bump the version from `0.x.y` to `0.x.(y+1)`.
+
+## Ownership and result
+
+$ rg -n -C 2 'R25|semver-bump-strategy' inputs/parameters.json inputs/PARAMETERS.md inputs/prompt.md
+inputs/prompt.md:18:- id: R25
+inputs/prompt.md:19:- owns:
+inputs/prompt.md:20:- consumes:
+
+$ shasum -a 256 review/DECISION.md
+9dfb724a0c4a90b5cea05fbd387ddaa79da8428bf3aaffbd0f61180d6b256c14  review/DECISION.md
+
+Result before the vocabulary-actor check: revision 2's registry correction, source-grounded
+recommendation, flag correction, and parameter statement match the cited evidence. R25 owns no
+parameter. Its recommendation is research-only and intentionally leaves end-to-end proof to P03.
+
+## Vocabulary actor check
+
+$ curl -sS https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/README.md | sed -n '10,40p'
+It does so by parsing your git history, looking for Conventional Commit messages, and creating release PRs.
+...
+These Release PRs are kept up-to-date as additional work is merged. When you're ready to tag a
+release, simply merge the release PR.
+
+When the Release PR is merged, release-please takes the following steps:
+1. Updates your changelog file, along with other language specific files.
+2. Tags the commit with the version number.
+3. Creates a GitHub Release based on the tag.
+
+Reading: this contradicts DECISION.md's vocabulary definition that a release commit is a
+`chore(release): ...` commit that “release-please merges to the default branch.” Release-please
+creates and maintains the Release PR; a repository actor merges it. The definition must say that
+the release commit is generated in a Release PR and merged to the default branch, without assigning
+the merge to release-please. The adjacent claim that release-please “decides the first two” events
+should likewise distinguish its PR/tag/release automation from the repository's merge action.

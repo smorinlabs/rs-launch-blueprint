@@ -1,0 +1,47 @@
+{
+ "operation_id": "research-20260909-003302-e378b7e82207409d",
+ "kind": "bundle",
+ "providers": {
+  "openai": {
+   "saved_file": "doxa/research-outputs/2026-09-09_003302_all_deep_research_openai_deep-research-prompt-cli-parsing-framework-r60-bun.md",
+   "model": "gpt-5.6-sol",
+   "changes": [],
+   "normalized": "doxa-openai.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "perplexity": {
+   "saved_file": "doxa/research-outputs/2026-09-09_003302_all_deep_research_perplexity_deep-research-prompt-cli-parsing-framework-r60-bun.md",
+   "model": "sonar-deep-research",
+   "changes": [
+    "'### Principles and Implementation' -> '### Principles and implementation' (case)",
+    "'### Migration Implications' -> '### Migration implications' (case)",
+    "'### Validation Strategy' -> '### Validation strategy' (case)",
+    "'### Confidence & Re-verify Trigger' -> '### Confidence & re-verify trigger' (case)",
+    "'### CLI Surface Shape: Noun\u2013Verb Subcommand Groups' (not a template field) -> bold",
+    "'### Global Options and Stackability' (not a template field) -> bold",
+    "'### Extended `--version` Output' (not a template field) -> bold",
+    "'### Completion Command via clap_complete' (not a template field) -> bold",
+    "'### Did-You-Mean Matching' (not a template field) -> bold"
+   ],
+   "normalized": "doxa-perplexity.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "gemini": {
+   "saved_file": "doxa/research-outputs/2026-09-09_003302_all_deep_research_gemini_deep-research-prompt-cli-parsing-framework-r60-bun.md",
+   "model": "deep-research-preview-04-2026",
+   "changes": [],
+   "normalized": "doxa-gemini.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  }
+ },
+ "regrouped": {
+  "file": "doxa.normalized.md",
+  "shape": "OK: validation passed"
+ }
+}

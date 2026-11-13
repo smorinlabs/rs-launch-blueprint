@@ -1,0 +1,108 @@
+{
+ "openai": {
+  "status": "completed",
+  "model": "gpt-5.6-sol",
+  "created_at": 1789616770,
+  "completed_at": 1789617475,
+  "usage": {
+   "input_tokens": 144543,
+   "input_tokens_details": {
+    "cache_write_tokens": 3255,
+    "cached_tokens": 4261
+   },
+   "output_tokens": 51280,
+   "output_tokens_details": {
+    "reasoning_tokens": 36871
+   },
+   "total_tokens": 195823
+  },
+  "reasoning": {
+   "context": "all_turns",
+   "effort": "max",
+   "mode": "standard",
+   "summary": "detailed"
+  },
+  "output_item_types": {
+   "reasoning": 95,
+   "web_search_call": 34,
+   "message": 1
+  },
+  "list_price_usd_estimate": 1.9438
+ },
+ "perplexity": {
+  "status": "COMPLETED",
+  "model": "sonar-deep-research",
+  "created_at": 1789616771,
+  "started_at": 1789616771,
+  "completed_at": 1789617133,
+  "usage": {
+   "prompt_tokens": 3276,
+   "completion_tokens": 16702,
+   "total_tokens": 19978,
+   "search_context_size": null,
+   "citation_tokens": 7078,
+   "num_search_queries": 90,
+   "reasoning_tokens": 205103,
+   "cost": {
+    "input_tokens_cost": 0.00655,
+    "output_tokens_cost": 0.13362,
+    "reasoning_tokens_cost": 0.61531,
+    "request_cost": null,
+    "citation_tokens_cost": 0.01416,
+    "search_queries_cost": 0.45,
+    "total_cost": 1.21963
+   }
+  },
+  "n_citations": 20,
+  "finish_reason": "stop",
+  "list_price_usd_estimate": 1.21963
+ },
+ "gemini": {
+  "status": "completed",
+  "agent": "deep-research-preview-04-2026",
+  "created": "2026-09-17T03:46:12Z",
+  "updated": "2026-09-17T03:46:12Z",
+  "n_steps": 3,
+  "usage": {
+   "cached_tokens_by_modality": [
+    {
+     "modality": "text",
+     "tokens": 94208
+    }
+   ],
+   "grounding_tool_count": [
+    {
+     "count": 54,
+     "type": "google_search"
+    }
+   ],
+   "input_tokens_by_modality": [
+    {
+     "modality": "text",
+     "tokens": 1141837
+    },
+    {
+     "modality": "image",
+     "tokens": 1073
+    }
+   ],
+   "output_tokens_by_modality": [
+    {
+     "modality": "image",
+     "tokens": 1120
+    },
+    {
+     "modality": "text",
+     "tokens": 29242
+    }
+   ],
+   "total_cached_tokens": 94208,
+   "total_input_tokens": 1142910,
+   "total_output_tokens": 30362,
+   "total_thought_tokens": 34552,
+   "total_tokens": 1365587,
+   "total_tool_use_tokens": 157763
+  },
+  "list_price_usd_estimate": "flat USD 1-6 (Gemini Deep Research is not priced per token in the published list)"
+ }
+}

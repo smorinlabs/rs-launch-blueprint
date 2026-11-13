@@ -1,0 +1,9 @@
+decision sha256: 0fc0ed8a9c4a6daac900e23524c1c3ba0ef1707aeb44833c0ca2b2b57eb4cf4c
+R69 paths changed by revision-5 commit 704231c:
+retained r4 artifact hashes (parent/current):
+5a5d8b89006001ee584e9d124c2b1e1e9c800e122d837df919e46d3005828965  -
+5a5d8b89006001ee584e9d124c2b1e1e9c800e122d837df919e46d3005828965  review/evidence/feature-shape-check-r4.sh
+f9bec8b0ea550e0a176eecdf201c18bd6bd3cdf94e366f952785d106ccfb555d  -
+f9bec8b0ea550e0a176eecdf201c18bd6bd3cdf94e366f952785d106ccfb555d  review/evidence/feature-shape-check-r4.log
+feature-shape-r4 retained byte-identical: yes
+shellcheck with directive:

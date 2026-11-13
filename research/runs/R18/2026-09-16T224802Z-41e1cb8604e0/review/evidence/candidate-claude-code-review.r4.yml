@@ -1,0 +1,102 @@
+# LINT FIXTURE ONLY — not a shipped workflow. Revision 4 of the review-lane
+# candidate. P02 is research; P03 builds the template. This file exists so
+# `actionlint` can decide whether the revision-4 configuration in
+# review/DECISION.md is syntactically valid. It deliberately lives under
+# research/runs/.../review/evidence/, never under .github/workflows/, so GitHub
+# Actions never loads it. The revision-2 and revision-3 fixtures
+# (candidate-claude-code-review.yml, .r3.yml) are left byte-for-byte as they
+# were linted and audited.
+#
+# CHANGE FROM REVISION 3 — the `plugin_marketplaces` and `plugins` inputs are
+# removed. Revision 3 passed
+#   plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
+#   plugins: 'code-review@claude-code-plugins'
+# which made this lane's actual review instructions unpinnable. Read at
+# v1.0.220 (action-entrypoint-plugins-v1.0.220.log, E5–E7):
+#   * base-action/src/install-plugins.ts:7-8 anchors a marketplace URL to end in
+#     '.git', so no ref, tag, commit or fragment can be expressed — the URL is
+#     structurally unpinnable, and `claude plugin marketplace add` therefore
+#     clones whatever anthropics/claude-code@main holds at run time.
+#   * The marketplace name 'claude-code-plugins' and the plugin list are
+#     themselves defined by that remote content
+#     (anthropics/claude-code@main/.claude-plugin/marketplace.json).
+#   * base-action/src/index.ts:36 runs the clone AFTER setupWorkloadIdentity()
+#     at :18, i.e. inside the job that already holds the Anthropic credential
+#     and id-token: write.
+#   * Neither the maintainer's own .github/workflows/claude-review.yml nor
+#     examples/pr-review-comprehensive.yml uses a marketplace. The maintainer
+#     runs `prompt: "/review-pr …"`, a command file in the action's own tree at
+#     .claude/commands/review-pr.md, pinned with the checkout.
+# Pinning the action to v1.0.220 pinned nothing about what this lane executed.
+# The replacement below follows the maintainer's own form: the review prompt
+# becomes a template artifact, versioned and reviewed like the workflow itself.
+# COST, stated because it is real: the template owner now authors and maintains
+# .claude/commands/review-pr.md instead of inheriting a maintained upstream
+# plugin. P03 must write that file; this fixture only proves the YAML is legal.
+#
+# WHAT AN ADOPTER MUST UNDERSTAND BEFORE SETTING ENABLE_CLAUDE_REVIEW:
+#   1. Enabling this lane on a PUBLIC repository accepts a residual that no
+#      configuration in this file removes. A pull-request diff written by a
+#      write-access author is trusted-author content that routinely quotes
+#      untrusted text; nothing here distinguishes the two.
+#   2. Once this job starts, src/entrypoints/prepare.ts:37 calls
+#      setupGitHubToken(), which exchanges the workflow's OIDC token for a
+#      Claude GitHub App installation token at
+#      https://api.anthropic.com/api/github/github-app-token-exchange
+#      (src/github/token.ts:121) BEFORE checkWritePermissions runs at :44 and
+#      before checkHumanActor runs in either mode. Job-level `if:` is the only
+#      control that acts before that.
+#   3. CLAUDE_CODE_SUBPROCESS_ENV_SCRUB is INACTIVE here: action.yml:301 emits
+#      it only when allowed_non_write_users is non-empty, which this
+#      configuration deliberately leaves at "".
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  claude-review:
+    # `vars` is one of the four contexts available to jobs.<job_id>.if
+    # (github, needs, vars, inputs); `secrets` is not. The intended effect of
+    # an unset variable is a SKIPPED job rather than a failed one; that runtime
+    # outcome is U2 in review/DECISION.md and is unproven by this research.
+    #
+    # `draft == false` (revision 3): without it, a pull request opened as a
+    # draft and later marked ready fires `opened` and then `ready_for_review`,
+    # i.e. two paid agent sessions for one pull request. Reasoned from the
+    # documented pull_request activity-type set; no run executed — U11.
+    if: >-
+      vars.ENABLE_CLAUDE_REVIEW == 'true'
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.pull_request.draft == false
+      && github.event.pull_request.user.type != 'Bot'
+      && github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      # NOTE (recorded, not fixed here): on a `pull_request` event GITHUB_REF is
+      # `refs/pull/<n>/merge` and `actions/checkout` uses GITHUB_REF by default,
+      # so this checks out the MERGE branch — which contains pull-request head
+      # content — into the workspace root. The action's own docs/security.md at
+      # v1.0.220 annotates the same pattern as "no `ref:` → base branch", which
+      # is wrong for this event. The fork guard above bounds the exposure to
+      # branches pushed by a write-access author. See U13.
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1.0.220
+        with:
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          # Resolves from the template's own .claude/commands/review-pr.md,
+          # which P03 must author. No marketplace, no run-time plugin fetch.
+          prompt: '/review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}'

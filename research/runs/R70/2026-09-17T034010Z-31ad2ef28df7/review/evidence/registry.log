@@ -1,0 +1,87 @@
+=== R70 registry re-verification ===
+host date (UTC): 2026-09-18
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+python3: Python 3.14.7
+
+--- 1. crates.io: problem_details (the recommended envelope crate)
+PASS  crates.io /crates/problem_details HTTP == 200
+PASS  problem_details max_stable_version == 0.10.0
+PASS  crates.io /crates/problem_details/versions HTTP == 200
+PASS  problem_details newest non-yanked num == 0.10.0
+PASS  problem_details 0.10.0 created_at (second precision) == 2026-08-16T14:36:14
+PASS  problem_details 0.10.0 rust_version (gate 2) == 1.85
+PASS  crates.io /problem_details/0.10.0/dependencies HTTP == 200
+PASS  problem_details 0.10.0 non-optional normal deps == http
+PASS  problem_details 0.10.0 optional deps (frameworks and encoders, gated by feature) == actix-web,axum,http-serde,poem,quick-xml,serde,serde_json,utoipa
+PASS  problem_details 0.10.0 axum req (does not widen R69 features) == ^0.8|false|json
+
+--- 2. crates.io: the rest of the category
+PASS  crates.io /crates/problemdetails/versions HTTP == 200
+PASS  crates.io /crates/http-api-problem/versions HTTP == 200
+PASS  crates.io /crates/http-problem/versions HTTP == 200
+PASS  crates.io /crates/rfc7807/versions HTTP == 200
+PASS  http-api-problem: versions declaring rust_version (gate 2 exclusion) == 0
+PASS  http-api-problem newest non-yanked num == 0.60.0
+PASS  http-problem: versions declaring rust_version (gate 2 exclusion) == 0
+PASS  problemdetails newest non-yanked rust_version (runner-up, gate 2) == 1.85.1
+PASS  crates.io /http-problem/0.3.0/dependencies HTTP == 200
+PASS  http-problem 0.3.0 requires an http 0.x (cannot join an http 1.5 tree) == ^0.2.8
+PASS  http-problem 0.3.0 axum req == ^0.6
+
+--- 3. MSRV floor: the current stable channel
+PASS  static.rust-lang.org stable channel HTTP == 200
+PASS  current stable minor == 1.98
+PASS  stable-minus-2 MSRV floor == 1.96
+
+--- 4. RustSec: advisories (gate 3)
+PASS  rustsec.org/packages/problem_details.html (404 == no advisory) == 404
+PASS  rustsec.org/packages/problemdetails.html (404 == no advisory) == 404
+PASS  rustsec.org/packages/http-api-problem.html (404 == no advisory) == 404
+PASS  rustsec.org/packages/http-problem.html (404 == no advisory) == 404
+PASS  rustsec.org/packages/http-serde.html (404 == no advisory) == 404
+PASS  rustsec.org/packages/http.html (has advisories) == 200
+PASS  http advisory RUSTSEC-2019-0033 listed
+PASS  http advisory RUSTSEC-2019-0034 listed
+PASS  RUSTSEC-2019-0033 patched_versions = [">= 0.1.20"] (http 1.5.0 unaffected)
+
+--- 5. RFC 9457 and its IANA registration (the standard this item adopts)
+PASS  datatracker rfc9457 doc.json HTTP == 200
+PASS  RFC 9457 std_level == Proposed Standard
+PASS  RFC 9457 stream == IETF
+PASS  RFC 9457 title == Problem Details for HTTP APIs
+PASS  rfc-editor rfc9457.txt HTTP == 200
+PASS  RFC 9457 3.1.1: an absent "type" has the value "about:blank" (omission conformant)
+PASS  RFC 9457 3.2: a problem type MAY extend the object with additional members
+PASS  RFC 9457 3.2: names an "errors" extension by example (the field-error carrier)
+PASS  RFC 9457 section 3.1.1 is the "type" member
+PASS  RFC 9457 section 3.1.2 is the "status" member
+PASS  RFC 9457 section 3.1.3 is the "title" member
+PASS  RFC 9457 section 3.1.4 is the "detail" member
+PASS  RFC 9457 section 3.1.5 is the "instance" member
+PASS  IANA application media types CSV HTTP == 200
+PASS  IANA registers problem+json,application/problem+json
+PASS  IANA registers problem+xml,application/problem+xml
+PASS  IANA problem+json cites RFC9457
+
+--- 6. RFC 9110: the two header obligations the funnel must not drop
+PASS  rfc-editor rfc9110.txt HTTP == 200
+PASS  RFC 9110 15.5.2: a 401 MUST send WWW-Authenticate with at least one challenge
+PASS  RFC 9110 15.5.6: an origin server MUST generate Allow in a 405
+PASS  RFC 9110 15.5.2: rejected credentials are a 401 (the RSLB402 row)
+PASS  RFC 9110 15.5.4: 403 is for credentials the server considers insufficient (no such catalog code yet)
+PASS  rfc9110.txt line 7548 == 15.5.2.  401 Unauthorized
+PASS  rfc9110.txt line 7569 == 15.5.4.  403 Forbidden
+PASS  rfc9110.txt line 7601 == 15.5.6.  405 Method Not Allowed
+
+--- 7. GitHub REST (keyring gh; one call per 20 s)
+PASS  problem-details-rs archived (gate: not abandoned) == False
+PASS  problem-details-rs default_branch == main
+PASS  search/issues open-issue count retrieved (moving figure -> registry-figures.log)
+PASS  divviup/janus Cargo.toml declares http-api-problem (http-api-problem = "0.60.0")
+PASS  oxidecomputer/dropshot: HttpErrorResponseBody present and no problem+json (bespoke body)
+PASS  problem-details-rs CI runs ubuntu-latest and has NO macOS runner (gate 4 gap, as reported)
+PASS  problem-details-rs CI pins an MSRV job at 1.85
+
+=== summary ===
+PASS 65  FAIL 0  SKIP 0  TOTAL 65

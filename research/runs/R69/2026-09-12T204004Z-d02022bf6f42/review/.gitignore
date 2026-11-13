@@ -1,0 +1,12 @@
+# R69 review artefacts that are regenerated, never committed.
+#
+# sources/  - upstream files read at an immutable version, tag or commit.
+#             Third-party source, and bacon 3.25.0 is AGPL-3.0: the owner's
+#             2026-09-12 licence ruling does NOT touch the rule against
+#             committing third-party copyleft files into this repository.
+#             assert-figures.sh re-fetches them automatically.
+# target/   - cargo build output from the empirical probes.
+# toolcheck/- the scratch --root that bacon-install-check.sh installs into.
+evidence/sources/
+empirical/toolcheck/
+empirical/*/target/

@@ -1,0 +1,16 @@
+17c17
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.46s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.67s
+36c36
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.68s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+53c53
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.50s
+74c74
+< test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+---
+> test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

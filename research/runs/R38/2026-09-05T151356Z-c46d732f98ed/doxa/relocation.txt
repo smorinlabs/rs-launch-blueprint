@@ -1,0 +1,4 @@
+Relocated 2026-09-09T05:52:51Z by the controller from research-outputs/ (Doxa 3.3.0 'resume' writes to [paths].base_output_dir because the checkpoint does not persist the submission's --output-dir; checkpoint output_paths still name the old locations). Bytes unchanged; sha256 before the move:
+62cd3e1134e295b0690bacc3e6337630951901933c771de0e35872a0e96e19e6  research-outputs/2026-09-08_223857_all_deep_research_gemini_deep-research-prompt-commit-message-linter-r38-cra.md
+67639d29963a2096e7fe06bc64ba1e11730676d0d7f384f6123e6415df423c8a  research-outputs/2026-09-08_223857_all_deep_research_openai_deep-research-prompt-commit-message-linter-r38-cra.md
+2566089454d27cce530cd48e2a1df1d2c098e4adab208e627baf4e4e7be86c02  research-outputs/2026-09-08_223857_all_deep_research_perplexity_deep-research-prompt-commit-message-linter-r38-cra.md

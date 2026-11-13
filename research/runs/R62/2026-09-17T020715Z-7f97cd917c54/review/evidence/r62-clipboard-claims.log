@@ -1,0 +1,379 @@
+
+
+========== 0. Run header, toolchain, and what this script does not do ==========
+Run started (UTC): 2026-09-17T05:31:36Z
+Item            : R62 clipboard-integration (bundle, Focused), revision 1
+Run directory   : research/runs/R62/2026-09-17T020715Z-7f97cd917c54
+Repository root : /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+Scratch (removed on exit): /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r62-evidence.R6Mtlx
+rustc           : rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo           : cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+OS              : Darwin 25.4.0 arm64
+curl            : curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+grep (absolute) : grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+gh              : gh version 2.98.0 (2026-08-20)
+
+Nothing is implemented here. The template does not exist; P03 builds it.
+GitHub reads use the authenticated gh CLI; no token and no environment
+is printed by this script.
+
+
+========== 1. crates.io registry figures (spec 7.6 table rows 1-3) ==========
+
+--- crates.io: arboard ---
+[HTTP 200] https://crates.io/api/v1/crates/arboard
+[A1arboard PASS] crates.io metadata endpoint status for arboard = 200
+FIGURE arboard.recent_downloads = 12957229  [endpoint https://crates.io/api/v1/crates/arboard (.crate.recent_downloads), retrieved 2026-09-17]
+FIGURE arboard.downloads = 46174781  [endpoint https://crates.io/api/v1/crates/arboard (.crate.downloads), retrieved 2026-09-17]
+[HTTP 200] https://crates.io/api/v1/crates/arboard/versions
+[A2arboard PASS] crates.io versions endpoint status for arboard = 200
+FIGURE arboard.newest_unyanked = 3.6.1 (2025-08-23T20:19:03.127566Z)  [endpoint https://crates.io/api/v1/crates/arboard/versions (newest yanked:false), retrieved 2026-09-17]
+
+--- crates.io: copypasta ---
+[HTTP 200] https://crates.io/api/v1/crates/copypasta
+[A1copypasta PASS] crates.io metadata endpoint status for copypasta = 200
+FIGURE copypasta.recent_downloads = 857282  [endpoint https://crates.io/api/v1/crates/copypasta (.crate.recent_downloads), retrieved 2026-09-17]
+FIGURE copypasta.downloads = 5559318  [endpoint https://crates.io/api/v1/crates/copypasta (.crate.downloads), retrieved 2026-09-17]
+[HTTP 200] https://crates.io/api/v1/crates/copypasta/versions
+[A2copypasta PASS] crates.io versions endpoint status for copypasta = 200
+FIGURE copypasta.newest_unyanked = 0.10.2 (2025-04-25T12:50:12.246082Z)  [endpoint https://crates.io/api/v1/crates/copypasta/versions (newest yanked:false), retrieved 2026-09-17]
+
+--- crates.io: clipboard-rs ---
+[HTTP 200] https://crates.io/api/v1/crates/clipboard-rs
+[A1clipboard-rs PASS] crates.io metadata endpoint status for clipboard-rs = 200
+FIGURE clipboard-rs.recent_downloads = 284058  [endpoint https://crates.io/api/v1/crates/clipboard-rs (.crate.recent_downloads), retrieved 2026-09-17]
+FIGURE clipboard-rs.downloads = 475548  [endpoint https://crates.io/api/v1/crates/clipboard-rs (.crate.downloads), retrieved 2026-09-17]
+[HTTP 200] https://crates.io/api/v1/crates/clipboard-rs/versions
+[A2clipboard-rs PASS] crates.io versions endpoint status for clipboard-rs = 200
+FIGURE clipboard-rs.newest_unyanked = 0.3.5 (2026-06-30T07:27:08.167875Z)  [endpoint https://crates.io/api/v1/crates/clipboard-rs/versions (newest yanked:false), retrieved 2026-09-17]
+
+--- arboard 3.6.1 exists, is not yanked, and declares its licence and MSRV floor ---
+[A01 PASS] arboard 3.6.1 present in the versions endpoint = 1
+[A02 PASS] arboard 3.6.1 yanked = false
+[A03 PASS] arboard 3.6.1 declared licence = MIT OR Apache-2.0
+[A04 PASS] arboard 3.6.1 declared rust-version = 1.71.0
+[A05 PASS] arboard 3.6.1 declared edition (a 2021 crate links into a 2024 workspace; editions are per-crate) = 2021
+
+
+========== 2. GitHub repository figures (spec 7.6 table rows 4-6) ==========
+
+--- GitHub: 1Password/arboard ---
+FIGURE 1Password/arboard.stargazers_count = 967  [endpoint https://api.github.com/repos/1Password/arboard (.stargazers_count), retrieved 2026-09-17]
+FIGURE 1Password/arboard.pushed_at = 2026-09-16T16:54:50Z  [endpoint https://api.github.com/repos/1Password/arboard (.pushed_at), retrieved 2026-09-17]
+[A3arboard PASS] 1Password/arboard .archived = false
+FIGURE 1Password/arboard.open_issues = 19  [endpoint https://api.github.com/search/issues?q=repo:1Password/arboard+is:issue+is:open (.total_count, never .open_issues_count), retrieved 2026-09-17]
+
+--- GitHub: alacritty/copypasta ---
+FIGURE alacritty/copypasta.stargazers_count = 350  [endpoint https://api.github.com/repos/alacritty/copypasta (.stargazers_count), retrieved 2026-09-17]
+FIGURE alacritty/copypasta.pushed_at = 2025-05-09T16:33:48Z  [endpoint https://api.github.com/repos/alacritty/copypasta (.pushed_at), retrieved 2026-09-17]
+[A3copypasta PASS] alacritty/copypasta .archived = false
+FIGURE alacritty/copypasta.open_issues = 5  [endpoint https://api.github.com/search/issues?q=repo:alacritty/copypasta+is:issue+is:open (.total_count, never .open_issues_count), retrieved 2026-09-17]
+
+--- GitHub: ChurchTao/clipboard-rs ---
+FIGURE ChurchTao/clipboard-rs.stargazers_count = 180  [endpoint https://api.github.com/repos/ChurchTao/clipboard-rs (.stargazers_count), retrieved 2026-09-17]
+FIGURE ChurchTao/clipboard-rs.pushed_at = 2026-06-30T07:29:02Z  [endpoint https://api.github.com/repos/ChurchTao/clipboard-rs (.pushed_at), retrieved 2026-09-17]
+[A3clipboard-rs PASS] ChurchTao/clipboard-rs .archived = false
+FIGURE ChurchTao/clipboard-rs.open_issues = 5  [endpoint https://api.github.com/search/issues?q=repo:ChurchTao/clipboard-rs+is:issue+is:open (.total_count, never .open_issues_count), retrieved 2026-09-17]
+
+
+========== 3. RustSec advisory status, with the paired positive control ==========
+A bare 404 proves nothing on its own. It is zero-advisory evidence only
+because the SAME endpoint returns 200 for anyhow, whose page is backed by
+RUSTSEC-2026-0190, and because the advisory-db contents API agrees
+independently. This is R67 Empirical row E4 applied to this item.
+
+[HTTP 404] https://rustsec.org/packages/arboard.html
+[HTTP 404] https://rustsec.org/packages/copypasta.html
+[HTTP 404] https://rustsec.org/packages/clipboard-rs.html
+[HTTP 200] https://rustsec.org/packages/anyhow.html
+[A06 PASS] rustsec.org package page for arboard = 404
+[A07 PASS] rustsec.org package page for copypasta = 404
+[A08 PASS] rustsec.org package page for clipboard-rs = 404
+[A09 PASS] rustsec.org package page for anyhow (POSITIVE CONTROL — the endpoint works) = 200
+[A10 PASS] advisory-db lists 1 advisory file(s) under crates/anyhow (POSITIVE CONTROL — the API works)
+[A11arboard PASS] advisory-db has no crates/arboard directory (paired with the anyhow control above)
+[A11copypasta PASS] advisory-db has no crates/copypasta directory (paired with the anyhow control above)
+[A11clipboard-rs PASS] advisory-db has no crates/clipboard-rs directory (paired with the anyhow control above)
+
+
+========== 4. arboard at tag v3.6.1 — the source behind every behavioural claim ==========
+A tag is immutable, so every read in this section is reproducible.
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/Cargo.toml
+[A4f1 PASS] arboard v3.6.1 Cargo.toml fetched = 200
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/README.md
+[A4f2 PASS] arboard v3.6.1 README.md fetched = 200
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/lib.rs
+[A4f3 PASS] arboard v3.6.1 src/lib.rs fetched = 200
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/common.rs
+[A4f4 PASS] arboard v3.6.1 src/common.rs fetched = 200
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/platform/linux/mod.rs
+[A4f5 PASS] arboard v3.6.1 src/platform/linux/mod.rs fetched = 200
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/platform/linux/x11.rs
+[A4f6 PASS] arboard v3.6.1 src/platform/linux/x11.rs fetched = 200
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/platform/linux/wayland.rs
+[A4f7 PASS] arboard v3.6.1 src/platform/linux/wayland.rs fetched = 200
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/.github/workflows/test.yml
+[A4f8 PASS] arboard v3.6.1 .github/workflows/test.yml fetched = 200
+
+--- 4a. Manifest: licence, MSRV, features, and where each backend comes from ---
+[A12 PASS] arboard declares MIT OR Apache-2.0 (gate 1 is inapplicable by owner ruling 2026-09-12 Q7.B; recorded, not used to exclude)
+[A13 PASS] arboard declares rust-version 1.71.0
+[A14 PASS] arboard's DEFAULT feature set is image-data — so default-features = false is load-bearing, not cosmetic
+[A15 PASS] wayland-data-control is an opt-in feature that pulls wl-clipboard-rs
+[A16 PASS] wl-clipboard-rs is optional and lives under the unix-not-macos target table
+[A17 PASS] x11rb is an UNCONDITIONAL unix-not-macos dependency — X11 is the Linux default path
+[A18 PASS] macOS backend is objc2-app-kit (NSPasteboard), not an external binary
+[A19 PASS] no async-runtime coupling in the manifest (gate 5)
+
+--- 4b. Error type: what the call site can and cannot rely on ---
+[A20 PASS] arboard::Error is #[non_exhaustive] — the adapter must not exhaustively match it
+[A21 PASS] arboard::Error implements std::error::Error — it composes with thiserror #[source] and anyhow with no adapter code (R67 layering)
+[A22 PASS] the catch-all variant is Unknown { description }
+[A23 PASS] arboard's own doc comment forbids relying on the description string to identify an error case at runtime
+[A24 PASS] there is NO dedicated headless variant — headlessness is indistinguishable from any other Clipboard::new failure, so the wrapper must supply its own message
+
+--- 4c. The headless path: does it return, hang, or panic? ---
+[A25 PASS] Linux Clipboard::new tests WAYLAND_DISPLAY first when wayland-data-control is enabled
+[A26 PASS] it falls through to X11 — Wayland failure is logged and ignored, not propagated
+[A27 PASS] the X11 backend calls x11rb RustConnection::connect(None) and maps ANY error
+[A28 PASS] the message arboard produces is a TIMEOUT message — inaccurate for a machine that never had a display, which is why the wrapper must not forward it (CLI Design Standard R7.6: name the input, state a next step)
+  [/usr/bin/grep -cF] count=0 needle=panic!(" file=ar-src_platform_linux_mod.rs
+[A29 PASS] no panic! in the Linux Clipboard::new module path = 0
+[A30 PASS] Clipboard::new returns Result — it does not abort
+
+--- 4d. Selection ownership: the finding that decides the stack shape ---
+[A31 PASS] arboard README has a 'Clipboard Ownership' section
+[A32 PASS] README states that values copied on Linux can vanish before anyone pastes them
+[A33 PASS] README: on exit the data is LOST unless something else is listening
+[A34 PASS] the X11 backend serves paste requests from a THREAD inside the copying process — a thread dies with exit()
+[A35 PASS] the Wayland backend passes foreground only for WaitConfig::Forever — the default path also serves from a thread
+[A36 PASS] SetExtLinux and LinuxClipboardKind are re-exported from the crate root (the API the Linux helper needs)
+
+--- 4e. arboard's own CI is independent corroboration of the headless verdict ---
+[A37 PASS] clippy job runs on all three OSes — the crate COMPILES on ubuntu-latest
+[A38 PASS] the maintainers' own comment: the Linux TEST job is disabled because hosted runners have no desktop environment
+[A39 PASS] the test matrix is macOS and Windows only — gate 4 passes for BUILD on both fixed OSes and does not pass for a Linux end-to-end test
+
+
+========== 5. wl-clipboard-rs and x11rb — the substrate claims ==========
+[HTTP 200] https://raw.githubusercontent.com/YaLTeR/wl-clipboard-rs/master/src/copy.rs
+[A40 PASS] wl-clipboard-rs src/copy.rs fetched = 200
+[A41 PASS] wl-clipboard-rs documents foreground as a THREAD switch, not a process switch — the Wayland path does not escape ownership either
+[A42 PASS] wl-copy the BINARY forks; the library called in-process does not — this is exactly why pyperclip/clipboardy never faced this problem
+[HTTP 200] https://raw.githubusercontent.com/psychon/x11rb/master/x11rb-protocol/src/errors.rs
+[A43 PASS] x11rb errors.rs fetched = 200
+[A44 PASS] x11rb has a DisplayNotSet parsing error — an unset DISPLAY fails at parse time, before any socket, so there is nothing to block on
+
+
+========== 6. copypasta (the ranked runner-up) — the Ubuntu-test claim ==========
+[HTTP 200] https://raw.githubusercontent.com/alacritty/copypasta/v0.10.2/.github/workflows/ci.yml
+[A45 PASS] copypasta v0.10.2 CI workflow fetched = 200
+[A46 PASS] copypasta's CI matrix is Windows and macOS — it shows no ubuntu-latest job, which is half of this template's fixed target-os-matrix
+[A47 PASS] no ubuntu runner anywhere in copypasta's CI (this settles Codex's comparative claim as fact, not impression)
+
+
+========== 7. Adopters, and the defect in the best available reference implementation ==========
+
+--- 7a. Three active projects ship the recommended dependency line ---
+[HTTP 200] https://raw.githubusercontent.com/nushell/nushell/main/crates/nu-command/Cargo.toml
+[A48 PASS] nushell nu-command manifest fetched = 200
+[A49 PASS] nushell ships default-features = false + wayland-data-control verbatim
+[HTTP 200] https://raw.githubusercontent.com/nushell/reedline/main/Cargo.toml
+[A50 PASS] reedline manifest fetched = 200
+[A51 PASS] reedline ships the OPTIONAL + feature-gated shape this decision recommends
+[A52 PASS] reedline gates arboard behind a named Cargo feature
+[HTTP 200] https://raw.githubusercontent.com/mufeedvh/code2prompt/main/crates/code2prompt/Cargo.toml
+[A53 PASS] code2prompt manifest fetched = 200
+[A54 PASS] code2prompt is a short-lived CLI on the same feature configuration
+
+--- 7b. code2prompt runs the re-exec pattern — and omits the probe ---
+[HTTP 200] https://raw.githubusercontent.com/mufeedvh/code2prompt/main/crates/code2prompt/src/clipboard.rs
+[A55 PASS] code2prompt clipboard.rs fetched = 200
+[A56 PASS] the re-exec'd child entry point exists — the pattern has a maintained production instance
+[A57 PASS] the child is selected by a hidden flag on the binary's own argv
+[A58 PASS] the payload is handed over stdin, not argv (CLI Design Standard R5.6: nothing sensitive in a process listing)
+[A59 PASS] the child calls SetExtLinux::wait() so the copy outlives the parent
+[A60 PASS] isolated the parent-side spawn_clipboard_daemon body
+  [/usr/bin/grep -cF] count=0 needle=Clipboard::new() file=c2p-spawn.txt
+[A61 PASS] spawn_clipboard_daemon contains NO Clipboard::new probe — on headless Linux code2prompt spawns a child that dies silently and reports success. This is the defect the recommended probe-before-spawn repairs, and the reason Member 3's exact ordering has no production instance. = 0
+
+--- 7c. The ubuntu-latest image has no clipboard binary — with a positive control ---
+[HTTP 200] https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/Ubuntu2404-Readme.md
+[A62 PASS] ubuntu-latest (24.04) runner-image readme fetched = 200
+[A63 PASS] POSITIVE CONTROL: Xvfb IS listed, so this document does enumerate X-related packages
+[A64 PASS] xclip is NOT installed on ubuntu-latest
+[A65 PASS] xsel is NOT installed on ubuntu-latest
+[A66 PASS] wl-clipboard is NOT installed on ubuntu-latest — the shell-out alternative would need an apt-get step that arboard does not
+NOTE: this readme tracks the live runner image and is the one volatile
+document asserted on here. Its three absences are meaningful only with the
+Xvfb presence control on the same fetch, which is why A63 runs beside them.
+
+
+========== 8. py-launch-blueprint — the prompt-gloss correction ==========
+The prompt Context says "py ships no clipboard integration to compare
+against". At the pin that is true. As a statement about the py precedent it
+is not: py shipped --copy via pyperclip until 2026-06-09. The prompt is
+immutable; this is recorded as a finding, not an edit.
+Reads use --format without author/committer fields — see section 13.
+
+commit f587e48b41bcf6535ba1b62f348147294911c48d
+authored 2026-06-09
+subject refactor: remove legacy py-projects CLI and collapse command_name identity (#388)
+[A67 PASS] the removal commit f587e48 resolves in py-launch-blueprint
+[A68 PASS] its authored date is 2026-06-09
+
+--- git show f587e48b41bcf6535ba1b62f348147294911c48d --stat (paths only; --format='' suppresses identity) ---
+ .github/CONTRIBUTING.md                           |   2 +-
+ .github/dependabot.yml                            |   2 +-
+ .vscode/launch.json                               |   6 +-
+ .windsurfrules                                    |   8 +-
+ EXAMPLECLI.md                                     | 122 +-----
+ Justfile                                          |   8 +-
+ README.md                                         |   2 +-
+ docs/adr/0001-app-short-name-plbp.md              |   5 +-
+ docs/source/index.md                              |  83 ++--
+ docs/source/reference/cli_reference.md            |   2 +-
+ docs/source/reference/project_structure.md        |  35 +-
+ docs/source/tasks/debugging_configuration.md      |   6 +-
+ docs/source/tasks/managing_dependencies.md        |   4 +-
+ docs/source/tasks/setting_up_development.md       |   8 +-
+ init/_engine.py                                   |  10 -
+ init/_rewriters.py                                |   6 +-
+ init/common.py                                    |  12 -
+ init/init-spec.md                                 |   9 +-
+ init/init.py                                      |  32 +-
+ init/init_doctor.py                               |   4 +-
+ init/manifest.toml                                | 487 ++++++++++------------
+ init/tests/conftest.py                            |   1 -
+ init/tests/integration/answers.toml               |   3 +-
+ init/tests/integration/run-mode.sh                |   2 +-
+ init/tests/test_doctor_post_init.py               |   1 -
+ init/tests/test_manifest.py                       |  32 +-
+ init/tests/test_post_init.py                      |   1 -
+ pyproject.toml                                    |  47 +--
+ skill/SKILL.md                                    |  20 +-
+ skill/optimization-workspace/RESULTS.md           |  12 +-
+ skill/optimization-workspace/eval_v3.json         | 171 --------
+ skill/optimization-workspace/optimizer.log        |  64 ---
+ skill/optimization-workspace/trigger_eval.json    |  82 ----
+ skill/optimization-workspace/trigger_eval_v2.json |  82 ----
+ skill/optimization-workspace/trigger_eval_v3.json |  82 ----
+ src/py_launch_blueprint/__init__.py               |   2 -
+ src/py_launch_blueprint/projects.py               | 412 ------------------
+ tests/test_api.py                                 | 126 ------
+ tests/test_cli.py                                 | 185 --------
+ tests/test_config.py                              |  62 ---
+ uv.lock                                           | 170 --------
+ 41 files changed, 354 insertions(+), 2056 deletions(-)
+[A69 PASS] the commit deletes src/py_launch_blueprint/projects.py — the file that held --copy
+[A70 PASS] and touches pyproject.toml, where the pyperclip dependency lived
+[A71 PASS] the commit message itself names --copy among the dropped legacy flat-flag features
+[A72 PASS] its stated reason is an unported feature of a deleted duplicate CLI — collateral, NOT a judgement against clipboard integration
+[A73 PASS] before the removal, py called pyperclip.copy(result) — the capability existed
+  [/usr/bin/grep -cF] count=0 needle=except pyperclip file=py-pre.py
+[A74 PASS] the write was UNGUARDED: no pyperclip-specific except arm, so headless failure fell through to the generic handler. py had the capability and got the failure path wrong; ts D-016(7) is the repair; rs inherits the repaired shape. = 0
+[A75 PASS] pyperclip occurrences in *.py and pyproject.toml AT THE PIN b08bccfb55d05f15e46a83b52c5660b1881d19f5 — the ledger's ts-only origin for F281/F282 is correct as recorded, so NO BASELINE-REVIEW line is emitted = 0
+
+
+========== 9. ts-launch-blueprint at pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00 — the inherited shape ==========
+[A76 PASS] ts declares --copy on the result command
+[A77 PASS] ts reaches the OS clipboard through an INJECTED ClipboardWriter port, not a direct call — the seam this decision carries across
+[A78 PASS] the failure becomes a typed CliError rather than an escaping exception
+
+
+========== 10. org CLI Design Standard v1.4.14 (blob f9de0437) — the binding rules ==========
+blob f9de0437baece3383e73ca2c5f48b7ab399b51c7, 77990 bytes
+[A79 PASS] R8.2 exists
+[A80 PASS] R8.2 routes a RUNTIME environmental failure to exit 1 — not to the exit-2 'required input or consent missing because prompting is disabled' arm. An absent display server is not missing consent, so R67's RSLB205/2 does not fit and RSLB101/1 does.
+[A81 PASS] R7.6 error-message shape
+[A82 PASS] R7.6 requires a next step — which arboard's forwarded 'timed out' message cannot supply
+[A83 PASS] R7.3 separates presentation niceties from requested behaviour: --copy is a requested action, so it must NOT be gated on IsTerminal
+[A84 PASS] R7.1/R7.4 keep stdout data-clean — the 'copied to clipboard' note belongs on stderr
+[A85 PASS] R5.6 exists — the reason the Linux helper takes its payload on stdin rather than argv
+
+
+========== 11. This item's own couplings and the parameter registry ==========
+
+--- 11a. The prompt's Couplings block, quoted ---
+## Couplings
+- id: R62
+- owns:
+- consumes:
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
+- related (not a registry dependency): R67 (`error-and-exit-code-contract`) owns `error-taxonomy-exit-codes`; the typed error this item's clipboard-write function raises on failure eventually gets a catalog entry and exit code from R67, but this item does not need that value to make its own recommendation.
+
+If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
+
+[A86 PASS] the prompt's owns: line is EMPTY — this item registers no parameter, so ## Parameters carries no 'owns' line
+[A87 PASS] the prompt's consumes: line is EMPTY — R67 is listed as 'related (not a registry dependency)', so only the four fixed parameters are assumed
+[A88 PASS] R67 is explicitly a related item, not a consumed parameter
+
+--- 11b. The four fixed rows, compared byte-for-byte between the run inputs and the live registry ---
+[A89msrv-policy PASS] registry row for msrv-policy is byte-identical between docs/port/PARAMETERS.md and inputs/PARAMETERS.md
+  value: stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+[A89rust-edition PASS] registry row for rust-edition is byte-identical between docs/port/PARAMETERS.md and inputs/PARAMETERS.md
+  value: 2024
+[A89target-os-matrix PASS] registry row for target-os-matrix is byte-identical between docs/port/PARAMETERS.md and inputs/PARAMETERS.md
+  value: ubuntu-latest, macos-latest
+[A89license PASS] registry row for license is byte-identical between docs/port/PARAMETERS.md and inputs/PARAMETERS.md
+  value: MIT OR Apache-2.0
+
+--- 11c. The assumes-lines this decision publishes, generated from the registry (never typed) ---
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+  [/usr/bin/grep -cF] count=4 needle=- assumes  file=assumes.txt
+[A90 PASS] exactly four assumes lines are generated from the registry = 4
+[A91 PASS] assumes lines missing from DECISION.md = 0
+
+--- 11d. The F281/F282 ledger rows this decision settles ---
+285:| F281 | Clipboard-copy flag for command results | cli-framework-ux | ts-only | DIVERGENT | R62 | bundle; whether Rust adopts a clipboard-write crate (e.g. `arboard`) — decides F282 |
+286:| F282 | Clipboard write with headless-degrade handling | cli-framework-ux | ts-only | DIVERGENT | R62 | bundle |
+  [/usr/bin/grep -cF] count=2 needle=| R62 | file=ledger.txt
+[A92 PASS] both F281 and F282 name R62 as their item = 2
+  [/usr/bin/grep -cF] count=2 needle=| ts-only | DIVERGENT | file=ledger.txt
+[A93 PASS] both rows are ts-only / DIVERGENT — the origin the section-8 pin read confirms = 2
+
+
+========== 12. The R67 row this item's failure lands on (published, owner-accepted) ==========
+[A94 PASS] R67's published catalog maps RSLB101 (I/O) to exit 1 — the row a clipboard-write failure expresses. R62 does NOT own this mapping and does not add a catalog row.
+[A95 PASS] R67 owns the single-object stderr envelope with an optional hint — the hint is where this item's remedy text goes
+[A96 PASS] R67's layering rule: typed errors in the library, opaque carrier in the binary — which is why ClipboardError is a thiserror type in the library crate
+
+
+========== 13. Self-audit: no personal data in this script's captured git output ==========
+Every git read above used an explicit --format that omits %an/%ae/%cn/%ce,
+and every gh read was projected to named scalar fields with --jq. This
+asserts the result rather than trusting it.
+
+captured git output: 2741 bytes, 45 lines
+[A97 PASS] no e-mail address in any captured git output
+[A98 PASS] no Author/Commit/Signed-off-by identity line in any captured git output
+
+
+========== 14. Summary ==========
+assertions run : 120
+failures       : 0
+skipped        : 0
+
+What this script did NOT and CANNOT establish here:
+  - the observed behaviour of arboard on a headless Linux host. This
+    machine is macOS; no headless Linux is available in this session.
+    Sections 4c and 4e read the code path and the maintainers own CI
+    comment; neither is an execution. P03 runs it on ubuntu-latest.
+  - that a copy survives process exit under Xvfb (validation A4).
+  - that the probe-before-spawn ordering behaves as designed (A2/A5):
+    section 7b proves only that the best production instance omits it.
+  - whether GNOME/Mutter implements ext-data-control at the version
+    Ubuntu ships. It bounds how often XWayland is the live path on a
+    desktop; it changes nothing on ubuntu-latest, which has no
+    compositor at all.
+
+Dependency resolution and the compile check are a separate script:
+  spike-build.sh -> r62-spike-build.log
+
+exit status = failures = 0

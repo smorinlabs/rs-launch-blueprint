@@ -1,0 +1,25 @@
+# R33 adoption-figure baseline — the check-4 crates.io counter lines of the revision-2 run.
+#
+# Why this file exists: these six lines are the only record of the 2026-09-10 figures,
+# and the log they were copied from is the PUBLISHER'S copy of whichever revision is
+# current. Publishing revision 4 overwrites that path with revision 4's log, so a check
+# that read it would assert the 2026-09-10 values against 2026-09-13 content and fail on
+# every rerun after publication. The lines are therefore snapshotted here, in this run's
+# own evidence directory, and review/empirical/r33-checks.sh reads this file.
+#
+# source-path: research/topics/33-property-and-snapshot-testing/evidence/2026-09-05T164358Z-eae89906c763-property-and-snapshot-testing.log
+# source-sha256: 33c4358489d43edf46b30e37f7a8f5ff465f99f22ea3058e99604d6d40115f6b
+# source-run: 2026-09-10, revision 2 of review/DECISION.md (published)
+# source-commit: cbe731fef87794f816c12d3a62e3865e3b2c7ed9 — that path is the publisher's copy of
+#   whichever revision is current and is overwritten at each publication, so recover the
+#   2026-09-10 bytes with: git show cbe731fe:<source-path>
+# extracted: 2026-09-13, by revision 4's synthesizer, with
+#   grep -E '^  [a-z-]+: recent_downloads=' <source-path>
+# fields: recent_downloads is the crates.io 90-day download count; downloads is all-time;
+#   reverse_deps is meta.total from /reverse_dependencies?per_page=1.
+  proptest: recent_downloads=46574976 downloads=184292444 reverse_deps=10388
+  quickcheck: recent_downloads=10550560 downloads=67598302 reverse_deps=1536
+  insta: recent_downloads=26382169 downloads=97830232 reverse_deps=4384
+  cargo-insta: recent_downloads=204308 downloads=1555508 reverse_deps=5
+  snapbox: recent_downloads=3185186 downloads=12089278 reverse_deps=156
+  expect-test: recent_downloads=7326545 downloads=36849824 reverse_deps=313

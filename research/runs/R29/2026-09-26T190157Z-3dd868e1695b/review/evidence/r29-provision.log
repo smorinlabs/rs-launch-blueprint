@@ -1,0 +1,19 @@
+dprint 0.57.4
+cargo 1.93.0 (083ac5135 2025-12-15)
+rustc 1.93.0 (254b59607 2026-01-19)
+    Finished `release` profile [optimized] target(s) in 0.11s
+    Finished `release` profile [optimized] target(s) in 0.03s
+    Finished `release` profile [optimized] target(s) in 0.04s
+   Compiling dprint_plugin_yaml v0.6.0 (/private/tmp/r29-plugins/src/dprint_plugin_yaml-0.6.0)
+    Finished `release` profile [optimized] target(s) in 1.20s
+44024f27cfd72296cf9d616e714d3dc73c7259656d4d96c7f625e35e76ea99c8  json.wasm
+953ab247a9577ee31f30ee7bf60f27d42889fe9415bca77fbf4983a27b51c223  markdown.wasm
+1d4329dd1dd16b5fa06a1a10949c7aa90b5e3709f3851f5e501f0b299e4744ca  toml.wasm
+666bf5088c08ad8d5744457ed1d37986407b18571340f99c2fc0985fbd53103d  pretty_yaml.wasm
+total 4904
+-rwxr-xr-x@ 1 stevemorin  wheel  643865 Sep 26 19:58 json.wasm
+-rwxr-xr-x@ 1 stevemorin  wheel  743253 Sep 26 19:58 markdown.wasm
+-rwxr-xr-x@ 1 stevemorin  wheel  594430 Sep 26 19:58 pretty_yaml.wasm
+-rw-r--r--@ 1 stevemorin  wheel     315 Sep 26 19:58 SHA256SUMS
+-rwxr-xr-x@ 1 stevemorin  wheel  514607 Sep 26 19:58 toml.wasm
+r29-provision: OK

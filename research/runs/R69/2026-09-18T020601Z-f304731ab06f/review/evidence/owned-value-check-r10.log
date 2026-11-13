@@ -1,0 +1,78 @@
+== R69 revision 10 — owned-value check ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+shasum: 6.02
+decision: research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md
+
+-- 1. the file, and the one owned line --
+PASS V1a: supersession heading line number == 2685
+PASS V1b: owned lines in the current entry == 1
+PASS V2: sha256 of the owned line as grep emits it == 60558d1ab01ae3f7efd60cda1cd3cbc24f6a6114880deb3286940b6bb06f7346
+
+-- 2. the six clauses owner ruling W1-R02 moved, in their new form --
+PASS V3a: clause 1 — the feature is declared on the root package rs-launch-blueprint
+PASS V3b: clause 2a — the feature enables the optional member, not two crates
+PASS V3c: clause 2b — axum non-optional in crates/web, feature list byte-identical
+PASS V3d: clause 2c — tokio non-optional in crates/web, feature list byte-identical
+PASS V3e: clause 3 — the gated tree reads crates/web/src/
+PASS V3f: clause 4 — the tests live in crates/web/tests/ with no file-level cfg
+PASS V3g: clause 5 — tower is crates/web dev-dependency, still not gated
+PASS V3h: clause 6a — later layers nest inside crates/web/src/
+PASS V3i: clause 6b — skip-gating keys on crates/web/**
+
+-- 3. clauses that must NOT have moved --
+PASS V3j: the four-gated-things count
+PASS V3k: the gated serve binary target shape
+PASS V3l: R60's parser clause, deliberately verbatim
+PASS V3m: R67's exit integers as ExitCode
+PASS V3n: the otel/metrics nesting
+PASS V3o: bacon as a non-dependency
+PASS V3p: the consumer-selection clause
+
+-- 4. the superseded forms are gone from the value --
+PASS V4a: the src/web/ tree
+PASS V4b: the dep:axum feature entry
+PASS V4c: the dep:tokio feature entry
+PASS V4d: the R02 deferral
+PASS V4e: the file-level test cfg
+PASS V4f: the unqualified tower dev-dependency wording
+PASS V4g: the optional axum declaration
+PASS V4h: the optional tokio declaration
+
+-- 5. control: the V4 matcher must be able to fail --
+PASS V5a: control: the mutated copy differs from the asserted line
+PASS V5b: control: the V4a matcher finds src/web/ in the mutated copy, so V4a can fail
+
+-- 6. every clause of R02 CONFLICT line is honoured --
+PASS V6a: CONFLICT: lines against web-extra-surface in R02's decision == 1
+PASS V6b: R02's CONFLICT line specifies: web = ["dep:rs-launch-blueprint-web"]
+PASS V6c: R02's CONFLICT line specifies: declared on the root package `rs-launch-blueprint`
+PASS V6d: R02's CONFLICT line specifies: declared non-optionally in
+PASS V6e: R02's CONFLICT line specifies: crates/web/src/
+PASS V6f: R02's CONFLICT line specifies: crates/web/tests/
+PASS V6g: R02's CONFLICT line specifies: crates/web/**
+PASS V6h: R02's CONFLICT line specifies: as `crates/web`'s dev-dependency
+
+-- 7. the five assumed lines diff empty against the live registry --
+PASS V7a: assumed lines in the current entry == 5
+PASS V7b: diff of the five assumed lines against the registry rows is empty
+
+-- 8. the superseded forms survive above the heading only as marked quotations --
+PASS V8a-count: occurrences of 'src/web/' in the current entry == 10
+PASS V8a-marked: unmarked occurrences of 'src/web/' == 0
+PASS V8b-count: occurrences of 'web = ["dep:axum", "dep:tokio"]' in the current entry == 2
+PASS V8b-marked: unmarked occurrences of 'web = ["dep:axum", "dep:tokio"]' == 0
+PASS V8c-count: occurrences of 'pub mod web' in the current entry == 4
+PASS V8c-marked: unmarked occurrences of 'pub mod web' == 0
+PASS V8d-count: occurrences of '(optional, default features)' in the current entry == 1
+PASS V8d-marked: unmarked occurrences of '(optional, default features)' == 0
+
+-- 9. the asserting sites now carry the new forms --
+PASS V9a: the file map has a crates/web manifest row
+PASS V9b: the file map places the web library at crates/web/src/lib.rs
+PASS V9c: the file map places the route module under crates/web/src/
+PASS V9d: the file map places the web tests under crates/web/tests/
+PASS V9e: the root manifest row names the optional member
+PASS V9f: the member table marks axum non-optional inside crates/web
+
+== SUMMARY ==
+CHECKS RUN: 53 PASS: 53 FAIL: 0 SKIP: 0

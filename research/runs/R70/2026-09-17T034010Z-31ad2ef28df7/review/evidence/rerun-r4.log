@@ -1,0 +1,104 @@
+=== R70 revision 4: rerun of every earlier evidence script ===
+date (UTC): 2026-09-27T06:24:25Z
+os: macOS 26.4 (arm64)
+host rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+host cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+CARGO_HOME: /tmp/cargo-s25-R70-r4
+HEAD: e0b0d1c1762ee8aa4b28c62282a2225103e594eb
+scratch: /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r70-rerun-r4.LIClTF (deleted on exit)
+
+--- 0. the committed evidence is what HEAD holds, hashed before any run
+PASS  registry.sh is unmodified against HEAD
+PASS  registry.log is unmodified against HEAD
+PASS  registry-figures.log is unmodified against HEAD
+PASS  probe.sh is unmodified against HEAD
+PASS  probe.log is unmodified against HEAD
+PASS  archive-check.sh is unmodified against HEAD
+PASS  archive-check.log is unmodified against HEAD
+PASS  registry-archive.log is unmodified against HEAD
+PASS  probe-archive.log is unmodified against HEAD
+PASS  rest-r2.sh is unmodified against HEAD
+PASS  rest-r2.log is unmodified against HEAD
+PASS  probe-r2.sh is unmodified against HEAD
+PASS  probe-r2.log is unmodified against HEAD
+
+--- 1. archive-check.sh (reruns registry.sh and probe.sh) in a clone of HEAD
+PASS  clone is at HEAD == e0b0d1c1762ee8aa4b28c62282a2225103e594eb
+NOTE  archive-check.sh exited non-zero (expected only for the IANA drift asserted below)
+--- archive-check.sh output (verdict and diff lines)
+    PASS  repository marker present (.git directory)
+    PASS  git archive HEAD extracted to a clean tree
+    PASS  the extraction contains no nested repository
+    PASS  registry.sh is present and executable in HEAD
+    PASS  probe.sh is present and executable in HEAD
+    FAIL  registry.sh FAILED from the extracted tree
+    PASS  rfc-editor rfc9110.txt HTTP == 200
+    PASS  RFC 9110 15.5.2: a 401 MUST send WWW-Authenticate with at least one challenge
+    PASS  RFC 9110 15.5.6: an origin server MUST generate Allow in a 405
+    PASS  RFC 9110 15.5.2: rejected credentials are a 401 (the RSLB402 row)
+    PASS  RFC 9110 15.5.4: 403 is for credentials the server considers insufficient (no such catalog code yet)
+    PASS  rfc9110.txt line 7548 == 15.5.2.  401 Unauthorized
+    PASS  rfc9110.txt line 7569 == 15.5.4.  403 Forbidden
+    PASS  rfc9110.txt line 7601 == 15.5.6.  405 Method Not Allowed
+    PASS  problem-details-rs archived (gate: not abandoned) == False
+    PASS  problem-details-rs default_branch == main
+    PASS  search/issues open-issue count retrieved (moving figure -> registry-figures.log)
+    PASS  divviup/janus Cargo.toml declares http-api-problem (http-api-problem = "0.60.0")
+    PASS  oxidecomputer/dropshot: HttpErrorResponseBody present and no problem+json (bespoke body)
+    PASS  problem-details-rs CI runs ubuntu-latest and has NO macOS runner (gate 4 gap, as reported)
+    PASS  problem-details-rs CI pins an MSRV job at 1.85
+    PASS 64  FAIL 1  SKIP 0  TOTAL 65
+    FAIL  registry.log differs from the archive rerun:
+          < PASS  IANA problem+json cites RFC9457
+          > FAIL  IANA problem+json does not cite RFC9457
+          < PASS 65  FAIL 0  SKIP 0  TOTAL 65
+          > PASS 64  FAIL 1  SKIP 0  TOTAL 65
+    PASS  probe.sh exited 0 from the extracted tree
+    PASS  probe.log and probe-archive.log agree on every verdict and every captured body
+    PASS  probe.log summary is PASS 33  FAIL 0  SKIP 0
+    PASS  probe-archive.log summary is PASS 33  FAIL 0  SKIP 0
+    PASS 9  FAIL 2  SKIP 0  TOTAL 11
+PASS  archive-check.sh summary == PASS 9  FAIL 2  SKIP 0  TOTAL 11
+PASS  archive-check.sh FAIL lines are exactly the registry exit and the registry diff == FAIL  registry.sh FAILED from the extracted tree|FAIL  registry.log differs from the archive rerun:|
+PASS  the registry.log diff is exactly the IANA citation verdict and the summary line ==       < PASS  IANA problem+json cites RFC9457|      > FAIL  IANA problem+json does not cite RFC9457|      < PASS 65  FAIL 0  SKIP 0  TOTAL 65|      > PASS 64  FAIL 1  SKIP 0  TOTAL 65|
+PASS  registry.sh (rerun from the extraction) summary == PASS 64  FAIL 1  SKIP 0  TOTAL 65
+PASS  registry.sh rerun: its only FAIL is the IANA citation literal == FAIL  IANA problem+json does not cite RFC9457|
+PASS  probe.sh (rerun from the extraction) summary == PASS 33  FAIL 0  SKIP 0  TOTAL 33
+PASS  IANA application media types CSV HTTP == 200
+NOTE  IANA row: problem+json,application/problem+json,[RFC 9457]
+PASS  IANA problem+json cites RFC 9457 (whitespace-tolerant)
+NOTE  IANA row: problem+xml,application/problem+xml,[RFC 9457]
+PASS  IANA problem+xml cites RFC 9457 (whitespace-tolerant)
+
+--- 2. probe-r2.sh, in place, output captured
+PASS  probe-r2.sh exited 0
+PASS  probe-r2.sh summary == PASS 25  FAIL 0  SKIP 0  TOTAL 25
+PASS  probe-r2.sh verdict, body and catalog lines are identical to the committed probe-r2.log
+--- probe-r2.sh banner (moves by design)
+    date (UTC): 2026-09-27T06:26:58Z
+    os: macOS 26.4 (arm64)
+    host rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+    MSRV toolchain: rustc 1.96.0 (ac68faa20 2026-05-25)
+
+--- 3. rest-r2.sh, in place against the current DECISION.md
+PASS  rest-r2.sh exited 0
+PASS  rest-r2.sh summary == PASS 79  FAIL 0  SKIP 0  TOTAL 79
+PASS  rest-r2.sh verdict lines are identical to the committed rest-r2.log
+--- rest-r2.sh group C, this run
+    --- C. OVERRIDE numbering
+    PASS  OV-01 is claimed by 3 decision(s) outside this item
+    PASS  OV-02 is claimed by 1 decision(s) outside this item
+    PASS  OV-03 is claimed by 1 decision(s) outside this item
+    PASS  OV-04 is claimed by 1 decision(s) outside this item
+    PASS  OV-06, allocated to this item, is claimed by no decision outside it
+    PASS  OV-06 is allocated to this item and left unused, as this revision records no override
+    NOTE  DECISION.md mentions "OVERRIDE (OV-" 1 time(s) (headings are counted separately below)
+    PASS  this decision declares no OVERRIDE heading
+    
+    === summary ===
+
+--- 4. no committed log moved
+PASS  all 13 committed evidence files are byte-identical after the reruns
+
+=== summary ===
+PASS 30  FAIL 0  SKIP 0  TOTAL 30

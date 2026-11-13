@@ -1,0 +1,6 @@
+{"date":"2026-09-02T23:30:57Z","message":"doc_auto_cfg =\u003e doc_cfg (#1387)"}
+{"date":"2026-01-21T21:24:18Z","message":"Rust edition 2024 \u0026 MSRV 1.85 (#1347)"}
+{"date":"2024-11-14T17:58:48Z","message":"secrecy: fix `Secret\u003cT\u003e` reference in README.md (#1249)"}
+{"date":"2024-10-29T18:01:15Z","message":"secrecy: impl `CloneableSecret` for arrays (#1245)"}
+{"date":"2024-10-11T16:30:47Z","message":"secrecy: Add FromStr impl for SecretString (#1240)"}
+{"date":"2024-10-09T19:23:27Z","message":"secrecy v0.10.3 (#1238)"}

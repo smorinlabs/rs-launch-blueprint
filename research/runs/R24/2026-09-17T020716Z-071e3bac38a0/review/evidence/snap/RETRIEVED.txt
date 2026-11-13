@@ -1,0 +1,73 @@
+R24 changelog-section-mapping — evidence snapshots.
+
+Retrieved 2026-09-18 (UTC).
+
+Origin of every file under ./snap:
+
+  rp-17.11.2/*.js.snapshot, rp-17.11.2/schemas-config.json.snapshot
+      The npm package release-please@17.11.2 (registry.npmjs.org), installed
+      with `npm install release-please@17.11.2` into a throwaway directory
+      under $TMPDIR. Paths inside that package, in the order listed:
+        build/src/changelog-notes.js
+        build/src/changelog-notes/default.js
+        build/src/util/filter-commits.js
+        build/src/strategies/rust.js
+        build/src/strategies/base.js
+        build/src/commit.js
+        schemas/config.json
+      The package ships compiled JavaScript, not the TypeScript sources; the
+      decision cites the TypeScript paths and reads the compiled bytes.
+      The `.snapshot` suffix keeps third-party files out of this repository's
+      own lint and test globs. The bytes are upstream's, unmodified.
+
+  preset-6.1.0/writer-opts.js.snapshot
+      conventional-changelog-conventionalcommits@6.1.0, path writer-opts.js,
+      resolved as a transitive dependency of release-please@17.11.2 (see
+      npm-ls.txt). Unmodified.
+
+  npm-ls.txt
+      `npm ls --all` in that throwaway install, filtered to the three packages
+      the rendering path uses.
+
+  sources/py-release-please-config.json.snapshot
+      `git -C ~/c/py-launch-blueprint show
+       b08bccfb55d05f15e46a83b52c5660b1881d19f5:release-please-config.json`
+  sources/ts-release-please-config.json.snapshot
+      `git -C ~/c/ts-launch-blueprint show
+       cb1cbcb2e88b898e8c081b0abbfabc1630079c00:release-please-config.json`
+      Both read through the programme's pins, never from a working tree.
+
+  rendered/loader.txt, rendered/G-scope-routed-hidden-only.md
+      Added in revision 2 (2026-09-28). Output of ./probe/loader.cjs against a
+      fresh `npm install release-please@17.11.2` into a throwaway directory
+      under /tmp: the config-loader path (Manifest.fromManifest over an
+      in-memory GitHub stub, no network). The header date is normalised the
+      same way as below.
+
+  rendered/A-*.md through rendered/F-*.md, rendered/mech5.txt
+      Output of ./probe/render.cjs against that install. The release-header
+      date is normalised to `(<release-date>)` by the probe, because
+      conventional-changelog-writer stamps the machine's current date and
+      release-please's buildNotes gives a caller no way to set it.
+
+Nothing here is a template, a scaffold or a configuration this repository
+uses. No node_modules tree is committed.
+
+  github/release-please-latest-release.json
+      `gh api repos/googleapis/release-please/releases/latest --jq
+       '{tag_name,published_at,draft,prerelease}'`
+      Real endpoint: GET https://api.github.com/repos/googleapis/release-please/releases/latest
+      Retrieved 2026-09-18 (UTC). `gh` reads its own keyring credential; no
+      token byte is printed, written or committed anywhere.
+
+  github/release-please-action-v5.0.0-dep.json
+      `gh api "repos/googleapis/release-please-action/contents/package.json?ref=v5.0.0"
+       -H "Accept: application/vnd.github.raw"`, reduced to name, version and
+      the `release-please` dependency range.
+      Real endpoint:
+      GET https://api.github.com/repos/googleapis/release-please-action/contents/package.json?ref=v5.0.0
+      Retrieved 2026-09-18 (UTC), at least 20 s after the call above.
+
+These two files are current-state reads, not content-addressed ones: a later
+release-please release changes the first, and only a new action tag would
+change the second. Section 8 is the check that notices.

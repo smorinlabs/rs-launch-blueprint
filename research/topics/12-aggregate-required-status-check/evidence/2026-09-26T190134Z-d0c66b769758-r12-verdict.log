@@ -1,0 +1,47 @@
+INFO jq=jq-1.8.2
+rule: length > 0 and all(.[]; .result == "success" or .result == "skipped")
+PASS V0-rule extracted rule is the allow-list with length guard
+PASS V0-empty all() over {} is true (empty needs would pass without length>0)
+INFO py loop bytes:      273
+PASS V0-py extracted py ci-ok loop at b55b8c2
+PASS V-rec-T1 recommended->PASS
+PASS V-py-T1 py-loop->PASS
+PASS V-naive-T1 naive->PASS
+PASS V-cargo-T1 all-success->PASS
+PASS V-rec-T2 recommended->PASS
+PASS V-py-T2 py-loop->PASS
+PASS V-naive-T2 naive->PASS
+PASS V-cargo-T2 all-success->FAIL
+PASS V-rec-T3 recommended->FAIL
+PASS V-py-T3 py-loop->FAIL
+PASS V-naive-T3 naive->FAIL
+PASS V-cargo-T3 all-success->FAIL
+PASS V-rec-T4 recommended->FAIL
+PASS V-py-T4 py-loop->FAIL
+PASS V-naive-T4 naive->PASS
+PASS V-cargo-T4 all-success->FAIL
+PASS V-rec-T5 recommended->FAIL
+PASS V-py-T5 py-loop->FAIL
+PASS V-naive-T5 naive->FAIL
+PASS V-cargo-T5 all-success->FAIL
+PASS V-rec-T6 recommended->FAIL
+PASS V-py-T6 py-loop->FAIL
+PASS V-naive-T6 naive->PASS
+PASS V-cargo-T6 all-success->FAIL
+PASS V-rec-T7 recommended->FAIL
+PASS V-py-T7 py-loop->FAIL
+PASS V-naive-T7 naive->FAIL
+PASS V-cargo-T7 all-success->FAIL
+PASS V-rec-T8 recommended->FAIL
+PASS V-py-T8 py-loop->PASS
+PASS V-naive-T8 naive->PASS
+PASS V-cargo-T8 all-success->FAIL
+PASS V-rec-T9 recommended->FAIL
+PASS V-py-T9 py-loop->PASS
+PASS V-naive-T9 naive->PASS
+PASS V-cargo-T9 all-success->PASS
+PASS G1 guard exits 0 on the unchanged fixture
+PASS G2 guard exits 1 naming the added job
+PASS G3 guard exits 1 naming dropped plan
+PASS G4 guard exits 1 naming renamed job both ways
+RESULT PASS=43 FAIL=0 SKIP=0

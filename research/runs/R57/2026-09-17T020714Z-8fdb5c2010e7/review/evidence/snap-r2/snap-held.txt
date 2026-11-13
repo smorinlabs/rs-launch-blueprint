@@ -1,0 +1,11 @@
+advisory-directories.md
+advisory-dirs.md
+directories-6.0.0.crate
+etcetera-0.11.0.crate
+etcetera-crate.json
+etcetera-deps.json
+etcetera-versions.json
+rustsec-anyhow.txt
+rustsec-directories.txt
+rustsec-etcetera.txt
+spike-macos-arm64.txt

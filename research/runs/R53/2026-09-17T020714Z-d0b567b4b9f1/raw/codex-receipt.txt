@@ -1,0 +1,6 @@
+Output: `raw/codex.md`  
+SHA-256: `65b51d2faa31f2abeff6435508793bfe28e71d964fc24bfd9be64eac447e2758`  
+H3 fields written: 15  
+BASELINE-REVIEW: F229 emitted.  
+CONFLICT: none.  
+Unverified: RustSec zero-advisory result and upstream macOS CI evidence for Garde/Validator.

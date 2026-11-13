@@ -1,0 +1,47 @@
+== environment ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+original: registry-and-standard.sh sha256 2939478f29c0532bdc47512ba978059f4b0a5df6f2a2ea01afb57d7e9bf7f5e7
+
+== rewrites applied to the copy ==
+PASS  S0.crates every crates.io URL now points at crates.invalid
+PASS  S0.rustsec every rustsec.org URL now points at rustsec.invalid
+PASS  S0.standard STANDARD_REPO now names a missing directory
+PASS  S0.gh the gh probe now names a missing command
+
+== the copy, run ==
+== environment ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+retrieved: <timestamp>
+
+== stable assertions ==
+SKIP  B1..B9, B27 (every crates.io check)  (crates.io could not be reached)
+curl: (6) Could not resolve host: rustsec.invalid
+GET https://rustsec.invalid/packages/oas3.html -> 000
+SKIP  B10.oas3  (rustsec.org could not be reached)
+curl: (6) Could not resolve host: rustsec.invalid
+GET https://rustsec.invalid/packages/proptest.html -> 000
+SKIP  B10.proptest  (rustsec.org could not be reached)
+curl: (6) Could not resolve host: rustsec.invalid
+GET https://rustsec.invalid/packages/openapi-fuzzer.html -> 000
+SKIP  B10.openapi-fuzzer  (rustsec.org could not be reached)
+SKIP  B11..B22, B25, B26 (every standard quote and the Spectral cross-check)  (no clone of rest-standards at <work>/no-such-clone)
+
+== volatile figures (counters move; re-read rather than diff) ==
+SKIP  B23, B24 (both GitHub repositories)  (the gh CLI is not on PATH)
+
+== totals ==
+PASS=0 FAIL=0 SKIP=6 TOTAL=6
+exit=0
+
+== assertions ==
+PASS  S1 crates.io unreachable -> one named SKIP covering B1..B9 and B27
+PASS  S2.oas3 rustsec.org unreachable -> B10.oas3 SKIPped by name, not FAILed
+PASS  S2.proptest rustsec.org unreachable -> B10.proptest SKIPped by name, not FAILed
+PASS  S2.openapi-fuzzer rustsec.org unreachable -> B10.openapi-fuzzer SKIPped by name, not FAILed
+PASS  S3 no rest-standards clone -> one named SKIP covering B11..B22, B25 and B26
+PASS  S4 gh absent -> one named SKIP covering B23 and B24
+PASS  S5 every check is accounted for: six SKIP lines, no PASS, no FAIL
+PASS  S6 the copy exits 0 when every source is unreachable (SKIP is not failure)
+
+== totals ==
+PASS=12 FAIL=0 SKIP=0 TOTAL=12

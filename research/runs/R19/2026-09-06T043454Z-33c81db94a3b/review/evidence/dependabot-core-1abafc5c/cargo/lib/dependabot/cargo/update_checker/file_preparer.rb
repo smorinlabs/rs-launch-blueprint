@@ -1,0 +1,422 @@
+# typed: strict
+# frozen_string_literal: true
+
+require "sorbet-runtime"
+require "toml-rb"
+
+require "dependabot/dependency_file"
+require "dependabot/cargo/file_parser"
+require "dependabot/cargo/update_checker"
+
+module Dependabot
+  module Cargo
+    class UpdateChecker
+      # This class takes a set of dependency files and sanitizes them for use
+      # in UpdateCheckers::Rust::Cargo.
+      class FilePreparer
+        extend T::Sig
+
+        sig do
+          params(
+            dependency_files: T::Array[Dependabot::DependencyFile],
+            dependency: Dependabot::Dependency,
+            unlock_requirement: T::Boolean,
+            replacement_git_pin: T.nilable(String),
+            latest_allowable_version: T.nilable(T.any(String, Gem::Version))
+          )
+            .void
+        end
+        def initialize(
+          dependency_files:,
+          dependency:,
+          unlock_requirement: true,
+          replacement_git_pin: nil,
+          latest_allowable_version: nil
+        )
+          @dependency_files         = dependency_files
+          @dependency               = dependency
+          @unlock_requirement       = unlock_requirement
+          @replacement_git_pin      = replacement_git_pin
+          @latest_allowable_version = latest_allowable_version
+          @lower_bound_version = T.let(nil, T.nilable(T.any(String, Integer)))
+          @manifest_files = T.let(nil, T.nilable(T::Array[Dependabot::DependencyFile]))
+          @lockfile = T.let(nil, T.nilable(Dependabot::DependencyFile))
+          @toolchain = T.let(nil, T.nilable(Dependabot::DependencyFile))
+        end
+
+        sig { returns(T::Array[Dependabot::DependencyFile]) }
+        def prepared_dependency_files
+          files = []
+          files += manifest_files.map do |file|
+            DependencyFile.new(
+              name: file.name,
+              content: manifest_content_for_update_check(file),
+              directory: file.directory
+            )
+          end
+          files << lockfile if lockfile
+          files << toolchain if toolchain
+          files
+        end
+
+        private
+
+        sig { returns(T::Array[Dependabot::DependencyFile]) }
+        attr_reader :dependency_files
+
+        sig { returns(Dependabot::Dependency) }
+        attr_reader :dependency
+
+        sig { returns(T.nilable(String)) }
+        attr_reader :replacement_git_pin
+
+        sig { returns(T.nilable(T.any(String, Gem::Version))) }
+        attr_reader :latest_allowable_version
+
+        sig { returns(T::Boolean) }
+        def unlock_requirement?
+          @unlock_requirement
+        end
+
+        sig { returns(T::Boolean) }
+        def replace_git_pin?
+          !replacement_git_pin.nil?
+        end
+
+        sig { params(file: Dependabot::DependencyFile).returns(String) }
+        def manifest_content_for_update_check(file)
+          content = T.must(file.content)
+
+          unless file.support_file?
+            content = replace_version_constraint(content, file.name)
+            content = replace_git_pin(content) if replace_git_pin?
+          end
+
+          content = replace_ssh_urls(content)
+
+          content
+        end
+
+        # NOTE: We don't need to care about formatting in this method, since
+        # we're only using the manifest to find the latest resolvable version
+        sig { params(content: String, filename: String).returns(String) }
+        def replace_version_constraint(content, filename)
+          parsed_manifest = TomlRB.parse(content)
+
+          Cargo::FileParser::DEPENDENCY_TYPES.each do |type|
+            dependency_names_for_type(parsed_manifest, type).each do |name|
+              req = parsed_manifest.dig(type, name)
+
+              updated_req = temporary_requirement_for_resolution(filename)
+
+              if req.is_a?(Hash)
+                parsed_manifest[type][name]["version"] = updated_req
+              else
+                parsed_manifest[type][name] = updated_req
+              end
+            end
+          end
+
+          replace_req_on_target_specific_deps!(parsed_manifest, filename)
+          replace_req_on_workspace_deps!(parsed_manifest, filename)
+
+          TomlRB.dump(parsed_manifest)
+        end
+
+        sig { params(parsed_manifest: T::Hash[String, T.anything], filename: String).void }
+        def replace_req_on_target_specific_deps!(parsed_manifest, filename)
+          toml_table_or_empty(parsed_manifest.fetch("target", {})).each do |target, _|
+            Cargo::FileParser::DEPENDENCY_TYPES.each do |type|
+              dependency_names = dependency_names_for_type_and_target(
+                parsed_manifest,
+                type,
+                target
+              )
+
+              dependency_names.each do |name|
+                req = target_dependency_declaration(parsed_manifest, target, type, name)
+
+                updated_req = temporary_requirement_for_resolution(filename)
+
+                if req.is_a?(Hash)
+                  target_dependency_table(parsed_manifest, target, type, name)["version"] = updated_req
+                else
+                  target_dependency_type_table(parsed_manifest, target, type)[name] = updated_req
+                end
+              end
+            end
+          end
+        end
+
+        sig { params(parsed_manifest: T::Hash[String, T.anything], filename: String).void }
+        def replace_req_on_workspace_deps!(parsed_manifest, filename)
+          workspace = toml_table_or_empty(parsed_manifest.fetch("workspace", {}))
+          workspace_deps = toml_table_or_empty(workspace.fetch("dependencies", {}))
+
+          workspace_deps.each do |name, req|
+            req = dependency_declaration(req)
+            next unless dependency.name == name_from_declaration(name, req)
+
+            updated_req = temporary_requirement_for_resolution(filename)
+
+            if req.is_a?(Hash)
+              toml_table_or_empty(
+                toml_table_or_empty(
+                  toml_table_or_empty(parsed_manifest["workspace"])["dependencies"]
+                )[name]
+              )["version"] = updated_req
+            else
+              toml_table_or_empty(toml_table_or_empty(parsed_manifest["workspace"])["dependencies"])[name] = updated_req
+            end
+          end
+        end
+
+        sig { params(content: String).returns(String) }
+        def replace_git_pin(content)
+          parsed_manifest = TomlRB.parse(content)
+
+          Cargo::FileParser::DEPENDENCY_TYPES.each do |type|
+            dependency_names_for_type(parsed_manifest, type).each do |name|
+              req = T.cast(parsed_manifest.dig(type, name), T.any(String, T::Hash[String, T.anything]))
+              next unless req.is_a?(Hash)
+              next unless [req["tag"], req["rev"]].compact.uniq.one?
+
+              dependency_options = toml_table_or_empty(toml_table_or_empty(parsed_manifest[type])[name])
+              dependency_options["tag"] = replacement_git_pin if req["tag"]
+
+              dependency_options["rev"] = replacement_git_pin if req["rev"]
+            end
+          end
+
+          replace_git_pin_on_target_specific_deps!(parsed_manifest)
+
+          TomlRB.dump(parsed_manifest)
+        end
+
+        sig { params(parsed_manifest: T::Hash[String, T.anything]).void }
+        def replace_git_pin_on_target_specific_deps!(parsed_manifest)
+          toml_table_or_empty(parsed_manifest.fetch("target", {})).each do |target, _|
+            Cargo::FileParser::DEPENDENCY_TYPES.each do |type|
+              dependency_names = dependency_names_for_type_and_target(
+                parsed_manifest,
+                type,
+                target
+              )
+
+              dependency_names.each do |name|
+                req = target_dependency_declaration(parsed_manifest, target, type, name)
+                next unless req.is_a?(Hash)
+                next unless [req["tag"], req["rev"]].compact.uniq.one?
+
+                target_dependency_table(parsed_manifest, target, type, name)["tag"] = replacement_git_pin if req["tag"]
+
+                next unless req["rev"]
+
+                target_dependency_table(parsed_manifest, target, type, name)["rev"] = replacement_git_pin
+              end
+            end
+          end
+        end
+
+        sig { params(content: String).returns(String) }
+        def replace_ssh_urls(content)
+          parsed_manifest = TomlRB.parse(content)
+
+          Cargo::FileParser::DEPENDENCY_TYPES.each do |type|
+            toml_table_or_empty(parsed_manifest[type]).each do |_, details|
+              details = toml_table_or_empty(details)
+              git = T.cast(details.fetch("git", nil), T.nilable(String))
+              next unless git
+
+              details["git"] = git.gsub(%r{ssh://git@(.*?)/}, 'https://\1/')
+            end
+          end
+
+          TomlRB.dump(parsed_manifest)
+        end
+
+        sig { params(filename: String).returns(String) }
+        def temporary_requirement_for_resolution(filename)
+          original_req = dependency.requirements
+                                   .find { |r| r.file == filename }
+                                   &.requirement_string
+
+          lower_bound_req =
+            if original_req && !unlock_requirement?
+              original_req
+            else
+              ">= #{lower_bound_version}"
+            end
+
+          unless latest_allowable_version &&
+                 Cargo::Version.correct?(latest_allowable_version) &&
+                 Cargo::Version.new(latest_allowable_version) >=
+                 Cargo::Version.new(lower_bound_version)
+            return lower_bound_req
+          end
+
+          lower_bound_req + ", <= #{latest_allowable_version}"
+        end
+
+        # rubocop:disable Metrics/PerceivedComplexity
+        sig { returns(T.any(String, Integer)) }
+        def lower_bound_version
+          @lower_bound_version ||=
+            if git_dependency? && git_dependency_version
+              git_dependency_version
+            elsif !git_dependency? && dependency.version
+              dependency.version
+            else
+              version_from_requirement =
+                dependency.requirements
+                          .filter_map(&:requirement_string)
+                          .flat_map { |req_str| Cargo::Requirement.new(req_str) }
+                          .flat_map(&:requirements)
+                          .reject { |req_array| req_array.first.start_with?("<") }
+                          .map(&:last)
+                          .max&.to_s
+
+              version_from_requirement || 0
+            end
+        end
+        # rubocop:enable Metrics/PerceivedComplexity
+
+        sig { returns(T.nilable(String)) }
+        def git_dependency_version
+          return unless lockfile
+
+          version = dependency.version
+          return unless version
+
+          packages = T.cast(
+            TomlRB.parse(T.must(lockfile).content).fetch("package", []),
+            T::Array[T::Hash[String, T.anything]]
+          )
+          package = packages
+                    .select { |p| T.cast(p["name"], T.nilable(String)) == dependency.name }
+                    .find do |p|
+                      source = T.cast(p["source"], T.nilable(String))
+                      source&.end_with?(version)
+                    end
+          return unless package
+
+          T.cast(package.fetch("version"), String)
+        end
+
+        sig { params(parsed_manifest: T::Hash[String, T.anything], type: String).returns(T::Array[String]) }
+        def dependency_names_for_type(parsed_manifest, type)
+          names = []
+          toml_table_or_empty(parsed_manifest.fetch(type, {})).each do |nm, req|
+            req = dependency_declaration(req)
+            next unless dependency.name == name_from_declaration(nm, req)
+
+            names << nm
+          end
+          names
+        end
+
+        sig do
+          params(parsed_manifest: T::Hash[String, T.anything], type: String, target: String).returns(T::Array[String])
+        end
+        def dependency_names_for_type_and_target(parsed_manifest, type, target)
+          names = []
+          target_details = toml_table_or_empty(toml_table_or_empty(parsed_manifest["target"])[target])
+          toml_table_or_empty(target_details[type]).each do |nm, req|
+            req = dependency_declaration(req)
+            next unless dependency.name == name_from_declaration(nm, req)
+
+            names << nm
+          end
+          names
+        end
+
+        sig { params(name: String, declaration: T.any(String, T::Hash[String, T.anything])).returns(String) }
+        def name_from_declaration(name, declaration)
+          return name if declaration.is_a?(String)
+
+          T.cast(declaration.fetch("package", name), String)
+        end
+
+        sig do
+          params(
+            parsed_manifest: T::Hash[String, T.anything],
+            target: String,
+            type: String
+          ).returns(T::Hash[String, T.anything])
+        end
+        def target_dependency_type_table(parsed_manifest, target, type)
+          target_details = toml_table_or_empty(toml_table_or_empty(parsed_manifest["target"])[target])
+          toml_table_or_empty(target_details[type])
+        end
+
+        sig do
+          params(
+            parsed_manifest: T::Hash[String, T.anything],
+            target: String,
+            type: String,
+            name: String
+          ).returns(T.any(String, T::Hash[String, T.anything]))
+        end
+        def target_dependency_declaration(parsed_manifest, target, type, name)
+          T.cast(
+            target_dependency_type_table(parsed_manifest, target, type)[name],
+            T.any(String, T::Hash[String, T.anything])
+          )
+        end
+
+        sig do
+          params(
+            parsed_manifest: T::Hash[String, T.anything],
+            target: String,
+            type: String,
+            name: String
+          ).returns(T::Hash[String, T.anything])
+        end
+        def target_dependency_table(parsed_manifest, target, type, name)
+          toml_table_or_empty(target_dependency_type_table(parsed_manifest, target, type)[name])
+        end
+
+        sig { params(value: T.anything).returns(T::Hash[String, T.anything]) }
+        def toml_table_or_empty(value)
+          obj = T.cast(value, T.nilable(Object))
+          obj.is_a?(Hash) ? obj : {}
+        end
+
+        sig { params(value: T.anything).returns(T.any(String, T::Hash[String, T.anything])) }
+        def dependency_declaration(value)
+          return T.cast(value, String) if T.cast(value, T.nilable(Object)).is_a?(String)
+
+          T.cast(value, T::Hash[String, T.anything])
+        end
+
+        sig { returns(T::Array[Dependabot::DependencyFile]) }
+        def manifest_files
+          @manifest_files ||=
+            dependency_files.select { |f| f.name.end_with?("Cargo.toml") }
+
+          raise "No Cargo.toml!" if @manifest_files.none?
+
+          @manifest_files
+        end
+
+        sig { returns(T.nilable(Dependabot::DependencyFile)) }
+        def lockfile
+          @lockfile ||= dependency_files.find { |f| f.name == "Cargo.lock" }
+        end
+
+        sig { returns(T.nilable(Dependabot::DependencyFile)) }
+        def toolchain
+          @toolchain ||=
+            dependency_files.find { |f| f.name == "rust-toolchain" }
+        end
+
+        sig { returns(T::Boolean) }
+        def git_dependency?
+          GitCommitChecker
+            .new(dependency: dependency, credentials: [])
+            .git_dependency?
+        end
+      end
+    end
+  end
+end

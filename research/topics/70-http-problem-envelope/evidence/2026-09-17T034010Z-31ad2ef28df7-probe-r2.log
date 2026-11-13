@@ -1,0 +1,64 @@
+=== R70 revision 2 probe: the moved envelope ===
+date (UTC): 2026-09-19T01:16:49Z
+os: macOS 26.4 (arm64)
+host rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+MSRV toolchain: rustc 1.96.0 (ac68faa20 2026-05-25)
+scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r70-probe-r2.wI5fdh (deleted on exit)
+
+--- 1. build and test at the MSRV floor (1.96.0)
+PASS  cargo test --workspace compiled and ran under rustc 1.96.0
+PASS  MSRV run: 24 criteria passed
+
+--- 2. build and test on the host stable toolchain
+PASS  cargo test --workspace compiled and ran under the host toolchain
+PASS  host run: 24 criteria passed
+PASS  host build emitted no warning
+
+--- 3. the bodies this revision emits
+PASS  the dump example printed six bodies
+      GET /projects/demo -> 404 Not Found application/problem+json
+      {"type":"https://problems.example.com/resource-not-found","status":404,"title":"Not Found","detail":"project 'demo' not found","instance":"/projects/demo","code":"resource_not_found","catalog_code":"RSLB301"}
+      GET /upstream -> 502 Bad Gateway application/problem+json
+      {"type":"https://problems.example.com/upstream-failed","status":502,"title":"Bad Gateway","detail":"An unexpected error occurred.","instance":"/upstream","code":"upstream_failed","catalog_code":"RSLB103"}
+      POST /projects -> 422 Unprocessable Entity application/problem+json
+      {"type":"https://problems.example.com/request-invalid","status":422,"title":"Unprocessable Entity","detail":"The request could not be processed as submitted.","code":"request_invalid","catalog_code":"RSLB201","errors":[{"pointer":"","code":"invalid_body_type","detail":"The request body did not match the expected shape."}]}
+      DELETE /ok -> 405 Method Not Allowed application/problem+json
+      {"type":"https://problems.example.com/request-invalid","status":405,"title":"Method Not Allowed","detail":"This method is not allowed for this path.","code":"request_invalid","catalog_code":"RSLB201"}
+      GET /documented -> 409 Conflict application/problem+json
+      {"type":"https://problems.example.com/conflict","status":409,"title":"Conflict","detail":"The project already exists.","code":"conflict","catalog_code":"RSLB501","documentation":"https://developers.example.com/errors#conflict"}
+      POST /projects?dry_run=true -> 400 Bad Request application/problem+json
+      {"type":"https://problems.example.com/request-invalid","status":400,"title":"Bad Request","detail":"This endpoint does not implement the requested capability.","instance":"/projects","code":"request_invalid","catalog_code":"RSLB201","errors":[{"pointer":"","code":"unsupported_reserved_parameter","detail":"A reserved request parameter was sent to an endpoint that does not implement it."}]}
+PASS  the 404 body is template-bound and carries both codes
+PASS  the 422 body carries R5.15's errors array
+PASS  the dry_run guard answers 400
+PASS  the documented conflict carries the documentation member
+PASS  R5.13.5: no body carries about:blank
+PASS  R4.8: no body carries a null
+PASS  R8.12: no body echoes the upstream token
+PASS  all six dumped responses are labelled application/problem+json == 6
+
+--- 4. R5.16 — the generated catalog
+PASS  the catalog example emitted the published catalog
+      rows 17
+      codes_unique 17
+      catalog_codes_unique 17
+      grammar_ok True
+      https_ok True
+      template_ok True
+      no_about_blank True
+      rslb_ok True
+PASS  catalog: rows 17
+PASS  catalog: codes_unique 17
+PASS  catalog: catalog_codes_unique 17
+PASS  catalog: grammar_ok True
+PASS  catalog: https_ok True
+PASS  catalog: template_ok True
+PASS  catalog: no_about_blank True
+PASS  catalog: rslb_ok True
+
+--- 5. the crate choice does not move
+PASS  the moved envelope still adds exactly two crates == http-serde v2.1.1 problem_details v0.10.0
+PASS  only problems.rs names the crate (containment rule holds) == r70web/src/problems.rs
+
+=== summary ===
+PASS 25  FAIL 0  SKIP 0  TOTAL 25

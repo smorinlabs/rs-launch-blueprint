@@ -1,0 +1,4 @@
+R01 round-3 citation spot-check addendum
+curl_exit=0 http=200 https://doc.rust-lang.org/stable/reference/types/trait-object.html
+curl_exit=0 http=200 https://doc.rust-lang.org/book/ch18-02-trait-objects.html
+curl_exit=0 http=200 https://raw.githubusercontent.com/mozilla/sccache/main/src/cache/cache.rs

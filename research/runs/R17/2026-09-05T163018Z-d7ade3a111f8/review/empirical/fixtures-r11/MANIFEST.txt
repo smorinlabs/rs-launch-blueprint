@@ -1,0 +1,30 @@
+R17 mutations-r11 recorded api.github.com responses
+
+Captured 2026-09-17T02:04:39Z with curl 8.7.1 from a shell holding a declared GitHub token
+(core limit 5000), so the capture itself did not depend on the anonymous 60-request budget.
+Each file is the response body EXACTLY as the endpoint returned it; no field was edited.
+They are replayed by mutations-r11-curl-shim.sh during mutations-r11.sh's two mutant runs and
+nowhere else. The decision's own section-10 and section-12 figures are NOT read from here: they
+come from the live run recorded in secret-scanning-ci-workflow-r8-repo.log.
+
+endpoint (https://api.github.com/...)                               sha256                                                            file
+rate_limit (anonymous request)                                      520cb2369f561f41223ebeebff4e3660fd42ee6f080666cbefcaf226e68b5203  api-rate_limit-anonymous.json
+rate_limit (request carrying Authorization)                         8184e7cf0b3ea472da12dfbaf396631cf573c073b5b1faac02c740ce3722ad9b  api-rate_limit-token.json
+repos/trufflesecurity/trufflehog/releases/tags/v3.97.4              821ff56805c52a5acb5d2081ddbcbc1374f4b0bd15760f7695506ebb993075da  api-repos-trufflesecurity-trufflehog-releases-tags-v3.97.4.json
+repos/trufflesecurity/trufflehog                                    b5eeab2a2f9a333d7e19423dedd3445115a36ab37d7af66e5da5341a1bc553d7  api-repos-trufflesecurity-trufflehog.json
+repos/mongodb/kingfisher                                            ec1cbb7e38fa6218d342c03d15efe86311769e9e24c56bfbef673ad60263c9a0  api-repos-mongodb-kingfisher.json
+repos/gitleaks/gitleaks-action                                      32f4470279030b15eb5e04a4be10dc2769fc0c962ded9f5133f61b62c23a37bc  api-repos-gitleaks-gitleaks-action.json
+
+What each satisfies in run-checks-r8.sh, and what it does NOT:
+  rate_limit            00b, and the HAVE_NET / api-transport branch. The anonymous body reports
+                        limit 60 remaining 0, which is what an anonymous caller genuinely saw at
+                        the capture instant; 00b asserts the LIMIT (60) and never the remainder.
+  releases/tags/v3.97.4 03a (2 darwin + 2 linux tarballs), 03b (1 checksums file + 2 sig/pem).
+  repos/.../trufflehog  10a (archived false), 10b (AGPL-3.0). Its stargazers_count is printed by
+                        the parent check and asserted by nothing; in a mutant run that printed
+                        counter is the FIXTURE's, not a live read, and no claim in DECISION.md
+                        rests on it.
+  repos/mongodb/king... 10c (archived false), 10d (Apache-2.0).
+  repos/gitleaks/...    11c (license.spdx_id NOASSERTION). 11a and 11b still read the README
+                        LIVE from raw.githubusercontent.com at the pinned commit, and 11b asserts
+                        its sha256, so the pinned-file half of section 11 is not fixture-fed.

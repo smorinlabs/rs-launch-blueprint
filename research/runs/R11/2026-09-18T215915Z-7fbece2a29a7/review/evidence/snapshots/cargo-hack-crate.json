@@ -1,0 +1,7 @@
+{
+  "downloads": 1893214,
+  "endpoint": "GET https://crates.io/api/v1/crates/cargo-hack",
+  "max_stable_version": "0.6.45",
+  "recent_downloads": 219720,
+  "retrieved_utc": "2026-09-18T22:51:28Z"
+}

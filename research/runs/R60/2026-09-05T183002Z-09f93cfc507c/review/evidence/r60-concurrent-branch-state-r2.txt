@@ -1,0 +1,14 @@
+Concurrent work by other research items on branch research/p02-execution.
+Captured by r60-preservation-diff-r2.sh. VOLATILE: other sessions write to
+this branch, so this file legitimately differs between runs. Nothing in
+R60's decision rests on it; it exists so this revision's change set is
+distinguishable from work that is not R60's. Reported, never staged.
+
+ M R18 (other item)
+ M R49 (other item)
+ M R63 (other item)
+?? R17 (other item)
+?? R18 (other item)
+?? R49 (other item)
+?? R63 (other item)
+?? R81 (other item)

@@ -1,0 +1,106 @@
+== R73 standard conformance ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+date_utc: 2026-09-27T06:28:50Z
+standard_repo: /Users/stevemorin/c/rest-standards
+PASS C0-commit — commit 0850d43e45d919ef5e37f7174c4212b46013c49f exists in the standard clone
+PASS C0-blob — blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 reads back 3427 lines
+PASS C0-bind — rest-api-standard.md at 0850d43e45d919ef5e37f7174c4212b46013c49f is exactly blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+PASS C0-version — the pinned blob declares Version 2.0.0
+
+-- 1.6 / 1.7 / 1.8 / 1.9 applicability, deviation, reserved names --
+PASS C1-R1.6 — line 229 carries "Rules that only make sense for APIs with a given capability" — switch vocabulary governs the streaming scope declaration
+        :229: **R1.6** Rules that only make sense for APIs with a given capability are
+PASS C1-R1.7 — line 271 carries "An API deviates from this standard only in" — no silent deviation; a SHOULD departure is recorded
+        :271: **R1.7 — No silent deviation.** An API deviates from this standard only in
+PASS C1-R1.8 — line 312 carries "MUST NOT use a reserved" — reservation discipline, which Idempotency-Key is inside
+        :312: **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+PASS C1-R1.9 — line 318 carries "`dry_run` is reserved standard-wide" — the dry-run guard the layer must not consume a key for
+        :318: **R1.9 — `dry_run` rejection guard.** `dry_run` is reserved standard-wide:
+PASS C1-hdr — line 347 carries "`Idempotency-Key` | Request |" — the reserved request header this layer reads
+        :347: | `Idempotency-Key` | Request | Idempotency key on non-idempotent state-changing requests; Stripe semantics — payload fingerprint, reuse with a different payload rejected; retained ≥ 24 h. `[POLICY]` — the IETF draft that standardized this shape expired 2026-04-18; never cite it as a standard | `AC-016`/`AC-017` (completed) |
+PASS C1-draft — line 347 carries "never cite it as a standard" — the expired IETF draft is evidence, never authority
+        :347: | `Idempotency-Key` | Request | Idempotency key on non-idempotent state-changing requests; Stripe semantics — payload fingerprint, reuse with a different payload rejected; retained ≥ 24 h. `[POLICY]` — the IETF draft that standardized this shape expired 2026-04-18; never cite it as a standard | `AC-016`/`AC-017` (completed) |
+
+-- 3.1 / 3.2 method semantics --
+PASS C2-R3.1 — line 582 carries "MUST be" — method and status semantics are cited from RFC 9110/9111
+        :582: **R3.1** Method, status-code, validator, and caching semantics MUST be
+PASS C2-R3.3 — line 597 carries "registered safety and idempotence" — the scope rule for which methods carry a key
+        :597: **R3.3** Methods MUST be used per their registered safety and idempotence.
+
+-- 3.4 idempotency keys: the directly-on-point section --
+PASS C3-head — line 649 carries "### 3.4 Idempotency keys" — the section heading is where this decision says it is
+        :649: ### 3.4 Idempotency keys
+PASS C3-R3.9a — line 651 carries "MUST accept an idempotency key" — accepting the key is mandatory on non-idempotent state change
+        :651: **R3.9** An API MUST accept an idempotency key on non-idempotent
+PASS C3-R3.9b — line 652 carries "`Idempotency-Key` request header" — the header spelling is fixed by the standard
+        :652: state-changing requests, carried in the `Idempotency-Key` request header
+PASS C3-R3.9c — line 653 carries "the server fingerprints the request payload" — a payload fingerprint is mandatory, not optional
+        :653: (Stripe semantics): the server fingerprints the request payload, replays
+PASS C3-R3.9-stripe — line 653 carries "(Stripe semantics): the server fingerprints" — the parenthetical is defined by the three duties after its colon, none of which is a status rule
+        :653: (Stripe semantics): the server fingerprints the request payload, replays
+PASS C3-R3.9d — line 654 carries "the stored response for a genuine retry" — replay is the required behaviour
+        :654: the stored response for a genuine retry, and rejects a reused key carrying
+PASS C3-R3.9e — line 655 carries "a different payload" — a reused key with a different payload is rejected
+        :655: a different payload. **Exception:** naturally idempotent operations (PUT
+PASS C3-exempt — line 661 carries "**Header exemption.**" — the URI-names-the-work relaxation, not used here
+        :661: **Header exemption.** Where the **request target itself names the work**, the
+PASS C3-retain — line 668 carries "The stated retention window MUST be at least" — the 24-hour retention floor
+        :668: The stated retention window MUST be at least
+PASS C3-stream — line 671 carries "For a streaming request" — the streaming clause, scoped by the §1.8 streaming switch
+        :671: For a streaming request, "the stored response" means the terminal state
+PASS C3-policy — line 673 carries "`[POLICY]` This convention has no standards backing" — the section is house policy, not protocol
+        :673: replayable — not the original frame sequence. `[POLICY]` This convention has no standards backing — the IETF
+PASS C3-expired — line 674 carries "expired 2026-04-18" — the draft expiry the standard itself records
+        :674: draft that standardized the shape expired 2026-04-18 — and MUST NOT be
+PASS C3-redact — line 675 carries "cited as a standard" — the draft must not be cited as a standard
+        :675: cited as a standard. Deployments needing keys kept out of intermediary
+
+-- 3.6 dry-run --
+PASS C4-R3.12 — line 716 carries "A mutating endpoint that offers a rehearsal" — the dry-run contract
+        :716: **R3.12** A mutating endpoint that offers a rehearsal accepts
+PASS C4-key — line 728 carries "MUST NOT consume an" — a rehearsal never consumes a key
+        :728: 4. MUST NOT consume an `Idempotency-Key` (R3.9).
+
+-- 4.2 / 4.4 representation and extension hygiene --
+PASS C5-R4.3 — line 762 carries "object at the top level" — error bodies are objects, which R70 owns
+        :762: **R4.3** Every JSON response body MUST have an object at the top level —
+PASS C5-R4.12 — line 880 carries "RFC 9651 structured" — new header fields use structured field types
+        :880: **R4.12** New header fields SHOULD be defined using RFC 9651 structured
+PASS C5-R4.17 — line 868 carries "Access-Control-Expose-Headers" — the CORS exposure duty handed to R76
+        :868: response header in use — in `Access-Control-Expose-Headers`. None of
+
+-- 5.1 / 5.2 / 5.3 statuses and errors --
+PASS C6-R5.1 — line 916 carries "MUST match the registered semantics" — the status matches the outcome known when generated
+        :916: **R5.1** The status code MUST match the registered semantics of the
+PASS C6-R5.1b — line 918 carries "operation MUST NOT return 2xx" — why a failure is never stored as a replayable 2xx
+        :918: operation MUST NOT return 2xx.
+PASS C6-R5.2 — line 934 carries "Unregistered status codes MUST NOT" — every status used here is registered
+        :934: **R5.2** Unregistered status codes MUST NOT be defined or used.
+PASS C6-R5.3a — line 939 carries "`422 Unprocessable Content` SHOULD be used for semantically" — the 422 assignment, derived from the standard not the draft
+        :939: **R5.3** `422 Unprocessable Content` SHOULD be used for semantically
+PASS C6-R5.3b — line 941 carries "current resource state" — the 409 assignment
+        :941: current resource state; `400 Bad Request` remains correct for malformed
+PASS C6-R5.3c — line 941 carries "`400 Bad Request` remains correct for malformed" — the 400 assignment
+        :941: current resource state; `400 Bad Request` remains correct for malformed
+PASS C6-R5.6 — line 967 carries "`201 Created` with a `Location` header" — a replayed create must still carry Location
+        :967: client-supplied ID — MUST return `201 Created` with a `Location` header
+PASS C6-R5.12 — line 1020 carries "as `application/problem+json`" — error bodies are R70 problem documents
+        :1020: application itself generates as `application/problem+json` (RFC 9457)
+PASS C6-R5.13 — line 1049 carries "MUST carry" — the problem-document member set R70 owns
+        :1049: **R5.13** Every problem document **carried in an HTTP response** MUST carry
+PASS C6-R5.13-5 — line 1076 carries "5. `type` MUST be present on every problem document, and `about:blank`" — the point R70 revision 1 missed and R70 revision 4 now meets (move M-1)
+        :1076: 5. `type` MUST be present on every problem document, and `about:blank`
+
+-- 11 retryability and observability --
+PASS C7-R11.6 — line 1743 carries "MUST document which failure classes are retryable" — the 2xx-only rule is what this documents
+        :1743: **R11.6** An API MUST document which failure classes are retryable. The
+PASS C7-R11.7 — line 1752 carries "MUST carry the `request-id`" — why a replay must not carry a stale correlation id
+        :1752: **R11.7** Every response, including errors, MUST carry the `request-id`
+
+-- derived conformance assertions --
+PASS C8-retention — the retention floor is 24 hours, which the recommended entry ttl of 86400 s meets exactly
+PASS C8-put — R3.9 exempts a representation-storing PUT, so including PUT in scope is a permitted superset
+PASS C9-control — line 1098 carries "RFC 7807 MUST NOT be cited" — control — an unrelated rule reads back, so the quoting mechanism works
+        :1098: **R5.14** RFC 7807 MUST NOT be cited — it is obsoleted by RFC 9457.
+
+CHECKS RUN: 45 PASS: 45 FAIL: 0 SKIP: 0

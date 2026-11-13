@@ -1,0 +1,8 @@
+pass 1  started 2026-09-18T221648Z  ended 2026-09-18T221654Z  exit 0
+  states: openai running, perplexity completed, gemini completed
+  newly completed: perplexity, gemini
+  terminal: no — openai still running
+pass 2  started 2026-09-18T222621Z  ended 2026-09-18T222623Z  exit 0
+  states: openai completed, perplexity completed, gemini completed
+  newly completed: openai
+  terminal: yes

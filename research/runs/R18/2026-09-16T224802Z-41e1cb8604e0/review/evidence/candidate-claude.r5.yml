@@ -1,0 +1,210 @@
+# LINT FIXTURE ONLY — not a shipped workflow. Revision 5 of the assistant-lane
+# candidate (revision 6 of review/DECISION.md). See the header of
+# candidate-claude-code-review.r5.yml for the preflight mechanism, the two
+# credential shapes, their precedence and their setup costs. The revision-2,
+# revision-3 and revision-4 fixtures (candidate-claude.yml, .r3.yml, .r4.yml)
+# are left byte-for-byte as they were linted and audited.
+#
+# CHANGE 1 FROM REVISION 4 — `vars.ENABLE_CLAUDE_ASSISTANT` is removed
+# entirely, on the owner's direction of 2026-09-12. The lane runs when a
+# credential is present and is skipped with a printed reason when it is not.
+# Anyone who does not want it deletes this file.
+#
+# CHANGE 2 FROM REVISION 4 — BOT EXCLUSION, AND IT CLOSES A GAP RATHER THAN
+# RESTATING A CONTROL. The revision-4 assistant fixture carried NO bot check of
+# any kind, while the review-lane fixture carried two. Guard-contract clause (b)
+# in review/DECISION.md — "neither lane runs when either the author or the run's
+# initiator is a bot" — was therefore true of one lane only. The gap matters
+# because this decision's own source read found that the action's internal write
+# check does not close it: src/github/validation/permissions.ts:114 is
+# `if (actor.endsWith("[bot]")) { … return true; }`, i.e. checkWritePermissions
+# returns true unconditionally for any actor whose login ends in `[bot]`, and
+# the refusal of App actors lives entirely in checkHumanActor, a different
+# function called later. Revision 6 adds two type-based checks per event:
+# `github.event.sender.type != 'Bot'` for the run's initiator, and the
+# triggering content's own author (`comment.user.type`, `review.user.type`,
+# `issue.user.type`). Type-based, not a name denylist, for the reason
+# review/DECISION.md gives in `## Engines` §2: a type check is
+# name-independent and catches every bot without enumeration.
+#
+# CORRECTION 1 (carried from revision 4) — an organization MEMBER without write
+# access is refused, but the refusal does NOT live in either mode. At v1.0.220
+# (action-entrypoint-plugins-v1.0.220.log, E2):
+#   src/entrypoints/prepare.ts:37  const githubToken = await setupGitHubToken();
+#   src/entrypoints/prepare.ts:44  await checkWritePermissions(...)   <- shared entrypoint
+#   src/modes/tag/index.ts:43      await checkHumanActor(...)         <- per mode
+#   src/modes/agent/index.ts:30    await checkHumanActor(...)         <- per mode
+# `grep -c checkWritePermissions` is 0 in both mode files.
+#
+# CORRECTION 2 (carried from revision 4) — the ordering, which is the reason the
+# job-level `if:` below is load-bearing rather than merely defence in depth.
+# setupGitHubToken() at prepare.ts:37 runs BEFORE the write check at :44 and
+# before checkHumanActor in either mode. It exchanges the workflow's OIDC token
+# for a Claude GitHub App installation token at
+# https://api.anthropic.com/api/github/github-app-token-exchange
+# (src/github/token.ts:121). Because this lane sets `additional_permissions`,
+# parseAdditionalPermissions() returns a value, so token.ts:100 sends
+# DEFAULT_PERMISSIONS merged with it — contents: write, pull_requests: write,
+# issues: write, actions: read (token.ts:69-73). A write-capable App token is
+# therefore requested before any actor-trust check inside the action returns.
+# Whether anything attacker-controlled is processed in that window was NOT
+# traced: that is U14, and it is P03's to settle.
+#
+# WHAT AN ADOPTER ACCEPTS BY INSTALLING A CREDENTIAL. There is no flag to set,
+# so installing a credential is itself the act of acceptance, taken by whoever
+# installs it:
+#   AND IF THE CREDENTIAL IS ALREADY THERE, NOBODY ACCEPTS ANYTHING: a
+#   repository that already holds ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN
+#   as a secret for any other purpose gets this lane live on the next
+#   qualifying event with no act of acceptance taken and nothing printed — the
+#   notice below fires only when NO credential is found — so everything listed
+#   here is accepted by default rather than by choice.
+#   1. On a PUBLIC repository this lane is reachable from text that an OWNER,
+#      MEMBER or COLLABORATOR writes, and such an author routinely quotes
+#      untrusted content — an issue body, a fork pull request's diff, a stack
+#      trace. Neither the prefilter below nor any action-side check separates a
+#      trusted author's own words from untrusted text that author pasted. This
+#      residual is not removable by configuration.
+#   2. CLAUDE_CODE_SUBPROCESS_ENV_SCRUB is INACTIVE in this configuration:
+#      action.yml:301 emits it only when allowed_non_write_users is non-empty,
+#      which this configuration deliberately leaves at "".
+#   3. The prefilter below is the only actor-trust control that acts before the
+#      job is scheduled. Its runtime effect is U12 and is unproven by this
+#      research.
+#
+# The association clause below is the exact shape asked for by upstream issue
+# anthropics/claude-code-action#1068 ("Default workflow template missing author
+# trust gate — secrets exposed on public repos", open, labels bug /
+# documentation / area:permissions / p1 — issue-1068.log). It is a prefilter,
+# not a permission check: `author_association` is not the same predicate as
+# write access. The owner considered a genuine write-permission check on
+# 2026-09-12 and chose association as the more accurate test, so none is added.
+# It would NOT have stopped the 2026-06-01 GMO Flatt Security disclosure's
+# Phase 2, whose triggering comment was authored by a trusted user and whose
+# body was tampered with afterwards; that vector is closed instead by the
+# action's own isBodySafeToUse at v1.0.220.
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  credential-preflight:
+    # Not gated on credential presence — a job-level `if:` cannot read
+    # `secrets`. Every trigger, bot and author-trust guard sits here, so an
+    # event the guards reject starts nothing at all and spends no runner
+    # minutes. `github.event.sender.type` is the run's initiator; the per-event
+    # `*.user.type` is the triggering content's own author, which differs from
+    # the initiator on `issues: [assigned]`.
+    if: |
+      github.event.sender.type != 'Bot' &&
+      ((github.event_name == 'issue_comment' && github.event.comment.user.type != 'Bot' &&
+        contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+       (github.event_name == 'pull_request_review_comment' && github.event.comment.user.type != 'Bot' &&
+        contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+       (github.event_name == 'pull_request_review' && github.event.review.user.type != 'Bot' &&
+        contains(github.event.review.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+       (github.event_name == 'issues' && github.event.issue.user.type != 'Bot' &&
+        (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)))
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      credential: ${{ steps.detect.outputs.credential }}
+    env:
+      # `secrets` is available in jobs.<job_id>.env and nowhere a job condition
+      # can read. This block is the whole reason the preflight exists.
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+    steps:
+      - name: Detect which Claude credential shape is configured
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${ANTHROPIC_API_KEY:-}" ] || [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+            shape=static
+          elif [ -n "${ANTHROPIC_FEDERATION_RULE_ID:-}" ] && [ -n "${ANTHROPIC_ORGANIZATION_ID:-}" ]; then
+            shape=federation
+          else
+            shape=none
+          fi
+          echo "credential=${shape}" >> "${GITHUB_OUTPUT}"
+          if [ "${shape}" = none ]; then
+            echo "::notice title=Claude assistant not configured::No Claude credential is set, so the assistant job is skipped. This is not an error."
+            {
+              echo "### Claude assistant skipped — no credential configured"
+              echo
+              echo "The assistant job did not run because no Claude credential is set."
+              echo "Set **one** of the two shapes, not both:"
+              echo
+              echo "- Static credential: repository secret \`ANTHROPIC_API_KEY\`, or \`CLAUDE_CODE_OAUTH_TOKEN\` from \`claude setup-token\`."
+              echo "- Workload identity federation: repository variables \`ANTHROPIC_FEDERATION_RULE_ID\` and \`ANTHROPIC_ORGANIZATION_ID\` (and optionally \`ANTHROPIC_SERVICE_ACCOUNT_ID\`)."
+              echo
+              echo "If you do not want an AI assistant on this repository, delete \`.github/workflows/claude.yml\`."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "Claude credential shape detected: ${shape}"
+          fi
+
+  claude:
+    needs: credential-preflight
+    # The preflight's output is a literal string, never a secret-derived value,
+    # so it survives as a job output.
+    #
+    # WHY THE PREDICATE IS POSITIVE RATHER THAN `!= 'none'`. A SKIPPED preflight
+    # — which is what a rejected @claude, association or bot guard does to it —
+    # leaves needs.credential-preflight.outputs.credential as the EMPTY STRING,
+    # and `'' != 'none'` evaluates TRUE. On this lane that matters most: a
+    # negative predicate would leave a bot-authored comment's exclusion resting
+    # entirely on the platform's skip-propagation rule. `== 'static' ||
+    # == 'federation'` is false on an empty output as well as on 'none', so the
+    # bot and association guards bind this job through the value, not only
+    # through the dependency.
+    if: >-
+      needs.credential-preflight.outputs.credential == 'static'
+      || needs.credential-preflight.outputs.credential == 'federation'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      # None of this lane's four events is a `pull_request` event, so GITHUB_REF
+      # is the default branch and this checkout brings in no pull-request head
+      # content. Guard-contract clause (a), "never runs on a fork pull request",
+      # binds the review lane only; see review/DECISION.md.
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@v1.0.220
+        with:
+          # Both shapes are passed. An unset secret or variable arrives as an
+          # empty string, which the action treats as absent
+          # (workload-identity.ts, `?.trim()`); a static credential takes
+          # precedence over federation when both are set.
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          additional_permissions: |
+            actions: read
+          # No `prompt:` input — omitting it selects interactive @claude mode.

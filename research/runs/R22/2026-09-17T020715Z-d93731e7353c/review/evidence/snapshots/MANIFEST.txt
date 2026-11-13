@@ -1,0 +1,32 @@
+# R22 evidence snapshots. Every file below was fetched once, on the UTC date in
+# its row, from the endpoint in its row, with
+#   User-Agent: rs-launch-blueprint-research (https://github.com/smorinlabs/rs-launch-blueprint)
+# r22-sources.sh asserts each file's sha256 against SHA256SUMS.txt and then
+# asserts on its content, so every claim this decision draws from a live source
+# is reproducible byte-for-byte after the source moves.
+#
+# file | retrieved (UTC) | endpoint
+crates-built.json | 2026-09-18 | GET https://crates.io/api/v1/crates/built
+crates-built-versions.json | 2026-09-18 | GET https://crates.io/api/v1/crates/built/versions
+crates-shadow-rs.json | 2026-09-18 | GET https://crates.io/api/v1/crates/shadow-rs
+crates-shadow-rs-versions.json | 2026-09-18 | GET https://crates.io/api/v1/crates/shadow-rs/versions
+crates-vergen-gix.json | 2026-09-18 | GET https://crates.io/api/v1/crates/vergen-gix
+crates-vergen-gix-versions.json | 2026-09-18 | GET https://crates.io/api/v1/crates/vergen-gix/versions
+channel-rust-stable-excerpt.toml | 2026-09-18 | GET https://static.rust-lang.org/dist/channel-rust-stable.toml (excerpt: manifest header and [pkg.rust])
+gh-shadow-rs-issue-262.json | 2026-09-18 | GET https://api.github.com/repos/baoyachi/shadow-rs/issues/262
+gh-repo-apache-arrow-rs.json | 2026-09-18 | GET https://api.github.com/repos/apache/arrow-rs
+gh-repo-xiph-rav1e.json | 2026-09-18 | GET https://api.github.com/repos/xiph/rav1e
+gh-repo-open-telemetry-opentelemetry-rust.json | 2026-09-18 | GET https://api.github.com/repos/open-telemetry/opentelemetry-rust
+rustsec-git2.html | 2026-09-18 | GET https://rustsec.org/packages/git2.html
+arrow-rs-main.sha | 2026-09-18 | GET https://api.github.com/repos/apache/arrow-rs/commits/main -> .sha
+arrow-lib.rs.txt | 2026-09-18 | GET https://raw.githubusercontent.com/apache/arrow-rs/<arrow-rs-main.sha>/arrow/src/lib.rs
+rav1e-master.sha | 2026-09-18 | GET https://api.github.com/repos/xiph/rav1e/commits/master -> .sha
+rav1e-lib.rs.txt | 2026-09-18 | GET https://raw.githubusercontent.com/xiph/rav1e/<rav1e-master.sha>/src/lib.rs
+opentelemetry-rust-main.sha | 2026-09-18 | GET https://api.github.com/repos/open-telemetry/opentelemetry-rust/commits/main -> .sha
+otel-zipkin-lib.rs.txt | 2026-09-18 | GET https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/<opentelemetry-rust-main.sha>/opentelemetry-zipkin/src/lib.rs
+otel-sdk-lib.rs.txt | 2026-09-18 | GET https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/<opentelemetry-rust-main.sha>/opentelemetry-sdk/src/lib.rs
+clap-main.sha | 2026-09-18 | GET https://api.github.com/repos/clap-rs/clap/commits/main -> .sha
+clap-builder-macros.rs.txt | 2026-09-18 | GET https://raw.githubusercontent.com/clap-rs/clap/<clap-main.sha>/clap_builder/src/macros.rs
+clap-derive-item-excerpt.txt | 2026-09-18 | GET https://raw.githubusercontent.com/clap-rs/clap/<clap-main.sha>/clap_derive/src/item.rs, then reduced to the two cited regions (original lines 548-560 and 1268-1292), each line prefixed with its ORIGINAL line number and a tab. The rest of the file, including the copyright header carrying the maintainers' personal email addresses, is NOT committed.
+cargo-book-excerpts.txt | 2026-09-18 | GET https://doc.rust-lang.org/cargo/reference/environment-variables.html and .../build-scripts.html (three plain-text excerpts)
+cli-design-standard-v1.4.14-excerpt.md | 2026-09-18 | git -C /Users/stevemorin/c/cli-standards show f9de0437baece3383e73ca2c5f48b7ab399b51c7 (lines 237-244 and 275-278)

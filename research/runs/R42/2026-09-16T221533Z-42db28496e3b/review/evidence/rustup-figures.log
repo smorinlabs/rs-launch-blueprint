@@ -1,0 +1,19 @@
+# R42 revision 5 — the two figures the revision-4 table asserted without a query.
+# Run 2026-09-10T07:05:07Z. Working directory: the run directory. Read-only HTTP GETs.
+
+--- RustSec advisory page for rustup, with the same HTTP-200 controls check 7 used
+rustup               404
+time                 200
+atty                 200
+
+--- crates.io licence for the rustup crate: GET https://crates.io/api/v1/crates/rustup
+HTTP 200
+newest_version 0.0.0
+max_stable_version None
+newest version record license: ['MIT']
+newest version num: ['0.1.0']
+yanked: [True]
+
+--- GitHub license.spdx_id for rust-lang/rustup and rust-lang/cargo (for the licence column's source)
+{"license":"Apache-2.0","repo":"rust-lang/rustup"}
+{"license":"Apache-2.0","repo":"rust-lang/cargo"}

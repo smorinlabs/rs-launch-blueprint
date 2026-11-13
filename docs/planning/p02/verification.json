@@ -1,0 +1,14 @@
+{
+  "graph_parity": "PASS: independent reconstruction, 84 nodes, 66 edges, layers 33/19/15/17",
+  "schedule": "PASS: all 84 unique IDs",
+  "tier_counts": {
+    "Light": 6,
+    "Focused": 53,
+    "Deep": 25
+  },
+  "local_markdown_links": "PASS",
+  "current_plan_capture": "PASS: verbatim P02 and RUNBOOK",
+  "canonical_structural_gate": "PASS: bash scripts/check-research-tree.sh --require-owner-review returned 0",
+  "contract_reproductions": "PASS: three current defects reproduced in disposable copies",
+  "limits": "Doxa auth/paid async probe and binding research were not executed; no code fixes, commits, tags or PRs"
+}

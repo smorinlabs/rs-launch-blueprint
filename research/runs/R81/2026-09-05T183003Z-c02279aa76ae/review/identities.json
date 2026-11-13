@@ -1,0 +1,46 @@
+{
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T183003Z-c02279aa76ae-r5",
+      "family": "openai",
+      "file": "review/audit-codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T183003Z-c02279aa76ae-r5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "review/evidence/docs-delivery-claims-r5.sh"
+    ],
+    "cwd": "/private/tmp/r81-audit.ClOOU4/repo/research/runs/R81/2026-09-05T183003Z-c02279aa76ae, an isolated clone",
+    "exit_code": 0,
+    "output_log": "review/evidence/audit-docs-delivery-model-r5.log",
+    "toolchain": "rustc 1.98.0; cargo 1.98.0; gh 2.98.0; Darwin 25.4.0 arm64. The revision-5 script was run three times and exited 0 each time with 126 PASS, 0 FAIL and 'failed assertions: 0'; the recorded r5 log and all three reruns diffed empty. The same audit also reran the superseded review/evidence/docs-delivery-claims.sh and docs-delivery-claims-r4.sh, which exit 1 by construction because they assert the revision-3 and revision-4 texts this revision replaced."
+  },
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+      "family": "openai",
+      "file": "raw/codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+      "family": "anthropic",
+      "file": "raw/opus.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T183003Z-c02279aa76ae-r5",
+    "family": "anthropic",
+    "model": "claude-opus-5"
+  }
+}

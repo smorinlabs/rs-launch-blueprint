@@ -1,0 +1,116 @@
+=== R76 CORS-layer probe checks ===
+date(UTC): 2026-09-27T07:08:36Z
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+os:    macOS 26.4 arm64
+grep:  grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+--- A. the committed lockfiles: every arm resolves exactly the recorded tree ---
+LOCK  snapshots/probe-with.Cargo.lock sha256 = 2223bdbce4dc20e73240f7863eb6ffc8cc42e0ce662c8e46f4a5a379f086ed05
+LOCK  snapshots/probe-v06.Cargo.lock sha256 = 2a6e2e926bc7d0db735daeb65cdf24573fa695266b3350da8bf680a3c95898a3
+LOCK  snapshots/probe-without.Cargo.lock sha256 = fa4eb3f7be9cc67c76b794af99e3f3e11f33f32daf6b7e7ae8a6830538eb86f9
+FIGURE resolved tower-http = 0.7.1; bitflags = 2.13.2
+ASSERT ok   the probe resolves the exact tower-http version this decision recommends
+
+--- B. the twelve observations, on tower-http 0.7.1 ---
+  CHECK A status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8}
+  CHECK Q1 status=405 Method Not Allowed headers={allow=GET,HEAD, content-length=0}
+  CHECK Q2-get status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK Q2-options status=200 OK headers={allow=GET,HEAD, content-length=0, vary=origin}
+  CHECK Q3-get status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK Q3-options status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, allow=GET,HEAD, content-length=0, vary=origin}
+  CHECK C status=200 OK headers={access-control-allow-origin=https://app.example, content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK D status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK E status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, access-control-max-age=600, allow=GET,HEAD, content-length=0, vary=origin}
+  CHECK R1 status=200 OK handler_hits=0
+  CHECK P2 status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, vary=origin}
+  CHECK P3 status=404 Not Found headers={}
+  CHECK H parse_is_err=true
+ASSERT ok   criterion 1: with the allowlist empty the response carries neither access-control-allow-origin nor vary — the router is observably the one a build with no CORS code produces
+ASSERT ok   criterion 2: with the allowlist empty an OPTIONS preflight on a GET-only route is still 405 Method Not Allowed
+ASSERT ok   unconditional install, bare CorsLayer::new(): every response gains vary: origin, which criterion 1 forbids
+ASSERT ok   unconditional install, bare CorsLayer::new(): OPTIONS on a GET-only route becomes 200, not 405, which criterion 2 forbids
+ASSERT ok   unconditional install configured with py's literal empty list: every response still gains vary: origin
+ASSERT ok   unconditional install configured with py's literal empty list: OPTIONS becomes 200 and even advertises allow-headers and allow-methods, so an empty allowlist is not observationally equivalent to no layer
+ASSERT ok   criterion 3: with the allowlist configured, a GET from the allowed origin has that origin echoed back
+ASSERT ok   criterion 4: with the allowlist configured, a GET from a different origin receives no access-control-allow-origin
+ASSERT ok   criterion 5, and the report gap this run closes: .max_age(Duration::from_secs(600)) compiles and emits access-control-max-age: 600, matching Starlette's always-emitted 600 s default
+ASSERT ok   criterion 5 again, from the handler's side: a preflight short-circuits before the inner service runs — the constraint R75 must order around
+ASSERT ok   Router::layer answers a preflight for a path no route matches, which is what a preflight needs
+ASSERT ok   Router::route_layer does not, returning a bare 404 — so .layer(), not .route_layer(), is the right call
+ASSERT ok   criterion 6: a syntactically invalid origin fails at HeaderValue parsing, so it fails while the router is built rather than at request time
+
+--- C. what 0.7.0's cors change is observable as: the same probe on 0.6.11 ---
+  CHECK A status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8}
+  CHECK Q1 status=405 Method Not Allowed headers={allow=GET,HEAD, content-length=0}
+  CHECK Q2-get status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK Q2-options status=200 OK headers={allow=GET,HEAD, content-length=0, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK Q3-get status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK Q3-options status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, allow=GET,HEAD, content-length=0, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK C status=200 OK headers={access-control-allow-origin=https://app.example, content-length=2, content-type=text/plain; charset=utf-8, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK D status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK E status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, access-control-max-age=600, allow=GET,HEAD, content-length=0, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK R1 status=200 OK handler_hits=0
+  CHECK P2 status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, vary=origin, access-control-request-method, access-control-request-headers}
+  CHECK P3 status=404 Not Found headers={}
+  CHECK H parse_is_err=true
+ASSERT ok   on 0.6.11 the recommended configuration emits vary: origin, access-control-request-method, access-control-request-headers, where 0.7.1 emits vary: origin alone — the #674 relaxation, observable in this template's own configuration
+ASSERT ok   the conditional-install policy behaves identically on 0.6.11: with the allowlist empty there is still no layer and no header
+ASSERT ok   and the 405 on an unconfigured preflight is a property of not installing, not of the version
+ASSERT ok   the preflight short-circuit is unchanged across the two versions
+ASSERT ok   boot-time origin validation is unchanged across the two versions
+ASSERT ok   every status code the probe observes is identical on 0.6.11 and 0.7.1, so the 0.6-to-0.7 move changes the Vary value and nothing else this item depends on
+
+--- D. what the dependency line actually adds to the resolved graph ---
+FIGURE resolved packages: with the tower-http line 57, without it 55
+added by the line:
+  bitflags 2.13.2
+  tower-http 0.7.1
+removed by the line:
+ASSERT ok   the dependency line adds exactly two packages, tower-http 0.7.1 and bitflags 2.13.2, and nothing else moves
+ASSERT ok   and removes none, so this is a pure addition to R69's accepted graph
+the highest declared rust-version among the resolved dependencies (numeric order):
+  1.78 axum-core
+  1.80 axum
+  1.85 hyper-util
+FIGURE maximum declared rust-version in the resolved dependency tree = 1.85 (hyper-util), under the committed lockfile
+ASSERT ok   gate 2 over the tree, not just the crate: the highest declared rust-version among the locked dependencies (1.85, hyper-util) is at or below the 1.96 floor, compared numerically
+FIGURE packages declaring no rust-version (9): httparse, matchit, mime, serde_urlencoded, smallvec, sync_wrapper, tower-layer, tower-service, wasi
+ASSERT ok   neither package this item adds is among the undeclared ones — every undeclared package arrives with axum or tokio, which R69 already accepted
+where tower sits in the non-dev graph:
+  tower v0.5.3
+  └── axum v0.8.9
+      └── r76probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r76-probe.WeIGVk/with)
+ASSERT ok   tower 0.5.3 is already in the non-dev graph through axum, so this item's dependency line neither adds it nor promotes it — tower stays declared as crates/web's dev-dependency, which is the value R69 fixed
+which tower features axum already activates:
+  ├── tower feature "default"
+  ├── tower feature "futures-core"
+ASSERT ok   axum already activates tower's util feature, so option_layer costs no crate and no feature — its only cost is a DIRECT tower dependency declaration on crates/web, which is the precise price of the rejected alternative C
+what tower-http itself pulls in (normal edges, depth 1):
+  tower-http v0.7.1
+  ├── bitflags v2.13.2
+  ├── bytes v1.12.1
+  ├── http v1.5.0
+  ├── percent-encoding v2.3.2
+  ├── pin-project-lite v0.2.17
+  ├── tower-layer v0.3.3
+  └── tower-service v0.3.3
+ASSERT ok   gate 5: with only the cors feature on, tower-http has no tokio edge, so the layer is executor-agnostic and adds no async-runtime coupling
+
+--- E. gate 6: what the dependency costs in build time and bytes ---
+FIGURE clean release build, arm=without, run 1: 11.5 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE clean release build, arm=without, run 2: 11.8 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE stripped release binary, arm=without: 502264 bytes
+FIGURE clean release build, arm=with, run 1: 11.4 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE clean release build, arm=with, run 2: 11.7 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE stripped release binary, arm=with: 668728 bytes
+FIGURE binary-size cost of the CORS layer on this probe = +166464 bytes
+ASSERT ok   gate 6: the dependency costs binary size rather than being free, and the cost is measured here rather than estimated
+ASSERT ok   gate 6: that cost is under 400 kB on this probe, which is the order of magnitude the decision states — and the probe contains almost no other code, so the percentage form must not be carried forward
+NOTE  no compile-time cost is asserted: across two runs per arm the two arms
+      did not separate beyond this host's run-to-run variation, so this run
+      claims no build-second delta at all.
+
+=== RESULT ===
+PASS=29 FAIL=0 SKIP=0 TOTAL=29
+RESULT: PASS

@@ -1,0 +1,19 @@
+== E3 framework-log-foldin — 2026-09-28T05:54:25Z (UTC), Darwin arm64, rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+STATUS /v1/projects/7 -> HTTP/1.1 200 OK
+STATUS /healthz -> HTTP/1.1 200 OK
+STATUS /nope -> HTTP/1.1 404 Not Found
+STATUS /boom -> HTTP/1.1 500 Internal Server Error
+TALLY target=axum::serve level=TRACE count=7
+TALLY target=r75probe::http_access level=INFO count=3
+TALLY target=r75probe::panic level=ERROR count=1
+TALLY target=tower_http::catch_panic level=ERROR count=1
+PASS F01 3 http_request events for 4 requests (probe excluded) :: events=3
+PASS F02 no axum/hyper/tower event at INFO or above besides catch_panic :: loud=0
+PASS F03 no `log` records while a tracing subscriber is set :: log_records=0
+PASS F04 real-listener statuses :: [("/v1/projects/7", ("HTTP/1.1 200 OK", Some("3d4a087f-3562-46f3-a74e-579db49e9fa8"))), ("/healthz", ("HTTP/1.1 200 OK", Some("609d87e6-d4f8-4fcd-9232-0200924c7701"))), ("/nope", ("HTTP/1.1 404 Not Found", Some("8cf57c28-65f8-47bd-a818-d24ac6f0734a"))), ("/boom", ("HTTP/1.1 500 Internal Server Error", Some("08aa209a-ea80-4cfa-bb15-f54b9c86e640")))]
+PASS F05 panic hook: one ERROR event with message and location, in the request span :: hook_events=1 fields=Some({"location": "tests/common/mod.rs:100:5", "message": "panic", "panic_message": "boom"}) span_request_id=Some("08aa209a-ea80-4cfa-bb15-f54b9c86e640") response_id=Some("08aa209a-ea80-4cfa-bb15-f54b9c86e640")
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+== plain-text lines outside the tracing pipeline (std default panic hook):
+(none)
+PASS F06 no plain-text panic line outside the pipeline :: plain_lines=0
+== 6 pass, 0 fail

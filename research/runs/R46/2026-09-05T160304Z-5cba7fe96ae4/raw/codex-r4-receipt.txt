@@ -1,0 +1,3 @@
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/raw/codex.md  
+sha256: `c108365826aaa34286a328b870aafba727f99eb474db1348fcb0278b00658bed`  
+Fixtures: clean=0; forms (a)–(e)=1. Apache fixture matched form (d) at line 2.

@@ -1,0 +1,222 @@
+# r30-wiring-cost.sh  run 2026-09-27T07:25:27Z  host Darwin arm64  cpus 14
+# CARGO_HOME=/tmp/cargo-s34-R30-r3
+# stable: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) / rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew) / clippy 0.1.98
+# just 1.57.0  lefthook 2.1.14  git 2.50.1
+# CARGO_TARGET_DIR=<ws>/target
+
+# --- H1: identity invariant — the cargo commands in Justfile, lefthook.yml and the CI steps are byte-identical
+
+== H1a Justfile vs lefthook.yml
+$ diff /dev/fd/63 /dev/fd/62
+units re-checked: 0  wall-clock: 0.03 s
+exit=0 (expected 0) PASS
+
+== H1b Justfile vs CI steps
+$ diff /dev/fd/63 /dev/fd/62
+units re-checked: 0  wall-clock: 0.03 s
+exit=0 (expected 0) PASS
+
+== H1c the check detects drift (a hook job missing --all-targets)
+$ diff /dev/fd/63 /dev/fd/62
+units re-checked: 0  wall-clock: 0.01 s
+exit=1 (expected 1) PASS
+
+# --- H2: cost on this host (macOS arm64); synthetic workspace, 24 generated dependency crates
+
+== H2a cold: just typecheck (both configurations)
+$ just typecheck
+    Checking app-core v0.1.0 (<root>/proj/crates/core)
+    Checking facade v0.1.0 (<root>/proj)
+    Checking app-web v0.1.0 (<root>/proj/crates/web)
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 15.67s
+    Checking facade v0.1.0 (<root>/proj)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+units re-checked: 29  wall-clock: 16.01 s
+exit=0 (expected 0) PASS
+
+== H2b warm no-op: just typecheck
+$ just typecheck
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+units re-checked: 0  wall-clock: 0.14 s
+exit=0 (expected 0) PASS
+
+== H2c warm no-op again: just typecheck
+$ just typecheck
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+units re-checked: 0  wall-clock: 0.12 s
+exit=0 (expected 0) PASS
+
+== H2d after editing crates/core (every workspace member depends on it)
+$ just typecheck
+    Checking app-core v0.1.0 (<root>/proj/crates/core)
+    Checking facade v0.1.0 (<root>/proj)
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+    Checking app-web v0.1.0 (<root>/proj/crates/web)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+    Checking facade v0.1.0 (<root>/proj)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.07s
+units re-checked: 5  wall-clock: 0.29 s
+exit=0 (expected 0) PASS
+
+== H2e after editing crates/web
+$ just typecheck
+    Checking app-web v0.1.0 (<root>/proj/crates/web)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+    Checking facade v0.1.0 (<root>/proj)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+units re-checked: 2  wall-clock: 0.22 s
+exit=0 (expected 0) PASS
+
+== H2f after a second crates/core edit
+$ just typecheck
+    Checking app-core v0.1.0 (<root>/proj/crates/core)
+    Checking facade v0.1.0 (<root>/proj)
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+    Checking app-web v0.1.0 (<root>/proj/crates/web)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.20s
+    Checking facade v0.1.0 (<root>/proj)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+units re-checked: 5  wall-clock: 0.49 s
+exit=0 (expected 0) PASS
+
+# --- H3: the gate through lefthook's pre-commit tier
+
+== H3a nothing staged — both jobs skip (lefthook 2.x behaviour)
+$ lefthook run pre-commit
+│ 🥊 lefthook  v2.1.14   hook:  pre-commit │
+sync hooks: ✔️(pre-commit)
+│  typecheck (default features) (skip) no matching staged files
+│  typecheck (all features) (skip) no matching staged files
+summary: (done in 0.00 seconds)
+units re-checked: 0  wall-clock: 0.16 s
+exit=0 (expected 0) PASS
+
+== H3b a harmless staged change, clean tree — both jobs run, green
+$ lefthook run pre-commit
+│ 🥊 lefthook  v2.1.14   hook:  pre-commit │
+┃  typecheck (default features) ❯ 
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+┃  typecheck (all features) ❯ 
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+summary: (done in 0.11 seconds)
+✔️ typecheck (default features) (0.05 seconds)
+✔️ typecheck (all features) (0.03 seconds)
+units re-checked: 0  wall-clock: 0.15 s
+exit=0 (expected 0) PASS
+
+== H3c E0308 staged in crates/cli — the hook fails
+$ lefthook run pre-commit
+│ 🥊 lefthook  v2.1.14   hook:  pre-commit │
+┃  typecheck (default features) ❯ 
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+error[E0308]: mismatched types
+ --> crates/cli/src/lib.rs:2:24
+error: could not compile `app-cli` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `app-cli` (lib) due to 1 previous error
+┃  typecheck (all features) ❯ 
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+error[E0308]: mismatched types
+ --> crates/cli/src/lib.rs:2:24
+error: could not compile `app-cli` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `app-cli` (lib) due to 1 previous error
+summary: (done in 0.32 seconds)
+🥊 typecheck (default features) (0.18 seconds)
+🥊 typecheck (all features) (0.10 seconds)
+units re-checked: 2  wall-clock: 0.38 s
+exit=1 (expected 1) PASS
+
+== H3d E0308 staged behind the web feature — the all-features job fails
+$ lefthook run pre-commit
+│ 🥊 lefthook  v2.1.14   hook:  pre-commit │
+┃  typecheck (default features) ❯ 
+    Checking facade v0.1.0 (<root>/proj)
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.22s
+┃  typecheck (all features) ❯ 
+    Checking facade v0.1.0 (<root>/proj)
+error[E0308]: mismatched types
+ --> src/lib.rs:5:25
+error: could not compile `facade` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `facade` (lib) due to 1 previous error
+summary: (done in 0.52 seconds)
+✔️ typecheck (default features) (0.28 seconds)
+🥊 typecheck (all features) (0.10 seconds)
+units re-checked: 3  wall-clock: 0.69 s
+exit=1 (expected 1) PASS
+
+== H3e the same through a real commit with the hook installed — commit refused
+$ bash -c lefthook install >/dev/null && git -c user.email=probe@example.invalid -c user.name=probe commit -qm bad
+│ 🥊 lefthook  v2.1.14   hook:  pre-commit │
+┃  typecheck (default features) ❯ 
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+┃  typecheck (all features) ❯ 
+    Checking facade v0.1.0 (<root>/proj)
+error[E0308]: mismatched types
+ --> src/lib.rs:5:25
+error: could not compile `facade` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `facade` (lib test) due to 1 previous error
+summary: (done in 0.14 seconds)
+✔️ typecheck (default features) (0.05 seconds)
+🥊 typecheck (all features) (0.08 seconds)
+units re-checked: 1  wall-clock: 0.69 s
+exit=1 (expected 1) PASS
+HEAD subject after H3e (must still be the H2 commit): H2 edits
+
+== H3f green again after restoring — commit accepted through the hook
+$ git -c user.email=probe@example.invalid -c user.name=probe commit -qm readme note
+│ 🥊 lefthook  v2.1.14   hook:  pre-commit │
+┃  typecheck (default features) ❯ 
+    Checking facade v0.1.0 (<root>/proj)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+┃  typecheck (all features) ❯ 
+    Checking facade v0.1.0 (<root>/proj)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+summary: (done in 0.39 seconds)
+✔️ typecheck (default features) (0.15 seconds)
+✔️ typecheck (all features) (0.19 seconds)
+units re-checked: 2  wall-clock: 0.49 s
+exit=0 (expected 0) PASS
+HEAD subject after H3f: readme note
+
+# --- H4: clippy after the gate, same flags; and clippy's own type-error reporting
+
+== H4a cargo clippy --all-features after the gate — re-checks workspace members only, no dependency
+$ cargo clippy --workspace --all-targets --all-features --locked
+    Checking app-core v0.1.0 (<root>/proj/crates/core)
+warning: items after a test module
+ --> crates/core/src/lib.rs:3:1
+    Checking app-web v0.1.0 (<root>/proj/crates/web)
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+    Checking facade v0.1.0 (<root>/proj)
+warning: `app-core` (lib test) generated 1 warning (run `cargo clippy --fix --lib -p app-core --tests -- ` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.44s
+units re-checked: 4  wall-clock: 0.62 s
+exit=0 (expected 0) PASS
+
+== H4b cargo clippy reports a type error as error[E0308]
+$ cargo clippy --workspace --all-targets --locked
+    Checking facade v0.1.0 (<root>/proj)
+    Checking app-cli v0.1.0 (<root>/proj/crates/cli)
+warning: items after a test module
+ --> crates/core/src/lib.rs:3:1
+warning: `app-core` (lib test) generated 1 warning (run `cargo clippy --fix --lib -p app-core --tests -- ` to apply 1 suggestion)
+error[E0308]: mismatched types
+ --> crates/cli/src/lib.rs:2:24
+error: could not compile `app-cli` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `app-cli` (lib) due to 1 previous error
+units re-checked: 2  wall-clock: 0.53 s
+exit=101 (expected 101) PASS
+
+# --- H5: size of what was checked
+workspace members: 4; generated dependency crates: 24; generated dependency source lines: 8664
+target dir size: 163M
+
+# summary: failures=0

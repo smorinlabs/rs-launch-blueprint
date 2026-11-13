@@ -1,0 +1,78 @@
+
+===== 0  scope =====
+This check reads local files and pinned git blobs only. No network
+endpoint is queried, no host identity, wall-clock time or scratch path
+is recorded, and no Rust code is compiled or run. Its output is
+byte-for-byte reproducible; there is no difference rule.
+ts pin: cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+py pin: b08bccfb55d05f15e46a83b52c5660b1881d19f5
+
+===== 1  the binding standard: CLI Design Standard v1.4.14 =====
+PASS  standard readable
+PASS  standard sha256 == 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f
+PASS  standard declares version 1.4.14 (matching lines) == 1
+      7:| **Version** | 1.4.14 |
+--- R7.4 — the progress sentence revision 4 carries
+PASS  R7.4 heading (matching lines) == 1
+      394:**R7.4 — Pager & progress. (SHOULD)**
+PASS  R7.4 progress obligation (matching lines) == 1
+      395:Long human output **MAY** invoke a pager when attached to a TTY, and **MUST** provide `--no-pager` (or honor a standard pager variable) to disable it. Progress indicators **MUST** go to stderr (R7.1) and **MUST** be suppressed when not a TTY or under `--quiet`.
+--- R4.4 — the same obligation inside a MUST-labelled rule
+PASS  R4.4 heading (matching lines) == 1
+      265:**R4.4 — Verbosity semantics. (MUST)**
+PASS  R4.4 quiet obligation (matching lines) == 1
+      266:`-v`/`--verbose` **MUST** be repeatable to raise the level (`-v`, `-vv`, `-vvv`); `--debug` is equivalent to the maximum level plus internal detail; `--log-level <level>` **MAY** be offered as an explicit alternative. When both `--verbose` and `--quiet` are given, `--quiet` **MUST** win; an explicit `--debug`, however, **MUST** override `--quiet`, since it is a deliberate request for diagnostics. These three controls **MUST NOT** overlap ambiguously — define one ladder. `--quiet`/`-q` suppresses progress and informational diagnostics on stderr only; it **MUST NOT** suppress the requested result on stdout, and **MUST NOT** imply consent to prompts.
+--- scope note: colour and NO_COLOR are out of the standard's scope (R65 owns them)
+PASS  standard excludes colour/NO_COLOR from its scope (matching lines) == 1
+      32:- **Color, theming, terminal styling, and detailed accessibility presentation rules** are governed by a separate standard and are deliberately omitted here. This document does not define color usage, `NO_COLOR`/`FORCE_COLOR`, visual styling, or screen-reader/terminal rendering details. TTY detection appears only where it governs *human-vs-machine* output behavior, not appearance.
+
+===== 2  ts pin cb1cbcb2: the CLI defines -q, --quiet =====
+PASS  ts src/router.ts (read at pin, 240 lines)
+PASS  router.ts defines -q, --quiet: line 131 is exactly the recorded text
+          .option('-q, --quiet', 'only show warnings and errors', false)
+PASS  router.ts mentions quiet on exactly three lines (matching lines) == 3
+      78:  quiet: boolean;
+      105:    resolveLevel({ verbose: opts.verbose, quiet: opts.quiet, debug: opts.debug }),
+      131:    .option('-q, --quiet', 'only show warnings and errors', false)
+--- and routes it to the log level, which is the only thing it feeds
+PASS  router.ts feeds quiet to resolveLevel: line 105 is exactly the recorded text
+          resolveLevel({ verbose: opts.verbose, quiet: opts.quiet, debug: opts.debug }),
+
+===== 3  ts pin cb1cbcb2: the spinner gate does not consult it =====
+PASS  ts src/commands/projects.ts (read at pin, 204 lines)
+PASS  projects.ts spinner gate: line 128 is exactly the recorded text
+        const spinnerEnabled = deps.stderrIsTTY && (ci === undefined || ci === '');
+PASS  projects.ts CI read: line 127 is exactly the recorded text
+        const ci = deps.env['CI'];
+PASS  projects.ts contains no occurrence of quiet (matching lines) == 0
+PASS  ts src/lib/adapters.ts (read at pin, 71 lines)
+PASS  adapters.ts contains no occurrence of quiet (matching lines) == 0
+
+===== 4  py pin b08bccfb: py already defines -q, --quiet and ships no spinner =====
+PASS  py src/py_launch_blueprint/cli/options.py (read at pin, 278 lines)
+PASS  options.py defines -q, --quiet: line 82 is exactly the recorded text
+              "-q", "--quiet", is_flag=True, help="Suppress non-essential stderr output."
+
+===== 5  controls — this check can fail =====
+--- a numbered line asserted against the wrong text must FAIL
+probe-FAIL  control: router.ts:131 asserted as the wrong text: line 131 differs
+probe-      got:          .option('-q, --quiet', 'only show warnings and errors', false)
+probe-      expected:     .option('-q, --quiet', 'this is not what line 131 says', false)
+--- an absence asserted where the literal is present must FAIL
+probe-FAIL  control: quiet asserted absent from router.ts (matching lines): expected [0], got [3]
+probe-      78:  quiet: boolean;
+probe-      105:    resolveLevel({ verbose: opts.verbose, quiet: opts.quiet, debug: opts.debug }),
+probe-      131:    .option('-q, --quiet', 'only show warnings and errors', false)
+--- an unreadable checkout must FAIL, not pass silently
+probe-FAIL  control: blob read from a checkout that does not exist: cannot read cb1cbcb2e88b898e8c081b0abbfabc1630079c00:src/router.ts (checkout missing, pin missing, or empty blob)
+--- and the same helper on a true statement must PASS, so the controls are not
+--- merely showing that every probe is rejected
+probe-PASS  control: quiet present on three lines of router.ts (matching lines) == 3
+probe-      78:  quiet: boolean;
+probe-      105:    resolveLevel({ verbose: opts.verbose, quiet: opts.quiet, debug: opts.debug }),
+probe-      131:    .option('-q, --quiet', 'only show warnings and errors', false)
+PASS  probe tally == 1 pass / 3 fail
+
+===== DONE =====
+checks: 21 pass / 0 fail
+RESULT: PASS — the standard states both obligations, ts defines -q/--quiet and gates the spinner without it, and py defines -q/--quiet.

@@ -1,0 +1,4 @@
+[raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/raw/codex.md)  
+SHA256: `edcb7e58848a4c074114ac7f7ba03cc4b9b4114ed51031129b311cde7c00504f`  
+Linux: floor 1.96.0 and stable 1.98.1 clean guards exit 0; stale guards exit 101, commits exit 1; lockfile unchanged.  
+Evidence: `raw/fixture-r41/linux-leg.log`; Lima is `aarch64`, versus `ubuntu-latest` `x86_64`.

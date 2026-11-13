@@ -1,0 +1,262 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-05T18:30:02Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-05T18:30:02Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-05T18:30:03Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T183002Z-09f93cfc507c",
+        "at": "2026-09-05T18:30:03Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "7abb91ec84e44eb2b714d56a81eeecbe",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-06T04:33:37Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T183002Z-09f93cfc507c",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T18:30:03Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a072d5-de0b-70c0-9a32-a0db2812610c",
+        "provider": "codex",
+        "request_id": "7abb91ec84e44eb2b714d56a81eeecbe",
+        "returned_at": "2026-09-06T04:33:37Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-06T04:33:37Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T183002Z-09f93cfc507c",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T18:30:03Z",
+        "collected_at": "2026-09-06T04:33:37Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a072d5-de0b-70c0-9a32-a0db2812610c",
+        "provider": "codex",
+        "raw": "research/runs/R60/2026-09-05T183002Z-09f93cfc507c/raw/codex-99cfaa33b3ae00b921df4ad482e3b1a73a9f787eaa4d138197f544d3491cfb05.md",
+        "raw_sha256": "99cfaa33b3ae00b921df4ad482e3b1a73a9f787eaa4d138197f544d3491cfb05",
+        "reason": "",
+        "request_id": "7abb91ec84e44eb2b714d56a81eeecbe",
+        "returned_at": "2026-09-06T04:33:37Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    },
+    {
+      "actor": "research-doxa-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-09T07:33:01Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-05T183002Z-09f93cfc507c",
+        "at": "2026-09-09T07:33:01Z",
+        "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+        "provider": "doxa",
+        "request_id": "a116af1c2bcf4653ae88ad4ad1bb2160",
+        "state": "submitting"
+      },
+      "provider": "doxa",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-doxa-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-09T07:33:05Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-05T183002Z-09f93cfc507c",
+        "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+        "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_04f84c3220c8b74a006aa10baed11c87d090ce6aec9292d02a running; perplexity job ba91dcd1-6a86-4d5e-a4fa-7ceafb159c93 running; gemini job v1_ChZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3EhZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3 running",
+        "at": "2026-09-09T07:33:01Z",
+        "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+        "operation_id": "research-20260909-003302-e378b7e82207409d",
+        "provider": "doxa",
+        "request_id": "a116af1c2bcf4653ae88ad4ad1bb2160",
+        "returned_at": "2026-09-09T07:33:05Z",
+        "state": "submitted"
+      },
+      "provider": "doxa",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-doxa-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-09T07:47:09Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-05T183002Z-09f93cfc507c",
+        "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+        "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_04f84c3220c8b74a006aa10baed11c87d090ce6aec9292d02a running; perplexity job ba91dcd1-6a86-4d5e-a4fa-7ceafb159c93 running; gemini job v1_ChZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3EhZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3 running",
+        "at": "2026-09-09T07:33:01Z",
+        "collected_at": "2026-09-09T07:47:09Z",
+        "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+        "operation_id": "research-20260909-003302-e378b7e82207409d",
+        "provider": "doxa",
+        "raw": "research/runs/R60/2026-09-05T183002Z-09f93cfc507c/raw/doxa-6b6dea3cfc5736f71035f0c1688686f66a1ffda773697409330d1f8197042842.md",
+        "raw_sha256": "6b6dea3cfc5736f71035f0c1688686f66a1ffda773697409330d1f8197042842",
+        "reason": "op research-20260909-003302-e378b7e82207409d completed 2026-09-09; three provider reports under doxa/research-outputs/ (resume run from the doxa/ cwd); raw = doxa/combined.md (controller-built Doxa combined format); regrouped bundle-shaped raw/doxa.normalized.md: REGROUPED=OK; per-provider bodies: openai: shape OK, 0 lossless heading repairs; perplexity: shape OK, 9 lossless heading repairs; gemini: shape OK, 0 lossless heading repairs \u2014 details in doxa/normalization.json; saved-file sha256: openai 30a38a52d825698b295c39eaa31b2dea58b272aef385b452f4a25ed04265b633; perplexity 149ef119c429a8bb178f1f39e17411c70cce0ec59bd98bf90def85f42da3b147; gemini 988630ac8701d05f3db5cba50d38b9711ac122a8f38ba723c7dc9befd860e054;  usage in operations/doxa-usage.json",
+        "request_id": "a116af1c2bcf4653ae88ad4ad1bb2160",
+        "returned_at": "2026-09-09T07:33:05Z",
+        "state": "succeeded"
+      },
+      "provider": "doxa",
+      "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-10T14:56:50Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183002Z-09f93cfc507c",
+        "at": "2026-09-10T14:56:50Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "48cf3b9ef5df4d1e934770b56a93293e",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-10T15:27:12Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183002Z-09f93cfc507c",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-10T14:56:50Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-05T183002Z-09f93cfc507c:26f8720eb4b2714c",
+        "provider": "opus",
+        "request_id": "48cf3b9ef5df4d1e934770b56a93293e",
+        "returned_at": "2026-09-10T15:27:12Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183002Z-09f93cfc507c",
+      "at": "2026-09-10T15:27:12Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183002Z-09f93cfc507c",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-10T14:56:50Z",
+        "collected_at": "2026-09-10T15:27:12Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-05T183002Z-09f93cfc507c:26f8720eb4b2714c",
+        "provider": "opus",
+        "raw": "research/runs/R60/2026-09-05T183002Z-09f93cfc507c/raw/opus-26f8720eb4b2714cb14fdca45302b55449205a5c3889909e881aa7116aff7735.md",
+        "raw_sha256": "26f8720eb4b2714cb14fdca45302b55449205a5c3889909e881aa7116aff7735",
+        "reason": "",
+        "request_id": "48cf3b9ef5df4d1e934770b56a93293e",
+        "returned_at": "2026-09-10T15:27:12Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-17T01:20:24Z",
+      "publication": {
+        "acceptance_sha256": "d29628bbdc8c2c01a52d71b5942898909c8a3fd99d12fe7f61c312eae408dab4",
+        "decision_sha256": "16d2db72028bc368e0f857e2a168d488d40dffdbea78b99b01519d02dd120651",
+        "transaction": "502f641de45948ffb62913b2204b25b5"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "1c35293a773f7e60b0c47232966c661433b845b9b21685a08792143ed8650d1a",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "0023242a0337eade8fcd4f025fe7543b84338bf82916850a3659b8d949efb4e2",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "e8968e4e7d9a1c15a311aac1703fee6d0e6c4b4982d8ce1260432c1a1cd369fc",
+    "registry": "a3a86d7c27c2bd15285a0a87f2d91a871e38710b78a2fb623ad449618eb39ff0"
+  },
+  "item": "R60",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T183002Z-09f93cfc507c",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-05T18:30:03Z",
+      "collected_at": "2026-09-06T04:33:37Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a072d5-de0b-70c0-9a32-a0db2812610c",
+      "provider": "codex",
+      "raw": "research/runs/R60/2026-09-05T183002Z-09f93cfc507c/raw/codex-99cfaa33b3ae00b921df4ad482e3b1a73a9f787eaa4d138197f544d3491cfb05.md",
+      "raw_sha256": "99cfaa33b3ae00b921df4ad482e3b1a73a9f787eaa4d138197f544d3491cfb05",
+      "reason": "",
+      "request_id": "7abb91ec84e44eb2b714d56a81eeecbe",
+      "returned_at": "2026-09-06T04:33:37Z",
+      "state": "succeeded"
+    },
+    "doxa": {
+      "actor": "research-doxa-2026-09-05T183002Z-09f93cfc507c",
+      "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+      "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_04f84c3220c8b74a006aa10baed11c87d090ce6aec9292d02a running; perplexity job ba91dcd1-6a86-4d5e-a4fa-7ceafb159c93 running; gemini job v1_ChZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3EhZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3 running",
+      "at": "2026-09-09T07:33:01Z",
+      "collected_at": "2026-09-09T07:47:09Z",
+      "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+      "operation_id": "research-20260909-003302-e378b7e82207409d",
+      "provider": "doxa",
+      "raw": "research/runs/R60/2026-09-05T183002Z-09f93cfc507c/raw/doxa-6b6dea3cfc5736f71035f0c1688686f66a1ffda773697409330d1f8197042842.md",
+      "raw_sha256": "6b6dea3cfc5736f71035f0c1688686f66a1ffda773697409330d1f8197042842",
+      "reason": "op research-20260909-003302-e378b7e82207409d completed 2026-09-09; three provider reports under doxa/research-outputs/ (resume run from the doxa/ cwd); raw = doxa/combined.md (controller-built Doxa combined format); regrouped bundle-shaped raw/doxa.normalized.md: REGROUPED=OK; per-provider bodies: openai: shape OK, 0 lossless heading repairs; perplexity: shape OK, 9 lossless heading repairs; gemini: shape OK, 0 lossless heading repairs \u2014 details in doxa/normalization.json; saved-file sha256: openai 30a38a52d825698b295c39eaa31b2dea58b272aef385b452f4a25ed04265b633; perplexity 149ef119c429a8bb178f1f39e17411c70cce0ec59bd98bf90def85f42da3b147; gemini 988630ac8701d05f3db5cba50d38b9711ac122a8f38ba723c7dc9befd860e054;  usage in operations/doxa-usage.json",
+      "request_id": "a116af1c2bcf4653ae88ad4ad1bb2160",
+      "returned_at": "2026-09-09T07:33:05Z",
+      "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183002Z-09f93cfc507c",
+      "actual_model": "claude-opus-5",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-10T14:56:50Z",
+      "collected_at": "2026-09-10T15:27:12Z",
+      "model": "claude-opus-5",
+      "operation_id": "agent:research-opus-2026-09-05T183002Z-09f93cfc507c:26f8720eb4b2714c",
+      "provider": "opus",
+      "raw": "research/runs/R60/2026-09-05T183002Z-09f93cfc507c/raw/opus-26f8720eb4b2714cb14fdca45302b55449205a5c3889909e881aa7116aff7735.md",
+      "raw_sha256": "26f8720eb4b2714cb14fdca45302b55449205a5c3889909e881aa7116aff7735",
+      "reason": "",
+      "request_id": "48cf3b9ef5df4d1e934770b56a93293e",
+      "returned_at": "2026-09-10T15:27:12Z",
+      "state": "succeeded"
+    }
+  },
+  "prompt_source": "research/topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md",
+  "publication": {
+    "acceptance_sha256": "d29628bbdc8c2c01a52d71b5942898909c8a3fd99d12fe7f61c312eae408dab4",
+    "decision_sha256": "16d2db72028bc368e0f857e2a168d488d40dffdbea78b99b01519d02dd120651",
+    "transaction": "502f641de45948ffb62913b2204b25b5"
+  },
+  "remaining_budget": "no paid engine before the pilot publishes (Doxa admissions paused)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-05T183002Z-09f93cfc507c",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "deep",
+  "updated_at": "2026-09-17T01:20:24Z"
+}

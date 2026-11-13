@@ -1,0 +1,15 @@
+# workflow and config validation — 2026-09-09T07:49:47Z — cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture — macOS 26.4 arm64
+$ actionlint -version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+$ actionlint .github/workflows/codeql.yml
+exit=0
+
+$ python3 - (YAML parse of both files; A3 guard: init step has config-file and no queries input)
+config keys: ['name', 'paths-ignore', 'queries']
+config queries: [{'uses': 'security-extended'}]
+config paths-ignore: ['**/tests/**', '**/benches/**', '**/fuzz/**']
+init.with: {'languages': 'rust', 'build-mode': 'none', 'config-file': './.github/codeql/codeql-config.yml'}
+A3 guard (config-file set, queries unset, languages rust, build-mode none): PASS
+exit=0

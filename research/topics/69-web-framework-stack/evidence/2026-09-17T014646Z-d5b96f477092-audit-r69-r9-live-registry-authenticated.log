@@ -1,0 +1,21 @@
+curl binary: /usr/bin/curl
+jq binary: /opt/homebrew/bin/jq
+user-agent: rs-launch-blueprint-research/R69 (+https://github.com/smorinlabs/rs-launch-blueprint)
+endpoint 1: tokio version metadata
+http_status=200 effective_url=https://crates.io/api/v1/crates/tokio/1.53.1
+tokio=1.53.1 license=MIT rust_version=1.71 yanked=false default_count=0 full_count=12 full=fs,io-std,io-util,macros,net,parking_lot,process,rt,rt-multi-thread,signal,sync,time rt_multi_thread=rt
+endpoint 2: tokio dependencies
+http_status=200 effective_url=https://crates.io/api/v1/crates/tokio/1.53.1/dependencies
+parking_lot_req=^0.12.0 optional=true
+endpoint 3: axum-extra 0.12.6 version metadata
+http_status=200 effective_url=https://crates.io/api/v1/crates/axum-extra/0.12.6
+axum-extra=0.12.6 license=MIT rust_version=1.80 yanked=false cookie=dep:cookie typed-header=dep:headers
+endpoint 4: axum-extra crate summary
+http_status=200 effective_url=https://crates.io/api/v1/crates/axum-extra
+max_stable=0.12.6 newest=0.12.6
+endpoint 5: axum-extra dependencies
+http_status=200 effective_url=https://crates.io/api/v1/crates/axum-extra/0.12.6/dependencies
+axum req=^0.8.9 optional=true
+cookie req=^0.18.0 optional=true
+headers req=^0.4.0 optional=true
+live-probe rc=0

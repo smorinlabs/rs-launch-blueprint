@@ -1,0 +1,85 @@
+# crates.io API — retrieved 2026-09-09 (host: macOS 26.4, curl)
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/thiserror
+HTTP 200
+{"name":"thiserror","recent_downloads":350390985,"downloads":1436032398,"max_stable_version":"2.0.20","updated_at":"2026-08-08T06:22:23.795550Z","repository":"https://github.com/dtolnay/thiserror"}
+--- $ curl .../crates/thiserror/versions  (newest non-yanked)
+HTTP 200
+{"num":"2.0.20","created_at":"2026-08-08T06:22:23.795550Z","rust_version":"1.71","license":"MIT OR Apache-2.0","features_default":["std"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/anyhow
+HTTP 200
+{"name":"anyhow","recent_downloads":206068310,"downloads":942920266,"max_stable_version":"1.0.104","updated_at":"2026-07-18T20:59:37.656167Z","repository":"https://github.com/dtolnay/anyhow"}
+--- $ curl .../crates/anyhow/versions  (newest non-yanked)
+HTTP 200
+{"num":"1.0.104","created_at":"2026-07-18T20:59:37.656167Z","rust_version":"1.68","license":"MIT OR Apache-2.0","features_default":["std"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/signal-hook
+HTTP 200
+{"name":"signal-hook","recent_downloads":52617700,"downloads":235773971,"max_stable_version":"0.4.4","updated_at":"2026-04-04T08:08:58.259635Z","repository":"https://github.com/vorner/signal-hook"}
+--- $ curl .../crates/signal-hook/versions  (newest non-yanked)
+HTTP 200
+{"num":"0.4.4","created_at":"2026-04-04T08:08:58.259635Z","rust_version":"1.66","license":"MIT OR Apache-2.0","features_default":["channel","iterator"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/ctrlc
+HTTP 200
+{"name":"ctrlc","recent_downloads":20977033,"downloads":122696775,"max_stable_version":"3.5.2","updated_at":"2026-02-10T20:41:44.442750Z","repository":"https://github.com/Detegr/rust-ctrlc.git"}
+--- $ curl .../crates/ctrlc/versions  (newest non-yanked)
+HTTP 200
+{"num":"3.5.2","created_at":"2026-02-10T20:41:44.442750Z","rust_version":"1.69.0","license":"MIT/Apache-2.0","features_default":null}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/strum
+HTTP 200
+{"name":"strum","recent_downloads":133569704,"downloads":619448770,"max_stable_version":"0.28.0","updated_at":"2026-02-22T15:46:16.247520Z","repository":"https://github.com/Peternator7/strum"}
+--- $ curl .../crates/strum/versions  (newest non-yanked)
+HTTP 200
+{"num":"0.28.0","created_at":"2026-02-22T15:46:16.247520Z","rust_version":"1.71","license":"MIT","features_default":["std"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/inquire
+HTTP 200
+{"name":"inquire","recent_downloads":5097514,"downloads":20203144,"max_stable_version":"0.9.4","updated_at":"2026-02-24T17:21:33.418470Z","repository":"https://github.com/mikaelmello/inquire"}
+--- $ curl .../crates/inquire/versions  (newest non-yanked)
+HTTP 200
+{"num":"0.9.4","created_at":"2026-02-24T17:21:33.418470Z","rust_version":"1.80.0","license":"MIT","features_default":["macros","crossterm","one-liners","fuzzy"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/etcetera
+HTTP 200
+{"name":"etcetera","recent_downloads":31683342,"downloads":105128197,"max_stable_version":"0.11.0","updated_at":"2025-10-28T13:28:11.765603Z","repository":"https://github.com/lunacookies/etcetera"}
+--- $ curl .../crates/etcetera/versions  (newest non-yanked)
+HTTP 200
+{"num":"0.11.0","created_at":"2025-10-28T13:28:11.765603Z","rust_version":"1.87.0","license":"MIT OR Apache-2.0","features_default":null}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/miette
+HTTP 200
+{"name":"miette","recent_downloads":16825104,"downloads":72811399,"max_stable_version":"7.6.0","updated_at":"2025-04-27T04:53:40.567063Z","repository":"https://github.com/zkat/miette"}
+--- $ curl .../crates/miette/versions  (newest non-yanked)
+HTTP 200
+{"num":"7.6.0","created_at":"2025-04-27T04:53:40.567063Z","rust_version":"1.70.0","license":"Apache-2.0","features_default":["derive"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/human-panic
+HTTP 200
+{"name":"human-panic","recent_downloads":2750696,"downloads":13220540,"max_stable_version":"2.0.8","updated_at":"2026-04-02T15:43:33.195856Z","repository":"https://github.com/rust-cli/human-panic"}
+--- $ curl .../crates/human-panic/versions  (newest non-yanked)
+HTTP 200
+{"num":"2.0.8","created_at":"2026-04-02T15:43:33.195856Z","rust_version":"1.88","license":"MIT OR Apache-2.0","features_default":["color"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/exitcode
+HTTP 200
+{"name":"exitcode","recent_downloads":830039,"downloads":9036319,"max_stable_version":"1.1.2","updated_at":"2017-06-18T18:21:36.405587Z","repository":"https://github.com/benwilber/exitcode"}
+--- $ curl .../crates/exitcode/versions  (newest non-yanked)
+HTTP 200
+{"num":"1.1.2","created_at":"2017-06-18T18:21:36.405587Z","rust_version":null,"license":"Apache-2.0","features_default":null}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/sysexits
+HTTP 200
+{"name":"sysexits","recent_downloads":211934,"downloads":1536178,"max_stable_version":"0.13.0","updated_at":"2026-02-28T14:38:30.063991Z","repository":"https://github.com/sorairolake/sysexits-rs"}
+--- $ curl .../crates/sysexits/versions  (newest non-yanked)
+HTTP 200
+{"num":"0.13.0","created_at":"2026-02-28T14:38:30.063991Z","rust_version":"1.87.0","license":"Apache-2.0 OR MIT","features_default":["std"]}
+
+=== $ curl -sS -H 'User-Agent: rs-launch-blueprint-research/R67 (steve@conceptm.com)' https://crates.io/api/v1/crates/serde_json
+HTTP 200
+{"name":"serde_json","recent_downloads":301631570,"downloads":1277306669,"max_stable_version":"1.0.151","updated_at":"2026-07-20T05:54:44.078083Z","repository":"https://github.com/serde-rs/json"}
+--- $ curl .../crates/serde_json/versions  (newest non-yanked)
+HTTP 200
+{"num":"1.0.151","created_at":"2026-07-20T05:54:44.078083Z","rust_version":"1.71","license":"MIT OR Apache-2.0","features_default":["std"]}
+

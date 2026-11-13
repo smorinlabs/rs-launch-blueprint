@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "msrv-policy",
+    "value": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "rust-edition",
+    "value": "2024"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "target-os-matrix",
+    "value": "ubuntu-latest, macos-latest"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "license",
+    "value": "MIT OR Apache-2.0"
+  },
+  {
+    "kind": "researched",
+    "owner": "R01",
+    "param": "http-transport-injection-seam",
+    "value": "trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92"
+  }
+]

@@ -1,0 +1,2 @@
+archive root: /private/tmp/r69-audit-archive-clean.8Uqfya
+archive decision sha256: 0fc0ed8a9c4a6daac900e23524c1c3ba0ef1707aeb44833c0ca2b2b57eb4cf4c

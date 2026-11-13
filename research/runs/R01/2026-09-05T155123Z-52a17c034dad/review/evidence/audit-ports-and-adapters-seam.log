@@ -1,0 +1,852 @@
+# R01 empirical-audit transcript
+# UTC: 2026-09-10T01:22:37Z
+# source fixture: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/empirical/seam_fixture
+# fresh macOS copy: /private/tmp/audit-r01-seam-macos.ICv4YB/fixture
+
+$ rustc -vV
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+binary: rustc
+commit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea
+commit-date: 2026-08-18
+host: aarch64-apple-darwin
+release: 1.98.0
+LLVM version: 22.1.8
+
+$ cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+
+$ cargo clean
+     Removed 0 files
+
+$ cargo test --locked
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling itoa v1.0.18
+   Compiling pin-project-lite v0.2.17
+   Compiling libc v0.2.189
+   Compiling futures-core v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling bytes v1.12.1
+   Compiling once_cell v1.21.4
+   Compiling httparse v1.10.1
+   Compiling tower-service v0.3.3
+   Compiling log v0.4.34
+   Compiling serde v1.0.229
+   Compiling zmij v1.0.23
+   Compiling futures-channel v0.3.34
+   Compiling futures-task v0.3.34
+   Compiling tracing-core v0.1.36
+   Compiling serde_json v1.0.151
+   Compiling atomic-waker v1.1.2
+   Compiling percent-encoding v2.3.2
+   Compiling sync_wrapper v1.0.2
+   Compiling slab v0.4.12
+   Compiling httpdate v1.0.3
+   Compiling smallvec v1.16.0
+   Compiling tower-layer v0.3.3
+   Compiling futures-util v0.3.34
+   Compiling form_urlencoded v1.2.2
+   Compiling tracing v0.1.44
+   Compiling mime v0.3.17
+   Compiling http v1.5.0
+   Compiling memchr v2.8.3
+   Compiling ryu v1.0.23
+   Compiling matchit v0.8.4
+   Compiling http-body v1.1.0
+   Compiling http-body-util v0.1.5
+   Compiling axum-core v0.5.6
+   Compiling syn v3.0.5
+   Compiling mio v1.2.3
+   Compiling socket2 v0.6.5
+   Compiling serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+   Compiling tokio v1.53.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling seam_fixture v0.1.0 (/private/tmp/audit-r01-seam-macos.ICv4YB/fixture)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.36s
+     Running unittests src/lib.rs (target/debug/deps/seam_fixture-b16da7cd1fda6a43)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/seam_cli-2a1bfbcd960d651a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/contract_round_trip.rs (target/debug/deps/contract_round_trip-2e90e63b26e58fdc)
+
+running 2 tests
+test project_round_trips_and_keeps_its_field_names ... ok
+test query_round_trips_including_the_absent_filter ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/port_contract.rs (target/debug/deps/port_contract-019c9b83271b9511)
+
+running 5 tests
+test service_accepts_concrete_and_erased_ports ... ok
+test erased_service_is_clonable_shared_state ... ok
+test in_memory_adapter_satisfies_contract ... ok
+test erased_in_memory_adapter_satisfies_contract ... ok
+test http_adapter_against_live_listener_satisfies_contract ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/web_request_path.rs (target/debug/deps/web_request_path-c9d6f1cf90d8976d)
+
+running 1 test
+test web_adapter_serves_the_shared_contract_over_a_live_listener ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests seam_fixture
+
+running 2 tests
+test src/lib.rs - (line 17) ... ok
+test src/lib.rs - (line 44) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test src/lib.rs - (line 54) - compile fail ... ok
+test src/lib.rs - (line 30) - compile fail ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+all doctests ran in 0.48s; merged doctests compilation took 0.21s
+
+$ cargo run --locked --quiet -- --in-memory alpha
+[
+  {
+    "id": "1",
+    "name": "alpha"
+  },
+  {
+    "id": "3",
+    "name": "alphabet"
+  }
+]
+
+$ cargo fmt --check
+
+$ cargo clippy --locked --all-targets -- -D warnings
+    Checking itoa v1.0.18
+    Checking pin-project-lite v0.2.17
+    Checking futures-core v0.3.34
+    Checking bytes v1.12.1
+    Checking once_cell v1.21.4
+    Checking log v0.4.34
+    Checking tower-service v0.3.3
+    Checking libc v0.2.189
+    Checking serde_core v1.0.229
+    Checking httparse v1.10.1
+    Checking atomic-waker v1.1.2
+    Checking percent-encoding v2.3.2
+    Checking slab v0.4.12
+    Checking tower-layer v0.3.3
+    Checking sync_wrapper v1.0.2
+    Checking futures-task v0.3.34
+    Checking futures-channel v0.3.34
+    Checking smallvec v1.16.0
+    Checking httpdate v1.0.3
+    Checking form_urlencoded v1.2.2
+    Checking zmij v1.0.23
+    Checking mime v0.3.17
+    Checking memchr v2.8.3
+    Checking tracing-core v0.1.36
+    Checking ryu v1.0.23
+    Checking matchit v0.8.4
+    Checking futures-util v0.3.34
+    Checking http v1.5.0
+    Checking tracing v0.1.44
+    Checking mio v1.2.3
+    Checking socket2 v0.6.5
+    Checking tokio v1.53.1
+    Checking http-body v1.1.0
+    Checking http-body-util v0.1.5
+    Checking axum-core v0.5.6
+    Checking serde v1.0.229
+    Checking serde_json v1.0.151
+    Checking serde_path_to_error v0.1.20
+    Checking serde_urlencoded v0.7.1
+    Checking hyper v1.11.1
+    Checking tower v0.5.3
+    Checking hyper-util v0.1.20
+    Checking axum v0.8.9
+    Checking seam_fixture v0.1.0 (/private/tmp/audit-r01-seam-macos.ICv4YB/fixture)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.18s
+
+$ cargo audit
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+error: couldn't fetch advisory database: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+Caused by:
+  -> failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+  -> attempted to take an exclusive lock on a read-only path
+
+# cargo audit retry: copy the read-only cached advisory DB into the fresh temporary audit directory
+
+$ cargo audit --db /private/tmp/audit-r01-seam-macos.ICv4YB/advisory-db
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /private/tmp/audit-r01-seam-macos.ICv4YB/advisory-db)
+    Updating crates.io index
+warning: couldn't update crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+    Scanning Cargo.lock for vulnerabilities (53 crate dependencies)
+
+$ export PATH="$(rustup run 1.96.0 rustc --print sysroot)/bin:$PATH"
+
+$ rustc -vV
+rustc 1.96.0 (ac68faa20 2026-05-25)
+binary: rustc
+commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+commit-date: 2026-05-25
+host: aarch64-apple-darwin
+release: 1.96.0
+LLVM version: 22.1.2
+
+$ cargo --version
+cargo 1.96.0 (30a34c682 2026-05-25)
+
+$ cargo +1.96.0 --version (expected host-specific failure)
+error: no such command: `+1.96.0`
+
+help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+cargo +1.96.0 exit=101
+
+$ cargo clean
+     Removed 1828 files, 307.7MiB total
+
+$ cargo test --locked
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling itoa v1.0.18
+   Compiling libc v0.2.189
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling bytes v1.12.1
+   Compiling httparse v1.10.1
+   Compiling once_cell v1.21.4
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+   Compiling tower-service v0.3.3
+   Compiling log v0.4.34
+   Compiling futures-channel v0.3.34
+   Compiling tracing-core v0.1.36
+   Compiling tower-layer v0.3.3
+   Compiling serde_json v1.0.151
+   Compiling sync_wrapper v1.0.2
+   Compiling atomic-waker v1.1.2
+   Compiling slab v0.4.12
+   Compiling smallvec v1.16.0
+   Compiling futures-task v0.3.34
+   Compiling httpdate v1.0.3
+   Compiling percent-encoding v2.3.2
+   Compiling futures-util v0.3.34
+   Compiling form_urlencoded v1.2.2
+   Compiling http v1.5.0
+   Compiling tracing v0.1.44
+   Compiling memchr v2.8.3
+   Compiling ryu v1.0.23
+   Compiling mime v0.3.17
+   Compiling matchit v0.8.4
+   Compiling http-body v1.1.0
+   Compiling http-body-util v0.1.5
+   Compiling axum-core v0.5.6
+   Compiling syn v3.0.5
+   Compiling mio v1.2.3
+   Compiling socket2 v0.6.5
+   Compiling serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+   Compiling tokio v1.53.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling seam_fixture v0.1.0 (/private/tmp/audit-r01-seam-macos.ICv4YB/fixture)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.94s
+     Running unittests src/lib.rs (target/debug/deps/seam_fixture-5a0249ff07aa3272)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/seam_cli-a0b0e737201a28d6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/contract_round_trip.rs (target/debug/deps/contract_round_trip-04f57bedde6f75e3)
+
+running 2 tests
+test query_round_trips_including_the_absent_filter ... ok
+test project_round_trips_and_keeps_its_field_names ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/port_contract.rs (target/debug/deps/port_contract-513fd1b279683d59)
+
+running 5 tests
+test service_accepts_concrete_and_erased_ports ... ok
+test erased_service_is_clonable_shared_state ... ok
+test erased_in_memory_adapter_satisfies_contract ... ok
+test in_memory_adapter_satisfies_contract ... ok
+test http_adapter_against_live_listener_satisfies_contract ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/web_request_path.rs (target/debug/deps/web_request_path-dc822bd02319416d)
+
+running 1 test
+test web_adapter_serves_the_shared_contract_over_a_live_listener ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests seam_fixture
+
+running 2 tests
+test src/lib.rs - (line 44) ... ok
+test src/lib.rs - (line 17) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test src/lib.rs - (line 54) - compile fail ... ok
+test src/lib.rs - (line 30) - compile fail ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+all doctests ran in 0.45s; merged doctests compilation took 0.19s
+
+$ cargo run --locked --quiet -- --in-memory alpha
+[
+  {
+    "id": "1",
+    "name": "alpha"
+  },
+  {
+    "id": "3",
+    "name": "alphabet"
+  }
+]
+
+# macOS cargo-audit retry + 1.96 aggregate exit=0
+
+# Linux VM fresh-copy leg
+
+$ command -v limactl
+/opt/homebrew/bin/limactl
+
+$ limactl shell ubuntu -- bash -lc <source cargo env; copy fixture to VM-local directory; stable and 1.96 runs>
+time="2026-09-09T18:23:54-07:00" level=warning msg="failed to detect whether running under rosetta, assuming false" error="failed to read sysctl \"sysctl.proc_translated\": operation not permitted"
+# VM-local fixture: /tmp/audit-r01-seam-linux.e7PxwC/fixture
+
+$ rustc -vV
+rustc 1.98.1 (48a229cea 2026-09-01)
+binary: rustc
+commit-hash: 48a229ceaefd4985c50990b14116b6d856af0985
+commit-date: 2026-09-01
+host: aarch64-unknown-linux-gnu
+release: 1.98.1
+LLVM version: 22.1.8
+
+$ cargo --version
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+
+$ rustup toolchain list
+stable-aarch64-unknown-linux-gnu (active, default)
+1.96.0-aarch64-unknown-linux-gnu
+
+$ cargo clean
+     Removed 0 files
+
+$ cargo test --locked
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling itoa v1.0.18
+   Compiling pin-project-lite v0.2.17
+   Compiling libc v0.2.189
+   Compiling futures-core v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling bytes v1.12.1
+   Compiling once_cell v1.21.4
+   Compiling httparse v1.10.1
+   Compiling tower-service v0.3.3
+   Compiling zmij v1.0.23
+   Compiling tracing-core v0.1.36
+   Compiling log v0.4.34
+   Compiling serde v1.0.229
+   Compiling futures-channel v0.3.34
+   Compiling http v1.5.0
+   Compiling tracing v0.1.44
+   Compiling tower-layer v0.3.3
+   Compiling futures-task v0.3.34
+   Compiling sync_wrapper v1.0.2
+   Compiling smallvec v1.16.0
+   Compiling syn v3.0.5
+   Compiling slab v0.4.12
+   Compiling serde_json v1.0.151
+   Compiling percent-encoding v2.3.2
+   Compiling atomic-waker v1.1.2
+   Compiling httpdate v1.0.3
+   Compiling form_urlencoded v1.2.2
+   Compiling futures-util v0.3.34
+   Compiling mio v1.2.3
+   Compiling socket2 v0.6.5
+   Compiling mime v0.3.17
+   Compiling http-body v1.1.0
+   Compiling ryu v1.0.23
+   Compiling http-body-util v0.1.5
+   Compiling memchr v2.8.3
+   Compiling axum-core v0.5.6
+   Compiling matchit v0.8.4
+   Compiling serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+   Compiling tokio v1.53.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling seam_fixture v0.1.0 (/tmp/audit-r01-seam-linux.e7PxwC/fixture)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.61s
+     Running unittests src/lib.rs (target/debug/deps/seam_fixture-95a430ee9d06d819)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/seam_cli-8ab7c841e70fef87)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/contract_round_trip.rs (target/debug/deps/contract_round_trip-d2ed9311df6b19fe)
+
+running 2 tests
+test project_round_trips_and_keeps_its_field_names ... ok
+test query_round_trips_including_the_absent_filter ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/port_contract.rs (target/debug/deps/port_contract-32fa1af7ee412a32)
+
+running 5 tests
+test in_memory_adapter_satisfies_contract ... ok
+test erased_in_memory_adapter_satisfies_contract ... ok
+test service_accepts_concrete_and_erased_ports ... ok
+test erased_service_is_clonable_shared_state ... ok
+test http_adapter_against_live_listener_satisfies_contract ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/web_request_path.rs (target/debug/deps/web_request_path-4d91124ac494b309)
+
+running 1 test
+test web_adapter_serves_the_shared_contract_over_a_live_listener ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests seam_fixture
+
+running 2 tests
+test src/lib.rs - (line 17) ... ok
+test src/lib.rs - (line 44) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test src/lib.rs - (line 54) - compile fail ... ok
+test src/lib.rs - (line 30) - compile fail ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+all doctests ran in 0.60s; merged doctests compilation took 0.57s
+
+$ cargo run --locked --quiet -- --in-memory alpha
+[
+  {
+    "id": "1",
+    "name": "alpha"
+  },
+  {
+    "id": "3",
+    "name": "alphabet"
+  }
+]
+
+$ cargo +1.96.0 clean
+     Removed 967 files, 467.5MiB total
+
+$ cargo +1.96.0 test --locked
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling itoa v1.0.18
+   Compiling pin-project-lite v0.2.17
+   Compiling libc v0.2.189
+   Compiling futures-core v0.3.34
+   Compiling bytes v1.12.1
+   Compiling serde_core v1.0.229
+   Compiling once_cell v1.21.4
+   Compiling httparse v1.10.1
+   Compiling log v0.4.34
+   Compiling tracing-core v0.1.36
+   Compiling tower-service v0.3.3
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+   Compiling http v1.5.0
+   Compiling tracing v0.1.44
+   Compiling futures-channel v0.3.34
+   Compiling futures-task v0.3.34
+   Compiling sync_wrapper v1.0.2
+   Compiling atomic-waker v1.1.2
+   Compiling tower-layer v0.3.3
+   Compiling httpdate v1.0.3
+   Compiling syn v3.0.5
+   Compiling percent-encoding v2.3.2
+   Compiling serde_json v1.0.151
+   Compiling slab v0.4.12
+   Compiling http-body v1.1.0
+   Compiling smallvec v1.16.0
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling http-body-util v0.1.5
+   Compiling futures-util v0.3.34
+   Compiling form_urlencoded v1.2.2
+   Compiling ryu v1.0.23
+   Compiling mime v0.3.17
+   Compiling memchr v2.8.3
+   Compiling axum-core v0.5.6
+   Compiling matchit v0.8.4
+   Compiling serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+   Compiling tokio v1.53.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling seam_fixture v0.1.0 (/tmp/audit-r01-seam-linux.e7PxwC/fixture)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.62s
+     Running unittests src/lib.rs (target/debug/deps/seam_fixture-3cabcd3f5fb82441)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/seam_cli-1815f7d63a83562e)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/contract_round_trip.rs (target/debug/deps/contract_round_trip-1065319114fe83b9)
+
+running 2 tests
+test project_round_trips_and_keeps_its_field_names ... ok
+test query_round_trips_including_the_absent_filter ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/port_contract.rs (target/debug/deps/port_contract-a2975593b3d4b91a)
+
+running 5 tests
+test in_memory_adapter_satisfies_contract ... ok
+test service_accepts_concrete_and_erased_ports ... ok
+test erased_in_memory_adapter_satisfies_contract ... ok
+test erased_service_is_clonable_shared_state ... ok
+test http_adapter_against_live_listener_satisfies_contract ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/web_request_path.rs (target/debug/deps/web_request_path-e11ade44bdffad5f)
+
+running 1 test
+test web_adapter_serves_the_shared_contract_over_a_live_listener ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests seam_fixture
+
+running 2 tests
+test src/lib.rs - (line 44) ... ok
+test src/lib.rs - (line 17) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test src/lib.rs - (line 54) - compile fail ... ok
+test src/lib.rs - (line 30) - compile fail ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+all doctests ran in 0.50s; merged doctests compilation took 0.47s
+
+$ cargo +1.96.0 run --locked --quiet -- --in-memory alpha
+[
+  {
+    "id": "1",
+    "name": "alpha"
+  },
+  {
+    "id": "3",
+    "name": "alphabet"
+  }
+]
+
+# Linux VM aggregate exit=0
+
+# Five citation spot checks (retrieved 2026-09-10)
+
+$ curl -fsSIL --max-time 30 https://doc.rust-lang.org/reference/items/traits.html
+HTTP/2 200 
+content-type: text/html
+
+$ curl -fsSIL --max-time 30 https://doc.rust-lang.org/stable/reference/types/trait-object.html
+HTTP/2 200 
+content-type: text/html
+
+$ curl -fsSIL --max-time 30 https://doc.rust-lang.org/std/keyword.dyn.html
+HTTP/2 200 
+content-type: text/html
+
+$ curl -fsSIL --max-time 30 https://blog.rust-lang.org/2023/12/21/async-fn-rpit-in-traits/
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+
+$ curl -fsSIL --max-time 30 https://crates.io/api/v1/crates/serde/versions
+curl: (56) The requested URL returned error: 403
+HTTP/2 403 
+
+# Resolved package and source-tree coverage checks
+
+$ cargo metadata --locked --format-version 1 --no-deps
+seam_fixture 0.1.0 rust-version=1.96 license=MIT OR Apache-2.0
+
+$ rg -n "production_service" src tests
+src/main.rs:11:    InMemoryProjectsPort, ProjectQuery, build_projects_service, production_service, testing,
+src/main.rs:29:        (Some(authority), _) => production_service(&authority),
+src/lib.rs:72:pub use composition::{build_projects_service, production_service};
+src/composition.rs:4://! `production_service` is the only place in the crate that constructs the production adapter.
+src/composition.rs:17:pub fn production_service(authority: &str) -> ErasedProjectsService {
+
+# citation and coverage checks aggregate exit=0
+
+$ curl -fsSIL --max-time 30 https://serde.rs/
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+
+# Decision and fixture line references used by the audit
+   130	## Parameters
+   131	
+   132	- owns http-transport-injection-seam = trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92
+   133	- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+   134	- assumes rust-edition = 2024
+   135	- assumes target-os-matrix = ubuntu-latest, macos-latest
+   136	- assumes license = MIT OR Apache-2.0
+   137	
+   138	Consumed parameters: none (`- consumes:` is empty). The fixed values were exercised, not assumed: the fixture declares `edition = "2024"`, `rust-version = "1.96"` (stable 1.98.1 minus two on 2026-09-05) and `license = "MIT OR Apache-2.0"`, and ran on both target operating systems.
+   139	
+   140	No `CONFLICT:` line is raised by this decision. The codex report (`raw/codex.md`, `### Parameters`) wrote, verbatim:
+   141	
+   142	> CONFLICT: R05 sync-async execution model — native `async fn` in traits cannot be dynamically dispatched — R05 must choose an object-safe async representation or coordinate replacement of the object boundary.
+   143	
+   144	This is not a registry conflict under `research/RUNBOOK.md` §4: R05 registers no parameter and the line names no registered value to change, so nothing is reopened. The coupling it describes is real and is resolved inside this decision: the port stays dyn compatible under either R05 outcome (sync: unchanged; async: `#[async_trait]`, the route `rust-lang/crates.io` takes and the opus report executed). R05's `- related` coupling is recorded in the prompt and is the first re-verify trigger.
+   145	
+   146	Inputs to other items, not conflicts: R48 receives "the recommended seam needs no HTTP-mocking crate" for F120 and the optional `mock` feature shape; R30 receives the `BASELINE-REVIEW: F011` finding above; R69 receives that the web state type is `ProjectsService<Arc<dyn ProjectsPort>>` (`Clone + Send + Sync + 'static`) and that handlers return the library's `serde` types; R32 receives the three-call-site contract-suite shape.
+   147	
+   148	## Empirical check
+   149	
+   150	**Fixture.** `review/empirical/seam_fixture/` — a `cargo new --lib` package (`edition = "2024"`, `rust-version = "1.96"`, `license = "MIT OR Apache-2.0"`) implementing the recommended seam end to end for one port: `src/ports.rs` (trait + blanket `Arc<T>` impl), `src/service.rs` (generic service + erased alias), `src/composition.rs` (root), `src/adapters/in_memory.rs` (shipped fake, `std::sync::Mutex`), `src/adapters/http.rs` (the "real" adapter: a fixture-only `std::net::TcpStream` HTTP/1.1 GET, so no HTTP-client crate is selected), `src/contract.rs` (`serde`-derived `Project`, `ProjectQuery`), `src/testing.rs` (generic contract suite), `src/web.rs` (thin web adapter; `axum` 0.8 is the fixture's stand-in framework — the framework is R69's decision — and the port is called synchronously from the handler, so the fixture does not decide R05), `src/main.rs` (`seam-cli`, the CLI front end printing the same `Project` values as JSON). Tests: `tests/port_contract.rs` (the suite against the in-memory fake, the fake behind `Arc<dyn ProjectsPort>`, and `HttpProjectsPort` against a live listener served by the fixture's own web adapter; static-versus-erased equality; web-state bounds and cross-thread use), `tests/web_request_path.rs` (a raw HTTP GET to `127.0.0.1:<port>/projects?q=alpha` and `/project?id=..` decoded into the library's `Vec<Project>` / `Option<Project>`), `tests/contract_round_trip.rs` (`serde_json` round trip and field names), and four doctests in `src/lib.rs` (two positive twins, two `compile_fail` negatives: an adapter omitting `get`, a port with a generic method erased to `Arc<dyn _>`). `Cargo.lock` was generated once by cargo 1.98.0 with the edition-2024 MSRV-aware resolver ("Locking 52 packages to latest Rust 1.96 compatible versions"; it chose `matchit` 0.8.4 over 0.8.6) and every leg ran `--locked`. Resolved members: `serde` 1.0.229, `serde_json` 1.0.151, `axum` 0.8.9, `tokio` 1.53.1, `hyper` 1.11.1; the highest declared `rust-version` in the tree is 1.80.
+   151	
+   152	**Toolchains and OS.**
+   153	
+   154	| Leg | OS | `rustc -vV` release / host | cargo | Working directory |
+   155	|---|---|---|---|---|
+   156	| 1 | macOS 26.4, arm64 (host) | 1.98.0 (88d9e12ae 2026-08-18, Homebrew) / aarch64-apple-darwin | 1.98.0 | `research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/empirical/seam_fixture` |
+   157	| 2 | macOS 26.4, arm64 (host) | 1.96.0 (ac68faa20 2026-05-25) / aarch64-apple-darwin | 1.96.0 | same |
+   158	| 3 | Ubuntu 25.10, aarch64, kernel 6.17.0-41-generic (Lima VM `ubuntu`) | 1.98.1 (48a229cea 2026-09-01) / aarch64-unknown-linux-gnu | 1.98.1 | `/home/stevemorin.guest/r01-seam-fixture` (VM-local copy; the host mount is read-only) |
+   159	| 4 | same VM | 1.96.0 (ac68faa20 2026-05-25) / aarch64-unknown-linux-gnu | 1.96.0 | same VM-local copy |
+   160	
+   161	The VM is aarch64 while GitHub's `ubuntu-latest` runners are x86_64; the fixture has no architecture-specific code, but the x86_64 leg is not executed here. Leg 3's stable is 1.98.1 (rustup) versus the host's 1.98.0 (Homebrew); both are the current stable line.
+   162	
+   163	**Commands and exit status** (full transcripts in `review/evidence/`):
+   164	
+   165	| Leg | Command | Exit | Result | Log |
+   166	|---|---|---|---|---|
+   167	| 1 | `cargo clean && cargo test --locked && cargo run --locked --quiet -- --in-memory alpha` | 0 / 0 / 0 | 12 passed, 0 failed (2 + 5 + 1 integration, 2 doc, 2 compile-fail doc); clean build + test 23.96 s wall, 42.93 s user | `macos-stable-1.98.0-cargo-test.log` |
+   168	| 2 | `export PATH="$(rustup run 1.96.0 rustc --print sysroot)/bin:$PATH"; cargo clean && cargo test --locked && cargo run --locked --quiet -- --in-memory alpha` (`cargo +1.96.0` exits 101 on this host: Homebrew's cargo shadows rustup's `+toolchain` syntax, recorded in the log) | 0 / 0 / 0 | 12 passed, 0 failed; 20.41 s wall | `macos-msrv-1.96.0-cargo-test.log` |
+   169	| 3 | `limactl shell ubuntu -- bash -lc 'source $HOME/.cargo/env; rsync -a --exclude target/ <mount>/seam_fixture/ $HOME/r01-seam-fixture/; cd $HOME/r01-seam-fixture; cargo test --locked; cargo run --locked --quiet -- --in-memory alpha'` | 0 / 0 | 12 passed, 0 failed; 15.88 s wall | `linux-stable-1.98.1-cargo-test.log` |
+   170	| 4 | same VM copy: `cargo +1.96.0 clean && cargo +1.96.0 test --locked && cargo +1.96.0 run --locked --quiet -- --in-memory alpha` | 0 / 0 / 0 | 12 passed, 0 failed; 11.18 s wall | `linux-msrv-1.96.0-cargo-test.log` |
+   171	| gate | `cargo fmt --check`; `cargo clippy --locked --all-targets -- -D warnings` (leg 1 toolchain) | 0 / 0 | no warnings | `macos-stable-clippy-fmt.log` |
+   172	| gate | `cargo audit` (cargo-audit 0.22.1, advisory-db 1,243 advisories, 53 crate dependencies scanned) | 0 | no vulnerabilities reported | `cargo-audit.log` |
+   173	| gate | `cargo metadata --locked` name/version/rust-version/license table; `cargo tree --locked --edges normal` | 0 / 0 | highest declared MSRV 1.80 (`axum` 0.8.9); every licence is permissive (MIT, Apache-2.0, BSD-3-Clause, BSL-1.0, Unlicense, Unicode-3.0 and their combinations), none copyleft | `dependency-msrv-license.log` |
+   174	| gate | the two `compile_fail` bodies checked as a path-dependent scratch crate so the error codes are visible | 101 / 101 | `error[E0046]: not all trait items implemented, missing: get`; `error[E0038]: the trait NotDynCompatible is not dyn compatible` | `compile-fail-reasons.log` |
+   175	
+   176	**Observed output** (leg 1, `cargo test --locked`, abridged to the test harness lines; `Compiling` lines removed):
+   177	
+   178	```text
+   179	$ cargo test --locked
+   180	    Finished `test` profile [unoptimized + debuginfo] target(s) in 21.38s
+   181	     Running tests/contract_round_trip.rs (target/debug/deps/contract_round_trip-2e90e63b26e58fdc)
+   182	running 2 tests
+   183	test query_round_trips_including_the_absent_filter ... ok
+   184	test project_round_trips_and_keeps_its_field_names ... ok
+   185	test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+   186	     Running tests/port_contract.rs (target/debug/deps/port_contract-019c9b83271b9511)
+     1	//! F002 — the composition root: two plain functions, no dependency-injection container.
+     2	//!
+     3	//! `build_projects_service` is for callers that bring their own adapter (tests, the in-memory demo);
+     4	//! `production_service` is the only place in the crate that constructs the production adapter.
+     5	
+     6	use std::sync::Arc;
+     7	
+     8	use crate::adapters::http::HttpProjectsPort;
+     9	use crate::ports::ProjectsPort;
+    10	use crate::service::{ErasedProjectsService, ProjectsService};
+    11	
+    12	pub fn build_projects_service(port: Arc<dyn ProjectsPort>) -> ErasedProjectsService {
+    13	    ProjectsService::new(port)
+    14	}
+    15	
+    16	/// Wire the production adapter. `authority` is `host:port` of the upstream projects API.
+    17	pub fn production_service(authority: &str) -> ErasedProjectsService {
+    18	    build_projects_service(Arc::new(HttpProjectsPort::new(authority)))
+    19	}
+    14	
+    15	#[test]
+    16	fn in_memory_adapter_satisfies_contract() {
+    17	    assert_projects_port_contract("in-memory", InMemoryProjectsPort::seeded);
+    18	}
+    19	
+    20	#[test]
+    21	fn erased_in_memory_adapter_satisfies_contract() {
+    22	    assert_projects_port_contract("erased in-memory", |rows| {
+    23	        Arc::new(InMemoryProjectsPort::seeded(rows)) as Arc<dyn ProjectsPort>
+    24	    });
+    25	}
+    26	
+    27	#[test]
+    28	fn http_adapter_against_live_listener_satisfies_contract() {
+    29	    assert_projects_port_contract("http adapter over live listener", |rows| {
+    30	        let upstream = build_projects_service(Arc::new(InMemoryProjectsPort::seeded(rows)));
+    31	        let addr = serve_in_background(upstream).expect("fixture web adapter binds 127.0.0.1:0");
+    32	        HttpProjectsPort::new(addr.to_string())
+    33	    });
+    34	}
+    35	
+    36	#[test]
+    37	fn service_accepts_concrete_and_erased_ports() {
+    38	    let concrete = ProjectsService::new(InMemoryProjectsPort::seeded(sample_rows()));
+    39	    let erased: ErasedProjectsService =
+    40	        build_projects_service(Arc::new(InMemoryProjectsPort::seeded(sample_rows())));
+    41	
+    42	    let from_concrete = concrete.search(&ProjectQuery::default()).unwrap();
+    43	    let from_erased = erased.search(&ProjectQuery::default()).unwrap();
+    44	    assert_eq!(
+    45	        from_concrete, from_erased,
+    46	        "static and erased dispatch produce the same value"
+    47	    );
+    48	    let ids: Vec<&str> = from_erased.iter().map(|p| p.id.as_str()).collect();
+    49	    assert_eq!(
+    50	        ids,
+    51	        ["1", "2", "3"],
+    52	        "use-case logic (sort by id) lives in the service, not the adapter"
+    53	    );
+    54	}
+    55	
+    56	fn requires_web_state<S: Clone + Send + Sync + 'static>(_: &S) {}
+    57	
+    58	#[test]
+    59	fn erased_service_is_clonable_shared_state() {
+    60	    let service = build_projects_service(Arc::new(InMemoryProjectsPort::seeded(sample_rows())));
+    61	    requires_web_state(&service);
+    62	
+    63	    let moved = service.clone();
+    64	    let handle = std::thread::spawn(move || moved.find("1").unwrap());
+    65	    assert_eq!(
+    66	        handle.join().unwrap(),
+    67	        Some(Project {
+    68	            id: "1".into(),
+    69	            name: "alpha".into()
+    70	        })
+    27	}
+    28	
+    29	#[test]
+    30	fn web_adapter_serves_the_shared_contract_over_a_live_listener() {
+    31	    let service = build_projects_service(Arc::new(InMemoryProjectsPort::seeded(sample_rows())));
+    32	    let addr = serve_in_background(service).expect("bind 127.0.0.1:0");
+    33	    let authority = addr.to_string();
+    34	
+    35	    let (head, body) = http_get(&authority, "/projects?q=alpha");
+    36	    let status_line = head.lines().next().unwrap_or_default().to_string();
+    37	    assert!(
+    38	        status_line.starts_with("HTTP/1.1 200"),
+    39	        "status line was {status_line:?}"
+    40	    );
+    41	    assert!(
+    42	        head.to_ascii_lowercase()
+    43	            .contains("content-type: application/json"),
+    44	        "web adapter emits JSON; headers were:\n{head}"
+    45	    );
+    46	    let alpha_body = String::from_utf8_lossy(&body).to_string();
+    47	    let decoded: Vec<Project> =
+    48	        serde_json::from_slice(&body).expect("body is the library's Vec<Project>");
+    49	    assert_eq!(
+    50	        decoded,
+    51	        vec![
+    52	            Project {
+    53	                id: "1".into(),
+    54	                name: "alpha".into()
+    55	            },
+    56	            Project {
+    57	                id: "3".into(),
+    58	                name: "alphabet".into()
+    59	            },
+    60	        ],
+    61	        "the web layer returns the same value the service returns to the CLI, sorted by the service"
+    62	    );
+    63	
+    64	    let (head, body) = http_get(&authority, "/project?id=2");
+    65	    assert!(head.starts_with("HTTP/1.1 200"), "head was:\n{head}");
+    66	    let decoded: Option<Project> = serde_json::from_slice(&body).expect("Option<Project>");
+    67	    assert_eq!(
+    68	        decoded,
+    69	        Some(Project {
+    70	            id: "2".into(),
+    71	            name: "beta".into()
+    72	        })
+    73	    );
+    74	
+    75	    let (head, body) = http_get(&authority, "/project?id=404");
+    76	    assert!(head.starts_with("HTTP/1.1 200"), "head was:\n{head}");
+    77	    assert_eq!(
+    78	        body, b"null",
+    79	        "absence is serialized as the library's Option, not a second web type"
+    80	    );
+    81	
+    82	    println!("fixture listener {authority}: GET /projects?q=alpha -> {alpha_body}");
+    83	}
+
+# final citation and source-reference aggregate exit=0

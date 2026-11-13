@@ -1,0 +1,16 @@
+PASS P0 troubleshooting-required-status-checks.md sha256 9b5561c1111ad4a6e3430d1656cc17d7f923539794df8224638952984e1e2990 matches the value recorded when it was fetched
+PASS P0 path-filtering-required-workflows.md sha256 c6e62dacda695e578bae48e956372ef541fd097a6dfc4d14fbe61a0869c47c5d matches the value recorded when it was fetched
+PASS P0 section-using-jobs-in-a-workflow-needs.md sha256 cbee2b26a5e4f1f63ae514ccf3d9fa01dc8405da04c94364a65263a5e42d5cfa matches the value recorded when it was fetched
+PASS P0 contexts.md sha256 7dd35d881dc2502922b2911b8f620542cb9fe174236a414bc02481089f3d2aac matches the value recorded when it was fetched
+PASS P1a a workflow skipped by path filtering leaves its checks Pending and BLOCKS MERGING
+PASS P1b a job skipped by a conditional reports SUCCESS - the two skips are different outcomes on the same vendor page
+PASS P1c skipped is one of the three successful check statuses
+PASS P1d GitHub's own instruction against on.<event>.paths on a required workflow, verbatim
+PASS P1e the page does NOT say a conditionally skipped job reports Pending - the negative control on P1b
+PASS P2a a failed or skipped dependency skips its dependents unless they opt out
+PASS P2b the platform's own instruction for an aggregate required check - R12's rule, inherited from this file's job ids
+PASS P3a the needs-context worked example shows a non-successful job
+PASS P3b and its outputs are an EMPTY MAP, so needs.<job>.outputs.<key> is the empty string; the empty string != the literal false, which is why a negated gate runs the heavy job in exactly the case the gate exists to prevent
+PASS P4a a job-level if: may read github, needs, vars and inputs - and not secrets
+
+PASS=14 FAIL=0 SKIP=0 TOTAL=14

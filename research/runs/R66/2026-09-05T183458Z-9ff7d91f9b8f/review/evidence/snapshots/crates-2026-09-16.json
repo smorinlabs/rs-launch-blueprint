@@ -1,0 +1,21 @@
+{
+  "retrieved_utc": "2026-09-16T02:42:36Z",
+  "endpoints": {
+    "serde": {"endpoint":"https://crates.io/api/v1/crates/serde","recent_downloads":306342347,"downloads":1397723614,"max_stable_version":"1.0.229"},
+    "serde_json": {"endpoint":"https://crates.io/api/v1/crates/serde_json","recent_downloads":310040505,"downloads":1301202618,"max_stable_version":"1.0.151"},
+    "tabled": {"endpoint":"https://crates.io/api/v1/crates/tabled","recent_downloads":8766630,"downloads":38994460,"max_stable_version":"0.22.0"},
+    "comfy-table": {"endpoint":"https://crates.io/api/v1/crates/comfy-table","recent_downloads":18104035,"downloads":98783629,"max_stable_version":"8.0.0"},
+    "tempfile": {"endpoint":"https://crates.io/api/v1/crates/tempfile","recent_downloads":180327332,"downloads":811034428,"max_stable_version":"3.27.0"},
+    "csv": {"endpoint":"https://crates.io/api/v1/crates/csv","recent_downloads":47613018,"downloads":245261632,"max_stable_version":"1.4.0"}
+  },
+  "github": {
+    "serde-rs/serde": {"endpoint":"https://api.github.com/repos/serde-rs/serde","stargazers_count":10827,"archived":false,"pushed_at":"2026-08-25T03:53:14Z","open_issues_search_total_count":319},
+    "serde-rs/json": {"endpoint":"https://api.github.com/repos/serde-rs/json","stargazers_count":5635,"archived":false,"pushed_at":"2026-08-08T06:50:26Z","open_issues_search_total_count":191},
+    "zhiburt/tabled": {"endpoint":"https://api.github.com/repos/zhiburt/tabled","stargazers_count":2362,"archived":false,"pushed_at":"2026-09-05T13:32:36Z","open_issues_search_total_count":101},
+    "Nukesor/comfy-table": {"endpoint":"https://api.github.com/repos/Nukesor/comfy-table","stargazers_count":1394,"archived":false,"pushed_at":"2026-09-14T09:26:36Z","open_issues_search_total_count":4},
+    "Stebalien/tempfile": {"endpoint":"https://api.github.com/repos/Stebalien/tempfile","stargazers_count":1464,"archived":false,"pushed_at":"2026-09-11T02:33:00Z","open_issues_search_total_count":5},
+    "BurntSushi/rust-csv": {"endpoint":"https://api.github.com/repos/BurntSushi/rust-csv","stargazers_count":1959,"archived":false,"pushed_at":"2026-08-04T10:45:35Z","open_issues_search_total_count":65},
+    "nushell/nushell": {"endpoint":"https://api.github.com/repos/nushell/nushell","stargazers_count":40514,"archived":false,"pushed_at":"2026-09-16T00:25:02Z","open_issues_search_total_count":1387},
+    "sharkdp/hyperfine": {"endpoint":"https://api.github.com/repos/sharkdp/hyperfine","stargazers_count":28868,"archived":false,"pushed_at":"2026-04-30T08:23:25Z","open_issues_search_total_count":54}
+  }
+}

@@ -1,0 +1,4 @@
+CARGO_HACK_HTTP=404
+ATTY_CONTROL_HTTP=200
+RETRIEVED_UTC=2026-09-18T22:52:43Z
+ENDPOINTS="https://rustsec.org/packages/cargo-hack.html and https://rustsec.org/packages/atty.html"

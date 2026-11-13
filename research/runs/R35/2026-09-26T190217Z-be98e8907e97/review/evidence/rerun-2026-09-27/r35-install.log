@@ -1,0 +1,18 @@
+INFO date_utc=2026-09-27T07:39:42Z host=Darwin 25.4.0 arm64
+INFO CARGO_HOME=/tmp/cargo-s35-R35-r3 cargo=/Users/stevemorin/.cargo/bin/cargo rustup=/Users/stevemorin/.cargo/bin/rustup
+INFO floor toolchain: rustc 1.96.1 (31fca3adb 2026-06-26)
+PASS I0 — floor toolchain is a 1.96.x release (stable 1.98 minus 2 minor versions)
+PASS I1 — cargo +1.96 install cargo-llvm-cov --version 0.9.1 --locked succeeded in 49s
+INFO install: Installing cargo-llvm-cov v0.9.1
+INFO install: Finished `release` profile [optimized] target(s) in 48.54s
+INFO install: Installing /tmp/cargo-s35-R35-r3/bin/cargo-llvm-cov
+INFO install: Installed package `cargo-llvm-cov v0.9.1` (executable `cargo-llvm-cov`)
+PASS I2 — binary present at $CARGO_HOME/bin/cargo-llvm-cov
+INFO version output: cargo-llvm-cov 0.9.1
+PASS I3 — reports 'cargo-llvm-cov 0.9.1' (observed: cargo-llvm-cov 0.9.1)
+PASS I4 — packaged source extracted at registry/src/*/cargo-llvm-cov-0.9.1
+INFO snapshot sha256 README: 3e28985c41a68b5cff272410767afc1b70e1f5dd2a89e66d99d61920902ec0cb
+PASS I5 — packaged Cargo.toml declares rust-version 1.87, within floor 1.96 (observed: rust-version = "1.87")
+PASS I6 — packaged licence is Apache-2.0 OR MIT (observed: license = "Apache-2.0 OR MIT")
+PASS I7 — src/main.rs carries #![forbid(unsafe_code)] at line 3
+SUMMARY PASS=8 FAIL=0

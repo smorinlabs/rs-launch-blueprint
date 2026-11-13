@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "total": 5273,
+    "next_page": "?q=probe&per_page=12&sort=downloads&seek=WzI2Mjg5OTgwLDcxMjI0MV0",
+    "prev_page": null
+  },
+  "crates": [
+    {
+      "name": "autocfg",
+      "recent_downloads": 285397242,
+      "description": "Automatic cfg for Rust compiler features"
+    },
+    {
+      "name": "pkg-config",
+      "recent_downloads": 173129014,
+      "description": "A library to run the pkg-config system tool at build time in order to be used in\nCargo build scripts.\n"
+    },
+    {
+      "name": "openssl-probe",
+      "recent_downloads": 140690359,
+      "description": "A library for helping to find system-wide trust anchor (\"root\") certificate\nlocations based on paths typically used by `openssl`.\n"
+    },
+    {
+      "name": "rustls-native-certs",
+      "recent_downloads": 130210359,
+      "description": "rustls-native-certs allows rustls to use the platform native certificate store"
+    },
+    {
+      "name": "aws-lc-sys",
+      "recent_downloads": 85289737,
+      "description": "AWS-LC is a general-purpose cryptographic library maintained by the AWS Cryptography team for AWS and their customers. It іs based on code from the Google BoringSSL project and the OpenSSL project."
+    },
+    {
+      "name": "rustls-platform-verifier",
+      "recent_downloads": 72846170,
+      "description": "rustls-platform-verifier supports verifying TLS certificates in rustls with the operating system verifier"
+    },
+    {
+      "name": "wiremock",
+      "recent_downloads": 20698128,
+      "description": "HTTP mocking to test Rust applications."
+    },
+    {
+      "name": "system-deps",
+      "recent_downloads": 18987569,
+      "description": "Discover and configure system dependencies from declarative dependencies in Cargo.toml"
+    },
+    {
+      "name": "tokio-metrics",
+      "recent_downloads": 7432634,
+      "description": "Runtime and task level metrics for Tokio applications.\n"
+    },
+    {
+      "name": "imagesize",
+      "recent_downloads": 12214798,
+      "description": "Quick probing of image dimensions without loading the entire file."
+    },
+    {
+      "name": "rmcp",
+      "recent_downloads": 14275587,
+      "description": "Rust SDK for Model Context Protocol"
+    },
+    {
+      "name": "aws-lc-fips-sys",
+      "recent_downloads": 4952212,
+      "description": "AWS-LC is a general-purpose cryptographic library maintained by the AWS Cryptography team for AWS and their customers. This is the FIPS validated version of AWS-LC."
+    }
+  ]
+}

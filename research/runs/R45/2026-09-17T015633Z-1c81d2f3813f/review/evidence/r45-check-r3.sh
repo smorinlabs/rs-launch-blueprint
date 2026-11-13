@@ -1,0 +1,287 @@
+#!/usr/bin/env bash
+# R45 revision-3 empirical check. Verifies, against R18's OWNER-ACCEPTED decision
+# and the owner's recorded direction, every fact the rewritten CONTRIBUTING.md
+# precondition asserts, plus the three R18-derived facts revision 2 rests on,
+# plus that revision 2's own script still reproduces its log, plus that this
+# revision's `## Supersedes` block carries the published revision-2 bytes.
+# Verification only: no source-repository, template or workflow file is written,
+# no workflow is enabled and no bot is invoked. Durable writes: none. Ephemeral
+# writes: files inside a private `mktemp -d` removed by the EXIT trap, plus
+# whatever revision 2's script creates inside its own private mktemp -d when D16
+# re-runs it. Host preconditions: this repository at the path below, an
+# authenticated `gh` and network access (needed only by D16, which re-runs
+# revision 2's script).
+# shellcheck disable=SC2016
+# SC2016 is disabled deliberately and file-wide: every single-quoted argument
+# below is a FIXED string passed to `grep -F`, and several contain backticks or
+# `$GITHUB_STEP_SUMMARY`. Expanding them would change the string being searched
+# for, which would turn a content assertion into a vacuous one.
+set -uo pipefail
+
+REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+R18="$REPO/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/DECISION.md"
+R18PUB="$REPO/research/topics/18-ai-assisted-review-workflows/DECISION.md"
+OWN="$REPO/docs/planning/p02/owner-decisions.md"
+R45DIR="$REPO/research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5"
+R45DEC="$R45DIR/review/DECISION.md"
+R45R2SH="$R45DIR/review/evidence/r45-check.sh"
+R45R2LOG="$R45DIR/review/evidence/r18-trigger-phrase-pin.log"
+R18SHA=c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e   # the sha256 W0-R18 binds
+REV2COMMIT=396c734479575bb4de3524f7a837294bcf8bacca                      # the commit holding R45 revision 2
+REV2SHA=1e7fe24926e11fa5b40bedb3c42f187af05e161e4bec0b7ad4ea548b0fae6816 # revision 2 = the published bytes
+MARK='The complete revision-2 entry, as published, follows verbatim.'
+
+SCRATCH="$(mktemp -d)"
+trap 'rm -rf "$SCRATCH"' EXIT
+FAILS=0
+
+# check <id> <label> <observed> <expected>
+check () {
+  if [ "$3" = "$4" ]; then
+    printf '  %-5s PASS  %s\n        observed: %s\n' "$1" "$2" "$3"
+  else
+    printf '  %-5s FAIL  %s\n        observed: %s\n        expected: %s\n' "$1" "$2" "$3" "$4"
+    FAILS=$((FAILS + 1))
+  fi
+}
+# present <id> <label> <file> <fixed-string>  — asserts at least one occurrence
+present () {
+  local n
+  n=$(/usr/bin/grep -c -F "$4" "$3")
+  if [ "$n" -ge 1 ]; then
+    printf '  %-5s PASS  %s\n        %s occurrence(s) of: %s\n' "$1" "$2" "$n" "$4"
+  else
+    printf '  %-5s FAIL  %s\n        0 occurrences of: %s\n' "$1" "$2" "$4"
+    FAILS=$((FAILS + 1))
+  fi
+}
+# absent <id> <label> <file> <fixed-string>  — asserts zero occurrences
+absent () {
+  local n
+  n=$(/usr/bin/grep -c -F "$4" "$3")
+  if [ "$n" -eq 0 ]; then
+    printf '  %-5s PASS  %s\n        0 occurrences of: %s\n' "$1" "$2" "$4"
+  else
+    printf '  %-5s FAIL  %s\n        %s occurrence(s) of: %s\n' "$1" "$2" "$n" "$4"
+    FAILS=$((FAILS + 1))
+  fi
+}
+
+echo "# r45-r18-credential-gate-r3.log"
+echo "captured: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+echo "host toolchain:"
+rustc --version 2>&1 | sed 's/^/  /'
+cargo --version 2>&1 | sed 's/^/  /'
+echo "  OS: $(sw_vers -productName) $(sw_vers -productVersion) $(uname -m)"
+echo "  gh: $(gh --version | head -1)"
+echo "working directory: $REPO"
+echo "files read: R18 owner-accepted decision; R18 published decision; owner-decisions.md; R45 revision 3; R45 revision 2 via git"
+echo
+
+echo "=== D1 — R18's owner-accepted decision is the file W0-R18 binds ==="
+OBS_R18SHA=$(shasum -a 256 "$R18" | cut -d' ' -f1)
+check D1 "sha256 of R18 run DECISION.md equals the sha256 bound by W0-R18" "$OBS_R18SHA" "$R18SHA"
+echo
+
+echo "=== D2 — what that file calls itself, recorded because the number and the binding differ ==="
+sed -n '1p' "$R18" > "$SCRATCH/r18-title.txt"
+cat "$SCRATCH/r18-title.txt"
+present D2 "R18's own title line names the revision it implements" "$SCRATCH/r18-title.txt" "decision (revision 6)"
+echo "        NOTE: the binding in W0-R18 is the sha256 above, not a revision number; R45 cites R18 by sha256."
+echo
+
+# Everything below reads R18's LIVE region: the text before its own '## Supersedes'
+# heading. Text after that heading is R18 revision 5 preserved verbatim and is not
+# the owner-accepted rule.
+# -x is required, not cosmetic: R18's own prose mentions `## Supersedes` inline at
+# line 7, so an unanchored match puts the boundary six lines into the file.
+LIVE_END=$(( $(/usr/bin/grep -n -F -x '## Supersedes' "$R18" | head -1 | cut -d: -f1) - 1 ))
+sed -n "1,${LIVE_END}p" "$R18" > "$SCRATCH/r18-live.md"
+echo "R18 live region: lines 1-${LIVE_END} (its '## Supersedes' heading is at $((LIVE_END + 1)))"
+echo
+sed -n '38p' "$R18" > "$SCRATCH/row-review.txt"
+sed -n '39p' "$R18" > "$SCRATCH/row-assistant.txt"
+sed -n '19p' "$R18" > "$SCRATCH/preflight.txt"
+sed -n '25p' "$R18" > "$SCRATCH/cred-static.txt"
+sed -n '26p' "$R18" > "$SCRATCH/cred-fed.txt"
+
+echo "=== D3 — the enable variables are removed, asserted on the two file-table rows themselves ==="
+present D3a "claude-code-review.yml row records the removal" "$SCRATCH/row-review.txt" '`vars.ENABLE_CLAUDE_REVIEW` is removed at revision 6'
+present D3b "claude.yml row records the removal" "$SCRATCH/row-assistant.txt" '`vars.ENABLE_CLAUDE_ASSISTANT` is removed at revision 6'
+echo
+
+echo "=== D4 — the gate is credential presence, with no enable variable ==="
+present D4a "recommendation states the shipping form" "$SCRATCH/r18-live.md" 'with no enable variable'
+present D4b "each lane is gated on credential presence" "$SCRATCH/r18-live.md" 'Each lane is gated on **credential presence**'
+present D4c "the real jobs gate on the preflight output" "$SCRATCH/row-assistant.txt" "needs.credential-preflight.outputs.credential == 'static'"
+echo
+
+echo "=== D5 — the credential-preflight job exists and always exits 0 ==="
+present D5a "job name appears in the live region" "$SCRATCH/r18-live.md" 'credential-preflight'
+present D5b "the preflight always exits 0" "$SCRATCH/preflight.txt" 'always exits 0'
+present D5c "the preflight carries no permissions" "$SCRATCH/preflight.txt" 'permissions: {}'
+echo
+
+echo "=== D6 — the four credential identifiers, and which are secrets and which are variables ==="
+i=0
+for id in ANTHROPIC_API_KEY CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_FEDERATION_RULE_ID ANTHROPIC_ORGANIZATION_ID; do
+  i=$((i + 1))
+  present "D6.$i" "identifier present in the live region" "$SCRATCH/r18-live.md" "$id"
+done
+present D6s "static shape = repository SECRET" "$SCRATCH/cred-static.txt" 'repository secret `ANTHROPIC_API_KEY`, or `CLAUDE_CODE_OAUTH_TOKEN`'
+present D6f "federation shape = repository VARIABLES" "$SCRATCH/cred-fed.txt" 'repository variables `ANTHROPIC_FEDERATION_RULE_ID` and `ANTHROPIC_ORGANIZATION_ID`'
+echo
+
+echo "=== D7 — an absent credential prints which key to set, through two channels ==="
+present D7a "notice annotation" "$SCRATCH/preflight.txt" '::notice title='
+present D7b "step summary" "$SCRATCH/preflight.txt" 'GITHUB_STEP_SUMMARY'
+present D7c "naming the keys to set" "$SCRATCH/preflight.txt" 'naming the exact secret or variable names to set'
+echo
+
+echo "=== D8 — deleting the file is the supported opt-out ==="
+present D8 "opt-out recorded on the preflight paragraph" "$SCRATCH/preflight.txt" 'deleting the file is the supported way to opt out'
+echo
+
+echo "=== D9 — the OWNER/MEMBER/COLLABORATOR association check is still the rule ==="
+present D9a "literal clause form" "$SCRATCH/r18-live.md" 'contains(fromJSON('"'"'["OWNER","MEMBER","COLLABORATOR"]'"'"')'
+present D9b "the owner chose association over a write-permission check" "$SCRATCH/r18-live.md" 'chose `author_association` as the more accurate test'
+present D9c "no write-permission check is added" "$SCRATCH/r18-live.md" 'no write-permission check is added at the workflow level'
+present D9d "stated as a prefilter, not a permission check" "$SCRATCH/r18-live.md" 'This is a prefilter, not a permission check'
+echo "--- the clause-(d) sentence, quoted ---"
+sed -n '101p' "$R18" | cut -c1-320
+echo
+
+echo "=== D10 — the trigger phrase is still @claude ==="
+present D10a "assistant lane tests the four-clause @claude condition" "$SCRATCH/row-assistant.txt" "four-clause \`contains(…, '@claude')\` condition"
+present D10b "the action's default trigger_phrase at v1.0.220" "$SCRATCH/r18-live.md" 'trigger_phrase: "@claude"'
+echo
+
+echo "=== D11 — fact 2 re-checked: the review lane still omits 'synchronize' ==="
+present D11a "review lane trigger types" "$SCRATCH/row-review.txt" '`pull_request: types: [opened, ready_for_review, reopened]`'
+absent  D11b "no 'synchronize' anywhere in that row" "$SCRATCH/row-review.txt" 'synchronize'
+present D11c "R18's own caveat survives" "$SCRATCH/r18-live.md" 'That argument holds only if `synchronize` is dropped'
+echo
+
+echo "=== D12 — fact 3 re-checked: the assistant lane lists no pull_request event ==="
+present D12a "its four events" "$SCRATCH/row-assistant.txt" '`issue_comment: [created]`, `pull_request_review_comment: [created]`, `issues: [opened, assigned]`, `pull_request_review: [submitted]`'
+absent  D12b "no 'pull_request: types' in that row" "$SCRATCH/row-assistant.txt" 'pull_request: types'
+echo
+
+echo "=== D13 — both lanes reject bots ==="
+present D13a "type-based sender check" "$SCRATCH/r18-live.md" "github.event.sender.type != 'Bot'"
+present D13b "assistant-lane bot exclusion is stated as new" "$SCRATCH/r18-live.md" 'Bot exclusion on the assistant lane'
+echo
+
+echo "=== D14 — fact 1 re-checked over R18's live region: which vendor bots it configures ==="
+for v in coderabbit greptile cubic; do
+  printf '  %-12s hits=%s\n' "$v" "$(/usr/bin/grep -o -i "$v" "$SCRATCH/r18-live.md" | wc -l | tr -d ' ')"
+done
+check D14a "coderabbit occurrences in the live region" "$(/usr/bin/grep -o -i coderabbit "$SCRATCH/r18-live.md" | wc -l | tr -d ' ')" "1"
+check D14b "greptile occurrences in the live region"   "$(/usr/bin/grep -o -i greptile   "$SCRATCH/r18-live.md" | wc -l | tr -d ' ')" "0"
+check D14c "cubic occurrences in the live region"      "$(/usr/bin/grep -o -i cubic      "$SCRATCH/r18-live.md" | wc -l | tr -d ' ')" "0"
+sed -n '127p' "$R18" > "$SCRATCH/coderabbit-row.txt"
+present D14d "the single hit is still the rejected alternatives row" "$SCRATCH/coderabbit-row.txt" 'Rejected on the same fit ground'
+cat "$SCRATCH/coderabbit-row.txt"
+echo
+
+echo "=== D15 — the owner's direction and the two acceptance rows ==="
+present D15a "section 4 heading" "$OWN" "## 4. R18's residual risk -- ANSWERED 2026-09-12, and it changed the design"
+present D15b "no enable variable"           "$OWN" 'with no enable variable'
+present D15c "absent credential prints"     "$OWN" 'do not run, do not error, and print'
+present D15d "delete to opt out"            "$OWN" 'Anyone who does not want them deletes the files.'
+present D15e "both lanes reject bots"       "$OWN" 'Both lanes must reject bots.'
+present D15f "association test stays"       "$OWN" 'The author-trust test stays the association check'
+/usr/bin/grep -F '| W0-R18 |' "$OWN" > "$SCRATCH/row-w0r18.txt"
+/usr/bin/grep -F '| W0-R45 |' "$OWN" > "$SCRATCH/row-w0r45.txt"
+check   D15g "one W0-R18 row" "$(wc -l < "$SCRATCH/row-w0r18.txt" | tr -d ' ')" "1"
+check   D15h "one W0-R45 row" "$(wc -l < "$SCRATCH/row-w0r45.txt" | tr -d ' ')" "1"
+present D15i "W0-R18 accepts"          "$SCRATCH/row-w0r18.txt" 'A accept'
+present D15j "W0-R18 binds R18's sha"  "$SCRATCH/row-w0r18.txt" 'c9e44318'
+present D15k "W0-R45 binds R45 rev 2"  "$SCRATCH/row-w0r45.txt" '1e7fe249'
+present D15l "W0-R45 directs revision 3" "$SCRATCH/row-w0r45.txt" 'revision 3'
+present D15m "W0-R45 names the fired trigger" "$SCRATCH/row-w0r45.txt" "R45's re-verify trigger (R18's enablement decision) fired with W0-R18"
+echo "--- the two rows, quoted ---"
+cut -c1-300 "$SCRATCH/row-w0r18.txt"
+cut -c1-300 "$SCRATCH/row-w0r45.txt"
+echo
+
+echo "=== D16 — how far revision 2's script still reproduces revision 2's log ==="
+R18PUBSHA=$(shasum -a 256 "$R18PUB" | cut -d' ' -f1)
+echo "R18 published entry (what C1 and C2 read): sha256 $R18PUBSHA"
+sed -n '1p' "$R18PUB"
+bash "$R45R2SH" > "$SCRATCH/r2-rerun.log" 2>&1
+echo "revision-2 script exit: $?"
+diff "$R45R2LOG" "$SCRATCH/r2-rerun.log" > "$SCRATCH/r2.diff"
+/usr/bin/grep '^[<>]' "$SCRATCH/r2.diff" > "$SCRATCH/r2-difflines.txt"
+echo "--- every differing line, so the drift is on the record rather than summarised ---"
+cat "$SCRATCH/r2-difflines.txt"
+echo "--- and then region by region, because a flat diff cannot tell a live corpus from a republished file ---"
+# Revision 2 claimed the only differing line was the capture timestamp, and that
+# held on 2026-09-10/11. It no longer does, and it will stop holding twice over:
+# C8 fetches a LIVE vendor corpus that has already grown, and C1/C2 read the
+# PUBLISHED R18 entry, which the publisher will replace with revision 6 now that
+# W0-R18 has accepted it. A flat line filter cannot separate those two causes, so
+# the log is compared by region, and only the regions that must be stable are
+# asserted.
+region () { # region <file> <first-line-prefix> <stop-line-prefix, "" for EOF>
+  awk -v s="$2" -v e="$3" '
+    index($0, s) == 1 { inr = 1 }
+    e != "" && index($0, e) == 1 { inr = 0 }
+    inr { print }
+  ' "$1"
+}
+for side in old new; do
+  if [ "$side" = old ]; then f="$R45R2LOG"; else f="$SCRATCH/r2-rerun.log"; fi
+  awk 'NR>=3 { if (index($0,"=== C1 —")==1) exit; print }' "$f" > "$SCRATCH/$side-head.txt"
+  region "$f" "=== C1 —" "=== C3 —"          > "$SCRATCH/$side-c1c2.txt"
+  region "$f" "=== C3 —" "=== C8 —"          > "$SCRATCH/$side-c3c7.txt"
+  region "$f" "=== C8 —" "=== end of checks" > "$SCRATCH/$side-c8.txt"
+  region "$f" "=== end of checks" ""         > "$SCRATCH/$side-tail.txt"
+done
+same () { if diff -q "$1" "$2" > /dev/null; then echo identical; else echo "$(diff "$1" "$2" | /usr/bin/grep -c '^[<>]') differing line(s)"; fi; }
+check D16a "log header below the capture time: toolchain and working directory" "$(same "$SCRATCH/old-head.txt" "$SCRATCH/new-head.txt")" "identical"
+check D16b "C3 to C7, which read pinned git objects and a pinned action ref"     "$(same "$SCRATCH/old-c3c7.txt" "$SCRATCH/new-c3c7.txt")" "identical"
+check D16c "everything from '=== end of checks ===' on, emitted source included" "$(same "$SCRATCH/old-tail.txt" "$SCRATCH/new-tail.txt")" "identical"
+present D16d "C8 still counts 40 @greptileai"   "$SCRATCH/new-c8.txt" '@greptileai occurrences:   40'
+present D16e "C8 still counts 0 @greptile-apps" "$SCRATCH/new-c8.txt" '@greptile-apps occurrences: 0'
+echo "--- C8 reads a LIVE vendor corpus, so its byte count is recorded and never asserted ---"
+/usr/bin/grep -h 'llms-full.txt ->' "$SCRATCH/old-c8.txt" "$SCRATCH/new-c8.txt"
+if [ "$R18PUBSHA" = "b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205" ]; then
+  check D16f "C1 and C2, while the published R18 entry is still the one they were captured against" "$(same "$SCRATCH/old-c1c2.txt" "$SCRATCH/new-c1c2.txt")" "identical"
+else
+  printf '  %-5s N/A   %s\n' "D16f" "C1 and C2 now read a REPUBLISHED R18 entry, sha256 $R18PUBSHA."
+  echo "        Revision 2's log records what the PUBLISHED entry said on 2026-09-10; R18's own"
+  echo "        '## Supersedes' preserves those bytes verbatim, so nothing is lost and this is not"
+  echo "        a failure. The facts themselves are re-checked against the owner-accepted entry by"
+  echo "        D11, D12 and D14 above."
+  echo "--- what C1 and C2 read now ---"
+  cat "$SCRATCH/new-c1c2.txt"
+fi
+present D16g "C1 reports the review lane's trigger types under either published entry" "$SCRATCH/new-c1c2.txt" 'pull_request: types: [opened, ready_for_review, reopened]'
+echo "        rule: line 2 is the capture time; C8's byte count and corpus line numbers drift because"
+echo "        the corpus is live; C1 and C2 change when R18 is republished. Everything else must match."
+echo
+
+echo "=== D17 — this revision's '## Supersedes' carries the published revision-2 bytes verbatim ==="
+MARKLINE=$(/usr/bin/grep -n -F "$MARK" "$R45DEC" | head -1 | cut -d: -f1)
+if [ -z "$MARKLINE" ]; then
+  echo "  D17   FAIL  marker line not found in $R45DEC"
+  FAILS=$((FAILS + 1))
+else
+  tail -n +$((MARKLINE + 2)) "$R45DEC" > "$SCRATCH/carried.md"
+  git -C "$REPO" show "$REV2COMMIT":'research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/DECISION.md' > "$SCRATCH/rev2.md"
+  check D17a "sha256 of the revision-2 bytes recovered from $REV2COMMIT" "$(shasum -a 256 "$SCRATCH/rev2.md" | cut -d' ' -f1)" "$REV2SHA"
+  if diff -q "$SCRATCH/rev2.md" "$SCRATCH/carried.md" > /dev/null; then
+    check D17b "carried block equals the published revision-2 bytes" "identical" "identical"
+  else
+    check D17b "carried block equals the published revision-2 bytes" "$(diff "$SCRATCH/rev2.md" "$SCRATCH/carried.md" | /usr/bin/grep -c '^[<>]') differing line(s)" "identical"
+  fi
+fi
+echo
+
+echo "=== end of checks ==="
+echo "failed checks: $FAILS"
+echo
+echo "=== script source (emitted by this script, so the log is self-contained) ==="
+cat "$0"
+exit "$([ "$FAILS" -eq 0 ] && echo 0 || echo 1)"

@@ -1,0 +1,195 @@
+# R11 candidate fixture: plan-gated compile-tier CI.
+# This file is the JOB GRAPH ONLY. Every tool named inside a step is a slot
+# owned by another item (R27 R28 R29 R30 R31 R32 R35 R13 R71 R82) and is
+# written here as the cheapest placeholder that keeps the graph type-correct.
+# Package names are R02's; binary names are R49's and R69's; the serve
+# binary's name is still R69's placeholder and is written as a literal here
+# only so `actionlint` has something to type-check.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Tier 0 - always runs. No toolchain, no cache action, no target/ directory.
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+      web: ${{ steps.detect.outputs.web }}
+      workflows: ${{ steps.detect.outputs.workflows }}
+      docs: ${{ steps.detect.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect changed paths
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          # R11-DETECTOR-BEGIN
+          out() { printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"; }
+          if [ "${EVENT_NAME}" != "pull_request" ]; then
+            out code true; out web true; out workflows true; out docs true
+            echo "INFO: ${EVENT_NAME} event - nothing is skip-gated"
+            exit 0
+          fi
+          changed="$(git diff --no-ext-diff --no-textconv --name-only "${BASE_SHA}...HEAD")"
+          code=false; web=false; workflows=false; docs=false
+          # Paths that cannot affect a compile, a package or an installed artifact.
+          skip='^docs/|^\.vscode/|^\.github/ISSUE_TEMPLATE/|\.md$'
+          # R49's [package] include allow-list: every entry is a packaging input,
+          # so none of them is skippable however the skip-list reads.
+          packaging='^README\.md$|^CHANGELOG\.md$|^LICENSE-MIT$|^LICENSE-APACHE$'
+          if printf '%s\n' "$changed" | grep -qE "$packaging"; then code=true; fi
+          if printf '%s\n' "$changed" | grep -vE "$skip" | grep -q .; then code=true; fi
+          # A change to a workflow file can change the web gate itself, so it
+          # sets web as well as code - the conservative direction.
+          if printf '%s\n' "$changed" | grep -qE '^crates/web/|^src/bin/rslbp-serve\.rs$|^\.github/workflows/'; then web=true; fi
+          if printf '%s\n' "$changed" | grep -qE '^\.github/workflows/'; then workflows=true; fi
+          if printf '%s\n' "$changed" | grep -qE '^docs/|\.md$'; then docs=true; fi
+          out code "$code"; out web "$web"; out workflows "$workflows"; out docs "$docs"
+          echo "INFO: code=$code web=$web workflows=$workflows docs=$docs"
+          # R11-DETECTOR-END
+
+  # Tier 1 - no compilation, therefore no rust-cache step and no cache entry.
+  # Deliberately carries NO `needs:` edge, so a formatting failure still
+  # reports on a pull request whose compile tier is skipped.
+  hygiene:
+    name: hygiene
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Formatter check
+        run: cargo fmt --all --check
+
+  # Tier 1 - path-gated, no compilation. R29 owns the tools inside it, and
+  # R20's two pin-policy checks land here for the same reason.
+  workflow-lint:
+    name: workflow-lint
+    needs: plan
+    if: ${{ needs.plan.outputs.workflows == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Workflow-file lint slot (R29) and action-pin checks (R20)
+        run: echo "workflow-lint slot"
+
+  # Tier 2 - the one compiling job per runner. One target/ cache entry per OS.
+  check:
+    name: check (${{ matrix.os }})
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          cache-on-failure: "true"
+          prefix-key: "v1-rslbp"
+      - name: Record the runner image (R10 criterion A7)
+        run: echo "ImageOS=$ImageOS"
+      - name: Lint, default features
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Lint, web feature on
+        run: cargo clippy --locked --workspace --all-targets --features web -- -D warnings
+      - name: Facade builds with no default features (R69)
+        run: cargo check --locked --no-default-features -p rs-launch-blueprint
+      - name: Test, default features, root-scoped so feature-off is proven not assumed
+        run: cargo test --locked -p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli
+      - name: Test, web feature on, workspace-scoped
+        run: cargo test --locked --workspace --features web
+      - name: Build the serve binary
+        run: cargo build --locked --features web --bin rslbp-serve
+      - name: Doc build
+        run: cargo doc --locked --workspace --no-deps --features web
+
+  # Tier 2 - the rust-version floor. Its own job id because it is its own
+  # toolchain and must not share the stable job's cache key (R10 criterion A3).
+  msrv-floor:
+    name: msrv-floor
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Verify the declared rust-version floor
+        run: cargo hack check --locked --rust-version --workspace --all-targets --ignore-private
+
+  # Tier 2 - R50's job: one runner, gated on this file's code output, with the
+  # web leg as a step conditioned on this file's web output.
+  install-smoke:
+    name: install-smoke
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Install smoke, default surface
+        run: just install-check
+      - name: Install smoke, web surface
+        if: ${{ needs.plan.outputs.web == 'true' }}
+        run: just install-check web
+
+  # Slots this file leaves open. Each is a job id or step position another
+  # item fills, under the partition rule stated in this item's owned value:
+  #   coverage      (R35)        job;  needs: plan; if code == 'true'
+  #   deny / bans   (R02 F008, R13)  step of check, or a job if it needs a
+  #                              graph the compile tier does not build
+  #   test tiers    (R32)        steps of check unless a tier needs its own
+  #                              toolchain, runner or target/
+  #   docs-gate     (R82)        job;  needs: plan; if docs == 'true' || code == 'true'
+  #   openapi-snap  (R71, R84)   job;  needs: plan; if web == 'true'
+  #   permissions   (R08)        the scopes in every permissions: block here
+  #   ci-ok         (R12)        job;  needs: every job id above; if always()

@@ -1,0 +1,150 @@
+# r30-lints.sh  run 2026-09-27T07:24:53Z  host Darwin arm64
+# CARGO_HOME=/tmp/cargo-s34-R30-r3
+# stable: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) / rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+# 1.96.0: cargo 1.96.0 (30a34c682 2026-05-25) / rustc 1.96.0 (ac68faa20 2026-05-25)
+# CARGO_TARGET_DIR=<ws>/target
+
+# --- L0: the Opus leg's E13 example needs no table entry: rustc's default lints already flag it
+
+== L0a fn mk(s: &str) -> Wrap in the member WITHOUT the table — default lint warns, gate fails
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+warning: hidden lifetime parameters in types are deprecated
+ --> crates/inherits/src/lib.rs:2:15
+error: `inherits` (lib) generated 1 warning
+warning: hiding a lifetime that's elided elsewhere is confusing
+ --> crates/optout/src/lib.rs:2:14
+  = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+error: `inherits` (lib test) generated 1 warning (1 duplicate)
+error: `optout` (lib test) generated 1 warning (run `cargo fix --lib -p optout --tests` to apply 1 suggestion)
+error: `optout` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.30s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== L0b same, on the 1.96.0 floor rustc — the default lint warns there too
+$ tcargo 1.96.0 check --workspace --all-targets --locked
+warning: hidden lifetime parameters in types are deprecated
+ --> crates/inherits/src/lib.rs:2:15
+warning: hiding a lifetime that's elided elsewhere is confusing
+ --> crates/optout/src/lib.rs:2:14
+  = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+warning: `inherits` (lib test) generated 1 warning (1 duplicate)
+warning: `optout` (lib test) generated 1 warning (run `cargo fix --lib -p optout --tests` to apply 1 suggestion)
+warning: `optout` (lib) generated 1 warning (1 duplicate)
+warning: `inherits` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.46s
+exit=0 (expected 0) PASS
+
+# --- L1: rust_2018_idioms through [workspace.lints.rust]; only the member with [lints] workspace = true inherits it
+
+== L1a stable gate — inherits fails on elided_lifetimes_in_paths, optout (same code) is silent
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+warning: hidden lifetime parameters in types are deprecated
+ --> crates/inherits/src/lib.rs:2:15
+error: `inherits` (lib) generated 1 warning
+error: `inherits` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.25s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== L1b stable plain cargo check — same warning, exit 0 (the lax local tier survives)
+$ cargo check --workspace --all-targets --locked
+warning: hidden lifetime parameters in types are deprecated
+ --> crates/inherits/src/lib.rs:2:15
+warning: `inherits` (lib test) generated 1 warning
+warning: `inherits` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+exit=0 (expected 0) PASS
+
+== L1c 1.96.0 floor rustc — the table is read, same warning emitted
+$ tcargo 1.96.0 check --workspace --all-targets --locked
+warning: hidden lifetime parameters in types are deprecated
+ --> crates/inherits/src/lib.rs:2:15
+warning: `inherits` (lib) generated 1 warning
+warning: `inherits` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+exit=0 (expected 0) PASS
+
+== L1d 1.96.0 floor rustc with RUSTFLAGS=-Dwarnings — denied there too
+$ env RUSTFLAGS=-Dwarnings RUSTC=~/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustc ~/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --workspace --all-targets --locked
+error: hidden lifetime parameters in types are deprecated
+ --> crates/inherits/src/lib.rs:2:15
+error: could not compile `inherits` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `inherits` (lib) due to 1 previous error
+exit=101 (expected 101) PASS
+
+== L1e fixed to Wrap<'_> — stable gate green
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+exit=0 (expected 0) PASS
+
+== L1f fixed to Wrap<'_> — floor green
+$ tcargo 1.96.0 check --workspace --all-targets --locked
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+exit=0 (expected 0) PASS
+
+# --- L2: a misspelled feature name in cfg, with NO unexpected_cfgs entry in the table
+
+== L2a stable plain — Cargo's automatic --check-cfg already warns (unexpected_cfgs)
+$ cargo check --workspace --all-targets --locked
+warning: unexpected `cfg` condition value: `wbe`
+ --> src/lib.rs:2:7
+  = note: `#[warn(unexpected_cfgs)]` on by default
+warning: `facade` (lib test) generated 1 warning
+warning: `facade` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+exit=0 (expected 0) PASS
+
+== L2b stable gate — the warning fails the gate with no table entry
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+warning: unexpected `cfg` condition value: `wbe`
+ --> src/lib.rs:2:7
+  = note: `#[warn(unexpected_cfgs)]` on by default
+error: `facade` (lib test) generated 1 warning
+error: `facade` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== L2c 1.96.0 floor rustc — warns there too
+$ tcargo 1.96.0 check --workspace --all-targets --locked
+warning: unexpected `cfg` condition value: `wbe`
+ --> src/lib.rs:2:7
+  = note: `#[warn(unexpected_cfgs)]` on by default
+warning: `facade` (lib) generated 1 warning (1 duplicate)
+warning: `facade` (lib test) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+exit=0 (expected 0) PASS
+
+# --- L3: the Muse leg's entry, unexpected_cfgs = "deny" in the committed table
+
+== L3 stable plain cargo check — now a hard error in every local build (lax local tier lost)
+$ cargo check --workspace --all-targets --locked
+error: unexpected `cfg` condition value: `wbe`
+ --> src/lib.rs:2:7
+error: could not compile `facade` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `facade` (lib test) due to 1 previous error
+exit=101 (expected 101) PASS
+
+# --- L4: what rust_2018_idioms contains, and which of its members edition 2024 already makes hard errors
+$ rustc -W help | grep rust-2018-idioms   (stable, then 1.96.0)
+rust-2018-idioms  bare-trait-objects, unused-extern-crates, ellipsis-inclusive-range-patterns, elided-lifetimes-in-paths, explicit-outlives-requirements
+rust-2018-idioms  bare-trait-objects, unused-extern-crates, ellipsis-inclusive-range-patterns, elided-lifetimes-in-paths, explicit-outlives-requirements
+
+== L4a bare_trait_objects: a bare trait object is a hard error in edition 2024 with no table entry
+$ cargo check -p facade --locked
+error[E0782]: expected a type, found a trait
+ --> src/lib.rs:1:17
+error: could not compile `facade` (lib) due to 1 previous error
+exit=101 (expected 101) PASS
+
+== L4b ellipsis_inclusive_range_patterns: `...` is a hard error in edition 2024 with no table entry
+$ cargo check -p facade --locked
+error[E0783]: `...` range patterns are deprecated
+ --> src/lib.rs:1:37
+error: could not compile `facade` (lib) due to 1 previous error
+exit=101 (expected 101) PASS
+
+# summary: failures=0

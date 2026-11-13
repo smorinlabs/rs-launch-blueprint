@@ -1,0 +1,23 @@
+# codex exec header probe, 2026-09-04, binary /Users/stevemorin/.local/share/mise/installs/node/26.5.0/bin/codex
+# argv: codex exec --ephemeral --skip-git-repo-check --sandbox read-only --color never -m gpt-5.6-luna "Reply with exactly one line: HDR_OK_<nonce>. Do not run commands."
+Reading additional input from stdin...
+OpenAI Codex v0.153.2
+--------
+workdir: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/codex-probes
+model: gpt-5.6-luna
+provider: openai
+approval: on-request
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: 01a06fd4-8e8b-7611-9574-8723122c2b44
+--------
+user
+Reply with exactly one line: HDR_OK_P02ROUTE1788582441. Do not run commands.
+hook: SessionStart
+hook: SessionStart Completed
+codex
+HDR_OK_P02ROUTE1788582441
+tokens used
+25,469
+HDR_OK_P02ROUTE1788582441

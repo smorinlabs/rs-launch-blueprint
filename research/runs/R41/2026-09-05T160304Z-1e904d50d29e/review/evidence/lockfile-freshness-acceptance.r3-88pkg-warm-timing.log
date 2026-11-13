@@ -1,0 +1,9 @@
+started 2026-09-09T06:40:24Z; host Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+fixture: 88 [[package]] entries; Cargo.lock sha256 6205ba2b2fd07b45bec580c8ac91ddea63cf74182b93840bfe1c1bf614c972d0
+=== floor-1.96.0: cargo 1.96.0 (30a34c682 2026-05-25)
+  cargo update --workspace: warm wall seconds (5 samples): 0.10 0.10 0.10 0.10 0.10; git diff --quiet -- Cargo.lock -> 0
+  cargo metadata --locked --format-version=1: warm wall seconds (5 samples): 0.07 0.06 0.07 0.06 0.06; git diff --quiet -- Cargo.lock -> 0
+=== stable-1.98.0-homebrew: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+  cargo update --workspace: warm wall seconds (5 samples): 0.11 0.12 0.14 0.11 0.11; git diff --quiet -- Cargo.lock -> 0
+  cargo metadata --locked --format-version=1: warm wall seconds (5 samples): 0.08 0.09 0.10 0.08 0.09; git diff --quiet -- Cargo.lock -> 0
+finished 2026-09-09T06:40:27Z

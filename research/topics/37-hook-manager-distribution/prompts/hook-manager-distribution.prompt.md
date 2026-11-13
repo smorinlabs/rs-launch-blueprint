@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): target shape is CLI + library + web service (spec §4 D7); `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). lefthook itself is the hook manager tool (F142, `COMMON → REUSE`, not open for reconsideration). Three researched parameters this item consumes are still open (no `DECISION.md` yet): `ci-job-structure` (R11), `package-manager-invocation` (R42), `web-extra-surface` (R69) — design to fit whichever value each eventually takes; do not block on them.
 - Prior decisions of the TypeScript port that explain the current shape: D-020(1) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — lefthook 2.x kept as a devDependency, activated via `package.json`'s `"prepare": "lefthook install"`, chosen because it is the only hook manager with positive org precedent and is actively maintained versus a dormant husky or a Python-runtime-imposing pre-commit framework; D-022(1) — the CI workflow's dual-enforcement structure (checkout, setup, named just-recipe steps, plus a hook-suite run-all parity step).
 
+### Baseline review (2026-09-04)
+- F186 (hook-toolchain readiness check, `ADOPT`) keeps its capability, but its audited tool list is derived from this item, R39/R40 and R42; py's list includes bun and uv, source-specific runtime tools whose need in a Rust repo follows this research. State what the readiness check audits (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The commit-message linter tool itself and its config (base config, header/body/footer length overrides, type-enum, bot-PR relaxed ruleset, CI re-run); R38 (`commit-message-linter`) owns `commit-message-convention` and F149-F157 — this item wires the hook *manager*, not the commit-msg linter's own tooling.
 - The secret-scanning hooks (staged and pre-push-range) and their allowlist/suppression files; R39 (`secret-scanning-hooks`) owns F163-F166.
@@ -22,6 +25,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R37
 - owns:
 - consumes: R11: ci-job-structure; R42: package-manager-invocation; R69: web-extra-surface
+- effort: focused
+- engines: muse, opus
+- evidence-checks:
+- acceptance-after:
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 - related (not a registry dependency): R38 (`commit-message-linter`), R39 (`secret-scanning-hooks`), R40 (`auxiliary-hygiene-hooks`), and R41 (`lockfile-freshness-check`) each own a specific hook *job's* tool and config; this item owns the hook *manager*'s distribution, install trigger, and full-suite CI re-run — the container those jobs run inside, not their contents. R32 (`test-harness-and-execution`) owns F173 (the opt-in pre-push test-suite hook) — coordinate on where in the stage tiering it lands but do not re-decide it.
 
@@ -65,6 +72,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -75,7 +88,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

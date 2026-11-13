@@ -1,0 +1,62 @@
+{
+ "operation_id": "research-20260909-001249-fc1fbad6f52f4f42",
+ "kind": "bundle",
+ "providers": {
+  "openai": {
+   "saved_file": "doxa/research-outputs/2026-09-09_001249_all_deep_research_openai_deep-research-prompt-ports-and-adapters-seam-r01-b.md",
+   "model": "gpt-5.6-sol",
+   "changes": [],
+   "normalized": "doxa-openai.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "perplexity": {
+   "saved_file": "doxa/research-outputs/2026-09-09_001249_all_deep_research_perplexity_deep-research-prompt-ports-and-adapters-seam-r01-b.md",
+   "model": "sonar-deep-research",
+   "changes": [
+    "'## Landscape' -> H3",
+    "'### Category and ecosystem mapping' (not a template field) -> bold",
+    "'### Authoritative sources and why they count' (not a template field) -> bold",
+    "'### Practice evidence: what well-regarded projects do' (not a template field) -> bold",
+    "'### Fit for a CLI + library + web service template' (not a template field) -> bold",
+    "'## Principles and implementation' -> H3",
+    "'### Shared requirement, agreement level, and essential behaviours' (not a template field) -> bold",
+    "'### Architectural alternatives: port/adapter vs function injection' (not a template field) -> bold",
+    "'### Generics vs trait objects for the port abstraction' (not a template field) -> bold",
+    "'### Adapter verification: trait system vs mocking crate' (not a template field) -> bold",
+    "'### Composition root: idiomatic Rust shape' (not a template field) -> bold",
+    "'### First-class in-memory adapter and supporting mechanisms' (not a template field) -> bold",
+    "'### Web layer reuse of CLI data contract' (not a template field) -> bold",
+    "'## Recommendation' -> H3",
+    "'## Members' -> H3",
+    "'### #### Trait-based Port and Static DI Pattern' -> H4",
+    "'### #### Trait Objects at Application Boundaries' -> H4",
+    "'### #### In-Memory Fake Adapter' -> H4",
+    "'### #### Serde-based Shared Data Contract' -> H4",
+    "'### #### Axum Web Adapter Layer' -> H4",
+    "'## Sources' -> H3"
+   ],
+   "normalized": "doxa-perplexity.normalized.md",
+   "shape": "FAIL: answer: bundle member 'Axum Web Adapter Layer' must contain the crate H5 fields in order",
+   "field_gaps": "missing fields: ['Compatibility', 'Parameters', 'Migration implications', 'Validation strategy', 'Confidence & re-verify trigger']",
+   "member_notes": [
+    "member 'Axum Web Adapter Layer' incomplete (H5 fields present: ['Landscape', 'Principles and implementation']); demoted to bold text"
+   ],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "gemini": {
+   "saved_file": "doxa/research-outputs/2026-09-09_001249_all_deep_research_gemini_deep-research-prompt-ports-and-adapters-seam-r01-b.md",
+   "model": "deep-research-preview-04-2026",
+   "changes": [],
+   "normalized": "doxa-gemini.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  }
+ },
+ "regrouped": {
+  "file": "doxa.normalized.md",
+  "shape": "OK: validation passed"
+ }
+}

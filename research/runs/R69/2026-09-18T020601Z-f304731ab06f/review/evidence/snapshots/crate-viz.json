@@ -1,0 +1,19 @@
+{
+  "crate": "viz",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/viz",
+    "versions": "https://crates.io/api/v1/crates/viz/versions"
+  },
+  "recent_downloads": 5466,
+  "downloads": 215720,
+  "repository": "https://github.com/viz-rs/viz",
+  "versions_total": 66,
+  "newest_non_yanked": {
+    "num": "0.11.0",
+    "created_at": "2025-11-17T08:59:42.522292Z",
+    "yanked": false,
+    "rust_version": null,
+    "license": "MIT"
+  }
+}

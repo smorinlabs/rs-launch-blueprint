@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): the Diátaxis information architecture (tutorials/tasks/reference/about/tools/contributing categories) is preserved verbatim regardless of this item's delivery-model pick (F342, `COMMON → REUSE`, `rust-ok: yes`) — do not re-derive the category set, only decide how it is delivered; a contributor-facing "how to add a doc page" authoring guide is likewise already decided to exist, only its content mechanics (toctree/labels vs. relative links) are downstream of this item's pick (F347, `COMMON → REUSE`); the API-reference doc generator (rustdoc/`cargo doc` CI gating) moved to R82 at the Task 10 reconciliation and is not this item's decision (F353); `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
 - Prior decisions of the TypeScript port that explain the current shape: D-023(1) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — dropped the Sphinx docs-site generator and Read the Docs hosting entirely, in favor of a README-centric front door plus a plain CommonMark/GFM `docs/` tree, reasoning "org practice is unanimously README-centric (5/5 recent repos)... the template's value lives in the Diátaxis content, not the Sphinx machinery"; D-023(3) — normalized MyST to CommonMark/GFM, converted `{toctree}` blocks to plain bullet-list link indexes, and merged the landing page into the README to eliminate duplication, on the finding the source corpus was "~90% generator-agnostic CommonMark already"; D-023(5) — the full rationale for omitting Sphinx's machinery (conf.py, theme, `.readthedocs.yaml`, pdf/epub/htmlzip outputs) as having "no role in a README-centric model."
 
+### Baseline review (2026-09-04)
+- F358 (documented future docs-site upgrade path, `ADOPT`) is a derived note: state whether an upgrade-path note is useful under the selected delivery model; Astro Starlight is "documented, not shipped" in ts and is neither designated nor excluded here (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The doc content correctness gate — link checking (internal and external) and rustdoc/API-reference-doc-generator CI gating; R82 (`docs-correctness-gate`) owns F348/F349/F350/F353 — this item decides what docs tree/site exists, R82 decides how its correctness is checked in CI.
 - Whether the template ships an optional web/API surface at all; R69 (`web-framework-stack`) owns `web-extra-surface` — this item's docs-delivery pick does not depend on that surface's contents.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R81
 - owns:
 - consumes:
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R82 (`docs-correctness-gate`) decides the CI-facing correctness gate (link checking, rustdoc gating) built atop whatever docs tree or site this item produces; assume R82 resolves separately and design this item's tree/site to be checkable by either an mdBook-style build or a plain-markdown link walk.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -62,6 +69,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -72,7 +85,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

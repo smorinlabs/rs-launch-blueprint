@@ -1,0 +1,24 @@
+
+===== 0. Setup =====
+run-utc 2026-09-15T08:10:12Z
+scratch copy /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r19-r5-negctl.H7wjgF
+tampered: line 187 now reads
+Defines a **cooldown period** for dependency updates, allowing updates to be delayed for a configurable number of days. The `cooldown` option is also available for _security_ updates.
+
+===== 1. Run the checker against the tampered copy =====
+checker exit status 1
+FAIL  1a snapshot does not re-derive the pin's blob sha (1 row(s), 1 read, 1 defective)
+FAIL  2a the pinned cooldown section states the option is only available for version updates, not security updates
+failed assertions: 2
+
+===== 2. Assertions about the failure =====
+PASS  the checker exits 1 when its snapshot is tampered with
+PASS  the blob-sha integrity check caught the edit
+PASS  the line-187 content assertion caught the reversed sentence
+PASS  exactly 2 assertions failed — no other check is coupled to this edit
+
+===== 3. The committed snapshot is untouched =====
+PASS  the committed snapshot still passes its own checker
+
+===== SUMMARY =====
+failed assertions: 0

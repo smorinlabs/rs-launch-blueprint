@@ -1,0 +1,126 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-05T16:03:04Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-05T16:03:04Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+      "at": "2026-09-05T16:03:04Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+        "at": "2026-09-05T16:03:04Z",
+        "model": "gpt-5.6-luna",
+        "provider": "codex",
+        "request_id": "af9fd5b5a33e4805a2d160cc58edd68a",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+      "at": "2026-09-05T16:13:10Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+        "actual_model": "gpt-5.6-luna",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:03:04Z",
+        "model": "gpt-5.6-luna",
+        "operation_id": "01a0724f-933e-7e93-9d87-1f6bd96ae5f9",
+        "provider": "codex",
+        "request_id": "af9fd5b5a33e4805a2d160cc58edd68a",
+        "returned_at": "2026-09-05T16:13:10Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+      "at": "2026-09-05T16:13:10Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+        "actual_model": "gpt-5.6-luna",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:03:04Z",
+        "collected_at": "2026-09-05T16:13:10Z",
+        "model": "gpt-5.6-luna",
+        "operation_id": "01a0724f-933e-7e93-9d87-1f6bd96ae5f9",
+        "provider": "codex",
+        "raw": "research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/raw/codex-321933ee23f707259840f0b425d9554ece75d7faf8c6fc00453e7b0b6660a696.md",
+        "raw_sha256": "321933ee23f707259840f0b425d9554ece75d7faf8c6fc00453e7b0b6660a696",
+        "reason": "",
+        "request_id": "af9fd5b5a33e4805a2d160cc58edd68a",
+        "returned_at": "2026-09-05T16:13:10Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-06T05:28:38Z",
+      "correction": "raw/codex.md revised after defective evidence checks: r1 gpt-5.6-luna (collected hash-named copy), r2 under gpt-6-astra (resume without -m), r3 and r4 gpt-5.6-luna; the current raw/codex.md is r4; current sha256 c108365826aaa34286a328b870aafba727f99eb474db1348fcb0278b00658bed; recorded by the controller",
+      "provider": "codex",
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T02:40:58Z",
+      "publication": {
+        "acceptance_sha256": "622902e8a928ff1d130ea1af50a4c00c88c95ee3690128fe9235724c5c00f4d0",
+        "decision_sha256": "a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd",
+        "transaction": "6219d3850ac440afa8436386363b85ea"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "1c35293a773f7e60b0c47232966c661433b845b9b21685a08792143ed8650d1a",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "0023242a0337eade8fcd4f025fe7543b84338bf82916850a3659b8d949efb4e2",
+    "policy_item": "eabae257e92f1d93a2d640cfb627e526d300e7e6b918082d124a964a5f731192",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "27ac3f2850abf7b3ffe665ba252bbf8ba4b90d6abf227ef742f9a831c396b806",
+    "registry": "31a19e71ca9592be335161acdf0caaa3ae13ec0202ea38633ff192319def4cbf"
+  },
+  "item": "R46",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+      "actual_model": "gpt-5.6-luna",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-05T16:03:04Z",
+      "collected_at": "2026-09-05T16:13:10Z",
+      "model": "gpt-5.6-luna",
+      "operation_id": "01a0724f-933e-7e93-9d87-1f6bd96ae5f9",
+      "provider": "codex",
+      "raw": "research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/raw/codex-321933ee23f707259840f0b425d9554ece75d7faf8c6fc00453e7b0b6660a696.md",
+      "raw_sha256": "321933ee23f707259840f0b425d9554ece75d7faf8c6fc00453e7b0b6660a696",
+      "reason": "",
+      "request_id": "af9fd5b5a33e4805a2d160cc58edd68a",
+      "returned_at": "2026-09-05T16:13:10Z",
+      "state": "succeeded"
+    }
+  },
+  "prompt_source": "research/topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md",
+  "publication": {
+    "acceptance_sha256": "622902e8a928ff1d130ea1af50a4c00c88c95ee3690128fe9235724c5c00f4d0",
+    "decision_sha256": "a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd",
+    "transaction": "6219d3850ac440afa8436386363b85ea"
+  },
+  "remaining_budget": "no paid engine (Light tier)",
+  "required_engines": [
+    "codex"
+  ],
+  "run_id": "2026-09-05T160304Z-5cba7fe96ae4",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "light",
+  "updated_at": "2026-09-10T02:40:58Z"
+}

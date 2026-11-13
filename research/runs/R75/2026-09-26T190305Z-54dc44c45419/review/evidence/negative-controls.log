@@ -1,0 +1,16 @@
+== E2 negative-controls — 2026-09-28T05:54:14Z (UTC), Darwin arm64, rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+== Cargo.lock sha256: 5e89a57d3a9d8513487aeee2fa4e2f07afde2eddc7c3584ae90c3be7b01d43cb
+PASS N01a C11 order: a routed 200 still gets the headers (control) :: xfo=DENY
+PASS N01b C11 order: the access span has no id (TraceLayer outside SetRequestId) :: span_request_id=Some("-") response_id=Some("c5d16fb8-899b-4458-8cbd-fe3a373ac60d")
+PASS N01c C11 order: the 429 loses X-Frame-Options :: status=429 Too Many Requests xfo=NONE
+PASS N01d C11 order: the preflight loses X-Frame-Options :: status=200 OK xfo=NONE
+PASS N02a route_layer design: the routed 200 is logged once :: [("200", 200, 1, "DENY"), ("probe", 200, 0, "DENY"), ("404", 404, 0, "DENY"), ("429", 429, 0, "DENY"), ("preflight", 200, 0, "DENY")]
+PASS N02b route_layer design: the 429 from an outer rate-limit layer is NOT logged :: [("200", 200, 1, "DENY"), ("probe", 200, 0, "DENY"), ("404", 404, 0, "DENY"), ("429", 429, 0, "DENY"), ("preflight", 200, 0, "DENY")]
+PASS N02c route_layer design: the preflight and the 404 are NOT logged :: [("200", 200, 1, "DENY"), ("probe", 200, 0, "DENY"), ("404", 404, 0, "DENY"), ("429", 429, 0, "DENY"), ("preflight", 200, 0, "DENY")]
+PASS N02d route_layer design: the envelope still reaches the 429 and the probe :: [("200", 200, 1, "DENY"), ("probe", 200, 0, "DENY"), ("404", 404, 0, "DENY"), ("429", 429, 0, "DENY"), ("preflight", 200, 0, "DENY")]
+PASS N03 stock propagate: replay echoes the ORIGINAL id, not the logged one :: header=Some("original-111") event_request_id=Some("2dbafcf4-00d6-4ce2-97c7-e1e3dac6df71")
+PASS N04 no CatchPanicLayer: the request panics and emits 0 http_request events :: task_panicked=true events=0
+PASS N05 overriding: handler SAMEORIGIN becomes DENY :: xfo=DENY
+PASS N06 ServiceBuilder spelling: 429 enveloped and logged once; replay id echoed :: 429_xfo=DENY 429_events=1 replay_header=Some("eb322fc5-44d3-4a06-bcc4-d5674161b465") replay_event=Some("eb322fc5-44d3-4a06-bcc4-d5674161b465")
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+== 12 pass, 0 fail

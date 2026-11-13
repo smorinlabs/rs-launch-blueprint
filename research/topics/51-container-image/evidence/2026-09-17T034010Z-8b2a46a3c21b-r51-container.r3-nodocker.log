@@ -1,0 +1,36 @@
+=== R51 container checks
+date-utc: 2026-09-27T04:15:35Z
+host-os:  Darwin 25.4.0 arm64
+grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+script:   /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/evidence
+PASS  F-Dockerfile.candidate — fixture present
+PASS  F-dockerignore.candidate — fixture present
+PASS  C15a — FROM instructions in the Dockerfile: 3
+PASS  C15b — ARG image pins carrying a 64-hex sha256 digest: 3
+PASS  C15c — FROM instructions resolving through a pinned ARG: 3
+PASS  C15d — HEALTHCHECK is exec form invoking busybox by absolute path
+PASS  C15e — probe wait -T 2 (inside --timeout=3s)
+PASS  C15f — HEALTHCHECK --timeout=3s
+PASS  C15g — R77's container note: bind all interfaces
+PASS  C15h — image does not restate RSLBP_WEB_PORT (R77's default stands)
+PASS  C15i — EXPOSE matches R77's default port
+PASS  C15j — explicit non-root USER
+PASS  C15k — cache mounts serialise concurrent builds
+PASS  C15l — .dockerignore keeps Cargo.lock in the build context
+SKIP  C1 — no usable Docker daemon on this host
+SKIP  C2 — no usable Docker daemon on this host
+SKIP  C3 — no usable Docker daemon on this host
+SKIP  C4 — no usable Docker daemon on this host
+SKIP  C5 — no usable Docker daemon on this host
+SKIP  C6 — no usable Docker daemon on this host
+SKIP  C7 — no usable Docker daemon on this host
+SKIP  C8 — no usable Docker daemon on this host
+SKIP  C9 — no usable Docker daemon on this host
+SKIP  C10 — no usable Docker daemon on this host
+SKIP  C11 — no usable Docker daemon on this host
+SKIP  C12 — no usable Docker daemon on this host
+SKIP  C13 — no usable Docker daemon on this host
+SKIP  C14 — no usable Docker daemon on this host
+
+grep-version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+SUMMARY: PASS=14 FAIL=0 SKIP=14 TOTAL=28

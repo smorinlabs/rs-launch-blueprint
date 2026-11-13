@@ -1,0 +1,5 @@
+{
+  // editor settings for contributors (JSONC)
+  "editor.formatOnSave": true,
+    "rust-analyzer.check.command": "clippy",
+}

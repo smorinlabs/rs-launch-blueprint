@@ -1,0 +1,605 @@
+{
+    "categories": [
+        {
+            "category": "Configuration",
+            "crates_cnt": 2518,
+            "created_at": "2017-02-05T21:31:23.444608Z",
+            "description": "Crates to facilitate configuration management for applications.",
+            "id": "config",
+            "slug": "config"
+        }
+    ],
+    "crate": {
+        "badges": [],
+        "categories": [
+            "config"
+        ],
+        "created_at": "2016-07-02T20:30:15.390057Z",
+        "default_version": "0.4.2",
+        "description": "deserialize env vars into typesafe structs",
+        "documentation": "https://softprops.github.io/envy",
+        "downloads": 20877399,
+        "exact_match": false,
+        "homepage": "https://github.com/softprops/envy",
+        "id": "envy",
+        "keywords": [
+            "env",
+            "serde"
+        ],
+        "links": {
+            "owner_team": "/api/v1/crates/envy/owner_team",
+            "owner_user": "/api/v1/crates/envy/owner_user",
+            "owners": "/api/v1/crates/envy/owners",
+            "reverse_dependencies": "/api/v1/crates/envy/reverse_dependencies",
+            "version_downloads": "/api/v1/crates/envy/downloads",
+            "versions": null
+        },
+        "max_stable_version": "0.4.2",
+        "max_version": "0.4.2",
+        "name": "envy",
+        "newest_version": "0.4.2",
+        "num_versions": 11,
+        "recent_downloads": 3574490,
+        "repository": "https://github.com/softprops/envy",
+        "trustpub_only": false,
+        "updated_at": "2021-01-04T00:17:01.205407Z",
+        "versions": [
+            322027,
+            201421,
+            134488,
+            114002,
+            62346,
+            55146,
+            55027,
+            44731,
+            38845,
+            29831,
+            29476
+        ],
+        "yanked": false
+    },
+    "keywords": [
+        {
+            "crates_cnt": 413,
+            "created_at": "2014-11-20T20:53:09.574192Z",
+            "id": "env",
+            "keyword": "env"
+        },
+        {
+            "crates_cnt": 1578,
+            "created_at": "2015-08-10T17:10:09.021436Z",
+            "id": "serde",
+            "keyword": "serde"
+        }
+    ],
+    "versions": [
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-01-04T00:17:01.205407Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/2242?v=4",
+                        "created_at": "2008-03-05T03:41:51Z",
+                        "github_username_matches": true,
+                        "id": 1115,
+                        "login": "softprops",
+                        "name": "Doug Tangren",
+                        "url": "https://github.com/softprops"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "3f47e0157f2cb54f5ae1bd371b30a2ae4311e1c028f575cd4e81de7353215965",
+            "crate": "envy",
+            "crate_size": 10985,
+            "created_at": "2021-01-04T00:17:01.205407Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.4.2/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 20206292,
+            "edition": "2018",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 322027,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 431,
+                        "comment_lines": 6,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 431,
+                "total_comment_lines": 6
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.4.2/authors",
+                "dependencies": "/api/v1/crates/envy/0.4.2/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.4.2/downloads"
+            },
+            "num": "0.4.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/2242?v=4",
+                "created_at": "2008-03-05T03:41:51Z",
+                "github_username_matches": true,
+                "id": 1115,
+                "login": "softprops",
+                "name": "Doug Tangren",
+                "url": "https://github.com/softprops"
+            },
+            "readme_path": "/api/v1/crates/envy/0.4.2/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-01-04T00:17:01.205407Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-01-06T01:03:53.220790Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/2242?v=4",
+                        "created_at": "2008-03-05T03:41:51Z",
+                        "github_username_matches": true,
+                        "id": 1115,
+                        "login": "softprops",
+                        "name": "Doug Tangren",
+                        "url": "https://github.com/softprops"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "f938a4abd5b75fe3737902dbc2e79ca142cc1526827a9e40b829a086758531a9",
+            "crate": "envy",
+            "crate_size": 10833,
+            "created_at": "2020-01-06T01:03:53.220790Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.4.1/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 386064,
+            "edition": "2018",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 201421,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 426,
+                        "comment_lines": 1,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 426,
+                "total_comment_lines": 1
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.4.1/authors",
+                "dependencies": "/api/v1/crates/envy/0.4.1/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.4.1/downloads"
+            },
+            "num": "0.4.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/2242?v=4",
+                "created_at": "2008-03-05T03:41:51Z",
+                "github_username_matches": true,
+                "id": 1115,
+                "login": "softprops",
+                "name": "Doug Tangren",
+                "url": "https://github.com/softprops"
+            },
+            "readme_path": "/api/v1/crates/envy/0.4.1/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-01-06T01:03:53.220790Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "261b836bcf13f42a01c70351f56bd7b66db6e6fb58352bd214cb77e9269a34b4",
+            "crate": "envy",
+            "crate_size": 10142,
+            "created_at": "2019-02-18T15:22:37.729158Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.4.0/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 102443,
+            "edition": "2018",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 134488,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 416,
+                        "comment_lines": 1,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 416,
+                "total_comment_lines": 1
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.4.0/authors",
+                "dependencies": "/api/v1/crates/envy/0.4.0/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.4.0/downloads"
+            },
+            "num": "0.4.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.4.0/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2019-02-18T15:22:37.729158Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "20664407d5097b5a861dffb0c32af2be7215a0050415cb50232aec36d73f69df",
+            "crate": "envy",
+            "crate_size": 9725,
+            "created_at": "2018-10-22T18:18:12.642514Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.3.3/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 108315,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 114002,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 366,
+                        "comment_lines": 3,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 366,
+                "total_comment_lines": 3
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.3.3/authors",
+                "dependencies": "/api/v1/crates/envy/0.3.3/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.3.3/downloads"
+            },
+            "num": "0.3.3",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.3.3/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2018-10-22T18:18:12.642514Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "19a7e612a2549b1db0f7fd674b35f33b97fd83d1129914d5d8dd9795cdac7955",
+            "crate": "envy",
+            "crate_size": 6621,
+            "created_at": "2017-08-14T04:59:32.670601Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.3.2/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 18477,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 62346,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 188,
+                        "comment_lines": 0,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 188,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.3.2/authors",
+                "dependencies": "/api/v1/crates/envy/0.3.2/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.3.2/downloads"
+            },
+            "num": "0.3.2",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.3.2/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:59:39.786388Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "2449f419299a906fd26db30505518647644533e6a84fb653748f2623722e5265",
+            "crate": "envy",
+            "crate_size": 5725,
+            "created_at": "2017-05-30T04:10:38.731222Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.3.1/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 5995,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 55146,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 152,
+                        "comment_lines": 0,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 152,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.3.1/authors",
+                "dependencies": "/api/v1/crates/envy/0.3.1/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.3.1/downloads"
+            },
+            "num": "0.3.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.3.1/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:45:59.463023Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "d7fb05a4c839c7258bc9c8daf742157e030d48d0d5ce09d5ec4d980df4dfd2e5",
+            "crate": "envy",
+            "crate_size": 5574,
+            "created_at": "2017-05-29T06:42:38.293053Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.3.0/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 2135,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 55027,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 147,
+                        "comment_lines": 0,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 147,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.3.0/authors",
+                "dependencies": "/api/v1/crates/envy/0.3.0/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.3.0/downloads"
+            },
+            "num": "0.3.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.3.0/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:46:01.736706Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "19760752e257d0343a132d041983297b994f821a31338502905576efb956aca1",
+            "crate": "envy",
+            "crate_size": 5713,
+            "created_at": "2017-02-04T23:41:06.685383Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.2.0/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 2518,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 44731,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 234,
+                        "comment_lines": 7,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 234,
+                "total_comment_lines": 7
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.2.0/authors",
+                "dependencies": "/api/v1/crates/envy/0.2.0/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.2.0/downloads"
+            },
+            "num": "0.2.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.2.0/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:46:01.732608Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "61f2885ce9ba4be90605d11f53ad8ccb53fd26eb766a6c7618108977e46bfc62",
+            "crate": "envy",
+            "crate_size": 5822,
+            "created_at": "2016-12-01T06:23:41.165681Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.1.2/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 3384,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 38845,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 347,
+                        "comment_lines": 0,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 347,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.1.2/authors",
+                "dependencies": "/api/v1/crates/envy/0.1.2/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.1.2/downloads"
+            },
+            "num": "0.1.2",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.1.2/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:46:01.692469Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "4d415805fee0b93a628f7277f7dd9ff61a998b1be380f1712eaa53f40820f692",
+            "crate": "envy",
+            "crate_size": 5501,
+            "created_at": "2016-07-11T03:29:21.805204Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.1.1/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 2420,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 29831,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 254,
+                        "comment_lines": 0,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 254,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.1.1/authors",
+                "dependencies": "/api/v1/crates/envy/0.1.1/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.1.1/downloads"
+            },
+            "num": "0.1.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.1.1/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:46:01.677634Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "d8a626abbb9e0e0bb5c6e174d429fbb66e7e54c1e91489f185681f5d332b554f",
+            "crate": "envy",
+            "crate_size": 5146,
+            "created_at": "2016-07-02T20:30:15.390057Z",
+            "description": "deserialize env vars into typesafe structs",
+            "dl_path": "/api/v1/crates/envy/0.1.0/download",
+            "documentation": "https://softprops.github.io/envy",
+            "downloads": 2194,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/softprops/envy",
+            "id": 29476,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 251,
+                        "comment_lines": 0,
+                        "files": 2
+                    }
+                },
+                "total_code_lines": 251,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envy/0.1.0/authors",
+                "dependencies": "/api/v1/crates/envy/0.1.0/dependencies",
+                "version_downloads": "/api/v1/crates/envy/0.1.0/downloads"
+            },
+            "num": "0.1.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/envy/0.1.0/readme",
+            "repository": "https://github.com/softprops/envy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:45:59.450233Z",
+            "yank_message": null,
+            "yanked": false
+        }
+    ]
+}

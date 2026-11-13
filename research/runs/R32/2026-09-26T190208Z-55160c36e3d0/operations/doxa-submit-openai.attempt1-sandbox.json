@@ -1,0 +1,1 @@
+{"status": "error", "error": {"code": "PROVIDER_FAILURE", "message": "[Errno 1] Operation not permitted: '/Users/stevemorin/.local/state/doxa/checkpoints/research-20260926-153243-db50e437166a47f0.tmp'", "details": {"exception": "PermissionError"}}}

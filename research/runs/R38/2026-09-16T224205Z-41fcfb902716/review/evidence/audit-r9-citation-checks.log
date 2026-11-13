@@ -1,0 +1,5 @@
+PASS conventional-commits-specification
+PASS committed-reference-v1.1.11
+PASS committed-checks-whole-subject
+PASS committed-action-pin
+PASS committed-crates-api

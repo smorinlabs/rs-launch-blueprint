@@ -1,0 +1,139 @@
+# r82-decision-integrity — run 2026-09-28T04:38:17Z
+# DECISION sha256 edd8134100747cece06310b69bcb394e08538ea055c3213f52ed8210e0876502, 676 lines
+
+## I1 assumes lines
+ok   assumes msrv-policy byte-identical (118 chars)
+ok   assumes rust-edition byte-identical (4 chars)
+ok   assumes target-os-matrix byte-identical (27 chars)
+ok   assumes license byte-identical (17 chars)
+ok   assumes ci-job-structure byte-identical (8093 chars)
+ok   assumes web-extra-surface byte-identical (2638 chars)
+ok   no owns line
+
+## I2 prerequisite decision hashes
+ok   R11 410e88e5195a08def126037e9c451988633b1e48437ac82edca0a08c7a62418c
+ok   R69 d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d
+
+## I3 H2 structure
+H2: ['Decision', 'Parameters', 'Empirical check', 'Engines']
+ok   title line
+ok   re-verify lines: 1
+
+## I4 case and check ids
+ok   G0
+ok   G10
+ok   G1a
+ok   G1b
+ok   G1c
+ok   G2
+ok   G2a
+ok   G2b
+ok   G2c
+ok   G2d
+ok   G3
+ok   G3a
+ok   G3b
+ok   G3c
+ok   G4a
+ok   G4b
+ok   G4c
+ok   G5
+ok   G5a
+ok   G5b
+ok   G6
+ok   G6a
+ok   G6b
+ok   G6c
+ok   G7a
+ok   G7b
+ok   G8a
+ok   G9a
+ok   G9b
+ok   G9c
+ok   L0
+ok   L1
+ok   L1v
+ok   L2
+ok   L3
+ok   L4
+ok   U1
+ok   U10
+ok   U2
+ok   U3
+ok   U4
+ok   U5
+ok   U6
+ok   U6b
+ok   U7
+ok   U8
+ok   U8b
+ok   U9
+
+## I5 file:line citations (first cited line shown)
+ok   prompt:8 | - Source precedent (spec §2): the two repos diverge on doc-correctness gating. py's CI runs `sphinx-build -W`,
+ok   prompt:9 | - Per-row evidence for the rest of this bundle: F349 offline relative-link checker tool — py: none; ts `script
+ok   prompt:22 | - owns:
+ok   prompt:23 | - consumes: R69: web-extra-surface; R11: ci-job-structure
+ok   prompt:37 | - LOW: What is the idiomatic way to scope `cargo doc`'s feature flags (`--all-features` vs. an explicit featur
+ok   raw/muse.md:3 | Actor: `research-muse-2026-09-26T190316Z-971c9d005dbf`. Retrieval date for all
+ok   raw/muse.md:114 | build step of `check`. R81's delivery model is still open, so the gate
+ok   raw/muse.md:175-181 | - E. Gate rustdoc but keep the ts latent posture for API docs
+ok   raw/muse.md:210-211 | No `BASELINE-REVIEW:` finding: no recorded baseline row was challenged
+ok   raw/muse.md:285-286 | issues: median 0.8 days to first non-OP reply, 5 answered / 5
+ok   raw/muse.md:296-297 | 2026-09-14; open issues 11; responsiveness median 1.9 days, 7
+ok   raw/muse.md:304-307 | binaries, Marketplace action, docker image. Maintenance: active
+ok   raw/muse.md:311-314 | - mdbook-linkcheck 0.7.7: EXCLUDED — fails the fitness requirement
+ok   raw/muse.md:333-334 | issues total, responsiveness over all 6: median 15.6 days, 2 answered
+ok   raw/muse.md:363-364 | `lychee --offline --no-progress --config .lychee.toml "**/*.md"
+ok   raw/muse.md:418 | - New: `.lychee.toml` at repo root (excludes per Recommendation;
+ok   raw/muse.md:424 | - Later (R34 lane exists): add the scheduled full-check job reusing
+ok   raw/muse.md:432-433 | Planned (NOT executed — lychee binary unavailable in this offline
+ok   raw/muse.md:436-439 | only the broken relative link, with network disabled to prove
+ok   raw/muse.md:592-594 | (the floor toolchain's rustdoc IS the gate — doc builds under
+ok   raw/muse.md:599-600 | `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features`
+ok   raw/muse.md:609 | responsiveness median 22.2 days, 1 answered / 9 unanswered (10
+ok   raw/muse.md:617-621 | reference adoption. Maintenance: at-risk (concrete signals:
+ok   raw/muse.md:626-628 | `-D rustdoc::broken-intra-doc-links`: blanket chosen — it also
+ok   raw/muse.md:633-635 | explicit `--features web`: all-features chosen for
+ok   raw/muse.md:643 | runs on the floor toolchain too — doc warnings must be clean
+ok   raw/muse.md:662-665 | EXECUTED 2026-09-26 (local toolchain rustc/cargo 1.98.1,
+ok   raw/muse.md:718-719 | exit-101 probe (rustdoc half, this report). No shared adopter
+ok   raw/muse.md:758 | - Later, when R34 lands: add the scheduled full-link job
+ok   raw/opus.md:3 | Engine: `claude-opus-5-5` (Opus seat, CLI run 2026-09-26). This is an independent
+ok   raw/opus.md:35-40 | **Not executed (gap, stated once here and repeated where it matters):** `lychee` was not
+ok   raw/opus.md:98-99 | | DioxusLabs/dioxus | 39,261 stars | `lycheeverse/lychee-action@v2` with `--config ./lychee.toml './**/*.md'` 
+ok   raw/opus.md:101 | | rust-lang/rustc-dev-guide | 1,914 stars; Rust project repository | `mdbook-linkcheck2 0.13.0`; `MDBOOK_OUTPU
+ok   raw/opus.md:114-117 | Source: py `ci.yml:226-229` ("Broken cross-references and autodoc failures block the PR instead of
+ok   raw/opus.md:134 | **R81 and R34 have since resolved** (`research/CLAUDE.md` lists both `resolved`; the prompt predates this).
+ok   raw/opus.md:137-145 | (`research/topics/81-docs-delivery-model/DECISION.md:146-150`), with `docs/SUMMARY.md` as "the single
+ok   raw/opus.md:144-145 | check with no mdBook present. It does **not** detect an orphan page (a file under `docs/` that `SUMMARY.md` ne
+ok   raw/opus.md:145-148 | lists); that is not a link property, and R81's criterion (c) keeps it (gap, stated in the summary). R34 ships
+ok   raw/opus.md:177 | hand-written script — "lychee (not installed on this machine/CI image)" (`check-links.mjs:5-6`) —
+ok   raw/opus.md:218-219 | - `BASELINE-REVIEW: F353 — a configured API-reference generator must be a gated one — proposed change: from "c
+ok   raw/opus.md:231 | | Internal/relative links in `*.md` | F349 | `lychee --offline --include-fragments` | every PR, push to `main`
+ok   raw/opus.md:262-266 | - **LOW (feature flags for `cargo doc`):** Use the same explicit feature list as R11's other
+ok   raw/opus.md:299 | | `lychee` | 7 / 10 | 0.09 (0.01, 0.05, 0.05, 0.09, 0.85, 1.64, 8.28) | 3 (#2303, #2302 under 11 days old; #22
+ok   raw/opus.md:300 | | `hyperlink` | 7 / 9 externally opened | 0.29 (0.00, 0.00, 0.01, 0.29, 0.50, 15.63, 15.63) | 2 (#192, #191) |
+ok   raw/opus.md:301 | | `mlc` | 2 / 10 | 4.67 (2.95, 6.39) | 8, back to 2025-02 | `at-risk` — unanswered backlog is the concrete sig
+ok   raw/opus.md:304 | | `cargo-deadlinks` | not sampled | — | — | `stable-quiet` — no release since 2021-10-13, pushed 2024-12-10, n
+ok   raw/opus.md:318-322 | --offline
+ok   raw/opus.md:327-331 | `--offline` "Only check local files and block network requests" (lychee README, parameters block);
+ok   raw/opus.md:353 | 3. Advisories: none open (rustsec 404, confirmed meaningful). `unsafe`: neither `lychee-lib/src/lib.rs` nor `l
+ok   raw/opus.md:354 | 4. OS: release assets exist for `aarch64-apple-darwin`, `x86_64-apple-darwin`, `x86_64-unknown-linux-gnu` and 
+ok   raw/opus.md:360-365 | - `mdbook-linkcheck` 0.7.7 — passes numbered gates 1 (MIT) and 3 (no advisory); excluded on the
+ok   raw/opus.md:402-406 | - `--include-fragments` gains anchor checking over ts's script, at the risk of false positives where
+ok   raw/opus.md:504-507 | Every flag above is quoted from lychee's parameter block: `--max-retries` (default 3),
+ok   raw/opus.md:554-556 | Same tool, same scheduled lane, plus a non-blocking PR run limited to URLs added by the diff, as rerun
+ok   raw/opus.md:572-573 | A job in R34's scheduled workflow file (not `ci.yml`); a shared `lychee.toml` at the root holding only
+ok   raw/opus.md:625 | run: cargo doc --locked --workspace --no-deps --features web --document-private-items
+ok   raw/opus.md:634-635 | - `env:` on the step, not the job: cargo passes `RUSTDOCFLAGS` to `rustdoc --test` too (E7: the verbose
+ok   raw/opus.md:659-660 | - `cargo docs-rs` and `--cfg docsrs` / `doc_cfg` badges — fail the stable-only constraint (`cargo docs-rs`
+ok   raw/opus.md:794 | | E3 | same + `[workspace.lints.rustdoc] broken_intra_doc_links = "deny"`, `[lints] workspace = true` in all f
+ok   research/RUNBOOK.md:73-78 | (legs Muse, synthesis/judgment/empirical Claude), partially reversed 2026-09-28
+ok   research/topics/11-ci-workflow-job-structure/DECISION.md:86 | **Status.** This decision is a **proposal validated in the implementation phase** (owner ruling, 2026-09-10). 
+ok   research/topics/11-ci-workflow-job-structure/DECISION.md:294 | | **R82** docs-correctness-gate | the relative-link and external-URL checks, and rustdoc correctness | **the l
+ok   research/topics/11-ci-workflow-job-structure/DECISION.md:320 | - owns ci-job-structure = one .github/workflows/ci.yml whose jobs are partitioned by whether a check compiles 
+ok   research/topics/11-ci-workflow-job-structure/DECISION.md:329 | **The note the `assumes web-extra-surface` line requires.** Those bytes are the **live registry row**, R69 **r
+ok   research/topics/53-config-schema-validation/DECISION.md:45-47 | **Fitness gate 1 (licence) is `inapplicable — owner ruling 2026-09-12 (Q7.B)`** for every
+
+RESULT: PASS (0 failures, 65 citations)

@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). This item was deliberately kept standalone rather than folded into R59 (`file-log-sink`) at the Task 10 reconciliation, because the directory set this item resolves is consumed by both R59 (a file-sink default path) and R67 (a crash-log path) — folding it into R59 would hide the R67 dependency inside another item.
 - Prior decisions of the TypeScript port that explain the current shape: none — ts never built data/state/cache directory accessors (only config), so `TS_PORT_DECISIONS.md`'s D-017(3) (which covers only the config-dir XDG override mechanism) has no data/state/cache entry to carry forward.
 
+### Baseline review (2026-09-04)
+- F247's acceptance criteria were attached to R54, which selects the config directory crate; this item's "already inherited" note refers to the principle only (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The config directory itself and its override mechanism (`$XDG_CONFIG_HOME`, absoluteness check); F231 is covered by R54 (`config-discovery-tiers`, system-wide config dir) and F247 is `COMMON → REUSE`, already inherited — this item decides only whether *additional* data/state/cache directories exist, not the config directory's own resolution.
 - Whether a file log sink actually uses a state-directory default path, and its rotation/precedence rules; R59 (`file-log-sink`) owns F256-F261 — this item only decides whether the directory-accessor functions exist and where they point, not who consumes them.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R57
 - owns:
 - consumes:
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R59 (`file-log-sink`) — F258's default file-sink path is the state directory this item would resolve, if adopted; R59 does not require this item to land first, since it may default to a hardcoded/relative path if this item concludes no data/state/cache set is needed. R67 (`error-and-exit-code-contract`) — the crash-log path would also consume this item's state directory, if adopted.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -61,6 +68,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

@@ -1,0 +1,51 @@
+== clean-extraction rerun ==
+Both evidence scripts, re-run from a fresh 'git archive <tree> | tar -x' extraction of the
+exact tree this commit records, unpacked under $TMPDIR outside the worktree, with no .git
+present. The extraction root is a mktemp name and is deleted afterwards. Re-running
+'git archive HEAD' after this commit reproduces the same tree for these paths.
+
+---- contract-fuzz-probe.sh (tail) ----
+PASS  A18 a 3.0.3 document still parses and still enumerates
+
+== dependency cost ==
+packages in the normal graph: 60
+packages with dev-dependencies: 141
+PASS  A19 the harness crates enter only through dev-dependencies (141 > 60)
+PASS  A20.oas3 oas3 appears only with dev-dependencies
+PASS  A20.proptest proptest appears only with dev-dependencies
+PASS  A21 tower is already in the normal graph through axum, not added by this design
+PASS  A22 the path to tower in the normal graph runs through axum
+
+== resolved versions of the three crates this decision names ==
+axum v0.8.9
+oas3 v0.22.0
+proptest v1.11.0
+tower v0.5.3
+tower v0.5.3 (*)
+
+== totals ==
+PASS=24 FAIL=0 SKIP=0 TOTAL=24
+exit=0
+
+---- registry-and-standard.sh (tail) ----
+rest-api-standard.md:1019: **R5.12** Every API MUST be capable of returning every error response the
+PASS  B20 R5.12 is quoted at its line (problem+json capability)
+rest-api-standard.md:754: **R4.2** The description document is authoritative: changes to it MUST be
+PASS  B25 R4.2 is quoted at its line (the document is authoritative and its changes gated)
+rest-api-standard.md:1049: **R5.13** Every problem document **carried in an HTTP response** MUST carry
+PASS  B26 R5.13 is quoted at its line (the required problem-document members)
+rules mechanically checked by conformance/spectral.yaml: R10.1 R10.9 R13.1 R13.2 R2.4 R4.11 R4.16 R4.3 R4.4 R5.13 R5.6 R6.1 R6.8 
+PASS  B21 R4.3 is also statically linted, so the runtime oracle is a second line, not the only one
+PASS  B22 R5.2 is not in the Spectral ruleset: an unregistered status is only observable at runtime
+
+== volatile figures (counters move; re-read rather than diff) ==
+matusf/openapi-fuzzer stars=577 archived=false pushed_at=2024-01-29T11:19:08Z
+PASS  B23 openapi-fuzzer has had no push since 2024 (maintenance: at-risk)
+x52dev/oas3-rs stars=79 archived=false pushed_at=2026-09-09T10:10:27Z
+PASS  B24 oas3 was pushed in 2026 or later (maintenance: active)
+oas3: recent_downloads=796004 downloads=2011518
+openapi-fuzzer: recent_downloads=40 downloads=11730
+
+== totals ==
+PASS=29 FAIL=0 SKIP=0 TOTAL=29
+exit=0

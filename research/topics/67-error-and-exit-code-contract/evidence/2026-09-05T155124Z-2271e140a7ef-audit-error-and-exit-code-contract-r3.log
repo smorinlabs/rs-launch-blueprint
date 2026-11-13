@@ -1,0 +1,194 @@
+# R67 revision-3 empirical audit — error-and-exit-code-contract
+# Actor: audit-codex-2026-09-05T155124Z-2271e140a7ef-r3
+# Model: gpt-5.6-terra; family: openai
+# Audit date: 2026-09-10
+# Scope: research-decision audit only. No Rust template source was created.
+
+## Input identity
+
+$ shasum -a 256 review/DECISION.md
+37d610925710e4f667c8fbca1f590de6d46ffdc11b8872c2cd1b508b942e2284  review/DECISION.md
+
+The fixture has three Cargo manifests and no Rust source. E13/E14 used byte-identical temporary copies plus empty target stubs because Cargo cannot load target-less packages. The fixture itself was not changed and no crate was built.
+
+## E13 — Linux fixture-copy resolution
+
+$ limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; rustc --version; cargo --version'
+rustc 1.98.1 (48a229cea 2026-09-01)
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+
+$ sha256sum fixture manifests before copy
+88a297764f7e3fc892f6017819d24fa3a63782930e2e3f41e5848a7a9f36f5f8  Cargo.toml
+6c781855be41af8cfb60c61adc127013c9bdc7b972cb94a061e1a1d066a51792  crates/rslb-core/Cargo.toml
+eebf385d456a4b6b72b3feb852e5d2da1016ee9dd01dec9ff0e36a554d3e9434  crates/rslb-cli/Cargo.toml
+
+$ sha256sum copied manifests
+88a297764f7e3fc892f6017819d24fa3a63782930e2e3f41e5848a7a9f36f5f8  Cargo.toml
+6c781855be41af8cfb60c61adc127013c9bdc7b972cb94a061e1a1d066a51792  crates/rslb-core/Cargo.toml
+eebf385d456a4b6b72b3feb852e5d2da1016ee9dd01dec9ff0e36a554d3e9434  crates/rslb-cli/Cargo.toml
+
+$ cargo generate-lockfile
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+exit=0
+
+$ cargo tree -e normal
+rslb-cli v0.1.0
+├── anyhow v1.0.104
+├── rslb-core v0.1.0
+│   └── thiserror v2.0.20
+│       └── thiserror-impl v2.0.20 (proc-macro)
+│           ├── proc-macro2 v1.0.107
+│           ├── quote v1.0.47
+│           └── syn v3.0.5
+├── serde_json v1.0.151
+│   ├── itoa v1.0.18
+│   ├── memchr v2.8.3
+│   ├── serde_core v1.0.229
+│   └── zmij v1.0.23
+└── signal-hook v0.4.4
+    ├── libc v0.2.189
+    └── signal-hook-registry v1.4.8
+        └── errno v0.3.14
+exit=0
+
+$ cargo tree -d
+warning: nothing to print.
+exit=0
+
+$ cargo metadata --format-version 1 | jq -r '<highest declared rust_version>'
+1.71
+pipeline-exit=0 0
+
+$ cargo tree -e normal | grep -F etcetera
+pipeline-exit=0 1 (expected: no etcetera dependency)
+
+$ sha256sum fixture manifests after resolution
+88a297764f7e3fc892f6017819d24fa3a63782930e2e3f41e5848a7a9f36f5f8  Cargo.toml
+6c781855be41af8cfb60c61adc127013c9bdc7b972cb94a061e1a1d066a51792  crates/rslb-core/Cargo.toml
+eebf385d456a4b6b72b3feb852e5d2da1016ee9dd01dec9ff0e36a554d3e9434  crates/rslb-cli/Cargo.toml
+
+E13 reproduced: 20 packages, no duplicate resolution, no etcetera, and highest declared dependency rust-version 1.71. Fixture hashes are unchanged.
+
+## E14 — advisory scan and inverse control
+
+$ limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; cargo audit --version; cargo-audit --version'
+error: no such command: audit
+exit=101
+bash: cargo-audit: command not found
+exit=127
+
+The Linux VM cannot run E14. I reran it on macOS with cargo-audit and a writable temporary clone of the official RustSec advisory database.
+
+$ rustc --version; cargo --version; cargo-audit --version
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+cargo-audit 0.22.1
+
+$ cargo generate-lockfile
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+exit=0
+
+$ git clone --depth 1 https://github.com/RustSec/advisory-db.git <temporary-db>
+Cloning into /private/tmp/r67-rustsec-db.psRdoQ...
+exit=0
+
+$ cargo-audit audit --db <temporary-db> --no-fetch
+      Loaded 1243 security advisories (from /private/tmp/r67-rustsec-db.psRdoQ)
+warning: couldn't open crates.io index: I/O operation failed: failed to obtain lock file /Users/stevemorin/.cargo/.package-cache
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+exit=0
+
+$ cargo generate-lockfile  # inverse control: anyhow = 1.0.102
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+      Adding anyhow v1.0.102 (available: v1.0.104)
+exit=0
+
+$ cargo-audit audit --db <temporary-db> --no-fetch  # inverse control
+      Loaded 1243 security advisories (from /private/tmp/r67-rustsec-db.psRdoQ)
+warning: couldn't open crates.io index: I/O operation failed: failed to obtain lock file /Users/stevemorin/.cargo/.package-cache
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+Crate:     anyhow
+Version:   1.0.102
+Warning:   unsound
+Title:     Unsoundness in Error::downcast_mut()
+Date:      2026-06-25
+ID:        RUSTSEC-2026-0190
+URL:       https://rustsec.org/advisories/RUSTSEC-2026-0190
+Dependency tree:
+anyhow 1.0.102
+└── rslb-cli 0.1.0
+exit=0
+
+E14 reproduced: the recommended lockfile scans 22 dependencies with no finding; the control reports RUSTSEC-2026-0190. The package-cache warning did not prevent either scan.
+
+## E1–E12 cited-log support and source spot checks
+
+$ rg count checks on cited logs
+crates-io.log: api_blocks=12; version_records=12
+github-api.log: repo_records=11
+github-issue-search.log: issue_totals=5
+
+$ rg paired RustSec controls
+rustsec.log: anyhow.html -> HTTP 200
+rustsec.log: anyhow advisory directory -> ["RUSTSEC-2026-0190.md"]
+rustsec.log: absent-package advisory directories -> HTTP 404
+
+$ curl -H User-Agent crates.io API
+{"name":"thiserror","recent_downloads":350390985,"downloads":1436032398,"max_stable_version":"2.0.20","updated_at":"2026-08-08T06:22:23.795550Z"}
+{"name":"anyhow","recent_downloads":206068310,"downloads":942920266,"max_stable_version":"1.0.104","updated_at":"2026-07-18T20:59:37.656167Z"}
+
+$ curl RustSec package-page controls
+anyhow 200
+thiserror 404
+signal-hook 404
+ctrlc 404
+inquire 404
+
+$ curl ctrlc-3.5.2.crate; shasum; grep set_handler and termination text
+e0b1fab2ae45819af2d0731d60f2afe17227ebb1a1538a236da84c93e9a60162  ctrlc.crate
+pub fn set_handler<F>(user_handler: F) -> Result<(), Error>
+where
+    F: FnMut() + 'static + Send,
+the handler specified by set_handler() will be executed for SIGINT, SIGTERM and SIGHUP.
+
+$ curl signal-hook-0.4.4.crate and inquire-0.9.4.crate; shasum; grep interfaces
+b2a0c28ca5908dbdbcd52e6fdaa00358ab88637f8ab33e1f188dd510eb44b53d  signal-hook.crate
+6654738b8024300cf062d04a1c13c10c8e2cea598ec1c47dc9b6641159429756  inquire.crate
+pub fn register(signal: c_int, flag: Arc<AtomicBool>) -> Result<SigId, Error> {
+OperationCanceled,
+OperationInterrupted,
+
+$ curl Rust 1.96 process.rs; grep stability anchors
+#[stable(feature = "process_exitcode", since = "1.61.0")]
+impl From<u8> for ExitCode {
+#[stable(feature = "termination_trait_lib", since = "1.61.0")]
+
+$ curl Cargo SemVer reference; grep enum guidance
+Major: adding new enum variants (without non_exhaustive)
+It is a breaking change to add a new enum variant if the enum does not use the #[non_exhaustive] attribute.
+
+$ curl FreeBSD sysexits.h; grep macros
+#define EX_USAGE 64
+#define EX_CONFIG 78
+#define EX__MAX 78
+
+$ curl ripgrep main.rs; grep BrokenPipe branch
+if ioerr.kind() == std::io::ErrorKind::BrokenPipe {
+    return ExitCode::from(0);
+}
+
+$ gh api two repositories and two open-issue searches
+{"archived":false,"pushed_at":"2026-09-05T05:32:25Z","stargazers_count":5539}
+{"archived":false,"pushed_at":"2026-04-04T08:10:09Z","stargazers_count":866}
+27
+22
+
+$ sed R6.1 and R8.2 from cli-design-standard.md
+R6.1: 0 success; 1 generic runtime error; 2 usage / parse error (bad flags, missing args); 3 not found; 4 authentication or authorization required; 5 conflict / precondition failed; 130 SIGINT; 143 SIGTERM. Unlisted failures collapse to 1.
+R8.2: exit 2 when required non-auth input or consent is missing because prompting is disabled/unavailable; exit 4 when authentication or authorization input is missing; exit 1 for runtime input failures such as unreadable files.
+
+The E1–E12 cited logs contain their claimed command/result material. Direct checks above confirm primary-source anchors for E1, E2/E3, E4/E5, E6, E7, E8, E9, E10, E11 and E12. E6/E7 remain source-interface evidence only; no runtime claim was treated as executed.
+

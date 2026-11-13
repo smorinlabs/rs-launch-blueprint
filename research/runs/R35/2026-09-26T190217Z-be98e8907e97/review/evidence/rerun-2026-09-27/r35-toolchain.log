@@ -1,0 +1,13 @@
+INFO date_utc=2026-09-27T07:42:02Z
+INFO rustup cargo: /Users/stevemorin/.cargo/bin/cargo; Homebrew cargo: /opt/homebrew/bin/cargo (cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew))
+PASS T1 — rustup 1.93.0 with llvm-tools-preview: cargo llvm-cov succeeds
+INFO 1.96 installed components: cargo-aarch64-apple-darwin clippy-aarch64-apple-darwin rust-docs-aarch64-apple-darwin rust-std-aarch64-apple-darwin rustc-aarch64-apple-darwin rustfmt-aarch64-apple-darwin 
+PASS T2 — rustup 1.96 without llvm-tools-preview and CARGO_LLVM_COV_SETUP=no: cargo llvm-cov fails
+INFO t2: error: failed to find llvm-tools-preview, please install llvm-tools-preview with `rustup component add llvm-tools-preview --toolchain 1.96-aarch64-apple-darwin`
+PASS T2b — the T2 error names llvm-tools-preview
+PASS T3 — Homebrew cargo first on PATH: cargo llvm-cov fails
+INFO t3: error: failed to find llvm-tools-preview, please install llvm-tools-preview, or set LLVM_COV and LLVM_PROFDATA environment variables
+PASS T3b — the T3 error is the non-rustup message (install llvm-tools-preview or set LLVM_COV and LLVM_PROFDATA)
+PASS T4a — rustup component list --installed shows llvm-tools on 1.93.0
+PASS T4b — and does not on 1.96 (the component is per toolchain)
+SUMMARY PASS=7 FAIL=0

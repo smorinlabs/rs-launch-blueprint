@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): `rustfmt` is near-certain as the tool itself (unlike py/ts's real formatter choice, Rust has one dominant, rustup-bundled formatter) — the ledger's own note on F084 frames the research question as rustfmt's *config surface*, not tool selection; confirm this in your answer but do not spend significant budget surveying alternatives. `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
 - Prior decisions of the TypeScript port that explain the current shape: D-014(1) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — Oxfmt (0.58.0-0.59.0 beta, exact-pinned) chosen as formatter, Biome documented as the stability-first fallback; D-014(2) — formatter style options (`printWidth: 100`, `endOfLine: "lf"`, `trailingComma: "es5"`) reused from org Prettier/Biome precedent rather than py's Python-norm values; D-014(3) — Oxfmt's `sortImports` enabled as the import-sorting mechanism; D-024(1) — the `all` composite recipe includes format-check as part of a near-1:1 Justfile port; D-020(6) — lefthook's pre-commit tier runs formatter with `stage_fixed` (write mode). F100 and F162 carry no ts-decision record (`—` in the area tables).
 
+### Baseline review (2026-09-04)
+- F190 (`COMMON → REUSE`) and F103 no longer derive `rust-toolchain.toml`'s `channel` from the fixed `msrv-policy`; that parameter fixes only `rust-version` and the CI floor test. The file's `channel` and `components` are decided here (F103) in coordination with R42's provisioning answer; pinning the channel to the floor would put local builds and CI on the MSRV compiler unless explicitly overridden (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The linter (clippy) tool and its own config surface (rule selection, autofix default, test-file relaxation, security-rule coverage, editor extension); R28 (`linter-and-editor-tooling`) owns F085/F086/F093/F094/F096/F101/F109/F195/F196.
 - Non-Rust-source-code formatting (TOML, YAML, JSON, Markdown); R29 (`non-code-file-formatting`) owns F097/F098/F099 — this item covers only `rustfmt`'s scan scope (Rust source files).
@@ -21,6 +24,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R27
 - owns:
 - consumes: R11: ci-job-structure; R42: package-manager-invocation
+- effort: focused
+- engines: muse, opus
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R28 (`linter-and-editor-tooling`) decides clippy's config surface in the same bundle-decided-together spirit; F100's exclude-list scope question ("does Rust share one exclude list across rustfmt/clippy or keep them per-tool") depends on R28's clippy config shape — assume R28's answer is open and state the exclude-list recommendation for both outcomes if they diverge.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -65,6 +72,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -75,7 +88,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

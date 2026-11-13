@@ -1,0 +1,41 @@
+archive HEAD: e0b0d1c1762ee8aa4b28c62282a2225103e594eb
+r84-source-claims: rc=0 DIFFERS
+21c21
+< PASS  A13 the ledger allocates OV-11 to R84 (owner decision 2026-09-21, Q5.A/Q6.A entry)
+---
+> SKIP  A13 this tree's execution-ledger.md lacks the 2026-09-21 'OV-11 to R84' allocation line (not yet committed at this tree's HEAD)
+91c91
+< PASS=60 FAIL=0 SKIP=0 TOTAL=60
+---
+> PASS=59 FAIL=0 SKIP=1 TOTAL=60
+r84-openapi-to-rust-probe: rc=0 DIFFERS
+60c60,64
+<       RT_BIND=refused PermissionDenied
+---
+>       RT_200=typed id=p1 state=Custom("suspended") visibility=Custom("internal")
+>       RT_404_PROBLEM=api status=404 typed_status404=true
+>       RT_404_NON_PROBLEM=api status=404 typed_none=true parse_error_some=true body=upstream proxy says no
+>       RT_ACCEPT_SENT=application/json
+>       RT_CALLER_DEADLINE=elapsed
+64,68c68,72
+< SKIP  R06 end-to-end typed 200 — this shell refused a loopback TCP bind, so the HTTP half of the probe could not run
+< SKIP  R07 R12.7 problem+json 404 — this shell refused a loopback TCP bind, so the HTTP half of the probe could not run
+< SKIP  R08 R12.7 non-problem 404 — this shell refused a loopback TCP bind, so the HTTP half of the probe could not run
+< SKIP  R09 R12.6 Accept header — this shell refused a loopback TCP bind, so the HTTP half of the probe could not run
+< SKIP  R10 R12.3 caller deadline — this shell refused a loopback TCP bind, so the HTTP half of the probe could not run
+---
+> PASS  R06 end to end over HTTP: the 200 body with an unknown field and two unknown values deserializes into the typed Project
+> PASS  R07 R12.7 a problem+json 404 is branched on status and parsed into the typed Status404(Problem)
+> PASS  R08 R12.7 a text/plain 404 from 'infrastructure' still surfaces as status 404 with the raw body, typed=None, parse_error kept
+> PASS  R09 R12.6 DEPARTS (SHOULD): even with a caller-supplied Accept, only 'application/json' reaches the server — OVERRIDE (OV-11)
+> PASS  R10 R12.3 is met by the caller: tokio::time::timeout around a call to a never-answering listener elapses
+71c75
+< PASS=31 FAIL=0 SKIP=5 TOTAL=36
+---
+> PASS=36 FAIL=0 SKIP=0 TOTAL=36
+r84-progenitor-probe: rc=0 IDENTICAL
+r84-registry-figures: rc=0 DIFFERS
+2c2
+< retrieval date (UTC): 2026-09-26
+---
+> retrieval date (UTC): 2026-09-27

@@ -36,6 +36,192 @@ Current binding interpretation for P02 (spec §2, amendment A5). This replaces t
 - Multi-engine research (2026-09-04): every item runs on Claude Opus, Codex and Doxa deep research in parallel, each as its own subagent; a non-producer synthesizes the decision; at most 4 Claude subagents at once, out-of-process engines uncounted (spec §13 A2, `research/RUNBOOK.md` §2).
 - Dependency waves (2026-09-04): keystone decisions such as the web framework (R69) are researched before the items that hang off them, independent items run in parallel (spec §13 A3, `research/RUNBOOK.md` §1).
 
+## Later owner rulings that bind every item (recorded after the 2026-09-04 codesign)
+
+The dispositions table below records one 2026-09-04 codesign choice per item. The
+rulings in this section came later, bind items regardless of their disposition,
+and are recorded here because `docs/port/` is the port's durable record; the
+reasoning and blast radius for each is in `docs/planning/p02/owner-decisions.md`
+and `docs/planning/p02/execution-ledger.md`.
+
+### 2026-09-12 — no licence check for anything the template uses (Q4, superseded and widened by Q7.B)
+
+Owner ruling, verbatim:
+
+> Here, we don't need to check the licensing for any tool we use. Zero license
+> check. That accounts for other tools and libraries we're including. The license
+> we have only applies to the source code in the repo itself directly, not
+> anything it includes or depends on.
+
+Q7.B extended this knowingly to crates compiled into the shipped artifact, after
+the owner was shown that a linked crate's terms travel into every downstream
+binary. **Fitness gate 1 ("license compatible with `MIT OR Apache-2.0`") is
+struck from every item's evaluation.** It appears in 85 of the 86 binding
+prompts; this is an owner *interpretation* of that gate, not a prompt edit,
+because editing the prompts would invalidate the prompt hashes that published
+acceptance records cite. Decisions record gate 1 as `inapplicable` with the
+ruling named, rather than deleting the row.
+
+What the ruling does **not** touch: the repository's own declared
+`license = MIT OR Apache-2.0` and its per-file licence headers (R46); any rule
+against committing third-party copyleft files *into* this repository; a tool's
+usage terms restricting where it may lawfully run (R16), which is a functional
+availability constraint rather than a compatibility check; and an
+attribution notice owed on shipped content (R81), which is a distribution duty.
+
+### 2026-09-14 — the CLI Design Standard binds, and OV-01 is refused
+
+The owner confirmed that `/Users/stevemorin/c/cli-standards/cli-design-standard.md`
+(version 1.4.14, blob `f9de0437`) governs this template. Its own header states
+"Applies to: All new CLIs, any language", and R67 is published relying on its
+rule R6.1 for the entire exit-code taxonomy.
+
+**Override OV-01 is REFUSED.** It was requested on 2026-09-12 as a waiver of
+R4.6 `(SHOULD)`, which says `--version`/`-V` should print a single line
+`acme <semver>`. R60 had recommended printing a target-triple line and a rustc
+line on every build. The owner instead selected R60's own conformant option (b):
+both spellings print the single line, and extended build data moves behind a
+JSON output flag, which R4.6 explicitly permits.
+
+**Consequence for conformance: the template waives no `SHOULD`.** The standard's
+conformance clause (`:50`) requires a waiver to name the rule ID, describe the
+deviation, explain the rationale, and record the owner and date. No waiver record
+exists because none is owed. R60 carries zero overrides; OV-01 is retired as
+refused rather than deleted, its argument and options table kept as the record of
+how the choice was reached.
+
+### 2026-09-15 — R42 install-integrity posture: record signedness per tool (W0-R42i)
+
+R42 revision 10 recorded three integrity postures for the `cargo binstall`
+recipe "rather than chosen" and asked the owner to choose. The owner chose the
+decision's **option 3**: the recipe body stays `cargo binstall --locked
+--no-confirm <name>@<version>` with no extra flag, and P03 adds a signed/unsigned
+column to the declared tool table so a tool whose author publishes no signing
+key is a deliberate entry rather than an invisible one. Options 1 (recipe as
+written, no column) and 2 (`--only-signed`) were declined. The choice rests on
+two unmeasured facts the decision records as unproven — the signed fraction of
+the real tool table and the time cost of a source build — and is to be
+re-put if P03's measurement shows a signed fraction high enough to make
+`--only-signed` nearly free. R42's republication revision cites this ruling.
+
+### 2026-09-15 — R49 binary name: `rslbp` (W0-R49n)
+
+R49 revision 7 kept the template's command name equal to its crate name,
+`rs-launch-blueprint`, and marked the choice owner-reviewable. The owner chose
+a short command name: **`rslbp`** (the Opus engine's proposal). The crate and
+distribution name stay `rs-launch-blueprint`; `cargo install rs-launch-blueprint`
+installs the command `rslbp`. Consequences the decision itself recorded for a
+divergent pair: the `[[bin]] name` row changes; R32 resolves the built binary
+through `env!("CARGO_BIN_EXE_rslbp")`; R68 uploads `target/release/rslbp`; and if
+R68 later adopts `cargo-binstall` metadata, the `bin-dir` template must
+interpolate `{ bin }` rather than `{ name }`. Five of the nine cross-platform
+CLIs R49 surveyed use a shorter command than their crate name. R49 revision 8
+implements this ruling.
+
+### 2026-09-15 — R17 secret scanner: TruffleHog CLI, pinned binary (W0-R17b)
+
+The owner directed that the template use the secret scanner the sibling
+projects use. Validated at the programme pins: py (`b08bccfb`) runs TruffleHog
+in CI (`.github/workflows/secret-scan.yml`, `trufflesecurity/trufflehog@v3.95.9`
+on `ubuntu-latest`, `--only-verified`); ts (`cb1cbcb2`) has no secret-scan CI.
+R17 revision 6 recommended the Kingfisher CLI with the TruffleHog CLI as its
+ranked runner-up. The owner chose the **TruffleHog OSS CLI, `>= 3.97.0, < 4.0.0`,
+installed as a pinned release binary in a `run:` step with `--only-verified
+--fail`** — the runner-up's form, which runs on both owner-fixed runners — over
+py's Action form, which is `docker`-based, `ubuntu-latest`-only and carries the
+`BASE and HEAD commits are the same` first-push failure. Part 1 of R17 (one job
+on `pull_request` and `push` to `main` that fails on a live credential) stands;
+Kingfisher becomes the runner-up. R17 revision 7 implements this ruling.
+
+### 2026-09-16 — Release build profile ownership: R68 (W0-R69p)
+
+R69's revision 9 found, by a census over all 85 binding prompts and the
+commonality ledger, that no research item names the Cargo release build
+profile (`[profile.release]`: `lto`, `codegen-units`, `opt-level`, `strip`).
+The owner rules that **R68 `release-binary-artifacts` owns it**: R68's prompt
+is amended before the item is prepared to admit `[profile.*]` keys, evaluated
+against binary size, build time and the fixed target matrix and MSRV policy.
+R49 `build-target-declaration` keeps the manifest's target declarations and is
+not reopened. The owner's reference architecture's `[profile.release]` row
+(`lto = "thin"`, `codegen-units = 1`) is an input to R68 under section 11 of
+`docs/planning/p02/owner-decisions.md`, not a pre-decision. Options declined:
+adding the subject to R49 (reopens an accepted, published decision), a new
+item (an extra research cycle), leaving Cargo's defaults to P03.
+
+### 2026-09-17 — R69 `web-extra-surface` revised to name the optional web member (W1-R02)
+
+R02 `crate-boundary-enforcement` (accepted at revision 1, judgment-only under
+W1-CODEX) recommends a four-package Cargo workspace — the root facade
+`rs-launch-blueprint` carrying the `rslbp` and `rslbp-serve` binaries and the
+composition root, `crates/core`, `crates/cli`, and `crates/web` as an optional
+dependency of the facade (`OVERRIDE (OV-03)` against F021) — and raised a
+`CONFLICT:` against R69's owner-accepted value `web-extra-surface`, whose
+feature body assumes `axum` and `tokio` are dependencies of the declaring
+package. The owner rules for R02's option 1: **R69 is revised** so that the
+feature reads `web = ["dep:rs-launch-blueprint-web"]` with `axum` 0.8.9 and
+`tokio` 1.53.1 declared inside `crates/web`, the gated tree reads
+`crates/web/src/`, the web integration tests live in `crates/web/tests/` with
+no file-level `#![cfg(feature = "web")]`, and the skip-gating paths read
+`crates/web/**`; every other clause of R69's value is unchanged, and R02's
+topology stands. Options declined: keeping R69 byte-for-byte and dropping
+`crates/web` (R02's check `H` built that shape and observed `src/web/` naming
+the CLI crate with no error, so the web-to-cli boundary would fall back to
+convention or a `cargo-deny` row), and folding both front ends into the facade.
+The seven prepared Wave 2 runs that pin R69 (R51, R70, R76, R77, R79, R80, R83)
+are re-prepared after R69 republishes.
+
+### 2026-09-17 — R67's byte-empty-stdout clause read as before-result failures only (W1-R62)
+
+R62 `clipboard-integration` (accepted at revision 2, judgment-only under
+W1-CODEX) makes a failed `--copy` a post-result partial failure: stdout carries
+the result byte-identical to the same command without `--copy`, stderr carries
+the single `RSLB101` envelope, and the exit code is 1. R67's accepted text says
+a machine-mode error "leaves stdout byte-empty" (AC2) and that "stdout stays
+byte-empty on the error path". The owner ratifies R62's reading: the clause
+covers failures before a result exists, not a failure after the result has
+already been written. R67's registered text does not change now; it carries
+R62's written-out substitute wording at R67's next revision, and R62 records
+the open end as a re-verify trigger. Option declined: revising R67 immediately
+(a carried-forward run and both audits for an editorial change).
+
+### 2026-09-18 — the REST API Design Standard binds the HTTP surface (W2-REST)
+
+The owner confirmed that the organisation's REST API Design Standard, version
+2.0.0 (`https://github.com/smorinlabs/rest-standards`, local clone
+`/Users/stevemorin/c/rest-standards/rest-api-standard.md`, commit
+`0850d43e45d919ef5e37f7174c4212b46013c49f`, file blob `71bd813c`), governs
+this template's optional HTTP surface the way the CLI Design Standard (ruling
+of 2026-09-14) governs its CLI. It was raised by the R72 pagination research:
+under the standard, rule R1.8 reserves the names `cursor` and `limit` and rule
+R6.4 forbids `Link` headers for pagination, so py's `page`/`size` request and
+`items`/`total` body are nonconformant and the first-party cursor contract
+stands. Every web item (R70 R72 R73 R74 R76 R77 R80 and the later R71 R83 R84)
+designs to the standard, quotes the rules it relies on at their lines, and
+records any departure as an `OVERRIDE (OV-nn)` in the shape of the standard's
+own section 1.9 deviation note. Nothing already accepted is reopened by this
+ruling. Option declined: treating the standard as a reference input only,
+which would have made R72's cursor contract an override needing its own
+argument against py's precedent.
+
+### 2026-09-18 — the MSRV floor is verified on Linux only (F033, with W1-R11)
+
+The baseline review left open whether the `rust-version` floor that
+`msrv-policy` requires CI to test runs on every runner in `target-os-matrix`
+(ubuntu-latest and macos-latest, py's cross product) or in a single Linux job
+(Cargo's own CI guide). With the acceptance of R11 `ci-workflow-job-structure`
+the owner rules: **one `ubuntu-latest` job verifies the floor**; the compiling
+`check` job is matrixed over the OS matrix, the floor job is not. R11 records
+the one-line `runs-on` substitution that would widen it, should the owner ever
+reverse this. Options declined: widening the floor job to both runners (one
+extra macOS job per run), fixing the cross product as a parameter value.
+
+## Wave 0 owner acceptances
+
+Recorded from 2026-09-14 in `docs/port/OWNER-ACCEPTANCES.md` (moved there on
+2026-09-16 so that this file keeps the single disposition table the tree
+checker validates). Each acceptance binds a `DECISION.md` sha256; the re-bind
+and stale rules are stated at the top of that file.
+
 ## Dispositions
 
 | item | disposition | rationale | date |
@@ -124,3 +310,4 @@ Current binding interpretation for P02 (spec §2, amendment A5). This replaces t
 | R83 | accept | Codesign `b`, owner override of the recommended `ch-83-a` (accept, Rust alone). Class B (same pattern, language-bound tool), harmonize no (`docs/port/DIVERGENCE-ANALYSIS.md`, R83 rows). Owner: Should take the principles and architectural pattern from PyLaunch Blueprint, the Python version, and see what the equivalents would be for TypeScript and Rust. Effect: cross-repo question appended to the prompt, answered in full; owner direction appended to the prompt Context. | 2026-09-04 |
 | R84 | accept | Codesign `b`, owner override of the recommended `ch-84-a` (accept, Rust alone). Class B (same pattern, language-bound tool), harmonize no (`docs/port/DIVERGENCE-ANALYSIS.md`, R84 rows). Owner: Again, because this is a superior and more mature pattern for Python, we should take the principles and apply the same research and the same solution set for TypeScript and Rust. Effect: cross-repo question appended to the prompt, answered in full; owner direction appended to the prompt Context. | 2026-09-04 |
 | R85 | accept | Codesign `b`, confirms the recommendation. Class D (one-sided, language-neutral), harmonize yes (`docs/port/DIVERGENCE-ANALYSIS.md`, R85 rows). Owner: Again, this is a more mature version for Python. We should find the equivalencies and best practices for TypeScript and Rust. Effect: cross-repo question appended to the prompt; owner direction appended to the prompt Context. | 2026-09-04 |
+| R86 | accept | **Not from the 2026-09-04 codesign; this item did not exist then.** R86 was created on 2026-09-12 by the owner's direct instruction during the R18 review: "I would also like the Codex variant of these to exist." The disposition is therefore `accept` by the direction that created the item, not by a codesign selection, and no recommendation was pre-selected for the owner to confirm or override. Class: none assigned (`docs/port/DIVERGENCE-ANALYSIS.md` predates the item and carries no R86 rows), so the harmonize question does not arise. Effect: none on the index or the ledger, as for every other `accept`. Recorded by the controller so that publication is not blocked by a missing row; the owner should confirm the wording, and only the wording, since the disposition follows from the instruction quoted above. | 2026-09-12 |

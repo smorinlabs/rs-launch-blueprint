@@ -1,0 +1,32 @@
+UTC now: 2026-09-27T22:51:27Z
+host: Darwin 25.4.0 arm64 git version 2.50.1 (Apple Git-155)
+cmd: sh r14-rev1-inputs.sh
+I1 PASS prompt sha256 8ea107a4f7098eb2039650a249af28b71ad564513e3a522a5c85e3f43245765a
+I2 PASS prerequisites.json carries R11 decision 410e88e5
+I3 PASS F043 DIVERGENT Item R14
+I4 PASS F172 DIVERGENT Item R14
+I5a PASS F043 harmonize yes
+I5b PASS F172 harmonize yes
+I6 PASS registry: msrv-policy
+I6 PASS registry: rust-edition
+I6 PASS registry: target-os-matrix
+I6 PASS registry: license
+I7 PASS R11 slot rule: non-compiling check is a hygiene step
+I7b PASS R11 carves out secret-scanning by name (not large-file)
+I8a PASS ci.yml triggers: push, pull_request, merge_group
+I8b PASS hygiene checkout has default depth (needs fetch-depth 0)
+I8c PASS hygiene permissions contents read
+I9a PASS py CI threshold 1048576
+I9b PASS py CI allowlist docs/assets/
+I9c PASS py hook 1048576
+I9d PASS py hook docs/assets exemption
+I9e PASS py docs/assets holds 0 entries at pin
+I10a PASS ts hook -gt 512000
+I10b PASS ts hook has no exemption
+I10c PASS ts workflows mention large only in larger-runners comment
+I11a PASS ADR 0018: hook mirrors CI guard
+I11b PASS py pre-lefthook ran bare check-added-large-files (500KB default)
+I12 PASS R81 DECISION never names docs/assets
+I13 PASS R17 ships dedicated secret-scan.yml (named carve-out, not a slot)
+inputs failures: 0
+exit=0

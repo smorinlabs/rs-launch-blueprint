@@ -1,0 +1,10 @@
+[package]
+name = "rs_publish_demo_public"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+description = "R04 fixture: published crate depending on a publish = false member"
+
+[dependencies]
+rs_publish_demo_internal = { path = "../internal", version = "0.1.0" }

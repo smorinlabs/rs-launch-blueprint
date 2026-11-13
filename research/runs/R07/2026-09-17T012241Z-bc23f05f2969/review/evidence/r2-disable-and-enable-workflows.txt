@@ -1,0 +1,12 @@
+source: https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows
+retrieved: 2026-09-16 UTC (2026-09-15 local) by the R07 revision-2 synthesizer (HTTP 200, 303019 bytes)
+extraction: tags stripped, whitespace collapsed; the three passages this decision quotes
+
+--- passage 0: what disabling a workflow does ---
+Disabling a workflow allows you to stop a workflow from being triggered without having to delete the file from the repo.
+
+--- passage 1: the automatic-disable warning ---
+To prevent unnecessary workflow runs, scheduled workflows may be disabled automatically. When a public repository is forked, scheduled workflows are disabled by default. In a public repository, scheduled workflows are automatically disabled when no repository activity has occurred in 60 days.
+
+--- passage 2: re-enabling a disabled workflow ---
+You can re-enable a workflow that was previously disabled. On GitHub, navigate to the main page of the repository. Under your repository name, click Actions . In the left sidebar, click the workflow you want to enable. Click Enable workflow . To enable a workflow, use the workflow enable subcommand. Replace workflow with either the name, ID, or file name of the workflow you want to enable. For example, "Link Checker" , 1234567 , or "link-check-test.yml" . If you don't specify a workflow, GitHub CLI returns an interactive menu for you to choose a workflow. gh workflow enable WORKFLOW

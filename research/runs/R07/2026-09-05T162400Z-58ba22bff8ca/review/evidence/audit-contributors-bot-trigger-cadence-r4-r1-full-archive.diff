@@ -1,0 +1,81 @@
+--- /private/tmp/r07-r1-committed-text.norm	2026-09-16 16:58:17
++++ /private/tmp/r07-r1-archive-text.norm	2026-09-16 16:58:17
+@@ -8,7 +8,7 @@
+ pyyaml 6.0.3
+ act: not installed -> form (b)
+ gh: gh version 2.98.0 (2026-08-20)
+-cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical
++cwd: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical
+ 
+ == 1. actionlint on the recommended workflow (expect exit 0) ==
+ exit: 0
+@@ -25,7 +25,7 @@
+ 
+ == 4. paths-ignore filter evaluated against real first-parent commits ==
+ -- py-launch-blueprint @ b08bccfb55d05f15e46a83b52c5660b1881d19f5, full history --
+-workflow: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/.github/workflows/update-contributors.yml
++workflow: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/.github/workflows/update-contributors.yml
+ repo: /Users/stevemorin/c/py-launch-blueprint @ b08bccfb55d05f15e46a83b52c5660b1881d19f5
+ on.push.branches: ['main']
+ on.push.paths-ignore: ['CONTRIBUTORS.md', '.contributors.jsonl']
+@@ -66,11 +66,11 @@
+   RUN        d347fd961d 2026-08-17 files=3 ignored=0 Merge pull request #522 from smorinlabs/docs/p06-close
+   RUN        986eafa76d 2026-08-17 files=54 ignored=0 Merge pull request #521 from smorinlabs/feat/full-conform
+   RUN        e36ecb9d71 2026-08-17 files=3 ignored=0 Merge pull request #520 from smorinlabs/docs/p05-close
+-json: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/../evidence/py-paths-verdicts.json
++json: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/../evidence/py-paths-verdicts.json
+ exit: 0
+ 
+ -- ts-launch-blueprint @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00, full history --
+-workflow: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/.github/workflows/update-contributors.yml
++workflow: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/.github/workflows/update-contributors.yml
+ repo: /Users/stevemorin/c/ts-launch-blueprint @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+ on.push.branches: ['main']
+ on.push.paths-ignore: ['CONTRIBUTORS.md', '.contributors.jsonl']
+@@ -83,16 +83,16 @@
+   RUN        1afaed3354 2026-09-01 files=1 ignored=0 Merge pull request #28 from smorinlabs/chore/difftree-action-canary
+   RUN        f4cbdcad91 2026-08-30 files=1 ignored=0 Merge pull request #27 from smorinlabs/ci/difftree-pr-diff-tree
+   RUN        808f11a27b 2026-07-22 files=2 ignored=0 Merge pull request #16 from smorinlabs/fix/portable-repository-visibility
+-json: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/../evidence/ts-paths-verdicts.json
++json: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/../evidence/ts-paths-verdicts.json
+ exit: 0
+ 
+ == 5. cross-check against real GitHub Actions run history (REST, pages 20 s apart) ==
+ == py-launch-blueprint: push-triggered history (REST) ==
+-  smorinlabs/py-launch-blueprint page 1: 100 runs (total_count=203)
+-  smorinlabs/py-launch-blueprint page 2: 100 runs (total_count=203)
+-  smorinlabs/py-launch-blueprint page 3: 3 runs (total_count=203)
+-retained runs: 203 by event: {"pull_request": 46, "push": 154, "workflow_dispatch": 3}
+-retained window: 2025-11-16T16:52:48Z .. 2026-09-07T06:58:02Z
++  smorinlabs/py-launch-blueprint page 1: 100 runs (total_count=217)
++  smorinlabs/py-launch-blueprint page 2: 100 runs (total_count=217)
++  smorinlabs/py-launch-blueprint page 3: 17 runs (total_count=217)
++retained runs: 217 by event: {"pull_request": 46, "push": 168, "workflow_dispatch": 3}
++retained window: 2025-11-16T16:52:48Z .. 2026-09-16T04:43:08Z
+ A2: SKIP commits in git history: 24; with a push run in production: 5
+   LEAK 2a44d9b08e Merge pull request #497 from smorinlabs/contributors-please/update
+   LEAK 8b36143c78 docs: update contributors (#352)
+@@ -108,8 +108,8 @@
+   ... 89 more; per-commit matching is the naive model, see analyze_runs.py for the push-range model
+ 
+ == ts-launch-blueprint: schedule-triggered history (REST) ==
+-  smorinlabs/ts-launch-blueprint page 1: 9 runs (total_count=9)
+-retained runs: 9 by event: {"schedule": 9}
++  smorinlabs/ts-launch-blueprint page 1: 10 runs (total_count=10)
++retained runs: 10 by event: {"schedule": 10}
+ cron '17 6 * * 1' = Monday 06:17 UTC; delay of each schedule run from its slot:
+   2026-07-13T09:49:11Z failure  delay=3:32:11 (weekday=Mon)
+   2026-07-20T09:35:52Z failure  delay=3:18:52 (weekday=Mon)
+@@ -120,10 +120,11 @@
+   2026-08-24T07:30:31Z success  delay=1:13:31 (weekday=Mon)
+   2026-08-31T13:58:35Z success  delay=7:41:35 (weekday=Mon)
+   2026-09-07T12:40:41Z success  delay=6:23:41 (weekday=Mon)
++  2026-09-14T12:55:20Z success  delay=6:38:20 (weekday=Mon)
+ exit: 0
+ 
+ == 5b. push-range model of the same run history (merge-queue batching) ==
+-push runs with head on the pinned first-parent line: 153 of 154
++push runs with head on the pinned first-parent line: 153 of 168
+ before the guard (40aa691910, 2026-05-27T23:45:38Z): bot-only commits that fired a push run: 2
+   5c3ad4f8b7 2026-05-26T19:47:10Z chore: update contributors list (#325)
+   6e8d7e541f 2026-05-26T20:40:49Z chore: update contributors list (#331)

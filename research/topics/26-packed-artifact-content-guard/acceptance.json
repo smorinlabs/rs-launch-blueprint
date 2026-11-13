@@ -1,0 +1,103 @@
+{
+  "audits": [
+    {
+      "decision_sha256": "013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3",
+      "identity": {
+        "actor": "audit-codex-2026-09-05T164358Z-bb73f46c3910-r3",
+        "family": "openai",
+        "model": "gpt-5.6-terra"
+      },
+      "kind": "empirical",
+      "path": "research/topics/26-packed-artifact-content-guard/audit-codex.md",
+      "sha256": "0882f7d0ccd00d9c0fcfbdfc369f1c2b09bcb3c9db34a4d60df63d4fc0ffda5f",
+      "unresolved_findings": [],
+      "verdict": "approve"
+    },
+    {
+      "decision_sha256": "013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3",
+      "identity": {
+        "actor": "audit-fable-2026-09-05T164358Z-bb73f46c3910-r3",
+        "family": "anthropic",
+        "model": "claude-opus-5"
+      },
+      "kind": "judgment",
+      "path": "research/topics/26-packed-artifact-content-guard/audit-fable.md",
+      "sha256": "b70b661bcb4cf658d669e487a8ddf9766b5bb4f156ff181c36b10306a1d5e5e3",
+      "unresolved_findings": [],
+      "verdict": "approve"
+    }
+  ],
+  "decision_sha256": "013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3",
+  "empirical": {
+    "argv": [
+      "bash",
+      "review/evidence/r26-crossrun-compare.sh"
+    ],
+    "cwd": "/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R26/2026-09-05T164358Z-bb73f46c3910",
+    "executed_by": {
+      "actor": "audit-codex-2026-09-05T164358Z-bb73f46c3910-r3",
+      "family": "openai",
+      "model": "gpt-5.6-terra"
+    },
+    "exit_code": 0,
+    "output_log": "research/topics/26-packed-artifact-content-guard/evidence/2026-09-05T164358Z-bb73f46c3910-audit-packed-artifact-content-guard-r3.log",
+    "output_sha256": "8ba32a9b20cc34c0f54a3a8d4549006a1144dd30b3a41711edb785b8c0f197c1",
+    "toolchain": "cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew), rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew), macOS arm64"
+  },
+  "engine_reports": [
+    {
+      "engine": "codex",
+      "identity": {
+        "actor": "research-codex-2026-09-05T164358Z-bb73f46c3910",
+        "family": "openai",
+        "model": "gpt-5.6-terra"
+      },
+      "path": "research/topics/26-packed-artifact-content-guard/raw/codex-2026-09-05T164358Z-bb73f46c3910.md",
+      "sha256": "d3621bee49664f6ccf9571936bce553c20b42c235c8abd695a0ec4d8a8fa7329"
+    },
+    {
+      "engine": "opus",
+      "identity": {
+        "actor": "research-opus-2026-09-05T164358Z-bb73f46c3910",
+        "family": "anthropic",
+        "model": "claude-opus-5"
+      },
+      "path": "research/topics/26-packed-artifact-content-guard/raw/opus-2026-09-05T164358Z-bb73f46c3910.md",
+      "sha256": "f5a4ab86cb92e1dd4feb40ffb6d36b90646ccbbeabb58827986844ea0969b200"
+    }
+  ],
+  "engines": "- `codex raw/codex-d3621bee49664f6ccf9571936bce553c20b42c235c8abd695a0ec4d8a8fa7329.md`\n- `opus raw/opus-f5a4ab86cb92e1dd4feb40ffb6d36b90646ccbbeabb58827986844ea0969b200.md`\n\n**Disagreement 1 \u2014 does Cargo have a silent-rewrite analogue to npm's `bin` auto-correction?** Codex says no undocumented silent correction exists: Cargo's manifest rewriting is documented, `Cargo.toml.orig` preserves the author's bytes, and the guard should therefore be a projection-equality check with an allowlist of documented transformations. Opus says yes: target pruning drops a target whose source is not packed, warning only. **Settled for Opus by this synthesizer's own reading of the pinned source and by reproduction**: `prepare_target_for_publish` warns and returns `Ok(None)` (`src/cargo/util/toml/mod.rs:3298-3316` at `797e8a9b`), and fault A produced `cargo package` exit 0, the pruning warning, and a packaged manifest missing `[[bin]] rsguard-serve`. Codex executed nothing in this run and did not reach the pruning path; its framing of Q2 as \"documented normalization, not silent correction\" is incomplete. Q2's half of the bundle is an active check.\n\n**Disagreement 2 \u2014 what the metadata assertion should compare.** Opus asserts the target set; Codex asserts a wider publish-facing field projection plus a byte-compare of `Cargo.toml.orig`. **Merged**, because they are complementary and both cheap: the target-set diff is the verified core (it is what the pruning fault moves), and Codex's `Cargo.toml.orig` compare and field projection are adopted with the qualification in `## Empirical check` \u2014 executed on the healthy path only, discrimination not demonstrated, workspace inheritance untested, left for P03.\n\n**Disagreement 3 \u2014 placement.** Opus recommends the file-set half in pull-request CI *and* the full guard at publish time; Codex recommends publish-time only, arguing that a pull-request copy adds maintenance pressure to every source change. **Settled for Codex's binding, with Opus's finding recorded**: the guard is bound to the publish verify job, matching the source precedent and coupling to nothing unresolved, while the pull-request copy is recorded as recommended hardening because R26 consumes no parameter and wiring a step into pull-request CI belongs to `ci-job-structure` (R11, unresolved), which lists every item that wires a check into CI and does not list R26. Opus's feasibility evidence stands and was reproduced: the listing runs offline without a registry, exit 0.\n\n**Disagreement 4 \u2014 source citations.** Opus's Cargo citations (`src/workspace/parser/mod.rs:3116` and neighbours) are from `master`'s current layout and **do not resolve at the pin**: the tree at `797e8a9b` contains no `src/workspace/` path at all, and the same code lives at `src/cargo/util/toml/mod.rs`. The behaviour Opus describes is confirmed; its file and line citations are not portable to the toolchain the template will use. This decision cites the pin.\n\n**Where the engines agree, and it held.** Both recommend `cargo package --list` diffed against a checked-in expectation; both reject the unstable JSON output under the stable-Rust constraint (confirmed, exit 101); both reject wrapper crates and Actions; both place the metadata check before the upload; both report no `CONFLICT:` and no `BASELINE-REVIEW:`. Codex's ecosystem figures were rate-limited and it says so; Opus's figures were retrieved through `gh api`. Since no crate is adopted, no popularity figure is load-bearing for the selection.\n\n**Unproven, with what would prove it.**\n\n1. **Linux.** Every result in this decision was produced on macOS 26.4 arm64. The fixed `target-os-matrix` includes `ubuntu-latest`, and no evidence for it exists in this run. What proves it: running the healthy pass and both injected faults on an `ubuntu-latest` runner in P03's CI and confirming the same three exit statuses and the same diffs.\n2. **A green-path `cargo publish --dry-run`.** Not executed here (the check must not reach a publish endpoint) and not executed by Opus (its probe reached the index, then failed on an unpublished path dependency). What proves it: the verify job at P03's first tagged release, where the version is publishable and the index resolves.\n3. **Discrimination of the `Cargo.toml.orig` compare and the wider field projection.** Executed once, healthy, single package. What proves it: P03 injecting a metadata fault (a changed `license` or `version` in a fixture archive) and confirming the projection diff fails, plus one run under the real workspace layout once R02 and R49 land.\n4. **The target-set assertion in the addition direction.** Only removal was reproduced here. What proves it: a P03 case that packs a target the expectation does not list.\n5. **The include+exclude and `package.build` warnings, and `--workspace --list` concatenation.** Read in the pinned source or taken from Opus, never triggered. What proves it: P03 exercising a manifest with both keys, a build script excluded from the package, and a multi-package workspace listing.\n6. **Runner utility availability.** `jq` and `tar` on both GitHub-hosted images is Opus-reported, not re-verified. What proves it: the first CI run of the guard on each runner.\n7. **Warning-string stability.** The scoped grep matches prose that Cargo may reword. What proves nothing can silently rot: the target-set diff, which survives wording changes; P03 should treat a grep miss as tolerable and a target diff as fatal.\n\n**Design constraints P03 must carry, each from an observed result.** Abort the guard when `cargo package` exits nonzero, before extracting anything: a failed packaging run leaves the previous `.crate` on disk and an unguarded check reads it and reports the earlier package's targets (row 10). Read the packaged manifest from the `.crate`, never from `target/package/<pkg>-<ver>/`. Loop over publishable packages with `-p`. Write `ci/expected-packed-files.txt` in byte order and compare it in byte order: the listing observed here is byte-sorted rather than locale-sorted (log lines 249\u2013250), so an expectation file generated through a locale-collating `sort` would diff against a correct listing. Keep the guard's own scratch files outside the repository being packaged \u2014 this check's first attempt put them inside and Cargo's dirty-tree detection failed the run for the wrong reason, which is exactly how a real guard would produce a false failure. Expectation files are per publishable package, and their contents depend on R02's topology and R49's target names.",
+  "evidence_checks": [],
+  "item": "R26",
+  "parameters": {
+    "consumed": {},
+    "fixed": {
+      "license": "MIT OR Apache-2.0",
+      "msrv-policy": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI",
+      "rust-edition": "2024",
+      "target-os-matrix": "ubuntu-latest, macos-latest"
+    }
+  },
+  "policy_snapshot": {
+    "acceptance_after": [],
+    "engines": [
+      "codex",
+      "opus"
+    ],
+    "evidence_checks": [],
+    "tier": "focused"
+  },
+  "prerequisites": {
+    "acceptance_after": {},
+    "research": {}
+  },
+  "principles": "**Shared requirement, source, agreement level.** *A publish pipeline must prove, before the irreversible upload, that the artifact contains exactly the intended files and declares exactly the intended package metadata; the packaging tool's own silent normalizations are changes requiring assertion, not trustworthy cleanup.* Source: ts expresses it as two steps of one verify job (F039, F078, `DIVERGENT`, origin `ts-only`, bundled in both rows' Notes); py expresses it nowhere. Agreement is required at the level of **policy plus observable acceptance criteria**, not at the level of a command: `npm pack --dry-run --json` and `cargo package --list` are two instances of one policy.\n\n**The load-bearing finding, verified in the pinned source.** Cargo materializes auto-discovered targets into explicit tables when it packages, and **prunes any target whose source file is not in the packed set, emitting a warning and continuing**. At `rust-lang/cargo` commit `797e8a9bca276c1c9f9f738d2a20f484fa4eea9d` \u2014 the commit the installed `cargo 1.98.0 (797e8a9bc 2026-08-05)` reports \u2014 the prune helper `prepare_target_for_publish` (`src/cargo/util/toml/mod.rs:3298-3316`) calls ``gctx.shell().warn(format!(\"ignoring {context} `{name}` as `{}` is not included in the published package\", \u2026))?`` and returns `Ok(None)`, dropping the target. It is called for `\"library\"` (`:3105`), `\"binary\"` (`:3109`), `\"example\"` (`:3111`), `\"test\"` (`:3112`) and `\"benchmark\"` (`:3114`); `package.build` entries get the same treatment at `:3005`. A second warn-and-continue surface sits in `src/cargo/ops/cargo_package/mod.rs:482-486`: when both `package.include` and `package.exclude` are set, Cargo warns `both package.include and package.exclude are specified; the exclude list will be ignored` and proceeds. The warning severity is deliberate and dated: `src/doc/src/CHANGELOG.md` at that commit, Cargo 1.80 (2024-07-25), \"cargo-package: Warn, rather than fail, if a Cargo target is excluded during packaging.\" (PR #13713). All four citations were read at the pin and are reproduced in the evidence log (lines 10\u201356).\n\n**Reproduced.** On the probe crate (library plus two binaries), narrowing `include` so `src/bin/rsguard-serve.rs` was not packed made `cargo package` print ``warning: ignoring binary `rsguard-serve` as `src/bin/rsguard-serve.rs` is not included in the published package`` and **exit 0**, producing a `.crate` whose normalized `Cargo.toml` declared only one `[[bin]]` (log lines 124\u2013143). That is ts's F078 hazard \u2014 \"ship the package WITHOUT its CLI\" \u2014 reproduced in Cargo, with no exit-code signal. The risk is therefore real and silent by design; the question this item answers is not whether it exists but what asserts it.\n\n**Essential behaviors.** (1) The packed file set is asserted against a checked-in expectation and any difference fails. (2) The packaged manifest's target set is asserted against a checked-in expectation and any difference fails, because a nonzero exit status will not appear. (3) The author manifest survives into the archive unmodified (`Cargo.toml.orig`) while the normalized `Cargo.toml` is compared semantically, never textually \u2014 Cargo documents that it rewrites the packed manifest and removes `[patch]`, `[replace]` and `[workspace]`, so a byte-diff of the normalized manifest is the wrong assertion. (4) All of it runs before the upload, in the same workflow, on the same commit.\n\n**Observable acceptance criteria for P03.** (a) A deliberately narrowed `include` that drops a binary fails the publish workflow before the upload step. (b) A stray file added to the repository root fails the guard. (c) The healthy repository passes on `ubuntu-latest` and `macos-latest`. (d) The guard aborts rather than inspecting a stale archive when `cargo package` exits nonzero.\n\n**What must agree; what may vary.** Must agree: the four essential behaviors above, and their placement before the upload. May vary: the expectation file's format, whether the comparison is `diff` or a set comparison, whether a pull-request copy of the file-set half also runs, and which additional publish-facing fields the projection pins.\n\n**Architectural alternatives compared, before libraries.**\n\n| Alternative | Why not chosen as primary |\n|---|---|\n| Command plus checked-in expectation, diffed in the workflow (**chosen**) | Mirrors ts's shape, keeps the expectation reviewable in the pull request that changes it, adds no dependency |\n| Snapshot test in the crate's own test suite (`insta`, `snapbox`) | Real option; rejected as primary because it couples an integrity gate to the test harness and to whatever R33 selects, makes `cargo test` shell out to `cargo`, and lets bulk re-blessing silently re-record a leak. Ranked runner-up |\n| Post-publish verification of the uploaded `.crate` | `cargo publish` is irreversible; detecting the problem afterwards only enables a yank |\n| Rely on `cargo package`'s verify build | Insufficient: a package missing one binary still compiles. The pruning fault above exited 0 |\n| Rely on `cargo package --list --message-format json` (ts's structural shape) | Fails the stable-Rust constraint: ``error: the `--message-format` flag is unstable, and only available on the nightly channel of Cargo`` (log lines 195\u2013198). Tracking issue rust-lang/cargo#15353 |\n| Wrapper crate or Action (`cargo-diet`, `cargo-release`, `cargo-package`) | `cargo-diet` rewrites `Cargo.toml` in place, so it cannot gate what it mutates; `cargo-release` documents only Cargo's own build verification; the `cargo-package` crate has one yanked `0.0.0` release and fails the maintenance gate |\n\n**Fitness gates.** The stack adds no crate, so the crate figures (downloads, last release, stars, open issues, issue responsiveness, adopters) and the dependency-tree gates are `inapplicable` for the selected elements: they are subcommands of the toolchain the template already requires, plus a manifest key that toolchain reads. Recorded per gate: (1) license \u2014 no dependency is introduced, so nothing is added to the template's license surface; (2) MSRV \u2014 the stack's highest toolchain floor is cargo 1.94 (2026-03-05) for offline `--list`, and cargo 1.80 (2024-07-25) for the warning text, both below the floor the fixed policy implies against current stable; (3) advisories \u2014 no crate is adopted, so no RustSec page applies to a selected element, and the stack's `unsafe` exposure in the shipped artifact is zero; (4) platforms \u2014 the elements are toolchain commands plus `diff`, `tar`, `cmp` and `jq`; every result here is macOS-only, so Linux is unproven (see `## Engines`); (5) default features and async coupling \u2014 `inapplicable`, no crate is compiled against; (6) binary size and compile time \u2014 zero added to the template's artifact; the CI cost is the `cargo package` run the publish flow already performs. The gates that excluded the surveyed wrappers are recorded in the row above and in both raw reports.\n\n**Reference implementations.** `PyO3/maturin` runs `[\"package\", \"--list\", \"--allow-dirty\", \"--manifest-path\"]` and parses the result as the authoritative file set for Python source distributions (`src/source_distribution/mod.rs`, Opus-reported at HEAD 2026-09-10) \u2014 production evidence that `--list` output is parsed by tools, not only eyeballed. `clap-rs/clap` declares a workspace-level `include` inherited with `include.workspace = true`; `GitoxideLabs/gitoxide` declares `include = [\"/src/**/*\", \"/LICENSE-*\"]`. The counter-practice is real: `BurntSushi/ripgrep` uses `exclude`, and `serde` and `tokio` declare neither. Those four adoption facts are Opus-reported at HEAD and were not re-read here.\n\n**Where the Rust design must differ from ts's.** ts parses JSON because npm offers it; Rust's stable output is a sorted plain-text list, so the assertion is a `diff` and is simpler rather than a workaround. ts greps `npm publish --dry-run` stderr for two known auto-correction strings; grepping Cargo's stderr is necessary but not sufficient, because excluding examples, tests or benches from a package is a legitimate design that produces the same warning shape \u2014 hence the scoped grep plus an authoritative target-set diff. ts's workflow comment states its dry run \"never contacts the registry\"; Cargo's `publish --dry-run` reaches the index instead, per Opus's probe observation, which this check did not reproduce.\n\nNo `BASELINE-REVIEW:` finding. The recorded source facts for F039 and F078 were confirmed at both pins, and this decision keeps their principle and their publish-time placement.\n\nre-verify: 2027-03-01, or earlier on a Cargo release that changes the pruning severity away from warning-only, changes the wording the scoped grep matches, changes the synthesized-file set that the expectation lists, or stabilizes `cargo package --list --message-format json` (rust-lang/cargo#15353); on rust-lang/cargo#13953 changing `cargo package --workspace --list` output; on R02 fixing the workspace topology or R49 fixing target names, either of which changes the per-package expectation files; on R11 fixing CI job structure, which decides the pull-request placement of the file-set half; or on the template gaining a build script or a non-Rust asset tree",
+  "prompt_sha256": "0abb4f09b04dce56e26ecffc79b9b778bd638ab70671e202bcb7812c57e4985a",
+  "reverify": "2027-03-01, or earlier on a Cargo release that changes the pruning severity away from warning-only, changes the wording the scoped grep matches, changes the synthesized-file set that the expectation lists, or stabilizes `cargo package --list --message-format json` (rust-lang/cargo#15353); on rust-lang/cargo#13953 changing `cargo package --workspace --list` output; on R02 fixing the workspace topology or R49 fixing target names, either of which changes the per-package expectation files; on R11 fixing CI job structure, which decides the pull-request placement of the file-set half; or on the template gaining a build script or a non-Rust asset tree",
+  "schema_version": 1,
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T164358Z-bb73f46c3910-r3",
+    "family": "anthropic",
+    "model": "claude-opus-5"
+  }
+}

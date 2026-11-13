@@ -1,0 +1,54 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T155503Z-4141a35b69e0",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T155503Z-4141a35b69e0",
+      "model": "claude-opus-5[1m]",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    },
+    "doxa": {
+      "actor": "research-doxa-2026-09-05T155503Z-4141a35b69e0",
+      "model": "all_deep_research: openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80) + perplexity sonar-deep-research + gemini deep-research-preview-04-2026, via doxa-research 3.3.0 and scripts/doxa_no_retry.py, operation research-20260909-001318-a42cc10197234031",
+      "family": "openai+perplexity+google",
+      "file": "raw/doxa.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T155503Z-4141a35b69e0-r6",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T155503Z-4141a35b69e0-r6",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T155503Z-4141a35b69e0-r6",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "shasum",
+      "-a",
+      "256",
+      "review/DECISION.md"
+    ],
+    "cwd": "research/runs/R42/2026-09-05T155503Z-4141a35b69e0. Revision 6 changes only the parameter line format that publication validates and moves the prose those lines carried; it runs no check. The empirical auditor's executed verification was a read of the five parameter lines against docs/port/PARAMETERS.md and a comparison of the rest of the decision against revision 5, recorded in the log below.",
+    "toolchain": "shasum and text comparison against the committed registry and the archived audits' recorded hashes; macOS 26.4 arm64. No check was rerun and the Linux virtual machine was stopped for host memory.",
+    "output_log": "review/evidence/audit-dev-toolchain-provisioning-r6.log",
+    "exit_code": 0
+  }
+}

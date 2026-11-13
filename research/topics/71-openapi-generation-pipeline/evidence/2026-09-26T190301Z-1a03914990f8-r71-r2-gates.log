@@ -1,0 +1,78 @@
+# retrieved_at_utc=2026-09-27T16:52:36Z
+# host=Darwin arm64
+
+## X. oasdiff gate 3 — published security advisories (GET api.github.com/repos/oasdiff/oasdiff/security-advisories)
+X advisory GHSA-m3wq-w7x2-4q6m severity=medium published=2026-07-27T11:13:55Z state=published summary=Git revision parsed as a git option, allowing arbitrary file write
+X advisory-range github.com/oasdiff/oasdiff vulnerable=<= 1.26.0 patched=1.26.1
+X advisory GHSA-2jcc-mxv7-p3f9 severity=medium published=2026-06-01T07:39:02Z state=published summary=oasdiff does not enforce --allow-external-refs=false on the git-revision load path (SSRF / local file read)
+X advisory-range github.com/oasdiff/oasdiff vulnerable=>= 1.13.2, <= 1.18.0 patched=1.18.1
+X pin=v1.32.1
+
+## X. oasdiff gate 3 posture — how the release binary is built (cgo off, targets)
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:5:   goos:
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:6:     - darwin
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:7:     - linux
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:8:     - windows
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:9:   goarch:
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:10:     - amd64
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:11:     - arm64
+X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:13:     - CGO_ENABLED=0
+X oasdiff/oasdiff@v1.32.1:go.mod:1:module github.com/oasdiff/oasdiff
+X oasdiff/oasdiff@v1.32.1:go.mod:3:go 1.26.0
+
+## X. oasdiff gate 5 — the flags `oasdiff breaking` inherits, with their defaults
+X oasdiff/oasdiff@v1.32.1:internal/breaking_changes.go:13:		Use:   "breaking base revision [flags]",
+X oasdiff/oasdiff@v1.32.1:internal/breaking_changes.go:20:	addCommonDiffFlags(&cmd)
+X oasdiff/oasdiff@v1.32.1:internal/breaking_changes.go:22:	addCommonBreakingFlags(&cmd)
+X oasdiff/oasdiff@v1.32.1:internal/breaking_changes.go:23:	enumWithOptions(&cmd, newEnumValue(GetBreakingLevels(), ""), "fail-on", "o", "exit with return code 1 when output includes errors with this level or higher")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:12:func addCommonDiffFlags(cmd *cobra.Command) {
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:13:	cmd.PersistentFlags().StringP("match-path", "p", "", "include only paths that match this regular expression")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:14:	cmd.PersistentFlags().StringP("unmatch-path", "q", "", "exclude paths that match this regular expression")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:20:	cmd.PersistentFlags().Bool("include-path-params", false, "include path parameter names in endpoint matching")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:26:	cmd.PersistentFlags().Bool("allow-external-refs", true, "allow external $refs in specs; disable to prevent SSRF when processing untrusted specs")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:28:	cmd.PersistentFlags().Bool("fetch", false, "fetch missing git revisions from the 'origin' remote (writes objects to your local repo)")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:91:func addCommonBreakingFlags(cmd *cobra.Command) {
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:93:	cmd.PersistentFlags().String("err-ignore", "", "configuration file for ignoring errors")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:99:	cmd.PersistentFlags().Uint("deprecation-days-beta", checker.DefaultBetaDeprecationDays, "min days required between deprecating a beta resource and removing it")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:100:	cmd.PersistentFlags().Uint("deprecation-days-stable", checker.DefaultStableDeprecationDays, "min days required between deprecating a stable resource and removing it")
+X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:103:	cmd.PersistentFlags().String("severity-levels", "", "configuration file for custom severity levels")
+
+## X. oasdiff gate 5 — configuration-file lookup and flag binding
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:43:	BindPFlag(key string, flag *pflag.Flag) error
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:47:func RunViper(cmd *cobra.Command, v IViper) *ReturnError {
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:48:	if err := readConfFile(cmd, v); err != nil {
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:56:	if err := bindFlags(cmd, v); err != nil {
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:62:	// values where the user explicitly set the corresponding CLI flag —
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:106://  3. Default cwd lookup, in order:
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:107://     a. .oasdiff.{json,yaml,yml,toml,hcl} (preferred — dotfile convention)
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:124:		v.SetConfigName(name)
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:125:		v.AddConfigPath(".")
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:156:func bindFlags(cmd *cobra.Command, v IViper) error {
+X oasdiff/oasdiff@v1.32.1:internal/viper.go:161:		if err := v.BindPFlag(name, persitentFlags.Lookup(name)); err != nil {
+X oasdiff/oasdiff@v1.32.1:internal/run.go:44:	rootCmd.PersistentFlags().String("config", "", "path to config file (overrides .oasdiff.* lookup; can also use the OASDIFF_CONFIG env var)")
+
+## X. oasdiff gates 4 and 6 — every v1.32.1 release asset, with its size in bytes
+X release v1.32.1 prerelease=false published_at=2026-09-15T18:42:31Z assets=12
+X asset checksums.txt size=1085
+X asset oasdiff_1.32.1_darwin_all.tar.gz size=13336632
+X asset oasdiff_1.32.1_linux_amd64.apk size=7084667
+X asset oasdiff_1.32.1_linux_amd64.deb size=6812082
+X asset oasdiff_1.32.1_linux_amd64.rpm size=6814747
+X asset oasdiff_1.32.1_linux_amd64.tar.gz size=6815540
+X asset oasdiff_1.32.1_linux_arm64.apk size=6355662
+X asset oasdiff_1.32.1_linux_arm64.deb size=6121660
+X asset oasdiff_1.32.1_linux_arm64.rpm size=6128265
+X asset oasdiff_1.32.1_linux_arm64.tar.gz size=6124569
+X asset oasdiff_1.32.1_windows_amd64.tar.gz size=7008405
+X asset oasdiff_1.32.1_windows_arm64.tar.gz size=6222421
+
+## Y. expectorate 1.3.0 gate 5 — features and dependencies (GET crates.io/api/v1)
+Y expectorate 1.3.0 features={"predicates":["dep:predicates"]} rust_version=1.85
+Y expectorate 1.3.0 dep atomicwrites req=^0.4.4 kind=normal optional=false default_features=true
+Y expectorate 1.3.0 dep console req=^0.16.4 kind=normal optional=false default_features=true
+Y expectorate 1.3.0 dep filetime req=^0.2.25 kind=dev optional=false default_features=true
+Y expectorate 1.3.0 dep newline-converter req=^0.3.0 kind=normal optional=false default_features=true
+Y expectorate 1.3.0 dep similar req=^3.2.0 kind=normal optional=false default_features=true
+Y expectorate 1.3.0 dep tempfile req=^3.19.1 kind=dev optional=false default_features=true
+Y expectorate 1.3.0 dep predicates req=^3.0.4 kind=normal optional=true default_features=true
+# done

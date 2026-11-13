@@ -1,0 +1,413 @@
+
+======== 0  toolchain, host, retrieval date ========
+retrieval date (UTC): 2026-09-17
+uname: Darwin 25.4.0 arm64
+sw_vers: macOS 26.4 25E246
+rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+jq: jq-1.8.2
+gh: gh version 2.98.0 (2026-08-20)
+network reachable (crates.io): 1
+gh authenticated: 1
+repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+======== 1  the binding prompt's Couplings block ========
+--- inputs/prompt.md '## Couplings' ---
+## Couplings
+- id: R53
+- owns:
+- consumes: R67: error-taxonomy-exit-codes
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
+- related (not a registry dependency): R52 (`toml-crate`) — this item's schema validates the value R52's parser produces. R55 (`config-error-tolerance`) decides what happens when this item's validation fails per-key; treat that as open. R56 (`config-secret-policy`) may add a `token` field to this item's schema; treat that as open.
+If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
+
+## Questions
+PASS S01 :: /usr/bin/grep -E matched: ^- owns:[[:space:]]*$
+PASS S02 :: /usr/bin/grep -F found: - consumes: R67: error-taxonomy-exit-codes
+PASS S03 :: /usr/bin/grep -F found: - effort: focused
+PASS S04 :: /usr/bin/grep -F found: - engines: codex, opus
+
+======== 2  the five '- assumes' lines, rebuilt from the live registry ========
+PASS S05 :: equal: 5
+(count above from /usr/bin/grep -c over the whole file, not a truncated listing)
+PASS S06 :: all five '- assumes' lines are byte-identical to docs/port/PARAMETERS.md
+PASS S07 :: equal: 0
+PASS S08 :: equal: 0
+
+======== 3  ledger and baseline-review rows this item settles ========
+--- docs/port/COMMONALITY.md F228 / F229 (row count: 2 from /usr/bin/grep -c) ---
+232:| F228 | config schema validation library | config-env-logging | different | DIVERGENT | R53 | pydantic (py) vs zod (ts) — Rust's analogue is `serde` (+ optionally a validation crate); origin is `different` (the area
+233:| F229 | typed config schema with per-key validation | config-env-logging | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; pattern row (tool-free): both validate the parsed file against a typed schema before us
+PASS S09 :: /usr/bin/grep -F found: | F228 | config schema validation library | config-env-logging | different | DIVERGENT | R53 |
+PASS S10 :: /usr/bin/grep -F found: | F229 | typed config schema with per-key validation | config-env-logging | same | COMMON → REUSE | — |
+PASS S11 :: /usr/bin/grep -F found: validation-before-use with constrained types or explicit checks, and representative rejected values, are acceptance criteria whose mechanism R53 selects
+PASS S12 :: /usr/bin/grep -F found: serde's typed deserialization preserves this same pattern, so this is a substitution in spirit, not an override
+--- docs/port/BASELINE-REVIEW.md F229 (line count: 4 from /usr/bin/grep -c) ---
+106:| F229 | The parsed file is validated against a typed schema before any value is used. | architectural pattern | py `src/py_launch_blueprint/core/settings.py:40` (`class OutputSettings(BaseModel)`, per-field `Literal`s at :45-46); ts `src/lib/config.ts:33` (per-field `z.string()`/`z.number().int
+279:BASELINE-REVIEW: F229 — configuration is validated before use — state validation-before-use with constrained types or explicit checks as acceptance criteria and leave the mechanism to R53 — a derived integer accepts values ts config.ts:40 rejects with .positive()
+324:| F229 | `COMMON → REUSE` kept | Validation-before-use acceptance criterion | R53 |
+424:| F229 | B5 | wrong | py `settings.py:40-46`; ts `config.ts:33-40`; Serde derive and custom-deserialization documentation. | Typed deserialization alone does not establish the cited semantic validation. For example, a derived signed integer accepts zero/negative values that Zod's `.positive()` r
+PASS S13 :: /usr/bin/grep -F found: R53 (mechanism), R55 (per-key failure tolerance, F238) | retained
+PASS S14 :: /usr/bin/grep -F found: BASELINE-REVIEW: F229 — configuration is validated before use
+PASS S15 :: /usr/bin/grep -F found: a derived integer accepts values ts config.ts:40 rejects with .positive()
+PASS S16 :: /usr/bin/grep -F found: ### 2026-09-12 — no licence check for anything the template uses (Q4, superseded and widened by Q7.B)
+PASS S17 :: /usr/bin/grep -F found: we don't need to check the licensing for any tool we use
+
+======== 4  the consumed prerequisite (R67) and the two siblings in flight (R52, R55) ========
+inputs/prerequisites.json .R67.decision = 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+sha256 research/topics/67-.../DECISION.md = 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+PASS S18 :: equal: 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+PASS S19 :: /usr/bin/grep -F found: `RSLB202` config document unparsable → 2
+PASS S20 :: /usr/bin/grep -F found: `RSLB203` config value invalid → 2
+PASS S21 :: /usr/bin/grep -F found: | `RSLB203` config value invalid | 2 | **This template's choice.**
+PASS S22 :: /usr/bin/grep -F found: `{"error":{"code","message","hint"?}}`
+PASS S23 :: /usr/bin/grep -F found: must be able to name the offending input per R7.6
+PASS S24 :: /usr/bin/grep -F found: `thiserror` in the library crate, `anyhow` (`>= 1.0.103`) in binary crates only
+--- R52 '## Decision' head (first 40 lines) ---
+## Decision
+
+**This decision is a proposal validated in the implementation phase** (owner ruling,
+2026-09-10). It records what the research found and what it recommends; **P03 builds the
+template and its CI proves the recommendation.** No Rust source exists in this repository —
+`rs-launch-blueprint` is still a research tree — so nothing here is an implemented result. The
+list of what P03 must validate closes `## Engines`. A decision that does not survive
+implementation is revised against this recorded research, not researched again from scratch.
+
+### The recommended stack
+
+Two crates from one upstream workspace, split by **operation**, not by direction:
+
+| Role | Crate | Version | Features | Where it runs |
+|---|---|---|---|---|
+| Typed read of `<tool>_config.toml` into the config struct R53 will define | `toml` | `1.1.6` (resolves `1.1.6+spec-1.1.0`) | **default only** — `std`, `serde`, `parse`, `display`; **not** `preserve_order` | the read path, every process start |
+| Read-modify-write for `config set`, preserving the user's comments, key order and spacing | `toml_edit` | `0.25.15` (resolves `0.25.15+spec-1.1.0`) | **default only** — `parse`, `display`; **not** `serde` | the `config set` write path only |
+
+Neither crate performs file I/O. Both take and return `&str`/`String`, so **F243's
+"mode 0600 from creation, then atomic replace" guarantee is hand-rolled `std::fs` work
+whatever crate is chosen** — see the `BASELINE-REVIEW: F243` disposition in `## Engines`.
+
+**Feature selection, stated because both raws and the ecosystem differ here.** `toml`'s
+published manifest makes `preserve_order` a non-default feature that pulls `dep:indexmap`
+into `toml` (evidence checks `S63e`, `S63f`). Cargo and starship both enable it because they
+re-serialize whole manifests through `toml::Value`; this template's write path goes through
+`toml_edit`, which preserves order natively, so enabling it would add `indexmap` to `toml`'s
+own closure for no gain. `toml_edit`'s `serde` feature is likewise non-default (`S73c`) and is
+not enabled here because `toml` owns the typed read; Cargo enables it because Cargo
+deserializes through `toml_edit` as well.
+
+**Ledger rows this settles.** F225 and F226 (`docs/port/COMMONALITY.md`, both `DIVERGENT` —
+`S12`, `S14`, `S15`): the parse library and the serialize library. F224 (TOML is the format),
+F227 (the `<tool>_config.toml` filename) and F243 (atomic write at mode 0600) are
+`COMMON → REUSE`, inherited, and untouched by this item (`S13`, `S16`).
+
+**What this decision does not decide.** The typed schema and its validation (R53, F228); where
+the file is discovered (R54) and the XDG set it sits in (R57); how a parse failure becomes a
+user-visible message (R55, and R67 for the code and exit status); whether P03 reaches for
+`tempfile` to write the temp file (F243/R54's call — R66's published stack already names
+PASS S25 :: /usr/bin/grep -E matched: \| `toml` \| `1\.1\.6`
+PASS S26 :: /usr/bin/grep -E matched: \| `toml_edit` \| `0\.25\.15`
+PASS S27 :: /usr/bin/grep -F found: **not** `preserve_order`
+PASS S28 :: /usr/bin/grep -F found: R53 concludes it needs per-field byte spans beyond `serde_spanned` and
+--- R55 raw/codex.md CONFLICT line ---
+CONFLICT: R67 error-taxonomy-exit-codes — `RSLB203 config value invalid` cannot mean every invalid file leaf — R55 requires an individually invalid declared config value to warn-and-drop, reserving `RSLB203` for a fatal nonrecoverable validation outcome such as R53's cross-field invariant.
+PASS S29 :: /usr/bin/grep -F found: CONFLICT: R67 error-taxonomy-exit-codes
+PASS S30 :: /usr/bin/grep -F found: R55 requires an individually invalid declared config value to warn-and-drop
+PASS S31 :: /usr/bin/grep -F found: assumes R53 validation = independently callable declared-field validation plus a separately classified cross-field invariant result
+
+======== 5  sibling decisions the recommendation reuses rather than re-deciding ========
+PASS S32 :: /usr/bin/grep -F found: | Result data contract (wire shape) | `serde` | `1.0.229` | `features = ["derive"]` | library crate |
+PASS S33 :: /usr/bin/grep -F found: `-o <table|json|markdown|name>`, default **`table`**
+PASS S34 :: /usr/bin/grep -F found: unsafe_code
+
+======== 6  the org CLI Design Standard v1.4.14 at its pinned blob ========
+blob f9de0437baece3383e73ca2c5f48b7ab399b51c7 size:    77990 bytes
+PASS S35 :: /usr/bin/grep -F found: A tool with project/user config **SHOULD** validate config files with precise file/key diagnostics and **SHOULD** provide `acme config validate`
+PASS S36 :: /usr/bin/grep -F found: acme config validate` reports `.acme/acme_config.toml:12 unknown key 'default-region'
+PASS S37 :: /usr/bin/grep -F found: name the offending input in quotes, and state a next step where possible
+PASS S38 :: /usr/bin/grep -F found: `{"error":{"code":"<stable-string>","message":"<human-readable>"}}`
+PASS S39 :: /usr/bin/grep -F found: R7.12 — Error code catalog
+PASS S40 :: /usr/bin/grep -F found: Pair with `figment`/`config` crates for the precedence chain
+PASS S41 :: /usr/bin/grep -E correctly found no match for: (garde|serde_valid|validify|nutype|pydantic|zod)
+(occurrences of the word 'validator' in the standard, /usr/bin/grep -c -i: 0)
+PASS S42 :: equal: 0
+
+======== 7  registry, repository and advisory figures ========
+--- GET https://crates.io/api/v1/crates/serde ---
+VOLATILE serde :: recent_downloads=308308063 downloads=1402408950 max_stable_version=1.0.229 (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/serde/versions ---
+newest non-yanked: num=1.0.229 created_at=2026-07-18T23:05:13.266456Z rust_version=1.56 license=MIT OR Apache-2.0
+--- GET https://crates.io/api/v1/crates/garde ---
+VOLATILE garde :: recent_downloads=1800800 downloads=4321159 max_stable_version=0.23.0 (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/garde/versions ---
+newest non-yanked: num=0.23.0 created_at=2026-05-23T15:01:07.928313Z rust_version=1.87 license=MIT OR Apache-2.0
+--- GET https://crates.io/api/v1/crates/validator ---
+VOLATILE validator :: recent_downloads=11775106 downloads=65165401 max_stable_version=0.21.0 (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/validator/versions ---
+newest non-yanked: num=0.21.0 created_at=2026-07-27T09:04:08.086375Z rust_version=1.88 license=MIT
+--- GET https://crates.io/api/v1/crates/serde_valid ---
+VOLATILE serde_valid :: recent_downloads=1579995 downloads=4363036 max_stable_version=3.1.2 (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/serde_valid/versions ---
+newest non-yanked: num=3.1.2 created_at=2026-09-10T15:00:05.135965Z rust_version=null license=MIT
+--- GET https://crates.io/api/v1/crates/nutype ---
+VOLATILE nutype :: recent_downloads=1774984 downloads=5798730 max_stable_version=0.7.0 (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/nutype/versions ---
+newest non-yanked: num=0.8.0-beta.2 created_at=2026-09-01T07:29:26.786675Z rust_version=null license=MIT
+--- GET https://crates.io/api/v1/crates/validify ---
+VOLATILE validify :: recent_downloads=11123 downloads=72844 max_stable_version=2.0.0 (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/validify/versions ---
+newest non-yanked: num=2.0.0 created_at=2025-02-09T10:54:24.637691Z rust_version=null license=MIT
+PASS S43 :: equal: 1.0.229
+PASS S44 :: equal: 0.23.0
+PASS S45 :: equal: 0.21.0
+PASS S46 :: equal: 3.1.2
+--- GET https://static.rust-lang.org/dist/channel-rust-stable.toml ([pkg.rust] version) ---
+current Rust stable: version = "1.98.1 (48a229cea 2026-09-01)"
+VOLATILE rust-stable :: version = "1.98.1 (48a229cea 2026-09-01)" (endpoint above, retrieved 2026-09-17)
+PASS S47 :: equal: 1.56
+PASS S48 :: equal: 1.87
+PASS S49 :: equal: 1.88
+PASS S50 :: equal: null
+PASS S51 :: equal: null
+licence (metadata only, nothing excluded on it): serde = MIT OR Apache-2.0
+licence (metadata only, nothing excluded on it): garde = MIT OR Apache-2.0
+licence (metadata only, nothing excluded on it): validator = MIT
+licence (metadata only, nothing excluded on it): serde_valid = MIT
+licence (metadata only, nothing excluded on it): nutype = MIT
+licence (metadata only, nothing excluded on it): validify = MIT
+--- GET https://crates.io/api/v1/crates/serde/1.0.229/dependencies (kind=normal, optional=false) ---
+  serde_core =1.0.229
+  non-optional normal count: 1
+--- GET https://crates.io/api/v1/crates/garde/0.23.0/dependencies (kind=normal, optional=false) ---
+  compact_str ^0.9.0
+  smallvec ^1.15.1
+  non-optional normal count: 2
+--- GET https://crates.io/api/v1/crates/validator/0.21.0/dependencies (kind=normal, optional=false) ---
+  idna ^1
+  regex ^1
+  serde ^1
+  serde_derive ^1
+  serde_json ^1
+  url ^2
+  non-optional normal count: 6
+--- GET https://crates.io/api/v1/crates/serde_valid/3.1.2/dependencies (kind=normal, optional=false) ---
+  indexmap ^2.0
+  itertools ^0.14.0
+  num-traits ^0.2
+  regex ^1.12
+  serde ^1.0
+  serde_json ^1.0
+  serde_valid_derive ^3.1.2
+  serde_valid_literal ^3.1.2
+  thiserror ^1.0
+  unicode-segmentation ^1.7
+  non-optional normal count: 10
+PASS S52 :: equal: serde_core
+PASS S53 :: equal: compact_str,smallvec
+PASS S54 :: equal: 6
+PASS S55 :: /usr/bin/grep -E matched: "crate_id": ?"regex"
+PASS S56 :: equal: 1
+--- GET https://crates.io/api/v1/crates/garde/0.23.0 (features) ---
+credit-card, derive, email, email-idna, full, js-sys, pattern, phone-number, regex, rust_decimal, serde, unicode, url
+PASS S57 :: equal: false
+PASS S58 :: equal: true
+
+======== 7b  RustSec advisory pages, with 200/404 controls in the same run ========
+https://rustsec.org/packages/serde.html -> HTTP 404
+PASS S59-serde :: equal: 404
+https://rustsec.org/packages/garde.html -> HTTP 404
+PASS S59-garde :: equal: 404
+https://rustsec.org/packages/validator.html -> HTTP 404
+PASS S59-validator :: equal: 404
+https://rustsec.org/packages/serde_valid.html -> HTTP 404
+PASS S59-serde_valid :: equal: 404
+https://rustsec.org/packages/nutype.html -> HTTP 404
+PASS S59-nutype :: equal: 404
+https://rustsec.org/packages/validify.html -> HTTP 404
+PASS S59-validify :: equal: 404
+CONTROL https://rustsec.org/packages/atty.html -> HTTP 200
+PASS S60-atty :: equal: 200
+CONTROL https://rustsec.org/packages/time.html -> HTTP 200
+PASS S60-time :: equal: 200
+CONTROL https://rustsec.org/packages/openssl.html -> HTTP 200
+PASS S60-openssl :: equal: 200
+CONTROL nonexistent crate name -> HTTP 404
+PASS S61 :: equal: 404
+NOTE: 404 is the no-advisory response for a real crate name, but it cannot
+      be distinguished from 'name unknown to RustSec'. Recorded, not glossed.
+
+======== 8  GitHub repository state and the garde maintenance signal ========
+--- gh api repos/serde-rs/serde ---
+stargazers_count=10826 archived=false pushed_at=2026-08-25T03:53:14Z
+VOLATILE serde-rs/serde :: stargazers_count=10826 archived=false pushed_at=2026-08-25T03:53:14Z (endpoint above, retrieved 2026-09-17)
+PASS S62-serde-rs-serde :: /usr/bin/grep -F found: archived=false
+--- gh api repos/jprochazk/garde ---
+stargazers_count=898 archived=false pushed_at=2026-07-31T07:15:56Z
+VOLATILE jprochazk/garde :: stargazers_count=898 archived=false pushed_at=2026-07-31T07:15:56Z (endpoint above, retrieved 2026-09-17)
+PASS S62-jprochazk-garde :: /usr/bin/grep -F found: archived=false
+--- gh api repos/Keats/validator ---
+stargazers_count=2516 archived=false pushed_at=2026-07-27T09:04:01Z
+VOLATILE Keats/validator :: stargazers_count=2516 archived=false pushed_at=2026-07-27T09:04:01Z (endpoint above, retrieved 2026-09-17)
+PASS S62-Keats-validator :: /usr/bin/grep -F found: archived=false
+--- gh api repos/ya7010/serde_valid ---
+stargazers_count=90 archived=false pushed_at=2026-09-11T02:33:55Z
+VOLATILE ya7010/serde_valid :: stargazers_count=90 archived=false pushed_at=2026-09-11T02:33:55Z (endpoint above, retrieved 2026-09-17)
+PASS S62-ya7010-serde_valid :: /usr/bin/grep -F found: archived=false
+--- gh api search/issues (total_count, never open_issues_count) ---
+serde-rs/serde open issues (total_count) = 319
+VOLATILE serde-rs/serde-open-issues :: 319 (endpoint above, retrieved 2026-09-17)
+PASS S63-serde-rs-serde :: 319 >= 0
+jprochazk/garde open issues (total_count) = 23
+VOLATILE jprochazk/garde-open-issues :: 23 (endpoint above, retrieved 2026-09-17)
+PASS S63-jprochazk-garde :: 23 >= 0
+Keats/validator open issues (total_count) = 47
+VOLATILE Keats/validator-open-issues :: 47 (endpoint above, retrieved 2026-09-17)
+PASS S63-Keats-validator :: 47 >= 0
+--- gh api repos/jprochazk/garde/commits?since=2026-05-23T16:00:00Z ---
+2026-05-29T08:49:53Z jprochazk Merge pull request #184 from jprochazk/dependabot/github_actions/github-actions-4436de3974
+2026-05-29T07:31:09Z dependabot[bot] Bump taiki-e/install-action in the github-actions group
+commits after the 0.23.0 release: 2 (from /usr/bin/grep -c over the whole file); dependabot-related: 2
+PASS S64 :: equal: 2
+PASS S65 :: equal: 2
+--- gh api repos/serde-rs/serde/pulls/2891 (the project's own validation-hook proposal) ---
+state=open merged=false created_at=2025-02-11T13:11:27Z title=Support `#[serde(validate = "function")]` for container, compatible with `validator` crate
+PASS S66 :: /usr/bin/grep -F found: state=open merged=false created_at=2025-02-11
+PASS S67 :: /usr/bin/grep -F found: Support `#[serde(validate = "function")]`
+
+======== 8b  practice evidence: seven pinned Rust CLI lockfiles ========
+alacritty/alacritty@d692748d3f61 resolved_packages=292 serde=1 toml_family=[name = "toml_edit" name = "toml" ] validation_crates=0
+  (all four counts from /usr/bin/grep -c / -oE over the whole lockfile, never a truncated prefix)
+PASS S68-alacritty-alacritty :: equal: 0
+PASS S69-alacritty-alacritty :: 1 >= 1
+starship/starship@4ff40d066af2 resolved_packages=428 serde=1 toml_family=[name = "toml_edit" name = "toml" ] validation_crates=0
+  (all four counts from /usr/bin/grep -c / -oE over the whole lockfile, never a truncated prefix)
+PASS S68-starship-starship :: equal: 0
+PASS S69-starship-starship :: 1 >= 1
+helix-editor/helix@079a789e8cb0 resolved_packages=337 serde=1 toml_family=[name = "toml" ] validation_crates=0
+  (all four counts from /usr/bin/grep -c / -oE over the whole lockfile, never a truncated prefix)
+PASS S68-helix-editor-helix :: equal: 0
+PASS S69-helix-editor-helix :: 1 >= 1
+zellij-org/zellij@474ea0cef620 resolved_packages=538 serde=1 toml_family=[name = "toml" ] validation_crates=0
+  (all four counts from /usr/bin/grep -c / -oE over the whole lockfile, never a truncated prefix)
+PASS S68-zellij-org-zellij :: equal: 0
+PASS S69-zellij-org-zellij :: 1 >= 1
+jj-vcs/jj@e6dd2c0d60f2 resolved_packages=517 serde=1 toml_family=[name = "toml_edit" name = "toml" ] validation_crates=0
+  (all four counts from /usr/bin/grep -c / -oE over the whole lockfile, never a truncated prefix)
+PASS S68-jj-vcs-jj :: equal: 0
+PASS S69-jj-vcs-jj :: 1 >= 1
+rust-lang/mdBook@afe6eb8836bf resolved_packages=273 serde=1 toml_family=[name = "toml" ] validation_crates=0
+  (all four counts from /usr/bin/grep -c / -oE over the whole lockfile, never a truncated prefix)
+PASS S68-rust-lang-mdBook :: equal: 0
+PASS S69-rust-lang-mdBook :: 1 >= 1
+EmbarkStudios/cargo-deny@79d7f54dc1bf resolved_packages=211 serde=1 toml_family=[name = "toml-span" ] validation_crates=0
+  (all four counts from /usr/bin/grep -c / -oE over the whole lockfile, never a truncated prefix)
+PASS S68-EmbarkStudios-cargo-deny :: equal: 0
+PASS S69-EmbarkStudios-cargo-deny :: 1 >= 1
+surveyed lockfiles: 7; total resolved packages: 2596; total validation-crate occurrences: 0
+PASS S70 :: equal: 7
+PASS S71 :: equal: 0
+
+======== 9  behavioural probe: the candidate mechanisms on six literal TOML strings ========
+probe crate: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-verify.19453/probe (throwaway; nothing is written into the repository)
+--- probe stdout ---
+P1_SERDE_DERIVE_ERROR_COUNT = 1
+P1_SERDE_DERIVE_MSG = unknown variant `rainbow`, expected one of `auto`, `always`, `never`
+P1_SERDE_DERIVE_DISPLAY_FIRSTLINE = TOML parse error at line 4, column 9
+P2_GARDE_REACHED = false
+P2_GARDE_REPORT_ENTRIES = 0
+P2_SERDE_FAILED_FIRST_MSG = unknown variant `yaml`, expected one of `table`, `json`, `markdown`, `name`
+P3_GARDE_CONSTRAINT_ENTRIES = 2
+P3_GARDE_ENTRY = limit: lower than 1
+P3_GARDE_ENTRY = workspace: length is lower than 1
+P4_TABLE_KEY_ORDER = ["color", "format", "limit"]
+P4_PERKEY_ISSUE_COUNT = 3
+P4_ISSUE = output.format: unknown variant `yaml`, expected one of `table`, `json`, `markdown`, `name`
+P4_ISSUE = output.color: unknown variant `rainbow`, expected one of `auto`, `always`, `never`
+P4_ISSUE = output.limit: invalid type: string "abc", expected a nonzero u32
+P4_PARTIAL_VALUE = ConfigFile { output: OutputSettings { format: Table, color: Auto, limit: None } }
+P5_NONZERO_ISSUE = output.limit: invalid value: integer `0`, expected a nonzero u32
+P5_ENUM_ISSUE = output.format: unknown variant `yaml`, expected one of `table`, `json`, `markdown`, `name`
+P6_SYNTAX_AS_TABLE_OK = false
+P6_BADVALUES_AS_TABLE_OK = true
+P6_BADVALUES_AS_STRUCT_OK = false
+PASS S72 :: /usr/bin/grep -F found: P1_SERDE_DERIVE_ERROR_COUNT = 1
+PASS S73 :: /usr/bin/grep -F found: P1_SERDE_DERIVE_MSG = unknown variant `rainbow`, expected one of `auto`, `always`, `never`
+PASS S74 :: /usr/bin/grep -F found: P2_GARDE_REACHED = false
+PASS S75 :: /usr/bin/grep -F found: P2_GARDE_REPORT_ENTRIES = 0
+PASS S76 :: /usr/bin/grep -F found: P2_SERDE_FAILED_FIRST_MSG = unknown variant `yaml`, expected one of `table`, `json`, `markdown`, `name`
+PASS S77 :: /usr/bin/grep -F found: P3_GARDE_CONSTRAINT_ENTRIES = 2
+PASS S78 :: /usr/bin/grep -F found: P3_GARDE_ENTRY = limit: lower than 1
+PASS S79 :: /usr/bin/grep -F found: P3_GARDE_ENTRY = workspace: length is lower than 1
+PASS S80 :: /usr/bin/grep -F found: P4_PERKEY_ISSUE_COUNT = 3
+PASS S81 :: /usr/bin/grep -F found: P4_ISSUE = output.format: unknown variant `yaml`, expected one of `table`, `json`, `markdown`, `name`
+PASS S82 :: /usr/bin/grep -F found: P4_ISSUE = output.color: unknown variant `rainbow`, expected one of `auto`, `always`, `never`
+PASS S83 :: /usr/bin/grep -F found: P4_ISSUE = output.limit: invalid type: string "abc", expected a nonzero u32
+PASS S84 :: /usr/bin/grep -F found: P4_PARTIAL_VALUE = ConfigFile { output: OutputSettings { format: Table, color: Auto, limit: None } }
+PASS S85 :: /usr/bin/grep -F found: P4_TABLE_KEY_ORDER = ["color", "format", "limit"]
+PASS S86 :: /usr/bin/grep -F found: P5_NONZERO_ISSUE = output.limit: invalid value: integer `0`, expected a nonzero u32
+PASS S87 :: /usr/bin/grep -F found: P5_ENUM_ISSUE = output.format: unknown variant `yaml`, expected one of `table`, `json`, `markdown`, `name`
+PASS S88 :: /usr/bin/grep -F found: P6_SYNTAX_AS_TABLE_OK = false
+PASS S89 :: /usr/bin/grep -F found: P6_BADVALUES_AS_TABLE_OK = true
+PASS S90 :: /usr/bin/grep -F found: P6_BADVALUES_AS_STRUCT_OK = false
+--- cargo tree -e normal (the probe's resolved graph) ---
+r53probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r53-verify.19453/probe)
+├── garde v0.23.0
+│   ├── compact_str v0.9.1
+│   │   ├── castaway v0.2.4
+│   │   │   └── rustversion v1.0.23 (proc-macro)
+│   │   ├── cfg-if v1.0.5
+│   │   ├── itoa v1.0.18
+│   │   ├── rustversion v1.0.23 (proc-macro)
+│   │   ├── ryu v1.0.23
+│   │   └── static_assertions v1.1.0
+│   ├── garde_derive v0.23.0 (proc-macro)
+│   │   ├── proc-macro2 v1.0.107
+│   │   │   └── unicode-ident v1.0.25
+│   │   ├── quote v1.0.47
+│   │   │   └── proc-macro2 v1.0.107 (*)
+│   │   └── syn v2.0.119
+│   │       ├── proc-macro2 v1.0.107 (*)
+│   │       ├── quote v1.0.47 (*)
+│   │       └── unicode-ident v1.0.25
+│   └── smallvec v1.16.1
+├── serde v1.0.229
+│   ├── serde_core v1.0.229
+│   └── serde_derive v1.0.229 (proc-macro)
+│       ├── proc-macro2 v1.0.107 (*)
+│       ├── quote v1.0.47 (*)
+│       └── syn v3.0.6
+│           ├── proc-macro2 v1.0.107 (*)
+│           ├── quote v1.0.47 (*)
+│           └── unicode-ident v1.0.25
+└── toml v1.1.6+spec-1.1.0
+    ├── serde_core v1.0.229
+    ├── serde_spanned v1.1.1
+    │   └── serde_core v1.0.229
+    ├── toml_datetime v1.1.1+spec-1.1.0
+    │   └── serde_core v1.0.229
+    ├── toml_parser v1.1.3+spec-1.1.0
+    │   └── winnow v1.0.4
+    ├── toml_writer v1.1.2+spec-1.1.0
+    └── winnow v1.0.4
+PASS S91 :: /usr/bin/grep -E matched: serde v1\.0\.229
+PASS S92 :: /usr/bin/grep -E matched: toml v1\.1\.6
+PASS S93 :: /usr/bin/grep -E matched: garde v0\.23\.0
+probe resolved packages (cargo tree lines, /usr/bin/grep -c): 39
+
+======== 10  summary ========
+checks run:  117
+failures:    0
+skips:       0
+
+Reproducibility rule for a rerun diff: every PASS / FAIL / SKIP line, every
+count and every probe output line is reproducible byte-for-byte on the same
+host with network, gh and cargo available. Two lines always differ between
+runs: the probe crate's $TMPDIR path embeds the shell's PID. Every VOLATILE
+line carries a live figure (download counts, stars, pushed_at, open-issue
+totals, the current stable Rust version) that drifts on any longer interval
+and is asserted only against a floor, never an exact value. The retrieval
+date on line 2 changes daily by construction.

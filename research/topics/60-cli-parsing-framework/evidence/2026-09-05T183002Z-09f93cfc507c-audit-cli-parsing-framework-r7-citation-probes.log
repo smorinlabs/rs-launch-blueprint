@@ -1,0 +1,13 @@
+=== citation probes: 2026-09-15 ===
+--- CLI Design Standard pinned raw source ---
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  -
+--- CLI Design Standard latest path commit ---
+fb30a591c267a7ec1130ba4cda679eaee494b9d7	docs: resolve PR #1 review findings (v1.4.14)\n\n- R7.8: make the single-object JSON error schema affirmative for every\n  machine format (json/jsonl/yaml/name), including mid-stream failures;\n  sync principles row 33 and the Appendix C checklist so they don't drift\n- R5.2: give the repository/workspace boundary concrete marker examples\n  (.git, Cargo.toml, go.mod, package.json, pyproject.toml)\n- R9.4: restore the -o prefix on the machine-format list\n- R3.5: tighten value-taking short-flag cluster wording (no intent change)\n- Bump version to 1.4.14 and add decision-log row 54\n\nRejected reviewer comments #4 (doc already uses -o jsonl, not --jsonl)\nand #6 (TOOL_* is the doc-wide placeholder convention) as unfounded.
+--- clap 4.6.6 metadata ---
+curl: (56) The requested URL returned error: 403
+--- clap 4.6.6 published tarball ---
+473c7e07f409a8d772161724aa8db6a765a2532a70f9667eeb7b49d3d02fbdca  -
+--- clap_complete 4.6.9 metadata ---
+curl: (56) The requested URL returned error: 403
+--- rustsec no-advisory page for clap ---
+HTTP 404

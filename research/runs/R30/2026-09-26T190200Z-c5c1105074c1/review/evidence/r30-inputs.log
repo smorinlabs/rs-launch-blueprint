@@ -1,0 +1,62 @@
+# r30-inputs.sh  run 2026-09-27T07:32:12Z
+PASS I-prompt run prompt is byte-identical to the live topic prompt
+PASS I-prompt-engines inputs/prompt.md:25 reads '- engines: muse, opus'
+PASS I-prompt-substitution
+PASS I-policy run policy snapshot is byte-identical to the live research/EXECUTION.json
+engine_overrides.R30: ['muse', 'opus']  items.R30.engines: ['muse', 'opus']
+PASS I-override live engine_overrides.R30 and items.R30.engines are [muse, opus]
+frozen empirical_auditor_overrides: 50 entries; R30 -> claude
+PASS I-eao-r30 frozen policy lists R30 -> claude in empirical_auditor_overrides; RUNBOOK.md:98-104 defines it
+PASS I-runbook-q17a RUNBOOK.md:73-76 names Q17.A and lists R30
+manifest required_engines: ['codex', 'opus']  input_hashes.prompt: a883b22d7e0c51cff4f41e671729652d1a434445a8623d32092bcfb74cf560db  operations: {}
+PASS I-manifest-dispatch manifest still records the pre-amendment dispatch (codex, opus; prompt a883b22d; no operations)
+PASS I-r1-snapshot revision 1 preserved byte-for-byte
+PASS I-r2-snapshot revision 2 preserved byte-for-byte
+PASS I-r42-channel R42 DECISION.md (a2504aa7) :26 defers the channel to R27; :439 channel = stable; :458 channel per R27
+PASS I-r27-f103 R27 prompt :14 claims the channel under F103
+PASS I-live-PARAMETERS inputs/PARAMETERS.md equals live docs/port/PARAMETERS.md
+PASS I-live-CLAUDE inputs/CLAUDE.md equals live research/CLAUDE.md
+PASS I-prereq-hash
+PASS I-r11-live R11 DECISION.md still matches prerequisites.json
+PASS I-counts-scope 20 PASS, 0 FAIL, failures=0
+PASS I-counts-severity 17 PASS, 0 FAIL, failures=0
+PASS I-counts-suppression 16 PASS, 0 FAIL, failures=0
+PASS I-counts-lints 14 PASS, 0 FAIL, failures=0
+PASS I-counts-wiring-cost 17 PASS, 0 FAIL, failures=0
+PASS I-counts-wiring-severity 8 PASS, 0 FAIL, failures=0
+PASS I-counts-upstream-docs 0 MISSING, failures=0
+PASS I-hdr-cargo-home-lints
+PASS I-hdr-cargo-home-scope
+PASS I-hdr-cargo-home-severity
+PASS I-hdr-cargo-home-suppression
+PASS I-hdr-cargo-home-wiring-cost
+first ('r30-lints.log', '2026-09-27T07:24:53Z') last ('r30-wiring-severity.log', '2026-09-27T07:25:58Z')
+PASS I-hdr-utc DECISION quotes the first and last log header stamps
+wall-clock by case: {'H1a': '0.03', 'H1b': '0.03', 'H1c': '0.01', 'H2a': '16.01', 'H2b': '0.14', 'H2c': '0.12', 'H2d': '0.29', 'H2e': '0.22', 'H2f': '0.49', 'H3a': '0.16', 'H3b': '0.15', 'H3c': '0.38', 'H3d': '0.69', 'H3e': '0.69', 'H3f': '0.49', 'H4a': '0.62', 'H4b': '0.53'}
+PASS I-fig-cold
+PASS I-fig-noop
+PASS I-fig-incr
+PASS I-fig-commit
+PASS I-fig-clippy
+PASS I-fig-under-1 H3e/H3f wall-clock < 1 s, as the DECISION states
+PASS I-fig-stale no revision-1 or revision-2 figure outside the revision notes
+PASS I-fig-lefthook lefthook summaries at :165 and :181
+PASS I-fig-all every quoted timing equals its case's wall-clock value
+excerpt lines: 33; not found: []
+PASS I-excerpt every excerpt line occurs verbatim in a log
+PASS I-dec-header
+PASS I-dec-revnote3
+PASS I-dec-revnote2
+PASS I-dec-revnote1
+PASS I-dec-reverify
+PASS I-dec-h3-prin
+PASS I-dec-nosup
+PASS I-dec-h2order
+PASS I-dec-h2-published published R11 DECISION carries the same four H2s in the same order
+5 assumes lines equal the live registry values
+PASS I-dec-assumes five assumes lines byte-identical to docs/port/PARAMETERS.md
+JF-5 routing problems: []
+PASS I-jf5 pin and Cargo >= 1.97 constraint routed to R27 (F103); no R42 pin routing outside the revision notes
+case IDs cited: 79, unresolved: []; I- IDs cited: 19, unresolved: []
+PASS I-dec-cases every cited case ID and I- ID resolves
+# summary: PASS=43 FAIL=0 failures=0

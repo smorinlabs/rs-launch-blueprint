@@ -1,0 +1,6 @@
+Audit: `review/audit-codex.md` — sha256 `4ee79b85103ec4745171defbb62a606f7e8c4594b7cf395acc9656e448d96157`  
+Verdict: approve  
+Rerun exit: 0 — `review/evidence/audit-dependabot-config-shape-r4.log`  
+Snapshot replay exit: 0; regenerated pinned snapshot diffed identically.  
+Negative control: child exits 1 with exactly 2 failures; controller exits 0.  
+Findings: none.

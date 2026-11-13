@@ -1,0 +1,49 @@
+=== R51 registry checks
+date-utc: 2026-09-27T00:48:25Z
+grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+curl:     curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+PASS  D1a — rust@sha256:ca5c572a3d4e8acfa44bc065aa6d9dafbee398bf14ec376d2bcf955820a4c9f3 (the pinned builder) resolves: 200
+observed-tag-digest rust:1.98.1-slim-trixie: sha256:4cd829461bd5c4d511c32e269da9cb8929223b666519d8004e35fc8d1d771ab7
+observed-tag-digest rust:1.98.1-slim: sha256:4cd829461bd5c4d511c32e269da9cb8929223b666519d8004e35fc8d1d771ab7
+observed-tag-digest rust:1.98.1-slim-bookworm: sha256:ff521445a372125ed4f76e1453a1f8098f2d05332d1601d30db1c1f62757e730
+PASS  D1b — rust:1.98.1-slim and rust:1.98.1-slim-trixie carry the same current digest
+PASS  D1c — rust:1.98.1-slim-bookworm carries a different digest from -slim-trixie (suites really differ)
+PASS  D1d — rust@sha256:8d50cf1cfb8929fbf0c2c1bf654c1f21693862c1facf42d2926d7fed716422ac (the runner-up builder) resolves: 200
+PASS  D1e — an all-zero digest does not resolve (the control that keeps D1a/D1d/D2a from passing vacuously): 404
+PASS  D2a — busybox@sha256:32b5cdad7cce41dfd53d0ae06baebcf8357a147ee7694dc706911c373bc30c37 (the pinned probe) resolves: 200
+observed-tag-digest busybox:1.38.0-musl: sha256:ea2b9914a16a4ac1981994af97b318f7c7d4db76b580c56177f08bf76f4a0be8
+observed-tag-digest gcr.io/distroless/cc-debian13:nonroot: sha256:54df941ed0d06a1bd95ef5e0ce391fd8d9f94b64782dc9a60062727849ee3f97
+PASS  D3a — gcr.io/distroless/cc-debian13@sha256:54df941ed0d06a1bd95ef5e0ce391fd8d9f94b64782dc9a60062727849ee3f97 (the pinned runtime) resolves: 200
+PASS  D3b — the :nonroot tag is a multi-architecture OCI index: application/vnd.oci.image.index.v1+json
+PASS  D3c — cc-debian13 publishes 6156 tags
+PASS  D3-latest — cc-debian13 publishes the :latest tag
+PASS  D3-nonroot — cc-debian13 publishes the :nonroot tag
+PASS  D3-debug — cc-debian13 publishes the :debug tag
+PASS  D3-debug-nonroot — cc-debian13 publishes the :debug-nonroot tag
+PASS  D4a — the stable channel's own date: 2026-09-03
+PASS  D4b — stable is 1.98.1 (48a229cea 2026-09-01), so the msrv-policy floor is 1.96 and the builder satisfies it
+PASS  D5a — cargo-chef's newest non-yanked version, by created_at: 0.1.78
+PASS  D5b — cargo-chef 0.1.78's declared rust_version on crates.io: null
+PASS  D5c — 0.1.78 was published 2026-08-12T06:19:24.814981Z, five weeks before the research date
+PASS  D5d — the listing carries 78 live versions, so D5a picked a maximum rather than the only row
+PASS  D5e — cargo-chef recent_downloads 1036172, downloads 4360576 (adoption is real; the gate is not about it)
+PASS  D6a — rustsec.org page for cargo-chef: 404
+PASS  D6b — rustsec.org page for atty (the positive control): 200
+gh-call-1-utc: 2026-09-27T00:48:33Z
+PASS  G1a — cargo-chef's manifest read at tag v0.1.78 (1170 bytes)
+PASS  G1b — rust-version keys in cargo-chef's manifest at v0.1.78 (gate 2 FAILS): 0
+PASS  G1c — the same search finds 1 edition key(s), so G1b's zero is not a failed read
+PASS  G1d — cargo-chef's declared edition: edition = "2018"
+gh-call-2-utc: 2026-09-27T00:48:54Z
+PASS  G2a — items returned by the ten-most-recent listing: 10
+PASS  G2b — all 6 issues among the ten most recent items carry 0 comments (the at-risk signal)
+PASS  G2c — the rubric's ten-issue sample is only 6 deep here, and is reported as such
+gh-call-2b-utc: 2026-09-27T00:49:16Z
+issue-sample-numbers: 367 366 365 363 361 359 356 355 353 350 
+PASS  G2d — issues in the rubric's ten-most-recently-opened sample: 10
+PASS  G2e — all 10 of 10 sampled issues (2026-04-01 to 2026-09-10) carry 0 comments: unanswered 10 of 10
+gh-call-3-utc: 2026-09-27T00:49:37Z
+PASS  G3a — cargo-chef open issues by the prompt's endpoint: 35
+
+grep-version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+SUMMARY: PASS=32 FAIL=0 SKIP=0 TOTAL=32

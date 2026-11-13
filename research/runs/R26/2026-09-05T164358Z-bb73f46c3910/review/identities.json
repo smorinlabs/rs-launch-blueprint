@@ -1,0 +1,19 @@
+{
+  "engine_reports": {
+    "codex": {"actor": "research-codex-2026-09-05T164358Z-bb73f46c3910", "model": "gpt-5.6-terra", "family": "openai", "file": "raw/codex-d3621bee49664f6ccf9571936bce553c20b42c235c8abd695a0ec4d8a8fa7329.md"},
+    "opus": {"actor": "research-opus-2026-09-05T164358Z-bb73f46c3910", "model": "claude-opus-5", "family": "anthropic", "file": "raw/opus-f5a4ab86cb92e1dd4feb40ffb6d36b90646ccbbeabb58827986844ea0969b200.md"}
+  },
+  "evidence_checks": {},
+  "synthesis": {"actor": "synth-opus-2026-09-05T164358Z-bb73f46c3910-r3", "model": "claude-opus-5", "family": "anthropic"},
+  "audits": {
+    "empirical": {"actor": "audit-codex-2026-09-05T164358Z-bb73f46c3910-r3", "model": "gpt-5.6-terra", "family": "openai", "file": "review/audit-codex.md"},
+    "judgment": {"actor": "audit-fable-2026-09-05T164358Z-bb73f46c3910-r3", "model": "claude-opus-5", "family": "anthropic", "file": "review/audit-fable.md"}
+  },
+  "empirical": {
+    "argv": ["bash", "review/evidence/r26-crossrun-compare.sh"],
+    "cwd": "/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R26/2026-09-05T164358Z-bb73f46c3910",
+    "toolchain": "cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew), rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew), macOS arm64",
+    "output_log": "review/evidence/audit-packed-artifact-content-guard-r3.log",
+    "exit_code": 0
+  }
+}

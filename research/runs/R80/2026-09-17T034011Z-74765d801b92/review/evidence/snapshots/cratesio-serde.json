@@ -1,0 +1,10 @@
+{
+  "crate": {
+    "name": "serde",
+    "newest_version": "1.0.229",
+    "max_stable_version": "1.0.229",
+    "recent_downloads": 314208639,
+    "downloads": 1410307353,
+    "repository": "https://github.com/serde-rs/serde"
+  }
+}

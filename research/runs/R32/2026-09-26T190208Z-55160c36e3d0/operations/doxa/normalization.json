@@ -1,0 +1,24 @@
+{
+ "operation_id": "research-20260926-153440-8e85986f883b449c",
+ "kind": "bundle",
+ "providers": {
+  "openai": {
+   "saved_file": "research-outputs/R32-openai/2026-09-26_153440_deep_research_openai_deep-research-prompt-test-harness-and-execution-be.md",
+   "model": "gpt-5.6-sol",
+   "changes": [],
+   "normalized": "doxa-openai.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": null
+  },
+  "gemini": {
+   "saved_file": "research-outputs/R32-gemini/2026-09-26_153550_gemini_deep_research_gemini_deep-research-prompt-test-harness-and-execution-be.md",
+   "model": "deep-research-preview-04-2026",
+   "changes": [],
+   "normalized": "doxa-gemini.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": null
+  }
+ }
+}

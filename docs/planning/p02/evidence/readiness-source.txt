@@ -1,0 +1,83 @@
+Local Doxa source evidence (read-only inspection)
+Source checkout: /Users/stevemorin/c/doxa-research
+
+Version
+  pyproject.toml:3 declares version = "3.2.0".
+  src/doxa_research/__init__.py:5-17 obtains package metadata; the installed
+  .venv metadata reports 3.1.2, so direct execution imports source code with
+  stale package metadata relative to pyproject.toml.
+
+Provider check
+  src/doxa_research/commands.py:867-879 defines get_providers_check_data as a
+  pure function. It reads each configured provider's api_key, resolves only a
+  ${VAR} placeholder through os.environ, and returns missing/complete. It does
+  not instantiate a provider or make an API request.
+  src/doxa_research/commands.py:917-927 returns the human check result; JSON
+  command wrapping reports status ok even when data.complete is false.
+  src/doxa_research/providers/__init__.py:50-76 resolve_api_key checks CLI,
+  environment, then config values. It is local resolution only; it is not
+  authentication or model-access validation.
+
+Mode and provider models
+  src/doxa_research/config.py:332-347 defines all_deep_research with
+  providers=[openai, perplexity, gemini], parallel=true, kind=background, and
+  provider namespaces: openai=o3-deep-research,
+  perplexity=sonar-deep-research, gemini=deep-research-preview-04-2026.
+  src/doxa_research/run.py:983-1007 submits each provider in a normal for loop;
+  the three submissions are sequential at the client. The remote jobs can run
+  concurrently after submission, but the mode's parallel field does not make
+  these local submit calls concurrent.
+
+Combined reports and job count
+  src/doxa_research/run.py:1080-1092 reads each completed provider file and
+  calls OutputManager.generate_combined_report. There is no provider/model call
+  for combination.
+  src/doxa_research/output.py:137-162 concatenates provider contents and saves
+  a local combined file with model="Multiple". One approved pilot prompt in
+  all_deep_research therefore means one Doxa operation, one submitted job each
+  to OpenAI/Perplexity/Gemini (three paid provider jobs), plus one local file;
+  this inspection submitted zero jobs to each provider.
+
+Spend and token controls
+  src/doxa_research/config.py:214-216 describes Perplexity deep research as
+  approximately $1.32/query at reasoning_effort=high; this is an estimate, not
+  a hard ceiling. The built-in all_deep_research mode has no cost cap.
+  src/doxa_research/providers/openai.py:358-378 sends model, input, reasoning,
+  tools, background and optional max_tool_calls. The built-in deep-research
+  namespace has no max_tool_calls; no max_output_tokens is sent on this path.
+  src/doxa_research/providers/perplexity.py:576-601 forwards namespace values,
+  and :603-631 submits the async request. The built-in namespace sets only
+  reasoning_effort=high; no bounded max_tokens or cost ceiling is present.
+  src/doxa_research/providers/gemini.py:769-775 submits only agent, input,
+  background=true and store=true for deep research. Its max_output_tokens and
+  thinking settings apply to generate-content config, not this DR submission.
+  ConfigSchema defaults inspected at runtime: execution.max_wait=30 minutes,
+  poll_interval=30 seconds, retry_attempts=3, max_transient_errors=5,
+  cancel_upstream_on_interrupt=true; these limit waiting/retries, not spend.
+
+Async, partial failure, status and resume
+  src/doxa_research/run.py:411-448 submits async providers, saving each job ID
+  in the checkpoint. If a later submit fails, earlier provider IDs remain in
+  the failed checkpoint; a new submit must not be used in place of resume.
+  src/doxa_research/run.py:815-958 polls each provider, retries transient
+  status errors up to max_transient_errors=5, saves completed files, and marks
+  permanent/cancelled failures. If at least one provider succeeds, the normal
+  path can mark the aggregate completed and combine only available outputs;
+  all-provider failure marks the operation failed.
+  src/doxa_research/run.py:1194-1245 implements resume --async as one status
+  check per non-completed provider, saving newly completed outputs. The
+  aggregate becomes completed only when every provider is completed.
+  src/doxa_research/run.py:1311-1362 refuses permanent aggregate failures,
+  reconnects using persisted job IDs, and transitions failed/cancelled work
+  back to running before a normal resume. It does not submit new jobs.
+
+Duplicate billing risk
+  src/doxa_research/providers/openai.py:321-325 retries submit on connection or
+  timeout up to three attempts, with no idempotency key in
+  src/doxa_research/providers/openai.py:327-378. If the server accepted a
+  request before the client timed out, a retry can create another paid job.
+  src/doxa_research/providers/gemini.py:763-775 likewise retries the DR create
+  call up to three times with no idempotency key.
+  src/doxa_research/providers/perplexity.py:603-615 creates one idempotency key
+  before retrying; :608-610 explicitly requires reusing it. This protects the
+  Perplexity async submit against duplicate creation on retry.

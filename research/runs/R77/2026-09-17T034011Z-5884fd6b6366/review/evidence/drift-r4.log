@@ -1,0 +1,66 @@
+# R77 drift, revision 4 — 2026-09-27T06:27:59Z
+# revision-1 snapshots 2026-09-18; revision-4 snapshots 2026-09-27 (UTC)
+
+## S — newest non-yanked release per crate, 2026-09-18 → 2026-09-27
+     envy       2026-09-18 0.4.2|2021-01-04|None              2026-09-27 0.4.2|2021-01-04|None
+PASS S envy newest release on 2026-09-27 (0.4.2|2021-01-04|None)
+     config     2026-09-18 0.15.25|2026-06-26|1.85.0          2026-09-27 0.15.26|2026-09-21|1.88.0
+PASS S config newest release on 2026-09-27 (0.15.26|2026-09-21|1.88.0)
+     figment    2026-09-18 0.10.19|2024-05-17|None            2026-09-27 0.10.19|2024-05-17|None
+PASS S figment newest release on 2026-09-27 (0.10.19|2024-05-17|None)
+     confique   2026-09-18 0.4.0|2025-10-27|1.68.2            2026-09-27 0.4.0|2025-10-27|1.68.2
+PASS S confique newest release on 2026-09-27 (0.4.0|2025-10-27|1.68.2)
+     envconfig  2026-09-18 0.11.1|2025-12-10|None             2026-09-27 0.11.1|2025-12-10|None
+PASS S envconfig newest release on 2026-09-27 (0.11.1|2025-12-10|None)
+     serde-env  2026-09-18 0.3.0|2026-04-15|None              2026-09-27 0.3.0|2026-04-15|None
+PASS S serde-env newest release on 2026-09-27 (0.3.0|2026-04-15|None)
+     envious    2026-09-18 0.3.0|2026-05-29|None              2026-09-27 0.3.0|2026-05-29|None
+PASS S envious newest release on 2026-09-27 (0.3.0|2026-05-29|None)
+     dotenvy    2026-09-18 0.15.7|2023-03-22|1.56.1           2026-09-27 0.15.7|2023-03-22|1.56.1
+PASS S dotenvy newest release on 2026-09-27 (0.15.7|2023-03-22|1.56.1)
+     serde      2026-09-18 1.0.229|2026-07-18|1.56            2026-09-27 1.0.229|2026-07-18|1.56
+PASS S serde newest release on 2026-09-27 (1.0.229|2026-07-18|1.56)
+     pathdiff   2026-09-18 0.2.3|2024-11-25|None              2026-09-27 0.2.3|2024-11-25|None
+PASS S pathdiff newest release on 2026-09-27 (0.2.3|2024-11-25|None)
+     winnow     2026-09-18 1.0.4|2026-07-13|1.65.0            2026-09-27 1.0.4|2026-07-13|1.65.0
+PASS S winnow newest release on 2026-09-27 (1.0.4|2026-07-13|1.65.0)
+PASS S config's newest release on 2026-09-18 was 0.15.25 declaring 1.85.0 (0.15.25|2026-06-26|1.85.0)
+PASS S current stable on 2026-09-27 (1.98.1 (48a229cea 2026-09-01))
+
+## S — repository figures revision 4 re-records
+PASS S Figment pushed_at on 2026-09-18 (2024-09-13T04:51:49Z)
+PASS S Figment pushed_at on 2026-09-27 (2026-09-27T00:54:08Z)
+PASS S Figment default-branch commits since 2024-09-14 (0)
+PASS S Figment open issues on 2026-09-27 (21)
+PASS S serde-env pushed_at on 2026-09-27 (2026-09-19T14:14:42Z)
+PASS S serde-env open issues on 2026-09-18 (1)
+PASS S serde-env open issues on 2026-09-27 (0)
+PASS S config-rs stars on 2026-09-27 (3214)
+PASS S config-rs pushed_at on 2026-09-27 (2026-09-25T01:17:15Z)
+PASS S envy pushed_at unchanged (2024-06-07T23:13:52Z)
+PASS S envy open issues unchanged (14)
+
+## G — gate-2 consequences
+PASS G config 0.15.26 is inside the runner-up range >= 0.15.25, < 0.16.0
+PASS G config 0.15.26's rust-version 1.88.0 is at or below the 1.96 floor — gate 2 still passes
+PASS G envy's newest release still declares no rust-version (gate 2 still fails) (None)
+PASS G figment's newest release still declares no rust-version (gate 2 still fails) (None)
+PASS G envconfig's newest release still declares no rust-version (gate 2 still fails) (None)
+PASS G serde-env's newest release still declares no rust-version (gate 2 still fails) (None)
+PASS G envious's newest release still declares no rust-version (gate 2 still fails) (None)
+
+## L — live
+PASS L config 0.15.26 declares rust-version 1.88.0 (immutable per version) (1.88.0)
+DRIFT envy       newest non-yanked snapshot-r4=0.4.2|2021-01-04|None live=0.4.2|2021-01-04|None
+DRIFT config     newest non-yanked snapshot-r4=0.15.26|2026-09-21|1.88.0 live=0.15.26|2026-09-21|1.88.0
+DRIFT figment    newest non-yanked snapshot-r4=0.10.19|2024-05-17|None live=0.10.19|2024-05-17|None
+DRIFT confique   newest non-yanked snapshot-r4=0.4.0|2025-10-27|1.68.2 live=0.4.0|2025-10-27|1.68.2
+DRIFT envconfig  newest non-yanked snapshot-r4=0.11.1|2025-12-10|None live=0.11.1|2025-12-10|None
+DRIFT serde-env  newest non-yanked snapshot-r4=0.3.0|2026-04-15|None live=0.3.0|2026-04-15|None
+DRIFT envious    newest non-yanked snapshot-r4=0.3.0|2026-05-29|None live=0.3.0|2026-05-29|None
+DRIFT dotenvy    newest non-yanked snapshot-r4=0.15.7|2023-03-22|1.56.1 live=0.15.7|2023-03-22|1.56.1
+DRIFT serde      newest non-yanked snapshot-r4=1.0.229|2026-07-18|1.56 live=1.0.229|2026-07-18|1.56
+DRIFT pathdiff   newest non-yanked snapshot-r4=0.2.3|2024-11-25|None live=0.2.3|2024-11-25|None
+DRIFT winnow     newest non-yanked snapshot-r4=1.0.4|2026-07-13|1.65.0 live=1.0.4|2026-07-13|1.65.0
+
+PASS=32 FAIL=0 SKIP=0 TOTAL=32

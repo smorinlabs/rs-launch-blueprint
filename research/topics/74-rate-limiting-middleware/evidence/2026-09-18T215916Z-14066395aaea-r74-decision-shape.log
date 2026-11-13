@@ -1,0 +1,118 @@
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+decision: review/DECISION.md
+published comparator: research/topics/53-config-schema-validation/DECISION.md
+
+=== S1. title, H2 set, and the revision rules ===
+PASS  S1a title line == # 2026-09-27 — R74 — rate-limiting-middleware (bundle, Deep) — decision (revision 3)
+PASS  S1b the four H2 headings, in order and nothing else == ## Decision|## Parameters|## Empirical check|## Engines|
+PASS  S1c exactly one '### Principles and implementation' == 1
+PASS  S1d no '## Supersedes' (nothing published for R74) == 0
+PASS  S1e exactly one 're-verify:' line == 1
+PASS  S1f 're-verify:' is the final content line of ## Decision == 2
+PASS  S1g gate 1 is recorded as inapplicable with the owner ruling, on one line == 1
+PASS  S1h no '#####' heading anywhere == 0
+PASS  S1i no '### Members' section == 0
+PASS  S1j exactly one revision note, for revision 3 == 1
+PASS  S1k the revision note precedes ## Decision
+PASS  S1l revision 1's sha256 is named == 1
+PASS  S1m review/R74-r1-snapshot.md is revision 1, byte for byte == 84c01ec019f9ba68b731b56ad846dece449ddecdf8fb6d548530f2dc1b4b3056
+PASS  S1n the revision-note table has a row for 'fable 1, JF-3/JF-9' == 1
+PASS  S1n the revision-note table has a row for 'fable 2, JF-4' == 1
+PASS  S1n the revision-note table has a row for 'fable 3, JF-4' == 1
+PASS  S1n the revision-note table has a row for 'fable 4 and claude EA-1' == 1
+PASS  S1n the revision-note table has a row for 'fable 5, JF-4/JF-5' == 1
+PASS  S1n the revision-note table has a row for 'fable 6, JF-1' == 1
+PASS  S1n the revision-note table has a row for 'claude EA-2' == 1
+PASS  S1n the revision-note table has a row for 'claude EA-3' == 1
+PASS  S1n the revision-note table has a row for 'claude EA-4' == 1
+PASS  S1n the revision-note table has a row for 'claude EA-5' == 1
+
+=== S2. the override and the baseline finding ===
+PASS  S2a exactly one OVERRIDE heading == 1
+PASS  S2b it is OV-17 == 1
+PASS  S2c the override carries an Argument == 1
+PASS  S2d the override carries Options == 1
+PASS  S2e the §1.9 deviation line shape is used (approver + date) == 1
+PASS  S2f no '### OVERRIDE (OV-04)' heading == 0
+PASS  S2f no '### OVERRIDE (OV-11)' heading == 0
+PASS  S2g exactly one BASELINE-REVIEW filing, for F323 (anchored on the filing line) == 1
+
+=== S3. parameters: byte-identity with the live registry ===
+PASS  S3a the four '- assumes' lines are byte-identical to the live registry's fixed rows (diff empty)
+PASS  S3b exactly four '- assumes' lines == 4
+PASS  S3c no '- owns' line (the prompt's owns list is empty) == 0
+PASS  S3d no 'CONFLICT:' line == 0
+PASS  S3-control the registry extractor found four fixed rows == 4
+PASS  S3e no '- assumes' line carries a backtick
+
+=== S4. the mechanical enumeration this revision owes ===
+     'off by default' / 'off-by-default' occurrences: 15 (each describes py, the prompt, Muse, R69's Cargo feature or the conditional evidence form — never this limiter's shipped default)
+PASS  S4a the moved default is discussed explicitly rather than silently
+PASS  S4b the move is stated before ## Decision (line 67)
+PASS  S4c 'RFC 7807' appears only where R5.14's ban and the gemini leg's breach are discussed == 3
+PASS  S4d 'standards-compliant' is never claimed (negated mentions excluded) == 0
+PASS  S4e 'src/web/' appears only where R69 revision 9's registry bytes are named (mentions: 2) == 0
+PASS  S4f 'crates/web' is the layout used: the migration-table row for rate_limit.rs == 1
+PASS  S4g no engine bullet for codex == 0
+PASS  S4h one engine bullet for muse, naming raw/muse.md == 1
+PASS  S4i the Muse leg's sha256 is stated == 1
+PASS  S4j no nonexistent rule ID R1.10 from ## Decision on (the revision note names the old label) == 0
+PASS  S4k no '§1.7 line 273' citation (R1.7 lives in §1.9) == 0
+PASS  S4l the shipped signature takes a policy, not an Option == 1
+PASS  S4m R1.6 is in the re-verify rule list == 1
+PASS  S4n no stale R77 revision 2 pin == 0
+PASS  S4o no citation of R73's raw report for the placement == 0
+PASS  S4p no 'Decided:' wording for the R73 placement == 0
+
+=== S5. hygiene ===
+PASS  S5a no email-shaped string in the decision
+PASS  S5b no email-shaped string in any evidence script or log == 0
+PASS  S5-control the email detector fires on a synthetic address
+PASS  S5c no token-shaped string in the decision
+PASS  S5d no *.rs anywhere under the run directory == 0
+PASS  S5d no Cargo.toml anywhere under the run directory == 0
+PASS  S5d no Cargo.lock anywhere under the run directory == 0
+PASS  S5e no target/ directory anywhere under the run directory == 0
+PASS  S5e no src/ directory anywhere under the run directory == 0
+PASS  S5f no nested .git (file or directory) under the run directory == 0
+PASS  S5g the eight committed probe lockfiles == 8
+
+=== S6. the sibling logs this decision cites, and the totals it states ===
+PASS  S6 r74-probe-r2.log records FAILURES: 0 == 1
+PASS  S6 r74-probe-r2.log records CHECKS RUN: 87 == 1
+PASS  S6 r74-registry-figures-r2.log records FAILURES: 0 == 1
+PASS  S6 r74-registry-figures-r2.log records CHECKS RUN: 130 == 1
+PASS  S6 r74-rest-conformance.log records FAILURES: 0 == 1
+PASS  S6 r74-rest-conformance.log records CHECKS RUN: 48 == 1
+PASS  S6 r74-citations.log records FAILURES: 0 == 1
+PASS  S6 r74-citations.log records CHECKS RUN: 134 == 1
+PASS  S6 r74-registry-figures.log records FAILURES: 0 == 1
+PASS  S6 r74-registry-figures.log records CHECKS RUN: 88 == 1
+PASS  S6t the Empirical-check table states 87 checks, all passing, for r74-probe-r2.sh == 1
+PASS  S6t the Empirical-check table states 130 checks, all passing, for r74-registry-figures-r2.sh == 1
+PASS  S6t the Empirical-check table states 48 checks, all passing, for r74-rest-conformance.sh == 1
+PASS  S6t the Empirical-check table states 134 checks, all passing, for r74-citations.sh == 1
+PASS  S6x r74-probe-r2.sh is present and executable
+PASS  S6x r74-registry-figures-r2.sh is present and executable
+PASS  S6x r74-rest-conformance.sh is present and executable
+PASS  S6x r74-citations.sh is present and executable
+PASS  S6x r74-fetch-snapshots.sh is present and executable
+PASS  S6x r74-probe.sh is present and executable
+PASS  S6x r74-registry-figures.sh is present and executable
+PASS  S6m snapshots/MANIFEST.tsv is present
+PASS  S6m snapshots-r2/MANIFEST.tsv is present
+PASS  S6f the revision-2 fetch log is present
+
+=== S7. shape parity with a published topic decision ===
+PASS  S7a both titles match the dated revision-title grammar == 1 1
+PASS  S7b the H2 sequence equals the published decision's == ## Decision|## Parameters|## Empirical check|## Engines|
+PASS  S7c both place 're-verify:' two lines above ## Parameters == 2 2
+PASS  S7d both carry '### Principles and implementation' inside ## Decision
+PASS  S7e both carry a revision note before ## Decision
+PASS  S7f each of the four '- assumes' lines appears verbatim in the published decision == 4
+
+=== S8. the raw legs pass the raw-answer shape check (the check's own target) ===
+PASS  S8a raw/muse.md passes scripts/check-answer-shape.sh … bundle (OK: validation passed)
+PASS  S8b raw/opus.md passes scripts/check-answer-shape.sh … bundle (OK: validation passed)
+
+CHECKS RUN: 96  PASS: 96  FAILURES: 0  SKIPPED: 0

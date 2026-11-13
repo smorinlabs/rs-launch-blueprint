@@ -1,0 +1,5 @@
+changelogEmpty source: changelogEmpty(changelogEntry) { return changelogEntry.split('\n').length <= 1; }
+hidden-only lines: 1
+hidden-only changelogEmpty: true
+hidden-plus-one-visible lines: 6
+hidden-plus-one-visible changelogEmpty: false

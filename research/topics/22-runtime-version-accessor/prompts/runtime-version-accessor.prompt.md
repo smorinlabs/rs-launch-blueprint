@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-021(2) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — "Hand-written `src/version.ts` importing `package.json` with `with { type: "json" }`, inlined by the bundler; no generated file tracked; test asserts `VERSION == package.json` version", chosen because "contributors-please's shipped single-source pattern has zero drift surface and fixes both the source's tracked-despite-header `_version.py` inconsistency and agent2linear's documented hardcoded-version drift bug."
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): We want to use the same principle. The principle is that all versions have a single source of truth.
 
+### Baseline review (2026-09-04)
+- F133 (`COMMON → REUSE`) retains its accessor-equality assertion: an accessor wired to a literal or to the wrong package is catchable even though `CARGO_PKG_VERSION` is compile-time. This item's accessor choice determines how that test reads the accessor (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Whether the CLI's `--version` output also prints extended build metadata (target triple, `rustc` version); R60 (`cli-parsing-framework`) owns F267, the CLI's extended-version-output surface — this item decides only where the base version number itself comes from, which F267's answer would then print.
 - The build tool's output-artifact naming and layout (what the binary/library targets are called, where `cargo build` places them); R49 (`build-target-declaration`) owns `build-tool-output-shape` — assume its answer as a consumed parameter, do not re-decide it here.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R22
 - owns:
 - consumes: R49: build-tool-output-shape
+- effort: light
+- engines: codex
+- evidence-checks: terra
+- acceptance-after:
 - related (not a registry dependency): R60 (`cli-parsing-framework`, F267 extended CLI version output) prints whatever version-metadata source this item selects; no registered parameter connects them — treat R60's direction as open, do not block on it.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -60,6 +67,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

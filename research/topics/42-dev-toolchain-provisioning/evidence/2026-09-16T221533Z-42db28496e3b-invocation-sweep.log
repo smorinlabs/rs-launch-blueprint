@@ -1,0 +1,208 @@
+# R42 revision 2 — invocation/detection sweep. Run 2026-09-10T06:03:03Z
+# PATH = $HOME/.cargo/bin:/usr/bin:/bin unless a line shows otherwise. Nothing installed.
+
+=== S1. does 'cargo fmt' route through the rustup proxy to the toolchain the file selects? ===
+# same command, three committed channels; the reported rustfmt version must follow the channel
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin sh -c 'rustup show active-toolchain; cargo fmt --version'
+stable-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/pos/rust-toolchain.toml')
+rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin sh -c 'rustup show active-toolchain; cargo fmt --version'
+1.96.0-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/c196/rust-toolchain.toml')
+rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin sh -c 'rustup show active-toolchain; cargo fmt --version'
+1.91.1-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/c191/rust-toolchain.toml')
+rustfmt 1.8.0-stable (ed61e7d7e2 2025-11-07)
+exit=0
+
+# 1.96.0 carries rustfmt but NOT clippy — a second independent negative case
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed
+cargo-aarch64-apple-darwin
+rust-src
+rust-std-aarch64-apple-darwin
+rustc-aarch64-apple-darwin
+rustfmt-aarch64-apple-darwin
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo clippy --version
+error: 'cargo-clippy' is not installed for the toolchain '1.96.0-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.96.0-aarch64-apple-darwin clippy` to install it
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed | grep -q '^clippy-'
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed | grep -q '^rustfmt-'
+exit=0
+
+=== S2. which names in ~/.cargo/bin are unconditional rustup proxies (command -v cannot fail) ===
+$ ls -l ~/.cargo/bin | awk '/-> rustup/ {print $NF, $(NF-2)}'
+rustup cargo
+rustup cargo-clippy
+rustup cargo-fmt
+rustup cargo-miri
+rustup clippy-driver
+rustup rls
+rustup rust-analyzer
+rustup rust-gdb
+rustup rust-gdbgui
+rustup rust-lldb
+rustup rustc
+rustup rustdoc
+rustup rustfmt
+exit=0
+
+=== S3. crates.io-installed cargo plugin: the PATH entry IS the tool, so command -v is meaningful ===
+$ ls -l ~/.cargo/bin/cargo-machete ~/.cargo/bin/cargo-audit
+-rwxr-xr-x@ 1 stevemorin  staff  18907184 Mar 22 22:23 /Users/stevemorin/.cargo/bin/cargo-audit
+-rwxr-xr-x@ 1 stevemorin  staff   5977856 Aug 16 16:06 /Users/stevemorin/.cargo/bin/cargo-machete
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-machete
+/Users/stevemorin/.cargo/bin/cargo-machete
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo machete --version
+0.9.2
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo audit --version
+cargo-audit-audit 0.22.1
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-nosuchplugin
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo nosuchplugin
+error: no such command: `nosuchplugin`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `nosuchplugin` with `cargo search cargo-nosuchplugin`
+exit=101
+
+=== S4. bare-binary class: a crates.io tool that is not a cargo plugin ===
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v taplo typos
+/Users/stevemorin/.cargo/bin/taplo
+/Users/stevemorin/.cargo/bin/typos
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin taplo --version
+taplo 0.10.0
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin typos --version
+typos-cli 1.32.0
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v gitleaks
+exit=1
+
+=== S5. the bare-<tool> class has the same proxy defect for any name rustup proxies ===
+# in the 1.97.1 dir, whose toolchain carries neither rustfmt nor rust-analyzer
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v rustfmt rust-analyzer
+/Users/stevemorin/.cargo/bin/rustfmt
+/Users/stevemorin/.cargo/bin/rust-analyzer
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustfmt --version
+error: 'rustfmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.97.1-aarch64-apple-darwin rustfmt` to install it
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rust-analyzer --version
+error: Unknown binary 'rust-analyzer' in official toolchain '1.97.1-aarch64-apple-darwin'.
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed | grep -q '^rust-analyzer-'
+exit=1
+
+# control in the stable dir, whose toolchain carries both
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustfmt --version
+rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rust-analyzer --version
+rust-analyzer 1.94.0 (4a4ef493 2026-03-02)
+exit=0
+
+=== S6. built-in cargo subcommands are a form the rule does not name: no cargo-<sub> executable exists ===
+$ PATH=$RUSTUP_PATH command -v cargo-test cargo-build cargo-doc cargo-run
+exit=1
+$ PATH=$RUSTUP_PATH cargo test --version
+error: unexpected argument '--version' found
+
+  tip: a similar argument exists: '--verbose'
+  tip: to pass '--version' as a value, use '-- --version'
+
+Usage: cargo test --verbose... [TESTNAME] [-- [ARGS]...]
+
+For more information, try '--help'.
+exit=1
+
+=== S7. casey/just's 'cargo lclippy' is not an alias: it is cargo-limit, a crates.io plugin its own justfile installs ===
+  cargo install -f just
+
+# install development dependencies
+[group: 'dev']
+install-dev-deps:
+  rustup install nightly
+  rustup update nightly
+  cargo install cargo-limit
+  cargo install cargo-watch
+  cargo install --locked mdbook@0.4.52
+  cargo install --locked mdbook-linkcheck@0.7.7
+
+# everyone's favorite animate paper clip
+[group: 'check']
+clippy: (watch 'lclippy --all --all-targets --all-features -- --deny warnings')
+
+--- GET https://crates.io/api/v1/crates/cargo-limit  (description + newest version)
+name cargo-limit
+newest 0.0.13
+description Cargo with less noise: warnings are skipped until errors are fixed, Neovim integration, etc.
+repository https://github.com/cargo-limit/cargo-limit
+--- GET https://raw.githubusercontent.com/cargo-limit/cargo-limit/HEAD/Cargo.toml  ([[bin]] targets)
+=== S6 (rerun). built-in cargo subcommands: no cargo-<sub> executable exists, yet the subcommand runs ===
+$ PATH=$RUSTUP_PATH command -v cargo-test cargo-build cargo-doc cargo-run
+exit=1
+$ PATH=$RUSTUP_PATH cargo --list | awk '$1=="test"||$1=="build"{print}'
+    build                Compile a local package and all of its dependencies
+    test                 Execute all unit and integration tests and build examples of a local package
+exit=0
+$ PATH=$RUSTUP_PATH cargo test --help >/dev/null
+exit=0
+
+=== S7b. cargo-limit's binary targets (the executables 'cargo lclippy' etc. dispatch to) ===
+--- GET https://api.github.com/repos/cargo-limit/cargo-limit/contents/src/bin
+{'message': "API rate limit exceeded for 98.35.110.15. (But here's the good news: Authenticated requests get a higher rate limit. Check out the documentation for more details.)", 'documentation_url': 'https://docs.github.com/rest/overview/resources-in-the-rest-api#rate-limiting'}
+--- gh api repos/cargo-limit/cargo-limit/contents/src/bin
+_cargo-limit-open-in-nvim.rs
+cargo-lbench.rs
+cargo-lbuild.rs
+cargo-lcheck.rs
+cargo-lclippy.rs
+cargo-ldoc.rs
+cargo-lfix.rs
+cargo-llbench.rs
+cargo-llbuild.rs
+cargo-llcheck.rs
+cargo-llclippy.rs
+cargo-lldoc.rs
+cargo-llfix.rs
+cargo-llrun.rs
+cargo-llrustc.rs
+cargo-llrustdoc.rs
+cargo-lltest.rs
+cargo-llzigbuild.rs
+cargo-lrun.rs
+cargo-lrustc.rs
+cargo-lrustdoc.rs
+cargo-ltest.rs
+cargo-lzigbuild.rs

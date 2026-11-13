@@ -1,0 +1,110 @@
+== toolchain on PATH
+CARGO_HOME=/tmp/cargo-s9-R28
+/opt/homebrew/bin/cargo
+/opt/homebrew/bin/cargo-clippy
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+clippy 0.1.98
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+binary: rustc
+commit-hash: 48a229ceaefd4985c50990b14116b6d856af0985
+commit-date: 2026-09-01
+== scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r28-lint-table.TBKKyE (outside any repository)
+
+== L1 recommended fixture, feature off
+$ cargo clippy --workspace --all-targets --locked -- -D warnings
+    Checking r28-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r28-lint-table.TBKKyE/crates/cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s
+PASS L1 — clean fixture passes the gate (exit 0)
+
+== L2 recommended fixture, feature on (R11's check job runs clippy feature off and on)
+$ cargo clippy --workspace --all-targets --locked --features web -- -D warnings   (the recipe spelling; only r28-cli defines web)
+    Checking r28-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r28-lint-table.TBKKyE/crates/cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+$ cargo clippy --workspace --all-targets --locked --all-features -- -D warnings
+PASS L2 — clean fixture passes with --features web (exit 0) and with --all-features (exit 0)
+
+== L3 tests still run
+$ cargo test --workspace --locked
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+PASS L3 — cargo test passes (exit 0)
+
+== L4 dbg!/todo! in shipped code fail the gate
+error: the `dbg!` macro is intended as a debugging tool
+error: `todo` should not be present in production code
+error: could not compile `r28-core` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `r28-core` (lib test) due to 2 previous errors
+PASS L4 — dbg_macro and todo both fire and the gate fails (exit 101)
+
+== L5 a group line without priority beside named lints is rejected
+15:all = "warn"
+19:allow_attributes_without_reason = "warn"
+error: lint group `all` has the same priority (0) as a lint
+error: could not compile `r28-core` (lib) due to 1 previous error
+error: could not compile `r28-core` (lib test) due to 1 previous error
+PASS L5 — lint_groups_priority rejects the bare group line (exit 101)
+
+== L6 all = warn at priority -1 downgrades the deny-by-default correctness group
+error: this comparison involving the minimum or maximum element for this type contains a case that is always true or always false
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#absurd_extreme_comparisons
+  = note: `#[deny(clippy::absurd_extreme_comparisons)]` on by default
+warning: this comparison involving the minimum or maximum element for this type contains a case that is always true or always false
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#absurd_extreme_comparisons
+  = help: to override `-W clippy::all` add `#[allow(clippy::absurd_extreme_comparisons)]`
+PASS L6 — default: error (exit 101); with all = warn: warning and exit 0 without -D warnings (downgrade observed)
+
+== L7 a member may not override the workspace lint table
+error: failed to load manifest for workspace member `/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r28-lint-table.TBKKyE/crates/cli`
+  cannot override `workspace.lints` in `lints`, either remove the overrides or `lints.workspace = true` and manually specify the lints
+PASS L7 — member override is a manifest error (exit 101)
+
+== L8 clippy.toml does not accept lint levels
+error: error reading Clippy's configuration file: unknown field `unwrap_used`, expected one of
+error: could not compile `r28-core` (lib) due to 1 previous error
+PASS L8 — a lint-level key in clippy.toml is an unknown-field error (exit 101)
+
+== L9 a pedantic warning passes the Muse recipe (no -D warnings) and fails R11's gate (-D warnings)
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+undocumented_unsafe_blocks = "warn"
+$ cargo clippy --workspace --all-targets --locked   (raw/muse.md:167 recipe shape: no -D warnings)
+warning: casts from `u8` to `u32` can be expressed infallibly using `From`
+warning: `r28-core` (lib) generated 1 warning (run `cargo clippy --fix --lib -p r28-core -- ` to apply 1 suggestion)
+warning: `r28-core` (lib test) generated 1 warning (1 duplicate)
+$ cargo clippy --workspace --all-targets --locked -- -D warnings   (R11 DECISION.md:268)
+error: casts from `u8` to `u32` can be expressed infallibly using `From`
+error: could not compile `r28-core` (lib) due to 1 previous error
+PASS L9 — pedantic warning passes without -D warnings (exit 0) and fails with it (exit 101)
+
+== L10 a style lint: the Muse table (all = deny) blocks a local run; the recommended table warns locally and gates under -D warnings
+error: unneeded `return` statement
+warning: unneeded `return` statement
+PASS L10 — Muse table local exit 101 (error); recommended local exit 0 (warning); recommended gate exit 101
+
+== L11 rustc warnings also fail the gate under -D warnings
+error: function `unused_helper` is never used
+error: could not compile `r28-cli` (bin "r28-cli") due to 1 previous error
+PASS L11 — dead_code fails the gate (exit 101)
+
+== L12 non-virtual workspace (a root package, the shape R11's owns line describes): without --workspace a member's test target is not linted
+$ cargo clippy --all-targets --locked   (at the root; the raw/muse.md:167 recipe omits --workspace)
+    Checking r28-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r28-lint-table.TBKKyE/nonvirtual/crates/core)
+    Checking r28-root v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r28-lint-table.TBKKyE/nonvirtual)
+$ cargo clippy --workspace --all-targets --locked
+error: approximate value of `f64::consts::PI` found
+ --> crates/core/tests/integration.rs:3:14
+error: could not compile `r28-core` (test "integration") due to 1 previous error
+PASS L12 — root-only run exit 0 misses crates/core/tests; --workspace run exit 101 catches the deny-by-default lint
+
+== L13 missing_safety_doc is on by default (not a pedantic lint)
+$ cargo clippy --locked   (no [lints] table: clippy defaults only)
+warning: unsafe function's docs are missing a `# Safety` section
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#missing_safety_doc
+  = note: `#[warn(clippy::missing_safety_doc)]` on by default
+PASS L13 — missing_safety_doc warns with no group enabled (exit 0)
+
+== summary: 0 failing case(s)

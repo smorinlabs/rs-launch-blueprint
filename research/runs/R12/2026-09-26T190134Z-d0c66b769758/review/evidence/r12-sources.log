@@ -1,0 +1,85 @@
+INFO github/docs@main = 18945a31a4f2d97beb6c5c1a7479102e23c25727
+INFO runner-images@main = ede07f8e48022b2c00dc669c7a9d927c46e32a81
+INFO pins: cargo=07b80494920f3824e2515e536b76ff282e23993e ra=86493cee4d8902389c3217d8e95a3aae9368fd98 uv=136ef97330781a0f5f2be6613aac4382ebbcecea ruff=ca8b416f05b1b210bb1741f9483081261bcc16e9 clap=6cde7384bc47913bdbf456cd2f0e3ebb94cb3557 tokio=facc6fc47eb2ba13a465a3179f8e34db620561ec clippy=072f108d4de4b8874e81faac05c4cdc88fc51537
+INFO tokio latest merged PR #8458 head fc283b11cd860fb5f4b81d0772b0e5b3dbea754c
+checked=21 drift=0
+INFO snapshots: 51 files
+PASS S-docs-success
+PASS S-docs-skipped
+PASS S-docs-skipped-success
+PASS S-docs-always
+PASS S-docs-pathfilter
+PASS S-docs-pending
+PASS S-docs-mergegroup
+PASS S-docs-unique
+PASS S-docs-appsource
+PASS S-docs-skipprop
+PASS S-docs-needscont
+PASS S-docs-expr-always
+PASS S-docs-expr-cancelled
+PASS S-docs-ruleset-org
+PASS S-docs-checks-skipped
+PASS S-app-id Actions app is 15368
+PASS S-runner-jq
+PASS S-runner-yq
+INFO runner ships jq 1.7 + yq 4.53.6
+INFO alls-green: stars=173 pushed=2026-08-21T23:59:58Z archived=false lic=BSD-3-Clause open=7 rel=v1.3.0
+PASS S-ag-notarchived
+PASS S-ag-required
+PASS S-ag-success-only REQUIRED accepts only success
+PASS S-ag-always
+PASS S-ag-allowed-skips
+PASS S-cargo-conclusion
+PASS S-cargo-ruleset requires conclusion from app 15368
+conclusion needs: ['rust', 'rust-cross', 'typescript', 'typo-check', 'proc-macro-srv', 'miri', 'rustfmt', 'clippy', 'analysis-stats']
+typescript needs: changes
+RUST_ANALYZER_DRIFT_CONFIRMED
+PASS S-ra-drift conclusion omits changes while typescript is gated on it
+PASS S-ra-ruleset requires conclusion from app 15368
+uv aggregate: required-checks-passed needs: ['plan', 'check-fmt', 'check-lint', 'check-docs', 'check-crates-policies', 'check-generated-files', 'test', 'test-system', 'build-dev-binaries']
+UV_FOLD_CONFIRMED
+PASS S-uv-fold uv aggregate folds plan with always()
+PASS S-uv-ruleset app-pinned required check
+INFO clippy required contexts: conclusion, conclusion_changelog, conclusion_dev, conclusion_remark
+PASS S-clippy-multi clippy requires 4 aggregate contexts (per-workflow)
+ruff aggregate candidates: ['required-checks-passed']
+RUFF_FOLD_CONFIRMED
+PASS S-ruff-fold ruff aggregate folds determine_changes with always()
+clap ci needs: 11
+CLAP_FOLD_CONFIRMED
+PASS S-clap-fold clap ci folds 10+ jobs with always()
+PASS S-clap-contains
+INFO tokio requires 46 individual contexts
+PASS S-tokio-long tokio requires 46 contexts
+PASS S-tokio-sync every required context reported on the sampled PR
+INFO clap requires: CI | Spell Check with Typos | Audit
+PASS S-clap-perwf clap requires CI aggregate plus 3 total contexts
+PASS S-cancelled-r12-cancelled-cargo-1 conclusion=cancelled
+PASS S-cancelled-r12-cancelled-cargo-2 conclusion=cancelled
+PASS S-cancelled-r12-cancelled-cargo-3 conclusion=cancelled
+PASS S-cancelled-r12-cancelled-ra-1 conclusion=cancelled
+PASS S-cancelled-r12-cancelled-ra-2 conclusion=cancelled
+PASS S-cancelled-r12-cancelled-ra-3 conclusion=cancelled
+PASS S-cancelled-r12-cancelled-uv-1 ran to success
+PASS S-cancelled-r12-cancelled-uv-2 ran to success
+PASS S-cancelled-r12-cancelled-uv-3 ran to success
+py jobs: 11 ci-ok needs: 10
+PY_COVER_CONFIRMED
+PASS S-py-cover py ci-ok covers all jobs with always() + {}
+PASS S-py-header
+PASS S-py-mergegroup
+INFO py history: 21 revisions with ci-ok, drift lines: 0
+PASS S-py-history zero drift across 21 revisions
+PASS S-py-problem15
+PASS S-py-problem15-body
+ts jobs: ['ci', 'bun-lane']
+PASS S-ts-nomergegroup ts triggers lack merge_group
+PASS S-ts-matrix
+PASS S-ts-nomg2 no merge_group string in ts ci.yml
+PASS S-ts-unprotected ts main protection returns 404
+PASS S-ts-norule ts has no required_status_checks rule
+INFO py requires 8 contexts: ci-ok, commitlint (humans), actionlint, bandit, codespell, editorconfig-check, yamllint, press-verify
+PASS S-py-live py requires ci-ok
+PASS S-py-live-app py ci-ok pinned to app 15368
+PASS S0 SHA256SUMS verifies (51 files)
+RESULT PASS=59 FAIL=0 SKIP=0

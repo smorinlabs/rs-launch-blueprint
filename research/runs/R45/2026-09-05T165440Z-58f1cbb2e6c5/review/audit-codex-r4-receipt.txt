@@ -1,0 +1,9 @@
+Audit: [review/audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/audit-codex.md)
+
+SHA-256: `d9c72ef3e26961d6cf3f4f97d8f62ee236e1feb589ed3af6ec14b46d61fe1df9`
+
+Verdict: reject.
+
+Rerun: exit 1 — [audit-r45-r4-r3-inplace.log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence/audit-r45-r4-r3-inplace.log).
+
+Finding: D16d fails: live Greptile now has 39 `@greptileai` occurrences, not the asserted 40. History, superseded bytes, parameters, licence inapplicability, and citation checks passed.

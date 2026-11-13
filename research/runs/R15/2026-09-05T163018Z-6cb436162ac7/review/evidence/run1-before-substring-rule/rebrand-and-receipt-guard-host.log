@@ -1,0 +1,166 @@
+# R15 empirical check — leg=host — 2026-09-09T07:01:21Z
+# os: Darwin 25.4.0 arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+# rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) | cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+# floor: rustc 1.96.0 (ac68faa20 2026-05-25) | cargo 1.96.0 (30a34c682 2026-05-25)
+# uv: uv 0.11.29 (901092ee1 2026-07-15 aarch64-apple-darwin) | press: press 4.0.1
+# python: Python 3.13.14
+--- answers.toml
+[answers]
+package_name = "zz_pressed"
+repo_name    = "zz-pressed"
+app_name     = "zzp"
+author       = "Zed Example"
+email        = "zz@example.com"
+owner        = "zz-owner"
+display_name = "Zz Pressed"
+$ press rebrand --target work-host/pressed --config work-host/answers.toml
+Platform: darwin
+Plan:
+  [replace] Cargo.lock  —  fields=['repo_name']
+  [replace] Cargo.toml  —  fields=['package_name']
+  [replace] Cargo.toml  —  fields=['repo_name']
+  [replace] Cargo.toml  —  fields=['email']
+  [replace] Cargo.toml  —  fields=['author']
+  [replace] Cargo.toml  —  fields=['owner']
+  [replace] Cargo.toml  —  fields=['app_name']
+  [replace] README.md  —  fields=['package_name']
+  [replace] README.md  —  fields=['repo_name']
+  [replace] README.md  —  fields=['display_name_spaced']
+  [replace] README.md  —  fields=['owner']
+  [replace] README.md  —  fields=['app_name']
+  [replace] src/lib.rs  —  fields=['package_name']
+  [replace] src/lib.rs  —  fields=['app_name_upper']
+  [replace] src/main.rs  —  fields=['package_name']
+  [replace] tests/cli.rs  —  fields=['package_name']
+Reset (declared stubs, written before every other pass):
+  [reset  ] CHANGELOG.md  —  5 lines → stub
+Remove (declared deletions, applied after the rewrite pass):
+  [remove ] .github/workflows/template-receipt-guard.yml  —  template-only receipt guard; a fork legitimately commits its receipt
+Applied: 6 replaced, 0 renamed, 1 reset, 1 removed, 0 regenerated, 0 skipped.
+verified: no identity leftovers. receipt: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R15/2026-09-05T163018Z-6cb436162ac7/review/empirical/work-host/pressed/press/press-receipt.toml
+updated press/press-source.toml to the new identity
+exit=0
+CASE rebrand exit=0 expect=0
+$ test -f press/press-receipt.toml
+exit=0
+--- press/press-receipt.toml
+# press/press-receipt.toml — written by template-press AFTER the no-leak
+# verification pass. Presence means: this rebrand completed and was
+# verified. Delete it (or use --force) to press again.
+[press]
+verified = true
+platform = "darwin"
+completed_at = "2026-09-09T07:01:37+00:00"
+
+[press.from]
+package_name = "rs_launch_blueprint"
+repo_name = "rs-launch-blueprint"
+app_name = "rslbp"
+author = "Fixture Author"
+email = "fixture@example.com"
+owner = "smorinlabs"
+display_name = "Rs Launch Blueprint"
+
+[press.to]
+package_name = "zz_pressed"
+repo_name = "zz-pressed"
+app_name = "zzp"
+author = "Zed Example"
+email = "zz@example.com"
+owner = "zz-owner"
+display_name = "Zz Pressed"
+
+[press.counts]
+replaced = 6
+renamed = 0
+reset = 1
+removed = 1
+regenerated = 0
+skipped = 0
+
+[[press.reset]]
+file = "CHANGELOG.md"
+
+[[press.remove]]
+file = ".github/workflows/template-receipt-guard.yml"
+reason = "template-only receipt guard; a fork legitimately commits its receipt"
+
+[[press.exempt]]
+file = "CHANGELOG.md"
+reason = "reset to the declared stub (scanned at plan time)"
+--- press/press-source.toml (after press)
+# press/press-source.toml — this repo's CURRENT identity (the FROM side
+# of a rebrand). Authoritative: press validates it against the repo
+# and refuses to run on mismatch. Commit this file.
+[identity]
+package_name = "zz_pressed"
+repo_name = "zz-pressed"
+app_name = "zzp"
+author = "Zed Example"
+email = "zz@example.com"
+owner = "zz-owner"
+display_name = "Zz Pressed"
+--- Cargo.toml (after press)
+[package]
+name = "zz-pressed"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+authors = ["Zed Example <zz@example.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/zz-owner/zz-pressed"
+description = "Synthetic R15 fixture: a template-press target shaped as library + CLI"
+
+[lib]
+name = "zz_pressed"
+path = "src/lib.rs"
+
+[[bin]]
+name = "zzp"
+path = "src/main.rs"
+
+[dependencies]
+
+# Dev-dependencies exist only for tests/press_source.rs (the compensating
+# cargo-metadata cross-check). The TOML crate is R52's decision; this fixture
+# uses `toml` as a placeholder so the check can execute.
+[dev-dependencies]
+serde_json = "1"
+toml = "0.9"
+--- workflow files present after press (template-receipt-guard.yml must be gone)
+press-verify.yml
+--- old identity outside the receipt (expect none):
+./tests/cli.rs:12:    let exe = env!("CARGO_BIN_EXE_rslbp");
+grep exit=0 (1 = no match)
+$ bash .github/receipt-guard-body.sh   (in the pressed copy: receipt present)
+::error::press-receipt.toml committed in the template — it would disarm every fork's guard. Revert.
+exit=1
+CASE receipt-guard-with-receipt exit=1 expect=1
+$ cargo test --workspace   (in the pressed copy)
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling winnow v1.0.4
+   Compiling serde_json v1.0.151
+   Compiling memchr v2.8.3
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling winnow v0.7.15
+   Compiling itoa v1.0.18
+   Compiling zz-pressed v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R15/2026-09-05T163018Z-6cb436162ac7/review/empirical/work-host/pressed)
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling toml v0.9.12+spec-1.1.0
+error: environment variable `CARGO_BIN_EXE_rslbp` not defined at compile time
+  --> tests/cli.rs:12:15
+   |
+12 |     let exe = env!("CARGO_BIN_EXE_rslbp");
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: `CARGO_BIN_EXE_rslbp` may not be available for the current Cargo target
+   = help: Cargo sets build script variables at run time. Use `std::env::var("CARGO_BIN_EXE_rslbp")` instead
+
+error: could not compile `zz-pressed` (test "cli") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+exit=101
+CASE pressed-copy-cargo-test exit=101 expect=0

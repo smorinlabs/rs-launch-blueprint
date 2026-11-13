@@ -1,0 +1,13 @@
+# R77 revision 2 — immediate rerun of rest-conformance-r2.sh, diffed against the committed log
+# produced 2026-09-19T01:19:25Z
+# This script reads only committed files and git blobs: no counter, no clock-dependent
+# input, no network call. The only line permitted to differ is its own timestamp header.
+
+=== rerun exit=0 ===
+--- diff committed-log vs rerun (whole file) ---
+1c1
+< # R77 revision 2 — REST standard conformance — 2026-09-19T01:18:44Z
+---
+> # R77 revision 2 — REST standard conformance — 2026-09-19T01:19:25Z
+--- diff over PASS/FAIL/SKIP lines only ---
+(every PASS/FAIL/SKIP line identical)

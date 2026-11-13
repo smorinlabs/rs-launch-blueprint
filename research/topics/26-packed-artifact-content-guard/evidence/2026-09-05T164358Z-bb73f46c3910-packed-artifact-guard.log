@@ -1,0 +1,377 @@
+
+===== PHASE 0 — toolchain and host =====
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+Darwin arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+cargo binary commit -> rust-lang/cargo pin:
+797e8a9bca276c1c9f9f738d2a20f484fa4eea9d  2026-08-05T21:00:28Z
+
+===== PHASE 1 — pinned cargo source: target pruning is warn-only =====
+# src/cargo/util/toml/mod.rs @ 797e8a9bca276c1c9f9f738d2a20f484fa4eea9d (prune helper)
+pub fn prepare_target_for_publish(
+    target: &manifest::TomlTarget,
+    packaged_files: Option<&[PathBuf]>,
+    context: &str,
+    gctx: &GlobalContext,
+) -> CargoResult<Option<manifest::TomlTarget>> {
+    let path = target.path.as_ref().expect("previously normalized");
+    let path = &path.0;
+    if let Some(packaged_files) = packaged_files {
+        if !packaged_files.contains(&path) {
+            let name = target.name.as_ref().expect("previously normalized");
+            gctx.shell().warn(format!(
+                "ignoring {context} `{name}` as `{}` is not included in the published package",
+                path.display()
+            ))?;
+            return Ok(None);
+        }
+    }
+
+# call sites
+3109:    let bin = prepare_targets_for_publish(me.bin.as_ref(), packaged_files, "binary", ws.gctx())?;
+3111:        prepare_targets_for_publish(me.example.as_ref(), packaged_files, "example", ws.gctx())?;
+3112:    let test = prepare_targets_for_publish(me.test.as_ref(), packaged_files, "test", ws.gctx())?;
+3114:        prepare_targets_for_publish(me.bench.as_ref(), packaged_files, "benchmark", ws.gctx())?;
+2572:        "test" | "bench" => {
+3105:        prepare_target_for_publish(target, packaged_files, "library", ws.gctx())?
+3109:    let bin = prepare_targets_for_publish(me.bin.as_ref(), packaged_files, "binary", ws.gctx())?;
+3111:        prepare_targets_for_publish(me.example.as_ref(), packaged_files, "example", ws.gctx())?;
+3112:    let test = prepare_targets_for_publish(me.test.as_ref(), packaged_files, "test", ws.gctx())?;
+3114:        prepare_targets_for_publish(me.bench.as_ref(), packaged_files, "benchmark", ws.gctx())?;
+# src/cargo/ops/cargo_package/mod.rs @ 797e8a9bca276c1c9f9f738d2a20f484fa4eea9d (include+exclude)
+    if !pkg.manifest().exclude().is_empty() && !pkg.manifest().include().is_empty() {
+        gctx.shell().warn(
+            "both package.include and package.exclude are specified; \
+             the exclude list will be ignored",
+        )?;
+    }
+    let src_files = src.list_files(pkg)?;
+# src/doc/src/CHANGELOG.md @ 797e8a9bca276c1c9f9f738d2a20f484fa4eea9d
+## Cargo 1.80 (2024-07-25)
+- cargo-package: Warn, rather than fail, if a Cargo target is excluded during packaging.
+  [#13713](https://github.com/rust-lang/cargo/pull/13713)
+## Cargo 1.94 (2026-03-05)
+- cargo-package: skip registry verification when using `--list`.
+  [#16341](https://github.com/rust-lang/cargo/pull/16341)
+
+===== PHASE 2 — build throwaway probe crate (lib + 2 bins) =====
+Cargo.lock
+Cargo.toml
+README.md
+src
+STRAY.txt
+
+===== PHASE 3 — expectation files (the only fixtures this check needs) =====
+.cargo_vcs_info.json
+Cargo.lock
+Cargo.toml
+Cargo.toml.orig
+README.md
+src/bin/rsguard-serve.rs
+src/lib.rs
+src/main.rs
+[{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]
+
+===== GUARD RUN — healthy =====
+--- sub-check 1: cargo package --list vs expectation
+cargo package --list exit=0
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+sub-check 1 rc=0
+--- sub-check 2: cargo package stderr (scoped grep)
+cargo package exit=0
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging rsguard v0.1.0 (/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/probe)
+    Packaged 8 files, 1.4KiB (1005B compressed)
+scoped grep clean
+--- sub-check 3: packaged manifest target set
+[{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]
+--- packaged Cargo.toml [[bin]] tables:
+35:[[bin]]
+36-name = "rsguard"
+37-path = "src/main.rs"
+--
+39:[[bin]]
+40-name = "rsguard-serve"
+41-path = "src/bin/rsguard-serve.rs"
+GUARD RESULT (healthy): rc=0
+healthy exit=0
+
+===== PHASE 4 — injected fault A: include narrowed so src/bin/rsguard-serve.rs is not packed =====
+7:include = ["src/lib.rs", "src/main.rs", "Cargo.toml", "README.md"]
+
+===== GUARD RUN — fault A (dropped binary) =====
+--- sub-check 1: cargo package --list vs expectation
+cargo package --list exit=0
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packed-files.txt	2026-09-10 18:22:00
++++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/files.txt	2026-09-10 18:22:13
+@@ -3,6 +3,5 @@
+ Cargo.toml
+ Cargo.toml.orig
+ README.md
+-src/bin/rsguard-serve.rs
+ src/lib.rs
+ src/main.rs
+sub-check 1 rc=1
+--- sub-check 2: cargo package stderr (scoped grep)
+cargo package exit=0
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging rsguard v0.1.0 (/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/probe)
+warning: ignoring binary `rsguard-serve` as `src/bin/rsguard-serve.rs` is not included in the published package
+    Packaged 7 files, 1.3KiB (967B compressed)
+SCOPED GREP MATCHED -> fail
+--- sub-check 3: packaged manifest target set
+[{"kind":["bin"],"name":"rsguard"},{"kind":["lib"],"name":"rsguard"}]
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packaged-targets.json	2026-09-10 18:22:00
++++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/targets.json	2026-09-10 18:22:15
+@@ -1 +1 @@
+-[{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]
++[{"kind":["bin"],"name":"rsguard"},{"kind":["lib"],"name":"rsguard"}]
+--- packaged Cargo.toml [[bin]] tables:
+36:[[bin]]
+37-name = "rsguard"
+38-path = "src/main.rs"
+GUARD RESULT (fault A (dropped binary)): rc=1
+faultA exit=1
+
+===== PHASE 5 — injected fault B: denylist manifest, stray file ships =====
+7:exclude = ["notes/"]
+probe repo git status (must be clean after commit):
+(empty above = clean tree)
+
+===== GUARD RUN — fault B (stray file) =====
+--- sub-check 1: cargo package --list vs expectation
+cargo package --list exit=0
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packed-files.txt	2026-09-10 18:22:00
++++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/files.txt	2026-09-10 18:22:21
+@@ -3,6 +3,11 @@
+ Cargo.toml
+ Cargo.toml.orig
+ README.md
++STRAY.txt
+ src/bin/rsguard-serve.rs
+ src/lib.rs
+ src/main.rs
++target/.rustc_info.json
++target/CACHEDIR.TAG
++target/package/rsguard-0.1.0.crate
++target/package/tmp-crate/rsguard-0.1.0.crate
+sub-check 1 rc=1
+--- sub-check 2: cargo package stderr (scoped grep)
+cargo package exit=0
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging rsguard v0.1.0 (/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/probe)
+    Packaged 13 files, 2.8KiB (2.5KiB compressed)
+scoped grep clean
+--- sub-check 3: packaged manifest target set
+[{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]
+--- packaged Cargo.toml [[bin]] tables:
+31:[[bin]]
+32-name = "rsguard"
+33-path = "src/main.rs"
+--
+35:[[bin]]
+36-name = "rsguard-serve"
+37-path = "src/bin/rsguard-serve.rs"
+GUARD RESULT (fault B (stray file)): rc=1
+faultB exit=1
+
+===== PHASE 6 — subsidiary claims =====
+--- --message-format json on stable:
+exit=101
+error: the `--message-format` flag is unstable, and only available on the nightly channel of Cargo, but this is the `stable` channel
+See https://doc.rust-lang.org/book/appendix-07-nightly-rust.html for more information about Rust release channels.
+See https://github.com/rust-lang/cargo/issues/15353 for more information about the `--message-format` flag.
+--- dirty working tree:
+exit=101
+target/package/rsguard-0.1.0.crate
+target/package/tmp-crate/rsguard-0.1.0.crate
+
+to proceed despite this and include the uncommitted changes, pass the `--allow-dirty` flag
+--- stdout/stderr separation of --list (stdout only paths):
+
+===== PHASE 7 — source repos at their pins =====
+# ts-launch-blueprint @ cb1cbcb2 .github/workflows/publish.yml
+112:      - name: Assert packed file list (dist + package.json/README/LICENSE/CHANGELOG)
+115:          npm pack --dry-run --json --ignore-scripts > pack.json
+199:      - name: Fail on any npm bin auto-correction
+202:          npm publish --dry-run 2>&1 | tee /tmp/npm-dry-run.log
+# py-launch-blueprint @ b08bccfb .github/workflows/publish.yml — packed-content assertions?
+0
+4:name: publish
+20:    name: build
+29:      - name: Verify tag is reachable from main
+39:      - name: Verify [project] version matches tag
+55:      - name: Install uv
+58:      - name: Build sdist + wheel
+61:      - name: Upload dist/ artifact
+64:          name: dist
+70:    name: publish-testpypi
+77:      - name: Download dist/
+80:          name: dist
+82:      - name: Install uv
+84:      - name: Publish to TestPyPI
+92:    name: publish-pypi
+99:      - name: Download dist/
+102:          name: dist
+105:      - name: Install uv
+108:      - name: Publish to PyPI
+
+===== PHASE 8 — stream separation on a clean tree =====
+target/ is tracked in the probe repo (no .gitignore), so PHASE 6's last sub-step hit the dirty-tree error.
+Committing the packaging artifacts, then re-running on a clean tree:
+(empty above = clean tree)
+PASS phase8/clean-tree-entries (0)
+exit=0
+PASS phase8/list-exit (0)
+--- stdout (first 6 lines):
+.cargo_vcs_info.json
+Cargo.lock
+Cargo.toml
+Cargo.toml.orig
+README.md
+STRAY.txt
+PASS phase8/stdout-first-path (.cargo_vcs_info.json)
+PASS phase8/stdout-byte-sorted (0)
+PASS phase8/stdout-not-locale-sorted (1)
+PASS phase8/stdout-diagnostic-lines (0)
+PASS phase8/stdout-carries-stray (1)
+--- stderr:
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+PASS phase8/stderr-carries-warning (1)
+PASS phase8/stderr-carries-no-paths (0)
+
+===== PHASE 9 — Cargo.toml.orig byte-compare and publish-facing field projection =====
+--- cmp source Cargo.toml vs archive Cargo.toml.orig:
+cmp exit=0
+PASS phase9/orig-byte-identical (0)
+--- normalized packaged Cargo.toml (whole file):
+# THIS FILE IS AUTOMATICALLY GENERATED BY CARGO
+#
+# When uploading crates to the registry Cargo will automatically
+# "normalize" Cargo.toml files for maximal compatibility
+# with all versions of Cargo and also rewrite `path` dependencies
+# to registry (e.g., crates.io) dependencies.
+#
+# If you are reading this file be aware that the original Cargo.toml
+# will likely look very different (and much more reasonable).
+# See Cargo.toml.orig for the original contents.
+
+[package]
+edition = "2024"
+name = "rsguard"
+version = "0.1.0"
+build = false
+exclude = ["notes/"]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
+description = "R26 probe"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+
+[lib]
+name = "rsguard"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rsguard"
+path = "src/main.rs"
+
+[[bin]]
+name = "rsguard-serve"
+path = "src/bin/rsguard-serve.rs"
+--- cargo metadata publish-facing projection (Codex field list) from the packaged manifest:
+{
+  "categories": [],
+  "default_run": null,
+  "description": "R26 probe",
+  "documentation": null,
+  "edition": "2024",
+  "homepage": null,
+  "keywords": [],
+  "license": "MIT OR Apache-2.0",
+  "license_file": null,
+  "links": null,
+  "name": "rsguard",
+  "publish": null,
+  "readme": "README.md",
+  "repository": null,
+  "rust_version": null,
+  "targets": [
+    {
+      "crate_types": [
+        "lib"
+      ],
+      "kind": [
+        "lib"
+      ],
+      "name": "rsguard",
+      "required_features": null
+    },
+    {
+      "crate_types": [
+        "bin"
+      ],
+      "kind": [
+        "bin"
+      ],
+      "name": "rsguard",
+      "required_features": null
+    },
+    {
+      "crate_types": [
+        "bin"
+      ],
+      "kind": [
+        "bin"
+      ],
+      "name": "rsguard-serve",
+      "required_features": null
+    }
+  ],
+  "version": "0.1.0"
+}
+metadata exit=0
+PASS phase9/projection-exit (0)
+PASS phase9/edition ("2024")
+PASS phase9/license ("MIT OR Apache-2.0")
+PASS phase9/readme ("README.md")
+PASS phase9/name ("rsguard")
+PASS phase9/version ("0.1.0")
+PASS phase9/target-count (3)
+
+===== PHASE 10 — stale-archive hazard when cargo package fails =====
+a .crate from the last successful packaging run is on disk: target/package/rsguard-0.1.0.crate
+PASS phase10/prior-crate-present (1)
+now make the tree dirty so cargo package fails:
+cargo package exit=101
+error: 1 files in the working directory contain changes that were not yet committed into git:
+PASS phase10/package-exit (101)
+PASS phase10/dirty-error-text (1)
+PASS phase10/stale-crate-survives-failure (yes)
+the .crate from the PREVIOUS run is still present, byte-identical, and an unguarded check would extract it:
+[{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]
+PASS phase10/stale-target-set ([{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}])
+(that target set was read from the earlier run's archive, not from the current source tree)
+
+===== DONE =====
+failed assertions: 0

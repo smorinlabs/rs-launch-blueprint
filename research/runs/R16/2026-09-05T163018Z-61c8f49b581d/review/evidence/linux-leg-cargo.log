@@ -1,0 +1,42 @@
+# Linux leg (Lima VM 'ubuntu', aarch64 — GitHub ubuntu-latest runners are x86_64; no linux-arm64 CodeQL bundle exists, so CodeQL itself does not run here) — workspace fixture — 2026-09-09T07:50:41Z
+$ limactl shell ubuntu -- bash -lc 'rm -rf ~/r16-fixture && mkdir -p ~/r16-fixture && cp -R <fixture>/{Cargo.toml,src,tests,examples,benches,docs,crates,.github} ~/r16-fixture/'
+Cargo.toml
+benches
+crates
+docs
+examples
+src
+tests
+exit=0
+
+$ limactl shell ubuntu -- bash -lc 'source $HOME/.cargo/env; cd ~/r16-fixture; export RUSTUP_TOOLCHAIN=stable; uname -mr; lsb_release -ds; cargo --version; rustc --version; cargo build --workspace --all-targets; cargo test --workspace'
+6.17.0-41-generic aarch64
+Ubuntu 25.10
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+rustc 1.98.1 (48a229cea 2026-09-01)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.54s
+build-exit=0
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test-exit=0
+exit=0
+
+$ limactl shell ubuntu -- bash -lc 'source $HOME/.cargo/env; cd ~/r16-fixture; export RUSTUP_TOOLCHAIN=1.96.0; uname -mr; lsb_release -ds; cargo --version; rustc --version; cargo build --workspace --all-targets; cargo test --workspace'
+6.17.0-41-generic aarch64
+Ubuntu 25.10
+cargo 1.96.0 (30a34c682 2026-05-25)
+rustc 1.96.0 (ac68faa20 2026-05-25)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.28s
+build-exit=0
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test-exit=0
+exit=0
+
+$ limactl shell ubuntu -- bash -lc 'command -v codeql || echo codeql-not-available-on-linux-aarch64'
+codeql-not-available-on-linux-aarch64
+exit=0

@@ -1,0 +1,143 @@
+snapshot retrieved-at: 2026-09-13T07:57:55Z
+field rules (prompt, Required evidence): crates.io crate.recent_downloads
+and crate.downloads; the newest non-yanked /versions entry for num,
+created_at, rust_version and license; the GitHub repos endpoint for
+stargazers_count, archived and pushed_at; the search endpoint's
+total_count for open issues, never open_issues_count.
+
+GATE 1 (licence compatibility) IS NOT ASSERTED ANYWHERE IN THIS SCRIPT.
+Owner ruling 2026-09-12 (Q7.B) makes it inapplicable to every dependency
+and tool. Licences are printed below as published metadata, not as a gate.
+
+### A. the three recommended compiled members
+OK   axum newest non-yanked = 0.8.9
+OK   axum rust_version = 1.80
+OK   axum archived = false
+OK   tokio newest non-yanked = 1.53.1
+OK   tokio rust_version = 1.71
+OK   tokio archived = false
+OK   tower newest non-yanked = 0.5.3
+OK   tower rust_version = 1.64.0
+  axum   90-day=114795000 all-time=466425972 released=2026-04-14T07:55:20.258398Z stars=27100 pushed=2026-09-11T19:28:52Z open-issues=34 licence=MIT
+  tokio  90-day=222551461 all-time=961082746 released=2026-07-20T17:06:09.996426Z stars=33136 pushed=2026-09-13T06:37:03Z open-issues=316 licence=MIT
+  tower  90-day=169723285 all-time=656241115 released=2026-01-12T18:43:05.227461Z stars=4293 pushed=2026-06-22T13:58:59Z open-issues=69 licence=MIT
+  reverse dependencies: axum 8598, tokio 72187
+
+### B. the dev-reload sub-field -- the one answer the licence ruling changes
+OK   bacon newest non-yanked = 3.25.0
+OK   bacon rust_version (gate 2: PASS) = 1.85
+OK   bacon archived = false
+OK   bacon licence (reported, NOT gated) = AGPL-3.0
+OK   watchexec-cli newest non-yanked = 2.7.2
+OK   watchexec-cli rust_version (gate 2: FAIL, none declared) = null
+OK   cargo-watch newest non-yanked = 8.5.3
+OK   cargo-watch rust_version (gate 2: PASS -- it is excluded on MAINTENANCE, not a gate) = 1.75.0
+OK   cargo-watch archived (the maintenance exclusion) = true
+OK   cargo-watch README at tag v8.5.3 carries the maintainer's own end-of-life notice
+OK   that notice names Bacon as a recommended successor
+  bacon         90-day=21763 all-time=328857 released=2026-08-23T16:21:08.727147Z licence=AGPL-3.0
+  watchexec-cli 90-day=8702 all-time=659914 released=2026-09-06T04:28:41.425571Z licence=Apache-2.0
+  cargo-watch   90-day=174663 all-time=1970345 released=2024-10-02T08:38:09.256209Z licence=CC0-1.0
+  repos: bacon stars=3410 pushed=2026-09-12T19:26:10Z issues=47 | watchexec stars=7180 pushed=2026-09-07T15:11:55Z issues=31 | cargo-watch stars=2861 pushed=2025-01-14T14:57:47Z
+  bacon CI runners (Canop/bacon .github/workflows/tests.yml @ tag v3.25.0):
+         runs-on: ubuntu-latest
+         runs-on: ubuntu-latest
+OK   bacon CI names no macOS runner -- gate 4's macOS leg is closed instead by the executed cargo install in bacon-install-check.log
+
+### C. framework candidates -- gate 2 (declared MSRV), answered before popularity
+    floor = 1.96 (stable 1.98.x minus two minors)
+  actix-web    newest=4.15.0             released=2026-08-21T19:31:31.356389Z  rust_version=1.88     licence=MIT OR Apache-2.0
+  warp         newest=0.4.3              released=2026-05-04T19:33:48.290142Z  rust_version=null     licence=MIT
+  poem         newest=3.1.12             released=2025-07-28T04:39:14.775671Z  rust_version=1.85     licence=MIT OR Apache-2.0
+  salvo        newest=0.96.0             released=2026-08-27T01:10:25.881378Z  rust_version=1.94     licence=Apache-2.0
+  rocket       newest=0.5.1              released=2024-05-23T20:35:24.403919Z  rust_version=1.64     licence=MIT OR Apache-2.0
+  ntex         newest=4.0.0-beta.10      released=2026-09-12T13:33:34.498468Z  rust_version=1.95     licence=MIT OR Apache-2.0
+  xitca-web    newest=0.8.3              released=2026-08-29T05:45:37.596691Z  rust_version=1.98     licence=Apache-2.0
+  pavex        newest=0.2.10             released=2025-11-10T08:07:56.165138Z  rust_version=null     licence=Apache-2.0
+  viz          newest=0.11.0             released=2025-11-17T08:59:42.522292Z  rust_version=null     licence=MIT
+  tide         newest=0.17.0-beta.1      released=2021-12-06T20:13:27.242719Z  rust_version=null     licence=MIT OR Apache-2.0
+  loco-rs      newest=1.1.0              released=2026-08-16T07:20:05.314328Z  rust_version=1.94     licence=Apache-2.0
+  dropshot     newest=0.17.1             released=2026-06-02T17:01:56.874507Z  rust_version=1.85     licence=Apache-2.0
+OK   warp declares no rust_version (gate 2 FAIL) = null
+OK   viz declares no rust_version (gate 2 FAIL) = null
+OK   pavex declares no rust_version (gate 2 FAIL) = null
+OK   tide declares no rust_version (gate 2 FAIL) = null
+OK   xitca-web rust_version is above the 1.96 floor (gate 2 FAIL) = 1.98
+OK   actix-web rust_version (gate 2 pass; excluded on fit) = 1.88
+OK   salvo rust_version (gate 2 pass; excluded on MSRV-policy fit) = 1.94
+OK   poem rust_version (gate 2 pass; excluded on maintenance) = 1.85
+  rocket MSRV: the gemini raw says 1.89.0, the opus raw says 1.64 -- the registry settles it:
+OK   rocket rust_version = 1.64
+  rocket last release 2024-05-23T20:35:24.403919Z, repo pushed_at 2025-12-28T18:27:39Z -- the maintenance exclusion
+  poem   last release 2025-07-28T04:39:14.775671Z, repo pushed_at 2026-08-03T02:01:09Z, open issues 179
+  ntex   newest non-yanked is a prerelease: 4.0.0-beta.10 -- the opus raw cited 3.12.3 / 1.88
+  tide   newest non-yanked is 0.17.0-beta.1 (2021-12-06T20:13:27.242719Z) -- the opus raw cited 0.16.0 (2021-01-29)
+
+### D. gate 3, advisories (RustSec package pages)
+OK   rustsec/packages/axum.html status (404 = no advisory) = 404
+OK   rustsec/packages/tower.html status (404 = no advisory) = 404
+OK   rustsec/packages/bacon.html status (404 = no advisory) = 404
+OK   rustsec/packages/watchexec-cli.html status (404 = no advisory) = 404
+OK   rustsec/packages/tokio.html status (page exists) = 200
+    historic advisory ids listed: RUSTSEC-2021-0072 RUSTSEC-2021-0124 RUSTSEC-2023-0001 RUSTSEC-2023-0005 RUSTSEC-2025-0023
+OK   rustsec/packages/hyper.html status (page exists) = 200
+    historic advisory ids listed: RUSTSEC-2016-0002 RUSTSEC-2017-0002 RUSTSEC-2020-0008 RUSTSEC-2021-0020 RUSTSEC-2021-0078 RUSTSEC-2021-0079 RUSTSEC-2022-0022
+  the decisive check is executed, not read: cargo audit over the resolved
+  --features web lockfile is check 8 of feature-shape-check.log.
+
+### E. gate 4, platform CI read from the upstream workflow at each pinned tag
+  axum  (tag axum-v0.8.9):  runs-on: ubuntu-24.04 
+OK   axum CI names no macOS runner -- a gate 4 gap, closed for this version only by this run's macOS resolve-and-build
+  tokio (tag tokio-1.53.1): macos-latest ubuntu-latest windows-latest 
+OK   tokio CI covers ubuntu-latest
+OK   tokio CI covers macos-latest
+
+### F. the reference implementation, rust-lang/crates.io at commit 3df99c2
+OK   pins axum =0.8.9
+OK   pins tokio =1.53.1
+OK   uses edition 2024, this template's fixed rust-edition
+OK   builds its router with .with_state(state) -- the F330 mechanism
+OK   router.rs has no ROUTERS registry and no registration loop -- the F331 finding holds
+OK   serves with axum::serve(..).with_graceful_shutdown(..)
+OK   selects over SIGTERM via tokio::signal::unix
+OK   awaits the serve future directly -- the drain is NOT wrapped in a timeout
+OK   the only Duration in that file is a metrics logging interval, not a drain deadline
+OK   axum's own graceful-shutdown example at tag axum-v0.8.9 also handles SIGTERM
+
+### G. published-artifact facts this decision rests on
+OK   axum's state-carrying impl<S> Router<S> is bounded S: Clone + Send + Sync + 'static
+OK   with_state is what turns a Router<S> into a Router<S2> -- no state, no service
+OK   axum documents FromRef substates on one State type
+OK   the graceful drain awaits close_tx.closed()
+OK   occurrences of 'timeout' or 'deadline' in axum src/serve/mod.rs (the drain is unbounded) = 0
+OK   axum::serve exists only with the tokio feature plus http1 or http2
+OK   axum declares [lints.rust] unsafe_code = "forbid"
+OK   occurrences of 'unsafe' in axum src/ = 0
+  axum default features: form,http1,json,matched-path,original-uri,query,tokio,tower-log,tracing
+OK   tokio default = [] -- every feature is opted into explicitly
+OK   tokio feature 'signal' does NOT enable sync
+OK   tokio feature 'net' does NOT enable sync
+OK   tokio feature 'rt-multi-thread' does NOT enable sync
+OK   tokio feature 'time' does NOT enable sync
+OK   tokio feature 'macros' does NOT enable sync
+OK   tokio 'sync' is its own leaf feature, so it must be listed explicitly
+OK   bacon declared rust-version in its published manifest = 1.85
+OK   watchexec-cli rust-version lines in its published manifest (gate 2 FAIL) = 0
+OK   bacon ships a run-long job that restarts on change (kill_then_restart)
+OK   that job captures the child's stdout
+OK   bacon's DEFAULT job interruption on unix is SIGKILL -- so a bacon.toml 'kill' override is required for a dev restart to run the production drain
+OK   in --headless mode bacon prints the child's stdout/stderr straight to the terminal, not into a TUI pane
+OK   bacon plumbs its --features flag into the cargo command
+OK   arguments after -- are appended to the job's command tokens
+OK   the -j argument is stored as settings.arg_job (src/conf/settings.rs)
+OK   the initial job is settings.arg_job, falling back to default_job (src/jobs/job_stack.rs)
+OK   references to 'headless' in bacon src/cli/mod.rs (all of them screen setup, none job selection) = 4
+OK   headless only guards the alternate-screen setup around tui::app::run -- it does not touch job selection
+
+### H. control -- an assertion that MUST report FAIL, proving these checks can fail
+FAIL deliberate control (expected to FAIL): expected '0.0.0-not-a-real-version', got '0.8.9'
+  -> the line above must read FAIL. If it reads OK, the harness is broken
+     and every OK above is worthless.
+
+assertions passed: 75   failures: 1 (exactly 1 expected: the control)
+assert-figures rc=0

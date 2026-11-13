@@ -1,0 +1,19 @@
+{
+  "engine_reports": {
+    "codex": {"actor": "research-codex-2026-09-05T162400Z-58ba22bff8ca", "model": "gpt-5.6-terra", "family": "openai", "file": "raw/codex.md"},
+    "opus": {"actor": "research-opus-2026-09-05T162400Z-58ba22bff8ca", "model": "claude-opus-5[1m]", "family": "anthropic", "file": "raw/opus.md"}
+  },
+  "evidence_checks": {},
+  "synthesis": {"actor": "synth-fable-2026-09-05T162400Z-58ba22bff8ca", "model": "claude-fable-5-1", "family": "anthropic"},
+  "audits": {
+    "empirical": {"actor": "audit-codex-2026-09-05T162400Z-58ba22bff8ca", "model": "gpt-5.6-terra", "family": "openai", "file": "review/audit-codex.md"},
+    "judgment": {"actor": "audit-fable-2026-09-05T162400Z-58ba22bff8ca", "model": "claude-fable-5-1", "family": "anthropic", "file": "review/audit-fable.md"}
+  },
+  "empirical": {
+    "argv": ["./run-check.sh"],
+    "cwd": "/private/tmp/r07-empirical-audit.*/empirical (fresh copy of review/empirical); form (b): actionlint on the fixture workflows, paths-ignore filter over 381 py and 61 ts real first-parent commits of the pinned clones, cross-checked against 203 py and 9 ts real workflow runs via the GitHub REST API; act absent; Linux VM lacked actionlint and gh so the check ran on macOS only",
+    "toolchain": "actionlint 1.7.12; Python 3.14.7 with PyYAML 6.0.3; rustc 1.98.0 / cargo 1.98.0; gh 2.98.0; macOS 26.4 arm64",
+    "output_log": "review/evidence/audit-contributors-bot-trigger-cadence.log",
+    "exit_code": 0
+  }
+}

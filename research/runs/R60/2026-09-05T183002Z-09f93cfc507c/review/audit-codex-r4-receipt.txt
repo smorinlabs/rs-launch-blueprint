@@ -1,0 +1,6 @@
+Audit: [audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/audit-codex.md)  
+SHA-256: `e4ef673ad7fecfc07599b003fa76da049275f2a27f158e5e0a3b2d3b62abacf9`  
+Verdict: reject  
+Rerun exits: standard-pin `2`; preservation `0`; provenance `0`; Cargo control `101` / `0`.  
+Log: [audit-cli-parsing-framework-r4.log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/audit-cli-parsing-framework-r4.log)  
+Finding F1: U8 falsely says the owner ruling is absent; `OWNER-REVIEW.md:72-91` records it, so E13’s C16h/C16i fail.

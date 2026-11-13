@@ -7,7 +7,7 @@ Codex (different model family; disposition of its 25 findings in §12). Governs
 Phase 0–5 of preparing a Rust sibling of `py-launch-blueprint` and
 `ts-launch-blueprint`. The port itself is out of scope; this program ends with
 a research tree whose prompts a later session executes under the contract in
-§11.
+§11. Owner amendment A6 (2026-09-04) governs the approved tiered execution method.
 
 ## 1. Purpose
 
@@ -313,8 +313,8 @@ plus the TS port's answer fields.
    claim sourced and dated.
 7. `## Answer template` — the fields in §7.7 for the item's kind.
 8. `## Constraints` — fresh survey (no prior-art baseline); stable Rust; the
-   fixed parameters quoted by value; cross-platform CI (macOS, Linux, Windows)
-   as py and ts have.
+   fixed parameters quoted by value; CI and fitness gates use the owner-selected
+   `target-os-matrix` (Ubuntu and macOS). Windows is not a required target.
 
 ### 7.6 Evidence protocol and fitness gates
 
@@ -356,7 +356,8 @@ gate and excluded from the shortlist:
   (`cargo msrv` or the crate's `rust-version`);
 - no open RustSec advisory; `unsafe` posture stated (`forbid(unsafe_code)`,
   audited unsafe, or unknown);
-- builds and is tested on Windows (CI badge or a stated platform list);
+- builds and is tested on every target in `target-os-matrix` (Ubuntu and macOS);
+  record Windows support only as informative evidence;
 - default features and any async-runtime coupling stated, so a CLI-only
   build does not pull the web stack (`workspace-architecture` owns the
   topology, but every crate item reports its own);
@@ -424,9 +425,12 @@ not required (A5).
   that does not exist; an `OV-nn` is used by two rows, has no `### OV-nn`
   section, has two, or has an empty `**Argument:**` / `**Options:**` line; an
   open index item has no ledger row;
-- an index row with status `resolved` lacks a non-empty `DECISION.md`
-  (with `## Decision`, `## Parameters`, `## Empirical check`),
-  `audit-codex.md`, or `audit-fable.md` in its topic directory;
+- execution policy and prompt metadata disagree, a required engine or evidence
+  check is missing, or the research/combined acceptance dependency graph cycles;
+- an index row with status `resolved` lacks current acceptance evidence under
+  `docs/planning/p02/acceptance-schema.md`: nonempty decision fields, complete
+  raw answer shapes, current input hashes, recorded empirical success, fresh
+  actor identities, and two approving audits of the exact decision revision;
 - with `--require-owner-review`: `docs/port/OWNER-REVIEW.md` is missing, an
   item has other than exactly one row, a row has an invalid disposition, empty
   rationale or malformed date, or `drop` / `dropped` disagree.
@@ -454,59 +458,71 @@ the owner first).
 
 ## 10. Conventions carried into the execution phase
 
-These bind the later session that runs the prompts; they are recorded here and
-in `research/RUNBOOK.md` so the prompts and index are shaped for them.
+These bind P02. Owner amendment A6 changes resource allocation and recovery;
+it retains the evidence protocol, fixed requirements, and acceptance gates.
 
-- **Pilot first.** Run one item end-to-end (prompt → DECISION.md → both audits)
-  before batch execution.
-- **Empirical gate.** A recommendation whose output is a configuration, a
-  command, or a version pin is not accepted until it has been executed against
-  the pinned toolchain and the observed result recorded in `DECISION.md`. (The
-  py typing research's Codex audit found the recommended `ty` rule block named
-  an unknown rule that made the proposed command exit 1 — undetectable by
-  document review.)
-- **Dual-lens audit.** `audit-codex.md` (different model family; runs the
-  config) and `audit-fable.md` (judgment) both exist before an item is marked
-  `resolved`.
-- **Append-only decisions.** Reversing a decision adds a new entry that cites
-  the old one; nothing is edited in place (TS `goal.md` §5 rule; it is what made
-  the D-026 → D-038 double flip legible).
-- **Producer never validates its own output.**
+- **Pilot first.** Run R38 end to end on Codex, Opus and Doxa before bulk
+  execution. Tool-free probes and the deferred conformance pilot do not count.
+- **Empirical gate.** Execute every recommended configuration, command or version
+  pin against the recorded toolchain; preserve argv, working directory, output,
+  exit status and identity. The required OpenTelemetry web example demonstrates
+  incoming request, handler, outbound operation, propagation, actual export,
+  useful metrics, exporter failure and shutdown. Startup alone is insufficient.
+- **Dual audit.** Fresh empirical and judgment auditors must both approve the
+  exact current decision with no unresolved findings. Neither is a raw producer
+  or synthesizer; the empirical auditor's model family differs from synthesis.
+- **Append-only decisions.** A reversal adds a dated current entry, cites its
+  predecessor under `## Supersedes`, and preserves the prior entry verbatim.
+- **Evidence integrity.** `acceptance.json` binds reports, decision, audits,
+  empirical output, fixed/consumed values and prerequisite revisions. The
+  validator checks records; reviewers establish execution truth and fitness.
 
 ## 11. Execution contract (`research/RUNBOOK.md`)
 
-The tree ships with the control flow a later session needs, so it does not
-reconstruct it (Codex finding 25). `RUNBOOK.md` is written in Phase 3 and
-contains:
+The runbook and `research/EXECUTION.json` implement A6. The
+[approved proposal](../../planning/p02/PROPOSAL.md) records the reviewed allocation;
+the [approval record](../../planning/p02/APPROVAL.md) distinguishes local work
+from later paid-run and Git publication approvals.
 
-1. **Run order.** Fixed parameters are already valued. Researched items run in
-   dependency waves: a `consumes` entry is a hard edge and a non-owner's
-   `related` mention of a parameter owner is a soft edge (A3, §13); an item runs
-   only after every item it has an edge to is `resolved`, and a wave's items
-   run in parallel under the concurrency cap.
-2. **Engine invocation.** Every item runs on every configured engine in
-   parallel, each as its own subagent (Claude Opus, Codex, Doxa; A2, §13), one
-   raw file per engine, the check that each fills the §7.7 template before
-   anyone reads its content, and a synthesis by a non-producer into
-   `DECISION.md`.
-3. **Failure and retry.** One retry on an engine failure; a second failure
-   narrows the prompt (`## Questions` HIGH only) and records that in the
-   decision; a third is escalated to the owner.
-4. **Conflict rule.** A `CONFLICT: R## <param>` line in an answer blocks the
-   consuming item and re-opens the owner item with the conflict appended to
-   its prompt context; the owner item re-runs and its new `DECISION.md` entry
-   cites the old one (append-only). Consumers never adopt a value the registry
-   does not hold.
-5. **Answer → decision.** `DECISION.md` has H2 sections `## Decision` (the
-   pick, version, and the ledger rows it settles), `## Parameters` (every owned
-   parameter's value — copied into `PARAMETERS.md` — and every consumed value
-   assumed), `## Empirical check` (toolchain, command, observed result), and
-   `## Supersedes` when it reverses an earlier entry. An item is `resolved`
-   only when both audits exist; the check script enforces the files and
-   sections.
-6. **Staleness.** Each decision's `re-verify trigger` (a date or an event such
-   as a major release) is listed; the runbook says who re-runs what when a
-   trigger fires.
+1. **Entry and order.** Local preparation may precede the P01 tag. Binding
+   research requires the merge/tag gate and full REUSE/ADOPT baseline review.
+   Release each item when its own research prerequisites have current accepted
+   evidence: `consumes` plus non-owner related-to-parameter-owner edges. R58 owns
+   `logging-pipeline-contract`, consumed by R59/R75/R78. `acceptance-after` holds
+   separate integration prerequisites; R83/R84 must accept against R71's schema.
+   Semantic compatibility still needs review beyond these machine-readable edges.
+2. **Tiered engines.** Six Light items use Codex/Luna plus a fresh Terra evidence
+   check; 53 Focused items use Codex/Terra and Opus; 25 Deep items add Doxa. The
+   Focused R38 pilot uses all three. Every tier retains the complete answer
+   template and fitness gates. A fresh Fable synthesizer reads the checked raws.
+   At most four Claude calls are active across roles, and local agent seats
+   include the controller. Reserve validation capacity and release wrappers
+   while provider jobs run. Actual model identities and families are recorded.
+3. **Durable recovery.** Persist unique run directories, exact inputs, hashes,
+   authorization, budgets, submission intent, operation IDs and outputs. Resume
+   known operations; reconcile ambiguous submissions before retrying. Preserve
+   successful partial results. Normalize cosmetic defects separately; request
+   bounded supplementary work for substantive gaps. Store narrowed prompts as
+   `inputs/narrowed.md`, not extra `*.prompt.md` files. No automatic retry may
+   exceed approval or conceal possible duplicate billing. The local runner has
+   no paid provider adapter; those routes require separate readiness validation.
+4. **Conflict rule.** `CONFLICT: R## <param> — <needed value> — <reason>` blocks
+   the consumer and reopens the owner. Append it verbatim under the owner's
+   existing `## Context`, rerun the owner, preserve prior decisions, publish
+   registry and owner revision together, then rerun affected consumers. A5
+   baseline findings preserve history and reconcile ledger, prompts and scope;
+   explicit owner requirements remain fixed.
+5. **Answer and publication.** Decisions retain `## Decision`, `## Parameters`,
+   `## Empirical check`, `## Engines`, and `## Supersedes` for reversals.
+   Principles, agreement level, source evidence and re-verification trigger
+   remain explicit. A resolved item requires the strict acceptance schema, not
+   merely nonempty audit files. A single publisher validates staged changes,
+   checks expected current hashes, journals the update and recovers interruptions
+   before readers proceed. Changed prerequisite revisions invalidate acceptance.
+6. **Budget and staleness.** Paid batches require item IDs, models, a maximum
+   authorized spend and a retry policy. Initial provider-job counts are planning
+   estimates, not hard spending limits. The controller checks triggers quarterly
+   and on relevant changes, then revalidates affected decisions and consumers.
 
 ## 12. Adversarial review disposition (Codex, 2026-09-01)
 
@@ -543,8 +559,9 @@ Their disposition (24 folded, 1 rejected by the owner):
 
 ## 13. Owner amendments (2026-09-04)
 
-Made during Phase 3.5 and the Phase 4 review, before v0.1.0; each is in force
-in the prompts and `RUNBOOK.md`.
+Recorded during preparation and P02 planning, before the missing v0.1.0 tag.
+A6 supersedes A2 engine allocation, A3 wave barriers, and the old automatic
+retry sequence. Earlier directions remain historical evidence.
 
 | # | Amendment | Effect | Where |
 |---|---|---|---|
@@ -553,3 +570,4 @@ in the prompts and `RUNBOOK.md`.
 | A3 | Dependency waves | run order from `consumes` (hard) plus non-owner → parameter-owner `related` mentions (soft); waves run in parallel; keystones first | §11, `RUNBOOK.md` §1 |
 | A4 | `accept` sub-choice `b` | Phase 3.5 `accept` may append one cross-repo question to `## Questions` (harmonize items); not a `narrow`; the checker sees `accept` | §6.5, `docs/port/OWNER-REVIEW.md` |
 | A5 | Principles and evidence before implementation | supersedes automatic reuse and compulsory cross-repo uniformity; research principles, native architectures and libraries; require acceptance criteria, evidence-backed differences and a realistic example; assess inherited baselines in P02 | §2, §7.7, `AGENTS.md`, `RUNBOOK.md`, prompt template and all prompts, `OWNER-REVIEW.md` |
+| A6 | Tiered, durable execution | approved 6 Light / 53 Focused / 25 Deep allocation, three-engine R38 pilot, short workers with durable files, per-item readiness, strict acceptance evidence and journaled publication; separate paid-run approval remains required | §10–§11, `research/EXECUTION.json`, `RUNBOOK.md`, `docs/planning/p02/APPROVAL.md` |

@@ -1,0 +1,151 @@
+grep:  grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+jq:    jq-1.8.2
+snapshots: snapshots-r2/ (revision 2) against snapshots/ (revision 1)
+
+=== 0. the snapshot set itself ===
+PASS  S0a snapshot manifest rows (revision 1's 37 plus two reverse-dependency pages) == 39
+PASS  S0b the manifest records each payload's endpoint
+PASS  S0c retrieval window start == 2026-09-27T06:26:22Z
+PASS  S0d retrieval window end == 2026-09-27T06:30:16Z
+
+=== 1. the MSRV floor ===
+PASS  F1a current stable (static.rust-lang.org channel-rust-stable.toml, [pkg.rust].version) == 1.98.1
+PASS  F1b the floor stable-minus-2-minors == 1.96
+
+=== 2. crates.io: downloads, newest non-yanked release, licence, rust-version ===
+PASS  F2-dl90  tower_governor crate.recent_downloads == 1751434
+PASS  F2-dlall tower_governor crate.downloads == 4850651
+PASS  F2-num   tower_governor newest non-yanked num == 0.8.0
+PASS  F2-date  tower_governor newest non-yanked created_at == 2025-08-14
+PASS  F2-rv    tower_governor newest non-yanked rust_version (GATE 2) == null
+PASS  F2-lic   tower_governor newest non-yanked license == MIT OR Apache-2.0
+PASS  F2-dl90  governor crate.recent_downloads == 16487740
+PASS  F2-dlall governor crate.downloads == 79753999
+PASS  F2-num   governor newest non-yanked num == 0.10.4
+PASS  F2-date  governor newest non-yanked created_at == 2025-12-16
+PASS  F2-rv    governor newest non-yanked rust_version (GATE 2) == null
+PASS  F2-lic   governor newest non-yanked license == MIT
+PASS  F2-dl90  tower-rate-limiter crate.recent_downloads == 296
+PASS  F2-dlall tower-rate-limiter crate.downloads == 296
+PASS  F2-num   tower-rate-limiter newest non-yanked num == 0.1.6
+PASS  F2-date  tower-rate-limiter newest non-yanked created_at == 2026-08-13
+PASS  F2-rv    tower-rate-limiter newest non-yanked rust_version (GATE 2) == 1.96.0
+PASS  F2-lic   tower-rate-limiter newest non-yanked license == MIT OR Apache-2.0
+PASS  F2-dl90  axum-governor crate.recent_downloads == 12901
+PASS  F2-dlall axum-governor crate.downloads == 20931
+PASS  F2-num   axum-governor newest non-yanked num == 2.1.2
+PASS  F2-date  axum-governor newest non-yanked created_at == 2026-09-26
+PASS  F2-rv    axum-governor newest non-yanked rust_version (GATE 2) == 1.95
+PASS  F2-lic   axum-governor newest non-yanked license == MIT
+PASS  F2-dl90  axum_gcra crate.recent_downloads == 57
+PASS  F2-dlall axum_gcra crate.downloads == 7595
+PASS  F2-num   axum_gcra newest non-yanked num == 0.1.1
+PASS  F2-date  axum_gcra newest non-yanked created_at == 2024-08-11
+PASS  F2-rv    axum_gcra newest non-yanked rust_version (GATE 2) == null
+PASS  F2-lic   axum_gcra newest non-yanked license == MIT OR Apache-2.0
+PASS  F2-dl90  gcra crate.recent_downloads == 390704
+PASS  F2-dlall gcra crate.downloads == 2224275
+PASS  F2-num   gcra newest non-yanked num == 0.6.0
+PASS  F2-date  gcra newest non-yanked created_at == 2024-08-01
+PASS  F2-rv    gcra newest non-yanked rust_version (GATE 2) == 1.80.0
+PASS  F2-lic   gcra newest non-yanked license == MIT
+PASS  F2-dl90  tower-resilience-ratelimiter crate.recent_downloads == 6978
+PASS  F2-dlall tower-resilience-ratelimiter crate.downloads == 15545
+PASS  F2-num   tower-resilience-ratelimiter newest non-yanked num == 0.13.0
+PASS  F2-date  tower-resilience-ratelimiter newest non-yanked created_at == 2026-08-21
+PASS  F2-rv    tower-resilience-ratelimiter newest non-yanked rust_version (GATE 2) == 1.85.0
+PASS  F2-lic   tower-resilience-ratelimiter newest non-yanked license == MIT OR Apache-2.0
+PASS  F2-dl90  axum crate.recent_downloads == 121285860
+PASS  F2-dlall axum crate.downloads == 488346635
+PASS  F2-num   axum newest non-yanked num == 0.8.9
+PASS  F2-date  axum newest non-yanked created_at == 2026-04-14
+PASS  F2-rv    axum newest non-yanked rust_version (GATE 2) == 1.80
+PASS  F2-lic   axum newest non-yanked license == MIT
+PASS  F2-dl90  tower crate.recent_downloads == 178757718
+PASS  F2-dlall tower crate.downloads == 687830161
+PASS  F2-num   tower newest non-yanked num == 0.5.3
+PASS  F2-date  tower newest non-yanked created_at == 2026-01-12
+PASS  F2-rv    tower newest non-yanked rust_version (GATE 2) == 1.64.0
+PASS  F2-lic   tower newest non-yanked license == MIT
+PASS  F2-ag axum-governor 2.1.2 created_at|rust_version|yanked == 2026-09-26|1.95|false
+PASS  F2-ag axum-governor 2.1.1 created_at|rust_version|yanked == 2026-09-23|1.95|false
+PASS  F2-ag axum-governor 2.1.0 created_at|rust_version|yanked == 2026-09-05|1.95|false
+PASS  F2-loco loco-rs newest version (crates.io crate.max_stable_version) == 1.2.0
+PASS  F2-loco loco-rs crate.recent_downloads == 107284
+PASS  F2-control the reader reports a declared rust_version for axum, so governor's and tower_governor's null is a real absence
+
+=== 3. crates.io: reverse dependencies (the practice-evidence figure) ===
+PASS  F3 governor reverse_dependencies meta.total == 489
+PASS  F3 tower_governor reverse_dependencies meta.total == 82
+PASS  F3 gcra reverse_dependencies meta.total == 0
+PASS  F3 axum-governor reverse_dependencies meta.total == 0
+PASS  F3 axum_gcra reverse_dependencies meta.total == 0
+PASS  F3 tower-rate-limiter reverse_dependencies meta.total == 0
+PASS  F3-adopter foundations depends on governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter alloy-transport depends on governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter librespot-core depends on governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter sc-rpc-server depends on governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter iroh-dns-server depends on tower_governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter snarkos-node-rest depends on tower_governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter miden-node-utils depends on tower_governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter taxy depends on tower_governor (first 100 dependents, 2026-09-27)
+PASS  F3-adopter-control the adopter reader does not match an absent name
+
+=== 4. RustSec (gate 3) ===
+PASS  F4 rustsec.org/packages/tower_governor.html == 404
+PASS  F4 rustsec.org/packages/governor.html == 404
+PASS  F4 rustsec.org/packages/gcra.html == 404
+PASS  F4 rustsec.org/packages/axum-governor.html == 404
+PASS  F4 rustsec.org/packages/axum_gcra.html == 404
+PASS  F4 rustsec.org/packages/tower-rate-limiter.html == 404
+PASS  F4-control rustsec.org/packages/dashmap.html (a package with a real advisory page) == 200
+
+=== 5. GitHub: maintenance state ===
+PASS  F5a benwis/tower-governor stargazers_count == 352
+PASS  F5b benwis/tower-governor archived == false
+PASS  F5c benwis/tower-governor pushed_at == 2025-08-14
+PASS  F5d benwis/tower-governor open issues (search/issues total_count, never open_issues_count) == 19
+PASS  F5e benwis/tower-governor open_issues_count (NOT used: it counts pull requests too) == 24
+PASS  F5f boinkor-net/governor stargazers_count == 938
+PASS  F5g boinkor-net/governor archived == false
+PASS  F5h boinkor-net/governor pushed_at == 2026-08-24
+PASS  F5i canmi21/axum-governor stargazers_count == 26
+PASS  F5j canmi21/axum-governor created_at == 2025-09-03
+PASS  F5j2 canmi21/axum-governor pushed_at == 2026-09-26
+PASS  F5k tower-rate-limiter stargazers_count == 7
+PASS  F5l tower-rate-limiter repo created_at == 2026-08-02
+PASS  F5m the nivek-ph/... path redirects to the renamed owner == nivek3/tower-rate-limiter
+PASS  F5n the tower-rate-limiter open-issue search still returns HTTP 422 (renamed owner)
+
+=== 6. GATE 2 at master, not only at the release ===
+PASS  F6 governor declares NO rust-version at master either, so the gate-2 failure is a standing property, not release lag
+PASS  F6 tower_governor declares NO rust-version at master either, so the gate-2 failure is a standing property, not release lag
+PASS  F6-control tower-rate-limiter rust-version at master (so F6's two absences are real) == 1.96.0
+
+=== 7. drift, 2026-09-19 (snapshots/) -> 2026-09-27 (snapshots-r2/), decision-bearing fields ===
+PASS  DR-rel tower_governor newest release and rust_version unchanged: 0.8.0 rv=null
+PASS  DR-rel governor newest release and rust_version unchanged: 0.10.4 rv=null
+PASS  DR-rel tower-rate-limiter newest release and rust_version unchanged: 0.1.6 rv=1.96.0
+PASS  DR-rel axum_gcra newest release and rust_version unchanged: 0.1.1 rv=null
+PASS  DR-rel gcra newest release and rust_version unchanged: 0.6.0 rv=1.80.0
+PASS  DR-rel tower-resilience-ratelimiter newest release and rust_version unchanged: 0.13.0 rv=1.85.0
+PASS  DR-rel axum newest release and rust_version unchanged: 0.8.9 rv=1.80
+PASS  DR-rel tower newest release and rust_version unchanged: 0.5.3 rv=1.64.0
+PASS  DR-rel axum-governor newest release and rust_version moved: 2.1.0 rv=1.95 -> 2.1.2 rv=1.95
+PASS  DR-rev governor reverse_dependencies moved: 483 -> 489
+PASS  DR-rev tower_governor reverse_dependencies moved: 81 -> 82
+PASS  DR-rev gcra reverse_dependencies unchanged: 0
+PASS  DR-rev axum-governor reverse_dependencies unchanged: 0
+PASS  DR-rev axum_gcra reverse_dependencies unchanged: 0
+PASS  DR-rev tower-rate-limiter reverse_dependencies unchanged: 0
+PASS  DR-arch gh-repo-benwis-tower-governor archived unchanged: false
+PASS  DR-arch gh-repo-boinkor-net-governor archived unchanged: false
+PASS  DR-arch gh-repo-canmi21-axum-governor archived unchanged: false
+PASS  DR-arch gh-repo-nivek-ph-tower-rate-limiter archived unchanged: false
+PASS  DR-push benwis/tower-governor pushed_at unchanged: 2025-08-14T19:44:19Z
+PASS  DR-push canmi21/axum-governor pushed_at moved: 2026-09-08T22:46:01Z -> 2026-09-26T08:06:45Z
+PASS  DR-rustsec the seven status lines unchanged: tower-rate-limiter 404 tower_governor 404 governor 404 axum-governor 404 gcra 404 axum_gcra 404 dashmap 200 
+PASS  DR-stable current stable unchanged: 1.98.1
+PASS  DR-std the REST standard snapshot is byte-identical in both sets
+
+CHECKS RUN: 130  PASS: 130  FAILURES: 0  SKIPPED: 0

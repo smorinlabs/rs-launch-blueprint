@@ -1,0 +1,42 @@
+R41 lockfile-freshness-check — revision-7 documentary audit
+auditor: audit-codex-2026-09-05T160304Z-1e904d50d29e-r7
+model: gpt-5.6-terra
+date read: 2026-09-10
+cwd: research/runs/R41/2026-09-05T160304Z-1e904d50d29e
+
+Scope: read-only audit of review/DECISION.md revision 7. Per the 2026-09-10
+owner ruling, the fixture, harness, Cargo commands, and Linux VM leg were not
+rerun. This log records comparison of retained evidence only.
+
+Commands and results:
+- git diff -U0 c68d5da^ c68d5da -- review/DECISION.md: seven changed hunks,
+  limited to the revision heading, provenance/record attribution, the command
+  list header and timing bullet, revision history, and source provenance.
+- shasum -a 256 review/DECISION.md: e64b5af78b3206af22a422d50a5acdcd2d29a5c837c5ec5b7c25211daf843edd.
+- shasum -a 256 raw/codex.md: edcb7e58848a4c074114ac7f7ba03cc4b9b4114ed51031129b311cde7c00504f.
+- shasum -a 256 raw/evidence-terra-r3.md: 5b10b6715711f93b8ec98f80abbc0dc4d5288d63ccf6bf5dbe439fab97cccb53.
+- revision-5 acceptance evidence: lockfile-freshness-acceptance.r5.log starts
+  2026-09-10T01:09:01Z; lockfile-freshness-acceptance-linux.r5.log starts
+  2026-09-10T01:10:38Z; the revision-5 empirical audit log hash is
+  3734526b625f07b2f2718ad417153fa9666fe076cb7632f533547224a9257ac1.
+- revision-3 direct-command timing evidence: the warm log starts
+  2026-09-09T06:40:24Z and the cold log starts 2026-09-09T06:40:49Z.
+- review/audit-codex.r6.md: the prior audit rejected only the over-broad
+  provenance statement and explicitly accepted the unproven list as P03
+  validation work.
+
+Result: revision 7 correctly separates the revision-5 acceptance records from
+the revision-3 timing probes, and the cited hashes, dates, and named auditor
+identities match the retained records. The findings, recommendation,
+alternatives, edge-case requirements, acceptance criteria, and remaining-
+uncertainty list have no revision-7 diff hunk.
+
+Finding F1: review/DECISION.md:3 says revision 7 is "correcting one provenance
+sentence and nothing else" and later says it "changes nothing else." The
+revision-history entry at review/DECISION.md:239 says revision 7 also fixed
+three further broad attributions and the pre-archive revision-5-audit path.
+Those statements cannot both be exact. Revise the earlier summary to name the
+related attribution and path corrections, while retaining the accurate
+no-design-change statement.
+
+Audit process exit code: 0 (record comparison completed; no harness rerun).

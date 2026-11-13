@@ -1,0 +1,60 @@
+== R73 primary sources ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+run_date_utc: 2026-09-27T06:28:50Z
+mode: SNAPSHOT
+
+-- Stripe, https://docs.stripe.com/api/idempotent_requests --
+PASS S1-replay-errors — Stripe replays the first result INCLUDING failures — so F314 row Notes attribute the 2xx-only rule to Stripe wrongly
+        7:"]},{"\u0024\u0024mdtype":"Tag","name":"Paragraph","attributes":{},"children":["Stripe’s idempotency works by saving the resulting status code and body of the first request made for any given idempotency key, regardless of whether it succeeds or fails
+PASS S1-execution-gate — Stripe stores a result only once endpoint execution begins, which is knowledge a generic layer does not have
+        8:"]},{"\u0024\u0024mdtype":"Tag","name":"Paragraph","attributes":{},"children":["We save results only after the execution of an endpoint begins
+PASS S1-key-length — the 255-byte key ceiling this design adopts is Stripe published, not invented
+        10:Idempotency keys are up to 255 characters long
+PASS S1-retention — Stripe 24-hour retention, matching the standard R3.9 floor and the recommended 86400 s ttl
+        9:"]},{"\u0024\u0024mdtype":"Tag","name":"Paragraph","attributes":{},"children":["You can remove keys from the system automatically after they’re at least 24 hours old
+
+-- IETF draft-ietf-httpapi-idempotency-key-header-07 (EVIDENCE, never authority) --
+PASS S2-expiry — the draft expired 2026-04-18, exactly as the org standard 347 records
+        51:   This Internet-Draft will expire on 18 April 2026.
+PASS S2-date — revision -07 is dated 15 October 2025
+        8:Expires: 18 April 2026                                   15 October 2025
+PASS S2-replay — the draft too would replay errors — so the 2xx-only rule is supported by NEITHER named authority
+        262:      completed operation, success or an error.  See Error Scenarios for
+PASS S2-422 — the draft 422 for payload mismatch, which the org standard R5.3 independently reaches
+        311:   request payload, the resource SHOULD reply with a HTTP 422 status
+PASS S2-409 — the draft 409 for a retry while the original is in flight
+        342:   processed, the resource SHOULD reply with an HTTP 409 status code
+PASS S2-fingerprint — the draft puts a payload fingerprint beside the key, which R3.9 makes mandatory
+        191:   An idempotency fingerprint MAY be used in conjunction with an
+
+-- py-launch-blueprint at pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 --
+PASS S3-header — py header spelling, which the org standard 347 also reserves
+        43:IDEMPOTENCY_HEADER = "idempotency-key"
+PASS S3-replayed — py replay marker name, kept; only its VALUE changes to the RFC 9651 boolean
+        44:REPLAYED_HEADER = "idempotency-replayed"
+PASS S3-methods — the method scope this design keeps
+        45:_UNSAFE_METHODS = frozenset({"POST", "PUT", "PATCH"})
+PASS S3-2xx — F314 2xx-only condition, the behaviour this decision keeps
+        141:        if 200 <= response.status_code < 300:
+PASS S3-stripe-comment — py own comment makes the same misattribution the ledger row repeats
+        140:        # for real (the Stripe semantics).
+PASS S3-singleflight — py documents that concurrent duplicates are NOT single-flighted — the hole this design closes
+        30:single-flighted; that also needs the shared store.
+PASS S3-query — py justification for keeping the query string in the cache key
+        101:        # Query string is part of the key: same Idempotency-Key against
+
+-- published crates, read as source --
+PASS S4-cs-module — cratestack-axum ships a complete idempotency layer — the Opus leg claim that no crate implements this is wrong
+        10:./src/idempotency/layer.rs
+PASS S4-cs-store — and its own store seam, converging on this design contract independently
+        20:./src/idempotency/store.rs
+PASS S4-cs-msrv — and it declares 1.98.0, ABOVE the 1.96 floor — the ground on which gate 2 excludes it
+        45:rust-version = "1.98.0"
+PASS S4-cs-forbid — its unsafe posture, recorded because the gate asks for it
+        200:unsafe_code = "forbid"
+PASS S5-ai-session — axum-idempotent requires a session layer, which this template has no reason to adopt
+        138:This middleware requires a session layer, such as `SessionLayer` from the [ruts](https://crates.io/crates/ruts) crate. For the `IdempotentLayer` to access the session, it must be placed *inside* the `SessionLayer`.
+PASS S5-ai-ruts — its store is a ruts session store, not a general seam
+        55:layered-store = ["ruts/layered-store"]
+
+CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0

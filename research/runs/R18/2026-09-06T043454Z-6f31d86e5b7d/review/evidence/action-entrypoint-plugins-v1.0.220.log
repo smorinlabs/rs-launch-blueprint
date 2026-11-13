@@ -1,0 +1,225 @@
+# R18 revision-4 evidence — call topology, subprocess env scrub, plugin marketplace
+# captured: 2026-09-10T07:08:10Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+# All commands read-only. No workflow installed, no credential used, no provider run.
+# Base: https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220
+
+== E1: fetch the nine source paths revision 4 reads ==
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/entrypoints/prepare.ts
+HTTP 200  bytes=3432  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/modes/tag/index.ts
+HTTP 200  bytes=6544  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/modes/agent/index.ts
+HTTP 200  bytes=5228  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/github/token.ts
+HTTP 200  bytes=5111  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/action.yml
+HTTP 200  bytes=23689  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/base-action/src/install-plugins.ts
+HTTP 200  bytes=7918  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/base-action/src/index.ts
+HTTP 200  bytes=3193  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/.github/workflows/claude-review.yml
+HTTP 200  bytes=1288  curl exit=0
+$ curl -sS -L -o <tmp> -w '%{http_code}' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/examples/pr-review-comprehensive.yml
+HTTP 200  bytes=2583  curl exit=0
+
+== E2 (F1): where checkWritePermissions and checkHumanActor are actually called ==
+$ grep -n 'setupGitHubToken()\|checkWritePermissions(\|checkHumanActor\|checkContainsTrigger(context)\|prepareTagMode\|prepareAgentMode' src/entrypoints/prepare.ts
+18:import { prepareTagMode } from "../modes/tag";
+19:import { prepareAgentMode } from "../modes/agent";
+37:    const githubToken = await setupGitHubToken();
+44:      const hasWritePermissions = await checkWritePermissions(
+60:        ? isEntityContext(context) && checkContainsTrigger(context)
+83:      await prepareTagMode({ context, octokit, githubToken });
+85:      await prepareAgentMode({ context, octokit, githubToken });
+exit=0
+
+$ sed -n '36,55p' src/entrypoints/prepare.ts
+    // Setup GitHub token
+    const githubToken = await setupGitHubToken();
+    const octokit = createOctokit(githubToken);
+
+    // Step 3: Check write permissions (entity contexts and workflow_run)
+    if (isEntityContext(context) || isWorkflowRunEvent(context)) {
+      // Check if github_token was provided as input (not from app)
+      const githubTokenProvided = !!process.env.OVERRIDE_GITHUB_TOKEN;
+      const hasWritePermissions = await checkWritePermissions(
+        octokit.rest,
+        context,
+        context.inputs.allowedNonWriteUsers,
+        githubTokenProvided,
+      );
+      if (!hasWritePermissions) {
+        throw new Error(
+          "Actor does not have write permissions to the repository",
+        );
+      }
+    }
+exit=0
+
+$ grep -n 'checkHumanActor' src/modes/tag/index.ts src/modes/agent/index.ts   # per-mode, and ONLY checkHumanActor
+src/modes/tag/index.ts:
+1:import { checkHumanActor } from "../../github/validation/actor";
+43:  await checkHumanActor(octokit.rest, context);
+src/modes/agent/index.ts:
+9:import { checkHumanActor } from "../../github/validation/actor";
+30:  await checkHumanActor(octokit.rest, context);
+$ grep -c 'checkWritePermissions' src/modes/tag/index.ts src/modes/agent/index.ts
+tag: 0  agent: 0   # grep -c exit 1 on zero matches is the zero result
+
+== E3 (F1, new): what setupGitHubToken() mints, and when ==
+$ grep -n 'DEFAULT_PERMISSIONS\|github-app-token-exchange\|export async function setupGitHubToken\|exchangeForAppToken(oidcToken\|core.setSecret' src/github/token.ts
+69:const DEFAULT_PERMISSIONS: Record<string, string> = {
+100:  return { ...DEFAULT_PERMISSIONS, ...additional };
+121:    "https://api.anthropic.com/api/github/github-app-token-exchange",
+158:export async function setupGitHubToken(): Promise<string> {
+175:    () => exchangeForAppToken(oidcToken, permissions),
+181:  core.setSecret(appToken);
+exit=0
+
+$ sed -n '69,73p;75,81p;100,100p;115,123p' src/github/token.ts
+const DEFAULT_PERMISSIONS: Record<string, string> = {
+  contents: "write",
+  pull_requests: "write",
+  issues: "write",
+};
+export function parseAdditionalPermissions():
+  | Record<string, string>
+  | undefined {
+  const raw = process.env.ADDITIONAL_PERMISSIONS;
+  if (!raw || !raw.trim()) {
+    return undefined;
+  }
+  return { ...DEFAULT_PERMISSIONS, ...additional };
+  if (permissions) {
+    headers["Content-Type"] = "application/json";
+    fetchOptions.body = JSON.stringify({ permissions });
+  }
+
+  const response = await fetch(
+    "https://api.anthropic.com/api/github/github-app-token-exchange",
+    fetchOptions,
+  );
+
+== E4 (F2): is CLAUDE_CODE_SUBPROCESS_ENV_SCRUB active in the recommended configuration? ==
+$ grep -n 'SUBPROCESS_ENV_SCRUB\|allowed_non_write_users' action.yml
+34:  allowed_non_write_users:
+228:      if: ${{ inputs.allowed_non_write_users != '' && runner.os == 'Linux' }}
+232:        if [ "${CLAUDE_CODE_SUBPROCESS_ENV_SCRUB:-}" = "0" ]; then
+233:          echo "Subprocess isolation opted out via CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=0"
+250:      if: ${{ inputs.allowed_non_write_users != '' }}
+269:      if: ${{ inputs.allowed_non_write_users != '' && runner.os != 'Windows' }}
+300:        ALLOWED_NON_WRITE_USERS: ${{ inputs.allowed_non_write_users }}
+301:        CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: ${{ env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB || (inputs.allowed_non_write_users != '' && '1') || '' }}
+395:      if: ${{ always() && inputs.allowed_non_write_users != '' && runner.os != 'Windows' }}
+exit=0
+
+$ sed -n '225,232p;299,302p' action.yml
+    - name: Install subprocess isolation dependencies
+      # Install subprocess isolation dependencies when processing content from non-write users.
+      # Best-effort: skips on non-Linux or when sudo/apt unavailable (self-hosted runners).
+      if: ${{ inputs.allowed_non_write_users != '' && runner.os == 'Linux' }}
+      continue-on-error: true
+      shell: bash
+      run: |
+        if [ "${CLAUDE_CODE_SUBPROCESS_ENV_SCRUB:-}" = "0" ]; then
+        ALLOWED_BOTS: ${{ inputs.allowed_bots }}
+        ALLOWED_NON_WRITE_USERS: ${{ inputs.allowed_non_write_users }}
+        CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: ${{ env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB || (inputs.allowed_non_write_users != '' && '1') || '' }}
+        CLAUDE_CODE_SCRIPT_CAPS: ${{ env.CLAUDE_CODE_SCRIPT_CAPS || '' }}
+
+# Reading: with inputs.allowed_non_write_users left at its "" default and no
+# env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set by the workflow, action.yml:301 evaluates
+# to '' and action.yml:228 does not run, so neither the flag nor bubblewrap/socat
+# is present. The scrub is AVAILABLE at the tag and INACTIVE in this configuration.
+
+== E5: the plugin marketplace fetch — can it be pinned, and when does it run? ==
+$ grep -n 'MARKETPLACE_URL_REGEX\|plugin\", \"marketplace\|plugin\", \"install' base-action/src/install-plugins.ts
+7:const MARKETPLACE_URL_REGEX =
+43:  if (!MARKETPLACE_URL_REGEX.test(normalized)) {
+exit=0
+$ sed -n '7,8p;191,202p' base-action/src/install-plugins.ts
+const MARKETPLACE_URL_REGEX =
+  /^https:\/\/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+\.git$/;
+async function addMarketplace(
+  claudeExecutable: string,
+  marketplace: string,
+): Promise<void> {
+  console.log(`Adding marketplace: ${marketplace}`);
+
+  return executeClaudeCommand(
+    claudeExecutable,
+    ["plugin", "marketplace", "add", marketplace],
+    `Failed to add marketplace '${marketplace}'`,
+  );
+}
+
+# Reading: the regex anchors the END of the string to '.git', so no ref, tag, commit,
+# '#fragment' or trailing path can be expressed — a marketplace URL is structurally unpinnable.
+
+$ grep -n 'setupWorkloadIdentity\|installPlugins(\|INPUT_PLUGIN\|runClaude(' base-action/src/index.ts
+10:import { setupWorkloadIdentity } from "./workload-identity";
+18:    workloadIdentity = await setupWorkloadIdentity();
+36:    await installPlugins(
+37:      process.env.INPUT_PLUGIN_MARKETPLACES,
+38:      process.env.INPUT_PLUGINS,
+47:    const result = await runClaude(promptConfig.path, {
+exit=0
+# Reading: the marketplace clone runs at base-action/src/index.ts:36, AFTER
+# setupWorkloadIdentity() at :18, i.e. inside the credentialed job.
+
+== E6: what the marketplace URL actually resolves to at run time ==
+$ curl -sS https://api.github.com/repos/anthropics/claude-code -o <tmp>/cc.json -w '%{http_code}'
+HTTP 200  curl exit=0
+full_name=anthropics/claude-code default_branch=main private=False archived=False pushed_at=2026-09-10T06:06:11Z
+
+$ curl -sS -L https://raw.githubusercontent.com/anthropics/claude-code/main/.claude-plugin/marketplace.json
+HTTP 200  bytes=5468  curl exit=0
+marketplace name='claude-code-plugins'  version='1.0.0'
+plugins=['agent-sdk-dev', 'claude-opus-4-5-migration', 'code-review', 'commit-commands', 'explanatory-output-style', 'feature-dev', 'frontend-design', 'hookify', 'learning-output-style', 'plugin-dev', 'pr-review-toolkit', 'ralph-wiggum', 'security-guidance']
+# Reading: the marketplace NAME 'claude-code-plugins' that the 'plugins:' input
+# references is itself defined by remote content on the default branch, not by the URL.
+
+== E7: does the maintainer's own review reference use the marketplace at all? ==
+$ grep -c 'plugin_marketplaces\|plugins:' .github/workflows/claude-review.yml examples/pr-review-comprehensive.yml
+claude-review.yml: 0   examples/pr-review-comprehensive.yml: 0
+$ grep -n 'prompt:' .github/workflows/claude-review.yml
+32:          prompt: "/review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}"
+
+$ python3 -c "import json; [print(e['path']) for e in json.load(open('<tmp>/tree.json'))['tree'] if e['path'].startswith('.claude/commands')]"
+# CORRECTION (revision 4): this block originally recorded a curl|jq|grep command line
+# that was NOT what ran. The listing below was produced by the python3 filter above over
+# a tree.json fetched to the scratch directory during orientation, before this log's
+# 07:08:10Z header. The command line has been replaced with the one that ran, and E9
+# below reruns the fetch itself with its real argv so the retrieval is on the record.
+# No output line in this block was added, removed or altered.
+.claude/commands
+.claude/commands/commit-and-pr.md
+.claude/commands/label-issue.md
+.claude/commands/review-pr.md
+# Reading: the maintainer's own review lane runs '/review-pr', a command file that lives
+# in the action's OWN tree at .claude/commands/review-pr.md and is therefore pinned with
+# the checkout. It uses no plugin and no marketplace. That is the available alternative.
+
+== E8: where revision 3 inherited plugin_marketplaces/plugins from ==
+$ git -C ~/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:.github/workflows/claude-code-review.yml | grep -n 'plugin\|prompt'
+49:          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
+50:          plugins: 'code-review@claude-code-plugins'
+51:          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }} --comment'
+exit=0
+# Reading: py's review lane carries both inputs at lines 49-51. Revision 3 inherited
+# them from py without adjudicating them; revision 4 removes them (see DECISION.md).
+
+== E9 (added after the E1-E8 capture, to put the tree retrieval on the record with its real argv) ==
+# captured: 2026-09-10T07:22:16Z
+$ curl -sS -o <tmp>/tree-e9.json -w 'HTTP %{http_code}' 'https://api.github.com/repos/anthropics/claude-code-action/git/trees/19dda84776b3518d98b8798e591daee763049ed3?recursive=1'
+HTTP 200  curl exit=0
+$ python3 -c "import json;d=json.load(open('<tmp>/tree-e9.json'));print('truncated=',d['truncated']);print('entries=',len(d['tree']));[print(e['path']) for e in d['tree'] if e['path'].startswith('.claude/commands')]"
+truncated= False
+entries= 258
+.claude/commands
+.claude/commands/commit-and-pr.md
+.claude/commands/label-issue.md
+.claude/commands/review-pr.md
+exit=0

@@ -1,0 +1,11 @@
+crates-proptest-1.11.0 HTTP 200 https://crates.io/api/v1/crates/proptest/1.11.0
+OK crates-proptest-1.11.0 content matched
+crates-insta-1.48.0 HTTP 200 https://crates.io/api/v1/crates/insta/1.48.0
+OK crates-insta-1.48.0 content matched
+rust-stable-channel HTTP 200 https://static.rust-lang.org/dist/channel-rust-stable.toml
+OK rust-stable-channel content matched
+clap-styledstr-docs HTTP 200 https://docs.rs/clap/latest/clap/builder/struct.StyledStr.html
+OK clap-styledstr-docs content matched
+insta-quickstart HTTP 200 https://insta.rs/docs/quickstart/
+FAIL insta-quickstart expected content absent
+citation_spot_failures=1

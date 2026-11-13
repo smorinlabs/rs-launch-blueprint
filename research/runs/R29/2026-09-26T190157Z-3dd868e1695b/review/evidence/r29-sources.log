@@ -1,0 +1,29 @@
+snapshot set: 51 entries; retrieval window:
+2026-09-27T02:58:30Z
+2026-09-27T02:58:48Z
+PASS S1a — taplo#715 is the owner's own thread, closed
+PASS S1b — owner comment 3513470749 (2025-11-10): plans no longer exist
+PASS S1c — owner comment 3516463115 (2025-11-11): 'destined to eventually die'
+PASS S1d — owner comment 3524761328 (2025-11-13): 'I don't want to be involved anymore'
+PASS S1e — collaborator panekj 4106765129 (2026-03-22): keeps merging and releasing 'as long as I can'
+PASS S1f — taplo-cli newest unyanked release is still 0.10.0 of 2025-05-23; repo not archived, pushed 2026-07-28
+PASS S2a — binstall v1.23.0 default templates include '{ repo }/releases/download/{ version }' + '/{ name }-{ target }{ archive-suffix }'
+PASS S2b — dprint 0.57.4 release carries dprint-<target>.zip for both matrix runners' targets (a binstall template match)
+PASS S2c — taplo 0.10.0 release assets carry no target triple and no 'taplo-cli' prefix, so no binstall template can name them
+PASS S2d — dprint crate manifest has no [package.metadata.binstall] stanza (binstall uses its defaults)
+PASS S3a — dprint cli.md:222-223 — exit 14 no files (0 with --allow-no-files), exit 20 unformatted
+PASS S3b — dprint config.md:42 plugins may be URLs or file paths; :100 Wasm plugins get no checksum by default
+PASS S3c — dprint/dprint's own dprint.json uses npm: specifiers (toml :26, yaml :30), no plugins.dprint.dev URL; the only @sha is the exec process plugin (:27)
+PASS S3d — deno .dprint.json:91-95 — json-0.21.3, markdown-0.21.1, toml-0.7.0, pretty_yaml-v0.6.0 via plugins.dprint.dev
+PASS S3e — rustup ci.yaml:1682/1686/1689 installs taplo+oxfmt and runs 'oxfmt . --check' and 'taplo fmt'
+PASS S4a — Rust Style Guide cargo.md:5 and :11-15 — same indentation as Rust; name, version first, description last; version-sort other sections
+PASS S4b — dprint-plugin-toml 0.8.0 resolve_config.rs:70 — cargo.applyConventions defaults to true; cargo.rs:13 keys on the file name Cargo.toml
+PASS S5a — pretty_yaml#4 (block-scalar final line break) is open, filed 2024-12-16, zero comments
+PASS S5b — pretty_yaml v0.6.0 dprint wrapper is package dprint_plugin_yaml, publish = false, cdylib
+PASS S5c — crates.io has no crate named yamlfmt or dprint-plugin-yaml (both 404)
+PASS S6 — the four @sha256 pins in fixtures/tree/dprint.json equal the api.github.com release digests of plugin.wasm
+PASS S7 — fixture CHANGELOG.md is the first 12 lines of release-please's own generated CHANGELOG.md, with its double blank line and '*' bullets
+PASS S8 — crates.io figures (recent 90-day / all-time / newest unyanked / date) as quoted in DECISION.md
+PASS S9 — GitHub repo figures: stars / archived / pushed_at as quoted in DECISION.md
+PASS S10 — rustsec.org: no package page for any recommended or compared crate (404); control page time.html is 200
+r29-sources: PASS=25 FAIL=0

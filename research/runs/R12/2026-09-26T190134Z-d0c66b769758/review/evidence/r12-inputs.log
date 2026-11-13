@@ -1,0 +1,61 @@
+PASS I-prompt run prompt is byte-identical to the published prompt
+PASS I-prompt-engines
+FAIL I-policy -- policy drift
+PASS I-policy-hash-stated
+engine_overrides.R12: ['muse', 'opus'] items.R12.engines: ['muse', 'opus']
+PASS I-override live engine_overrides and items engines for R12 are [muse, opus]
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+KeyError: 'R12'
+FAIL I-auditor-override -- R12 empirical seat differs
+PASS I-runbook-eao RUNBOOK.md:98-103 carries the empirical_auditor_overrides rule
+PASS I-runbook-q17a RUNBOOK.md:73-76 names Q17.A and lists R12
+manifest required_engines: ['codex', 'opus'] input_hashes.prompt: 3da9f7d26af89f1406eb86f608d1add3b0f31e6876a4328998fb16de154dabe8
+PASS I-manifest-dispatch manifest still records the pre-amendment dispatch (codex, opus; prompt 3da9f7d2)
+PASS I-r1-snapshot revision 1 preserved byte-for-byte
+PASS I-r2-snapshot revision 2 preserved byte-for-byte
+PASS I-r3-snapshot revision 3 preserved byte-for-byte
+PASS I-params-r11
+PASS I-params-fixed
+PASS I-prereq-r11
+PASS I-prereq-hash
+PASS I-manifest-tier
+PASS I-manifest-id
+PASS I-index-owns
+PASS I-f041
+PASS I-r11-handover
+PASS I-r11-plan-needs
+PASS I-r11-crit13
+PASS I-r11-slot
+PASS I-r11-owns
+PASS I-r11-jobs
+PASS I-muse-id
+PASS I-opus-id
+PASS I-muse-rec
+PASS I-opus-rec
+PASS I-opus-baseline
+PASS I-muse-nobaseline
+PASS I-dec-header
+PASS I-dec-revnote1
+PASS I-dec-revnote
+PASS I-dec-revnote3
+PASS I-dec-revnote4
+PASS I-dec-actor
+PASS I-dec-h2-decision
+PASS I-dec-h2-params
+PASS I-dec-h2-emp
+PASS I-dec-h2-eng
+PASS I-dec-h3-prin
+PASS I-dec-reverify
+PASS I-dec-ownsnone
+PASS I-dec-noconflict
+PASS I-dec-baseline
+PASS I-dec-nosup
+PASS I-dec-h2order
+PASS I-dec-assumes5
+all assumes lines byte-exact
+PASS I-dec-assumes-exact every assumes line byte-identical to inputs/parameters.json
+check tokens cited: 81
+all check IDs resolve
+PASS I-dec-checks every cited check ID resolves to a PASS
+RESULT PASS=50 FAIL=2 SKIP=0

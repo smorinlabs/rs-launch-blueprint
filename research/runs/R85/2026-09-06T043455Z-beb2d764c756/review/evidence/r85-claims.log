@@ -1,0 +1,743 @@
+
+========== 0. toolchain and platform ==========
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+macOS 26.4 (arm64)
+bash 3.2.57
+
+========== 1. pinned crate sources — download and sha256 assertion ==========
+OK   comfy-table            8.0.0    sha256=136c8c4c3823846e8ba6d4bda011b4e5d5827b8bb0ac26c31f9ab31abe9f54f2
+OK   tabled                 0.22.0   sha256=2d2596a104db1900b943f97d793a6c99addca918c4525c999f751a0f17d472eb
+OK   papergrid              0.18.0   sha256=d0984e668274d34691bc2b262ef0d115de5fa9973bcdee7ae32213f93099153e
+OK   console                0.16.6   sha256=e96a4956774c13c126a8b5af4daa79384f4d826534c95a02d76afb39e2ab64e3
+OK   ansi-str               0.9.0    sha256=060de1453b69f46304b28274f382132f4e72c55637cf362920926a70d090890d
+OK   ansitok                0.3.0    sha256=c0a8acea8c2f1c60f0a92a8cd26bf96ca97db56f10bbcab238bbe0cceba659ee
+OK   anstyle-hyperlink      1.0.2    sha256=7a14cad0fa1d1fb02de486a95ea7fd8dd28567b82f65b4ca34bffa7da81823e4
+OK   supports-hyperlinks    3.2.0    sha256=e396b6523b11ccb83120b115a0b7366de372751aa6edf19844dfb13a6af97e91
+OK   timeago                0.6.1    sha256=46c29b13d230e9cd58513d38701a661fc06e1215398937532a2d938ecca6f219
+
+========== 2. THE DECIDING QUESTION — does the cell-width function discount a zero-width OSC-8 hyperlink? ==========
+
+--- 2a. comfy-table 8.0.0 — which module supplies measure_text_width (feature-selected) ---
+use std::borrow::Cow;
+
+use crate::utils::ColumnDisplayInfo;
+
+#[cfg(feature = "custom_styling")]
+mod custom_styling;
+#[cfg(not(feature = "custom_styling"))]
+mod normal;
+
+#[cfg(feature = "custom_styling")]
+pub use custom_styling::*;
+#[cfg(not(feature = "custom_styling"))]
+pub use normal::*;
+
+
+--- 2b. comfy-table 8.0.0 DEFAULT features — content_split/normal.rs:1-10 ---
+use std::borrow::Cow;
+
+use unicode_segmentation::UnicodeSegmentation;
+use unicode_width::UnicodeWidthStr;
+
+/// Returns printed length of string
+#[inline(always)]
+pub fn measure_text_width(s: &str) -> usize {
+    s.width()
+}
+=> unicode_width over the raw cell: every printable byte of the URL is counted.
+
+--- 2c. comfy-table 8.0.0 feature custom_styling — content_split/custom_styling.rs:1-13 ---
+use std::borrow::Cow;
+
+use ansi_str::AnsiStr;
+use unicode_segmentation::UnicodeSegmentation;
+use unicode_width::UnicodeWidthStr;
+
+const ANSI_RESET: &str = "\u{1b}[0m";
+
+/// Returns printed length of string, takes into account escape codes
+#[inline(always)]
+pub fn measure_text_width(s: &str) -> usize {
+    s.ansi_strip().width()
+}
+=> delegates to ansi_str::AnsiStr::ansi_strip (see 2e).
+
+--- 2d. comfy-table 8.0.0 Cargo.toml — the custom_styling feature and its two deps ---
+custom_styling = [
+    "dep:ansi-str",
+    "dep:console",
+    "tty",
+]
+81:[dependencies.ansi-str]
+82-version = "0.9"
+83-optional = true
+85:[dependencies.console]
+86-version = "0.16"
+87-optional = true
+
+--- 2e. ansi-str 0.9.0 — strip_ansi_sequences keeps ONLY ElementKind::Text ---
+377:    fn ansi_strip(&self) -> Cow<'_, str>;
+378-
+379-    /// Returns true if a string contains any ansi sequences.
+380-    ///
+--
+444:    fn ansi_strip(&self) -> Cow<'_, str> {
+445-        strip_ansi_sequences(self)
+446-    }
+fn strip_ansi_sequences(text: &str) -> Cow<'_, str> {
+    let mut buf = String::new();
+    let mut tokens = parse_ansi(text);
+
+    {
+        // doing small optimization in regard of string with no ansi sequences
+        // which will contain only 1 block of text.
+
+        let t1 = match tokens.next() {
+            Some(t) => t,
+            None => return Cow::Borrowed(""),
+        };
+
+        match tokens.next() {
+            Some(t2) => {
+                if t1.kind() == ElementKind::Text {
+                    let s = &text[t1.start()..t1.end()];
+                    buf.push_str(s);
+                }
+
+                if t2.kind() == ElementKind::Text {
+                    let s = &text[t2.start()..t2.end()];
+                    buf.push_str(s);
+                }
+            }
+            None => {
+                return match t1.kind() {
+                    ElementKind::Text => {
+                        let s = &text[t1.start()..t1.end()];
+                        Cow::Borrowed(s)
+                    }
+                    _ => Cow::Borrowed(""),
+                }
+            }
+        };
+    }
+
+    for token in tokens {
+        if token.kind() == ElementKind::Text {
+            let text = &text[token.start()..token.end()];
+            buf.push_str(text);
+        }
+    }
+
+    Cow::Owned(buf)
+}
+
+
+--- 2f. ansitok 0.3.0 — a well-formed OSC-8 pair is classified Osc + Esc, never Text (crate's own test) ---
+    fn test_iterator_osc_hyperlinks_styled_non_ascii() {
+        let text = "\x1b[38;5;4m\x1b]8;;file:///Users/dan/src/delta/src/ansi/mod.rs\x1b\\src/ansi/modバー.rs\x1b]8;;\x1b\\\x1b[0m\n";
+
+        let elements: Vec<Element> = AnsiIterator::new(text).collect();
+
+        assert_eq!(
+            elements,
+            vec![
+                Element::sgr(0, 9),
+                Element::osc(9, 58),
+                Element::esc(58, 59),
+                Element::text(59, 80),
+                Element::osc(80, 86),
+                Element::esc(86, 87),
+                Element::sgr(87, 91),
+                Element::text(91, 92),
+            ]
+        );
+
+        assert_eq!(&text[0..9], "\x1b[38;5;4m");
+        assert_eq!(
+            &text[9..58],
+            "\x1b]8;;file:///Users/dan/src/delta/src/ansi/mod.rs\x1b"
+        );
+        assert_eq!(&text[58..59], "\\");
+        assert_eq!(&text[59..80], "src/ansi/modバー.rs");
+        assert_eq!(&text[80..86], "\x1b]8;;\x1b");
+        assert_eq!(&text[86..87], "\\");
+        assert_eq!(&text[87..91], "\x1b[0m");
+        assert_eq!(&text[91..92], "\n");
+    }
+
+--- 2g. ansitok 0.3.0 — the parser is vte (Alacritty's VT state machine); osc_dispatch records both terminators ---
+161:// Based on https://github.com/alacritty/vte/blob/v0.9.0/examples/parselog.rs
+201:    fn osc_dispatch(&mut self, _params: &[&[u8]], _bell_terminated: bool) {
+202-        self.element = Some(Element::osc(0, 0));
+203-    }
+204-
+65:[dependencies.vte]
+66-version = "0.14.1"
+67-
+
+--- 2h. tabled 0.22.0 / papergrid 0.18.0 — the same question, papergrid answers it in a comment ---
+/// Returns a string width.
+pub fn get_line_width(text: &str) -> usize {
+    #[cfg(not(feature = "ansi"))]
+    {
+        get_string_width(text)
+    }
+
+    #[cfg(feature = "ansi")]
+    {
+        // we need to strip ansi because of terminal links
+        // and they're can't be stripped by ansi_str.
+
+        ansitok::parse_ansi(text)
+            .filter(|e| e.kind() == ansitok::ElementKind::Text)
+            .map(|e| &text[e.start()..e.end()])
+            .map(get_string_width)
+            .sum()
+    }
+}
+
+/// Returns a max string width of a line.
+pub fn get_text_width(text: &str) -> usize {
+    text.lines().map(get_line_width).max().unwrap_or(0)
+}
+
+/// Returns a char width.
+pub fn get_char_width(c: char) -> usize {
+    unicode_width::UnicodeWidthChar::width(c).unwrap_or_default()
+}
+
+/// Returns a string width (accouting all characters).
+pub fn get_string_width(text: &str) -> usize {
+    unicode_width::UnicodeWidthStr::width(text)
+=> with feature `ansi`: only Text elements are measured. Without it: unicode_width over the raw cell.
+29:ansi = [
+30-    "ansi-str",
+31-    "ansitok",
+32-]
+33-default = ["std"]
+62:ansi = [
+63-    "papergrid/ansi",
+64-    "testing_table?/ansi",
+65-    "ansi-str",
+66-    "ansitok",
+67-    "std",
+
+--- 2i. comfy-table also splits/wraps through console::AnsiCodeIterator — console 0.16.6 has an explicit OSC branch ---
+21:    let iter = console::AnsiCodeIterator::new(line);
+68:    let mut iter = console::AnsiCodeIterator::new(word);
+145:        let iter = console::AnsiCodeIterator::new(word)
+274:fn find_ansi_code_exclusive(it: &mut Peekable<CharIndices>) -> Option<(usize, usize)> {
+275-    'outer: loop {
+276-        let (start, entry) = *it.peek()?;
+277-        match entry {
+278-            '\u{1b}' => {
+279-                it.next();
+280-                match it.peek() {
+281-                    Some((_, OscSequence::START)) => {
+282-                        return Some((start, consume_end_exclusive::<OscSequence>(it, start)))
+    fn strip_osc8_hyperlink_st() {
+        let s = "\x1b]8;;file:///tmp/test\x1b\\hello\x1b]8;;\x1b\\";
+        assert_eq!(strip_ansi_codes(s).as_ref(), "hello");
+    }
+    fn strip_osc8_hyperlink_bel() {
+        let s = "\x1b]8;;file:///tmp/test\x07hello\x1b]8;;\x07";
+        assert_eq!(strip_ansi_codes(s).as_ref(), "hello");
+    }
+    fn strip_tmux_passthrough_dcs() {
+        let open = "\x1bPtmux;\x1b\x1b\x1b]8;;file:///tmp/test\x1b\x1b\\\x1b\\";
+        let close = "\x1bPtmux;\x1b\x1b\x1b]8;;\x1b\x1b\\\x1b\\";
+        assert_eq!(
+            strip_ansi_codes(&format!("{open}hello{close}")).as_ref(),
+            "hello"
+        );
+    }
+--- console default features must include ansi-parsing for that path ---
+[features]
+alloc = []
+ansi-parsing = []
+default = [
+    "unicode-width",
+    "ansi-parsing",
+    "std",
+]
+std = [
+    "dep:libc",
+    "alloc",
+]
+windows-console-colors = ["ansi-parsing"]
+
+[lib]
+
+--- 2j. counter-signal: comfy-table carries an OSC-8 width test that NEVER COMPILES ---
+188-    // TODO: Figure out why this fails with the custom_styling feature enabled.
+189-    #[test]
+190-    #[cfg(not(feature = "custom_styling"))]
+191:    fn measure_text_width_osc8_test() {
+192-        use unicode_width::UnicodeWidthStr;
+193-
+194-        use super::measure_text_width;
+195-
+196-        let text = "\x1b]8;;https://github.com\x1b\\This is a link\x1b]8;;\x1b";
+197-        let width = measure_text_width(text);
+198-
+199-        assert_eq!(text.width(), 41);
+200-        assert_eq!(width, 14);
+201-    }
+202-}
+=> the test body lives in custom_styling.rs, which mod.rs compiles only under
+   `#[cfg(feature = "custom_styling")]`, while the test itself is
+   `#[cfg(not(feature = "custom_styling"))]` — a contradiction, so it is compiled out
+   in BOTH feature configurations and has never run. Its input is also malformed:
+   the closing sequence is `ESC ] 8 ; ; ESC` with no final backslash, so it is not
+   what a well-formed emitter produces.
+
+--- 2k. is measure_text_width the ONLY width site? comfy-table has a second one that bypasses it ---
+--- the primary measurement does go through the feature-selected function ---
+61:    pub(crate) fn max_content_widths(&self) -> Vec<usize> {
+62-        // Iterate over all cells
+63-        self.cells
+64-            .iter()
+65-            .map(|cell| {
+66-                // Iterate over all content strings and return a vector of string widths.
+67-                // Each entry represents the longest string width for a cell.
+68-                cell.content
+69-                    .iter()
+70-                    .map(|string| measure_text_width(string))
+71-                    .max()
+72-                    .unwrap_or(0)
+73-            })
+74-            .collect()
+75-    }
+--- but the ContentArrangement::Dynamic allocator measures cell content with raw unicode-width ---
+1:use unicode_width::UnicodeWidthStr;
+fn longest_line_after_split(average_space: usize, column: &Column, table: &Table) -> usize {
+    // Runtime variable that holds the longest found line length.
+    let mut longest = 0;
+
+    for cell in table.column_cells_with_header_iter(column.index) {
+        // Only look at rows that actually contain this cell.
+        let Some(cell) = cell else { continue };
+
+        let delimiter = delimiter(table, column, cell);
+
+        // Create a temporary ColumnDisplayInfo with the average space as width.
+        // That way we can simulate how the split text will look like.
+        let info = ColumnDisplayInfo::new(column, average_space.try_into().unwrap_or(u16::MAX));
+
+        // Iterate over each line and split it into multiple lines, if necessary.
+        // Newlines added by the user will be preserved.
+        for line in cell.content.iter() {
+            if line.width() > average_space {
+                let parts = split_line(line, &info, delimiter);
+
+                #[cfg(feature = "_debug")]
+                println!(
+                    "dynamic::longest_line_after_split: Splitting line with width {}. Original:\n    {}\nSplitted:\n    {:?}",
+                    line.width(),
+                    line,
+                    parts
+                );
+
+                parts
+                    .iter()
+                    .for_each(|part| longest = longest.max(part.width()));
+            } else {
+                longest = longest.max(line.width())
+            }
+        }
+    }
+
+=> longest_line_after_split uses line.width() / part.width() (unicode-width) on cell
+   content, NOT measure_text_width, so this path is not ANSI-aware even with
+   custom_styling enabled. Every raw .width() call on cell content in src/utils/arrangement:
+src/utils/arrangement/dynamic.rs:463:            if line.width() > average_space {
+src/utils/arrangement/dynamic.rs:469:                    line.width(),
+src/utils/arrangement/dynamic.rs:476:                    .for_each(|part| longest = longest.max(part.width()));
+src/utils/arrangement/dynamic.rs:478:                longest = longest.max(line.width())
+--- the same question for tabled/papergrid: any width site outside papergrid util/string.rs? ---
+(papergrid: no direct unicode-width use outside src/util/string.rs)
+(tabled: no direct unicode-width use at all; width goes through papergrid helpers)
+--- tabled wrapping branches explicitly on the ansi feature ---
+211:fn wrap_text(text: &str, width: usize, keep_words: bool) -> String {
+216:    #[cfg(not(feature = "ansi"))]
+225:    #[cfg(feature = "ansi")]
+240:#[cfg(not(feature = "ansi"))]
+241:fn wrap_text_basic(s: &str, width: usize) -> String {
+284:#[cfg(feature = "ansi")]
+285:fn wrap_text_basic(text: &str, width: usize, line_prefix: &str, line_suffix: &str) -> String {
+373:fn wrap_text_keeping_words_noansi(text: &str, width: usize) -> String {
+453:#[cfg(feature = "ansi")]
+454:fn wrap_text_keeping_words(text: &str, width: usize, prefix: &str, suffix: &str) -> String {
+
+--- 2l. history: the mis-measure was reported, diagnosed and fixed upstream (comfy-table issue #137) ---
+https://github.com/Nukesor/comfy-table/issues/137
+#137 Allow for OSC / Control Characters  state=closed created=2024-03-27T18:51:01Z closed=2024-04-05T20:37:41Z
+### A detailed description of the feature you would like to see added.
+
+Hi - I'd like to include OSC-8 hyperlinks in various columns - unfortunately that causes the column (and table) width to be incorrectly calculated.
+
+### Explain your usecase of the requested feature
+
+See above.
+
+Here's an example OSC-8 sequence:
+
+```shell
+printf '\033]8;;https://github.com\033\\This is a link\033]8;;\033\\\n'
+```
+
+### Alter
+--- selected comments (verbatim) ---
+--- dsully 2024-04-02T02:17:04Z
+So this kind of works:
+
+![CleanShot 2024-04-01 at 19 15 25@2x](https://github.com/Nukesor/comfy-table/assets/22371/ab153fa3-3be6-422f-a6d4-5fb56dbb36eb)
+
+The cell the OSC-8 escape codes are in are properly sized, but the header cell is not.
+
+If I remove `.set_header(...)`:
+
+![CleanShot 2024-04-01 at 19 17 48@2x](https://github.com/Nukesor/comfy-table/assets/22371/711c97f8-2c18-4354-b3c7-dc5ca3504053)
+
+```rust
+let mut table = Table::new();
+
+table
+    .load_preset("││──╞═╪╡│    ┬┴┌┐└┘")
+    .set_conten
+
+--- Nukesor 2024-04-02T13:08:16Z
+Yep. That should be the `measure_text_width` function, which is in `content_split/{custom_styling.mod,normal.rs}`
+
+Depending on where this should be handled, this is something that might need to be added to the `console` library upstream.
+
+--- dsully 2024-04-04T17:42:57Z
+PR above. `console` doesn't do the right thing. I'll look into addressing it there as well, but for now I'm using `ansi-str` which does the right thing. Would love a release if this looks good to you. 🙏
+
+
+========== 3. anstyle-hyperlink 1.0.2 — the null-object carrier claims ==========
+
+--- 3a. Default renders NOTHING; with_url writes the URL UNMODIFIED ---
+impl<D: core::fmt::Display> Default for Hyperlink<D> {
+    fn default() -> Self {
+        Self { url: None }
+    }
+}
+impl<D: core::fmt::Display> core::fmt::Display for Hyperlink<D> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let Some(url) = self.url.as_ref() else {
+            return Ok(());
+        };
+        if f.alternate() {
+            write!(f, "\x1B]8;;\x1B\\")
+        } else {
+            write!(f, "\x1B]8;;{url}\x1B\\")
+        }
+    }
+}
+=> open tag = 5 bytes ESC ] 8 ; ; + url + 2 bytes ESC \  (7 + url.len());
+   close tag = 7 bytes. No percent-encoding, no control-byte filtering: sanitizing is the caller obligation.
+
+--- 3b. declared MSRV, features, and the two unsafe libc calls the file feature brings ---
+14:rust-version = "1.66.0"
+[features]
+default = ["std"]
+file = [
+    "std",
+    "dep:percent-encoding",
+    "dep:libc",
+]
+std = []
+
+[lib]
+name = "anstyle_hyperlink"
+path = "src/lib.rs"
+
+[dependencies.libc]
+src/hostname.rs:35:    let limit = unsafe { libc::sysconf(libc::_SC_HOST_NAME_MAX) };
+src/hostname.rs:53:    let rc = unsafe { libc::gethostname(buf.as_mut_ptr().cast::<libc::c_char>(), maxlen) };
+
+--- 3c. path_to_url percent-encodes (the P4 URI guard the recommendation relies on) ---
+49:const FRAGMENT: &percent_encoding::AsciiSet = &percent_encoding::CONTROLS
+57:const PATH: &percent_encoding::AsciiSet = &FRAGMENT.add(b'#').add(b'?').add(b'{').add(b'}');
+59:const PATH_SEGMENT: &percent_encoding::AsciiSet = &PATH.add(b'/').add(b'%');
+63:const SPECIAL_PATH_SEGMENT: &percent_encoding::AsciiSet = &PATH_SEGMENT.add(b'\\');
+196:                url.extend(percent_encoding::percent_encode(
+198:                    SPECIAL_PATH_SEGMENT,
+
+========== 4. supports-hyperlinks 3.2.0 — licence and the environment inputs R65 must know about ==========
+14:rust-version = "1.70.0"
+27:license = "Apache-2.0"
+14:    if let Ok(arg) = std::env::var("FORCE_HYPERLINK") {
+18:    if std::env::var("DOMTERM").is_ok() {
+23:    if let Ok(version) = std::env::var("VTE_VERSION") {
+30:    if let Ok(program) = std::env::var("TERM_PROGRAM") {
+52:    std::env::var("WT_SESSION").is_ok() || std::env::var("KONSOLE_VERSION").is_ok()
+56:    use std::io::IsTerminal;
+58:        Stream::Stdout => std::io::stdout().is_terminal(),
+59:        Stream::Stderr => std::io::stderr().is_terminal(),
+66:    (std::env::var("FORCE_HYPERLINK").is_ok() || is_a_tty(stream)) && supports_hyperlinks()
+unsafe occurrences in src/lib.rs: 0
+
+========== 5. timeago 0.6.1 — does convert() take a signed or unsigned duration? ==========
+447:    pub fn convert(&self, d: Duration) -> String {
+448-        if d > self.max_duration {
+449-            return self
+450-                .too_high
+451-                .unwrap_or_else(|| self.lang.too_high())
+452-                .to_owned();
+453-        }
+419:    pub fn convert_chrono<Tz1, Tz2>(
+420-        &self,
+421-        from: chrono::DateTime<Tz1>,
+422-        to: chrono::DateTime<Tz2>,
+423-    ) -> String
+424-    where
+425-        Tz1: chrono::TimeZone,
+37:[features]
+38:default = [
+39-    "translations",
+40-    "isolang",
+41-    "chrono",
+42-]
+43-translations = []
+
+========== 6. Cargo declares both recommended crates — read at this machine's own cargo commit ==========
+pin: rust-lang/cargo 797e8a9bc (the commit printed by `cargo --version` above)
+21:anstream = "1.0.0"
+23:anstyle-hyperlink = "1.0.2"
+108:supports-hyperlinks = "3.2.0"
+165:anstream.workspace = true
+
+========== 7. registry figures — stable fields only, from snapshots (download counters excluded: they drift) ==========
+comfy-table          newest-unyanked=8.0.0    created_at=2026-08-05T01:05:28.283438Z rust_version=none     license=MIT
+tabled               newest-unyanked=0.22.0   created_at=2026-09-05T13:27:35.669751Z rust_version=none     license=MIT
+papergrid            newest-unyanked=0.18.0   created_at=2026-05-31T22:29:03.704393Z rust_version=none     license=MIT
+console              newest-unyanked=0.16.6   created_at=2026-09-10T07:42:27.489839Z rust_version=1.71     license=MIT
+ansi-str             newest-unyanked=0.9.0    created_at=2025-01-30T21:29:28.917372Z rust_version=none     license=MIT
+ansitok              newest-unyanked=0.3.0    created_at=2025-01-30T20:44:36.555490Z rust_version=none     license=MIT
+anstyle-hyperlink    newest-unyanked=1.0.2    created_at=2026-03-18T14:39:47.988589Z rust_version=1.66.0   license=MIT OR Apache-2.0
+supports-hyperlinks  newest-unyanked=3.2.0    created_at=2025-12-17T03:39:03.709710Z rust_version=1.70.0   license=Apache-2.0
+timeago              newest-unyanked=0.6.1    created_at=2026-07-02T11:29:33.182614Z rust_version=1.63     license=MIT OR Apache-2.0
+chrono-humanize      newest-unyanked=0.2.3    created_at=2023-07-22T21:23:36.487637Z rust_version=none     license=MIT/Apache-2.0
+
+========== 8. RustSec — the raws disagree (codex: unverified 404s; opus: pass). Query the advisory database itself. ==========
+pin: rustsec/advisory-db b50980aad8b8f14f77e25a97b32dd94bf008b0af
+anstream               ADVISORY FILES: RUSTSEC-2024-0404.md
+anstyle-hyperlink      no advisory directory in the database at this pin
+supports-hyperlinks    no advisory directory in the database at this pin
+timeago                no advisory directory in the database at this pin
+percent-encoding       no advisory directory in the database at this pin
+comfy-table            no advisory directory in the database at this pin
+tabled                 no advisory directory in the database at this pin
+console                no advisory directory in the database at this pin
+(anstream is the positive control: RUSTSEC-2024-0404 must appear, and it does.)
+
+========== 9. py and ts source precedent, read through the programme pins ==========
+py pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 / ts pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+
+--- 9a. py core/models.py — the hook and its default body ---
+    def table_rows(self) -> list[list[str]]:
+        """Row cells as strings, aligned with :meth:`table_columns`."""
+        return []
+
+    def table_rows_rich(self) -> list[list[str]]:
+        """Row cells for the *text* renderer only — may carry rich markup.
+
+        Override to add terminal niceties (OSC-8 hyperlinks via
+        :func:`core.format.rich_link`, relative times via
+        :func:`core.format.relative_time`). Defaults to :meth:`table_rows`;
+        Markdown and JSON always use the plain representations.
+        """
+        return self.table_rows()
+
+
+--- 9b. py core/format.py — the bucket table, relative_time, and rich_link ---
+
+from rich.markup import escape
+
+#: (seconds per unit, singular name) — largest first. Months/years use the
+#: coarse 30/365-day buckets appropriate for "about how long ago" display.
+_UNITS: list[tuple[int, str]] = [
+    (365 * 86400, "year"),
+    (30 * 86400, "month"),
+    (86400, "day"),
+    (3600, "hour"),
+    (60, "minute"),
+]
+
+def relative_time(moment: datetime, *, now: datetime | None = None) -> str:
+    """Render a coarse human delta: ``"2 days ago"`` / ``"in 3 hours"``.
+
+    Anything under a minute is ``"just now"``. A naive ``moment`` is taken
+    as UTC (matching the logging/JSON timestamp convention). ``now`` exists
+    for tests; it defaults to the current UTC time.
+    """
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=UTC)
+    reference = now if now is not None else datetime.now(UTC)
+    if reference.tzinfo is None:
+        reference = reference.replace(tzinfo=UTC)
+
+    seconds = (reference - moment).total_seconds()
+    future = seconds < 0
+    seconds = abs(seconds)
+
+    if seconds < 60:
+        return "just now"
+    for unit_seconds, name in _UNITS:
+        count = int(seconds // unit_seconds)
+        if count >= 1:
+            phrase = f"{count} {name}" + ("s" if count != 1 else "")
+            return f"in {phrase}" if future else f"{phrase} ago"
+    return "just now"  # pragma: no cover — unreachable (minute bucket catches)
+
+
+def rich_link(text: str, url: str) -> str:
+    """Markup for a clickable terminal hyperlink (OSC 8).
+
+    Rich emits the escape codes only on terminals that support them and
+    falls back to plain ``text`` everywhere else (pipes, files, no-color).
+    ``text`` is escaped — a path containing ``[`` must render literally,
+    not parse as markup. The URL needs no escaping (file URIs are
+    percent-encoded; markup is not parsed inside the tag).
+    """
+    return f"[link={url}]{escape(text)}[/link]"
+=> note: rich_link emits RICH MARKUP `[link=url]text[/link]`, not raw OSC-8 bytes;
+   Rich lowers the markup to OSC-8 and strips it off-terminal. That is the
+   mechanism Rust has no equivalent of inside a table crate.
+
+--- 9c. py — the text renderer is the only consumer of the rich variant ---
+    def _render_text(self, result: CLIResult, console: Console) -> None:
+        columns = result.table_columns()
+        if not columns or not result.table_rows():
+            note = result.human_note()
+            if note:
+                console.print(note)
+            return
+        title = result.table_title()
+        table = Table(title=title, show_header=True, header_style="bold cyan")
+        for column in columns:
+            table.add_column(column)
+        # Rich rows may carry markup (hyperlinks, relative times); rich strips
+        # the styling itself for non-terminal destinations (pipes, files).
+        for row in result.table_rows_rich():
+            table.add_row(*row)
+        console.print(table)
+
+    @staticmethod
+
+--- 9d. py — every mention of table_rows_rich in the repository at the pin ---
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:docs/adr/0010-rich-row-variant-on-result-models.md:19:Result models gain an optional **`table_rows_rich()`** hook, defaulting to
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:docs/design/0005-hexagonal-architecture-and-enforcement.md:191:  `table_columns()`/`table_rows_rich()`/OSC-8 links move to
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:src/py_launch_blueprint/cli/output.py:237:        for row in result.table_rows_rich():
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:src/py_launch_blueprint/core/format.py:23:variants (``table_rows_rich``) — they format strings, never print. The
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:src/py_launch_blueprint/core/models.py:59:    def table_rows_rich(self) -> list[list[str]]:
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:src/py_launch_blueprint/core/models.py:137:    def table_rows_rich(self) -> list[list[str]]:
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:44:    rows = ConfigPath(path=str(target), exists=True).table_rows_rich()
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:50:    rows = ConfigPath(path="rel.toml", exists=False).table_rows_rich()
+
+--- 9e. py — every mention of relative_time at the pin (is it wired into any model?) ---
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:src/py_launch_blueprint/core/format.py:46:def relative_time(moment: datetime, *, now: datetime | None = None) -> str:
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:src/py_launch_blueprint/core/models.py:64:        :func:`core.format.relative_time`). Defaults to :meth:`table_rows`;
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:5:from py_launch_blueprint.core.format import relative_time, rich_link
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:11:def test_relative_time_just_now():
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:12:    assert relative_time(NOW - timedelta(seconds=30), now=NOW) == "just now"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:15:def test_relative_time_singular_and_plural():
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:16:    assert relative_time(NOW - timedelta(minutes=1), now=NOW) == "1 minute ago"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:17:    assert relative_time(NOW - timedelta(minutes=5), now=NOW) == "5 minutes ago"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:20:def test_relative_time_buckets():
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:21:    assert relative_time(NOW - timedelta(hours=3), now=NOW) == "3 hours ago"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:22:    assert relative_time(NOW - timedelta(days=2), now=NOW) == "2 days ago"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:23:    assert relative_time(NOW - timedelta(days=70), now=NOW) == "2 months ago"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:24:    assert relative_time(NOW - timedelta(days=800), now=NOW) == "2 years ago"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:27:def test_relative_time_future():
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:28:    assert relative_time(NOW + timedelta(days=2), now=NOW) == "in 2 days"
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:31:def test_relative_time_naive_moment_treated_as_utc():
+b08bccfb55d05f15e46a83b52c5660b1881d19f5:tests/core/test_format.py:33:    assert relative_time(naive, now=NOW) == "1 hour ago"
+
+--- 9e2. py — the only override of the hook in the whole repository, and its escaping test ---
+    def table_rows(self) -> list[list[str]]:
+        return [[self.path, "yes" if self.exists else "no"]]
+
+    @override
+    def table_rows_rich(self) -> list[list[str]]:
+        try:
+            uri = Path(self.path).as_uri()
+        except ValueError:  # relative path — no sensible file:// form
+            return self.table_rows()
+        return [[rich_link(self.path, uri), "yes" if self.exists else "no"]]
+
+        "[link=https://example.com]docs[/link]"
+    )
+
+
+def test_config_path_rich_row_hyperlinks_absolute_path(tmp_path):
+    target = tmp_path / "cfg.toml"
+    rows = ConfigPath(path=str(target), exists=True).table_rows_rich()
+    assert rows[0][0] == f"[link={target.as_uri()}]{target}[/link]"
+    assert rows[0][1] == "yes"
+
+
+def test_config_path_rich_row_falls_back_for_relative_path():
+    rows = ConfigPath(path="rel.toml", exists=False).table_rows_rich()
+    assert rows == [["rel.toml", "no"]]
+
+
+def test_plain_rows_never_carry_markup(tmp_path):
+    result = ConfigPath(path=str(tmp_path / "cfg.toml"), exists=True)
+    assert "[link=" not in result.table_rows()[0][0]
+
+
+def test_rich_link_escapes_markup_in_text():
+    # a path containing brackets must render literally, not parse as markup
+    assert rich_link("a[b]", "https://e") == "[link=https://e]a\\[b][/link]"
+
+--- 9f. py design doc HEX-15 — the finding Amendment 2 rests on ---
+  subclass the shared base.
+
+- **HEX-15 — view models are a CLI concern.** `ProjectList`/`CLIResult` with
+  `table_columns()`/`table_rows_rich()`/OSC-8 links move to
+  `interfaces/cli/view_models.py`. The pure `Project` stays in the domain.
+  The web layer serialises `Project` directly; the CLI wraps it in a view
+  model for rendering. Both consume the *same* domain object.
+
+- **HEX-16 — front-ends compose, call, translate.** Every driving adapter
+
+--- 9g. py ADR 0010 — status and the escaping requirement ---
+# 0010. Terminal niceties via a rich-only row variant on result models
+
+- **Status:** Accepted
+- **Date:** 2026-06-12
+- **Deciders:** maintainer (interactive + CodeRabbit review), implemented in PR #400
+- **Related:** `core/models.py`; `core/format.py`; ADR 0003 (output modes)
+
+## Context
+
+Terminal niceties (OSC-8 hyperlinks, relative timestamps) belong only in
+interactive text output — JSON must stay raw fields + ISO-8601 UTC and
+Markdown must stay plain text. But the result models in `core/models.py`
+23:with the link text **escaped**, so data containing `[` renders literally
+36:- Rich strips the styling itself for non-terminal destinations, so the
+
+--- 9h. ts at its pin — any terminal-only row presentation at all? ---
+cb1cbcb2e88b898e8c081b0abbfabc1630079c00:pnpm-lock.yaml:2025:  supports-hyperlinks@3.2.0:
+cb1cbcb2e88b898e8c081b0abbfabc1630079c00:pnpm-lock.yaml:3584:      supports-hyperlinks: 3.2.0
+cb1cbcb2e88b898e8c081b0abbfabc1630079c00:pnpm-lock.yaml:3870:  supports-hyperlinks@3.2.0:
+
+========== 10. fixed-parameter byte comparison against the registry (generated, not typed) ==========
++ awk <the four fixed rows of docs/port/PARAMETERS.md> > expected-assumes.txt
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
++ grep "^- assumes " review/DECISION.md > actual-assumes.txt
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
++ diff -u expected-assumes.txt actual-assumes.txt
+parameter-diff-exit=0
+
+========== 11. done ==========

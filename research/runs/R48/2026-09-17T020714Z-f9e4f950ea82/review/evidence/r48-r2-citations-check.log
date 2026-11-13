@@ -1,0 +1,13 @@
+# R48 mocking-crates — revision 2 citation and gate-2 check (JF-1, JF-3, JF-7)
+# retrieved: 2026-09-17T04:56:33Z
+# host: Darwin arm64
+# grep binary: /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+# shellcheck: version: 0.11.0
+#
+PASS E01: tokio-rs/tokio declares mockall = "0.13.0" and runs CI on macos-latest — corroborating adopter evidence for mockall on macOS, at 0.13.0 and NOT at the recommended 0.15.0, which is why revision 2 closes gate 4 for 0.15.0 by executed compile instead (see r48-r2-msrv-macos-spike.log D03) (1 matching manifest line and at least one macos-latest occurrence in the project's own CI, counts by /usr/bin/grep -c)
+PASS E02: matrix-org/matrix-rust-sdk declares wiremock = { version = "0.6.5" } and runs CI on macos-latest — the adopter evidence behind wiremock's gate-4 sentence, which stands even though wiremock is excluded on gate 2 (1 matching manifest line and at least one macos-latest occurrence in the project's own CI, counts by /usr/bin/grep -c)
+PASS E03: apache/iceberg-rust declares mockito = "1" and names macos-latest in its own CI — the adopter evidence behind mockito's gate-4 disposition; that its macOS lanes are build-only and its tests job is ubuntu-only is carried from the opus report, 2026-09-17, and is NOT asserted here (1 matching manifest line and at least one macos-latest occurrence in the project's own CI, counts by /usr/bin/grep -c)
+PASS E04: newest non-yanked version and declared rust-version for every candidate: mockall=0.15.0:1.77.0 httpmock=0.8.3:1.88.0 mockito=1.7.2:1.70 unimock=0.6.8:1.70 faux=0.1.13:1.65 wiremock=0.6.5:NONE httptest=0.16.4:NONE mry=0.14.0:NONE double=0.2.4:NONE stubr=0.6.2:NONE rvcr=0.2.1:NONE — five declare a version inside the 1.96 floor and clear gate 2 (mockall, httpmock, mockito, unimock, faux); six declare none and therefore fail gate 2 under the strict reading the programme applies (wiremock, httptest, mry, double, stubr, rvcr)
+PASS E05: shellcheck reports no findings and exits 0 for all 3 evidence scripts in this run (r48-claims-check.sh, r48-r2-msrv-macos-spike.sh, r48-r2-citations-check.sh); its output was 0 lines long
+#
+RESULT: all checks passed (0 FAIL)

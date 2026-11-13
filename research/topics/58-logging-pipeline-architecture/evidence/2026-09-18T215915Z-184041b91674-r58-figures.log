@@ -1,0 +1,183 @@
+== environment ==
+/usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+python3:       Python 3.14.7
+snapshots retrieved (UTC): 2026-09-27T05:48:12Z
+
+== crates.io figures ==
+PASS  tracing crate.recent_downloads = 198651206
+PASS  tracing crate.downloads = 877269566
+PASS  tracing newest non-yanked num = '0.1.44'
+PASS  tracing newest non-yanked created_at (date) = '2025-12-18'
+PASS  tracing newest rust_version = '1.65.0'
+PASS  tracing newest license = 'MIT'
+PASS  tracing-core crate.recent_downloads = 199035032
+PASS  tracing-core crate.downloads = 888047949
+PASS  tracing-core newest non-yanked num = '0.1.36'
+PASS  tracing-core newest non-yanked created_at (date) = '2025-12-18'
+PASS  tracing-core newest rust_version = '1.65.0'
+PASS  tracing-core newest license = 'MIT'
+PASS  tracing-subscriber crate.recent_downloads = 146641301
+PASS  tracing-subscriber crate.downloads = 627181762
+PASS  tracing-subscriber newest non-yanked num = '0.3.23'
+PASS  tracing-subscriber newest non-yanked created_at (date) = '2026-03-13'
+PASS  tracing-subscriber newest rust_version = '1.65.0'
+PASS  tracing-subscriber newest license = 'MIT'
+PASS  tracing-log crate.recent_downloads = 127130173
+PASS  tracing-log crate.downloads = 565906807
+PASS  tracing-log newest non-yanked num = '0.2.0'
+PASS  tracing-log newest non-yanked created_at (date) = '2023-10-25'
+PASS  tracing-log newest rust_version = '1.56.0'
+PASS  tracing-log newest license = 'MIT'
+PASS  log crate.recent_downloads = 292355635
+PASS  log crate.downloads = 1291450844
+PASS  log newest non-yanked num = '0.4.34'
+PASS  log newest non-yanked created_at (date) = '2026-08-22'
+PASS  log newest rust_version = '1.71.0'
+PASS  log newest license = 'MIT OR Apache-2.0'
+PASS  env_logger crate.recent_downloads = 79902863
+PASS  env_logger crate.downloads = 569103899
+PASS  env_logger newest non-yanked num = '0.11.11'
+PASS  env_logger newest non-yanked created_at (date) = '2026-06-25'
+PASS  env_logger newest rust_version = '1.71'
+PASS  env_logger newest license = 'MIT OR Apache-2.0'
+PASS  fern crate.recent_downloads = 8203320
+PASS  fern crate.downloads = 48696181
+PASS  fern newest non-yanked num = '0.7.1'
+PASS  fern newest non-yanked created_at (date) = '2024-12-15'
+PASS  fern newest rust_version = '1.60'
+PASS  fern newest license = 'MIT'
+PASS  log4rs crate.recent_downloads = 1924992
+PASS  log4rs crate.downloads = 23310983
+PASS  log4rs newest non-yanked num = '1.4.0'
+PASS  log4rs newest non-yanked created_at (date) = '2025-09-05'
+PASS  log4rs newest rust_version = '1.75'
+PASS  log4rs newest license = 'MIT OR Apache-2.0'
+PASS  slog crate.recent_downloads = 8457982
+PASS  slog crate.downloads = 77773432
+PASS  slog newest non-yanked num = '2.8.2'
+PASS  slog newest non-yanked created_at (date) = '2025-10-11'
+PASS  slog newest rust_version = '1.61'
+PASS  slog newest license = 'MPL-2.0 OR MIT OR Apache-2.0'
+PASS  tracing-opentelemetry crate.recent_downloads = 46120245
+PASS  tracing-opentelemetry crate.downloads = 210366232
+PASS  tracing-opentelemetry newest non-yanked num = '0.34.0'
+PASS  tracing-opentelemetry newest non-yanked created_at (date) = '2026-09-23'
+PASS  tracing-opentelemetry newest rust_version = '1.75.0'
+PASS  tracing-opentelemetry newest license = 'MIT'
+PASS  tracing-bunyan-formatter crate.recent_downloads = 957838
+PASS  tracing-bunyan-formatter crate.downloads = 10794256
+PASS  tracing-bunyan-formatter newest non-yanked num = '0.3.10'
+PASS  tracing-bunyan-formatter newest non-yanked created_at (date) = '2024-11-26'
+PASS  tracing-bunyan-formatter newest rust_version = None
+PASS  tracing-bunyan-formatter newest license = 'MIT/Apache-2.0'
+PASS  tracing-tree crate.recent_downloads = 2988329
+PASS  tracing-tree crate.downloads = 14834805
+PASS  tracing-tree newest non-yanked num = '0.4.1'
+PASS  tracing-tree newest non-yanked created_at (date) = '2025-09-23'
+PASS  tracing-tree newest rust_version = '1.70'
+PASS  tracing-tree newest license = 'MIT OR Apache-2.0'
+PASS  tracing-stackdriver crate.recent_downloads = 293363
+PASS  tracing-stackdriver crate.downloads = 1736336
+PASS  tracing-stackdriver newest non-yanked num = '0.10.0'
+PASS  tracing-stackdriver newest non-yanked created_at (date) = '2024-03-11'
+PASS  tracing-stackdriver newest rust_version = None
+PASS  tracing-stackdriver newest license = 'MIT'
+PASS  fastrace crate.recent_downloads = 1408144
+PASS  fastrace crate.downloads = 7177731
+PASS  fastrace newest non-yanked num = '0.7.19'
+PASS  fastrace newest non-yanked created_at (date) = '2026-07-31'
+PASS  fastrace newest rust_version = '1.91.0'
+PASS  fastrace newest license = 'Apache-2.0'
+PASS  logforth crate.recent_downloads = 260018
+PASS  logforth crate.downloads = 1061515
+PASS  logforth newest non-yanked num = '0.30.1'
+PASS  logforth newest non-yanked created_at (date) = '2026-06-03'
+PASS  logforth newest rust_version = '1.89.0'
+PASS  logforth newest license = 'Apache-2.0'
+PASS  redactable crate.recent_downloads = 21007
+PASS  redactable crate.downloads = 45528
+PASS  redactable newest non-yanked num = '0.14.0'
+PASS  redactable newest non-yanked created_at (date) = '2026-09-23'
+PASS  redactable newest rust_version = '1.97'
+PASS  redactable newest license = 'non-standard'
+PASS  secrecy crate.recent_downloads = 42208097
+PASS  secrecy crate.downloads = 167656491
+PASS  secrecy newest non-yanked num = '0.10.3'
+PASS  secrecy newest non-yanked created_at (date) = '2024-10-09'
+PASS  secrecy newest rust_version = '1.60'
+PASS  secrecy newest license = 'Apache-2.0 OR MIT'
+
+== the MSRV floor, and the one crate above it ==
+PASS  tracing rust_version 1.65.0 is within the 1.96 floor
+PASS  tracing-core rust_version 1.65.0 is within the 1.96 floor
+PASS  tracing-subscriber rust_version 1.65.0 is within the 1.96 floor
+PASS  tracing-log rust_version 1.56.0 is within the 1.96 floor
+PASS  log rust_version 1.71.0 is within the 1.96 floor
+PASS  env_logger rust_version 1.71 is within the 1.96 floor
+PASS  fern rust_version 1.60 is within the 1.96 floor
+PASS  log4rs rust_version 1.75 is within the 1.96 floor
+PASS  slog rust_version 1.61 is within the 1.96 floor
+PASS  tracing-opentelemetry rust_version 1.75.0 is within the 1.96 floor
+PASS  tracing-bunyan-formatter declares no rust_version, so gate 2 has nothing to compare
+PASS  tracing-tree rust_version 1.70 is within the 1.96 floor
+PASS  tracing-stackdriver declares no rust_version, so gate 2 has nothing to compare
+PASS  fastrace rust_version 1.91.0 is within the 1.96 floor
+PASS  logforth rust_version 1.89.0 is within the 1.96 floor
+PASS  redactable rust_version 1.97 is ABOVE the 1.96 floor - excluded by gate 2
+PASS  secrecy rust_version 1.60 is within the 1.96 floor
+
+== yanked versions a naive 'latest' pin would land on ==
+PASS  tracing 0.1.42 is yanked
+PASS  tracing-subscriber 0.3.21 is yanked
+
+== reverse dependencies (GET /reverse_dependencies?per_page=1, meta.total) ==
+PASS  tracing meta.total = 43201
+PASS  tracing-subscriber meta.total = 19039
+PASS  tracing-log meta.total = 453
+PASS  log meta.total = 30894
+PASS  env_logger meta.total = 11986
+PASS  slog meta.total = 417
+PASS  redactable meta.total = 1
+
+== GitHub: GET repos/<o>/<r> ==
+PASS  tokio-rs/tracing stargazers_count = 6891
+PASS  tokio-rs/tracing archived = False
+PASS  tokio-rs/tracing pushed_at = '2026-05-30T06:42:00Z'
+PASS  tokio-rs/tracing open_issues_count (the field the prompt FORBIDS using) = 894
+PASS  tokio-rs/tracing-opentelemetry stargazers_count = 409
+PASS  tokio-rs/tracing-opentelemetry pushed_at = '2026-09-23T08:23:27Z'
+
+== GitHub: GET search/issues (total_count, never open_issues_count) ==
+PASS  tokio-rs/tracing open issues, search total_count = 628
+PASS  total_count (628) differs from open_issues_count (894): the latter counts pull requests
+
+== issue responsiveness: the 10 most recently opened issues ==
+PASS  sample size = 10
+PASS  sample issue numbers = ['3613', '3612', '3611', '3607', '3601', '3599', '3597', '3595', '3593', '3587']
+PASS  no pull request is in the sample
+PASS  issues with no maintainer response = 10
+PASS  issues with zero comments of any kind = 6
+PASS  observations available for a median latency = 0
+PASS  sample opened between = ('2026-07-31', '2026-09-16')
+
+== RustSec ==
+PASS  rustsec.org/packages/tracing-core.html is 404: no advisory filed
+PASS  rustsec.org/packages/tracing-log.html is 404: no advisory filed
+PASS  rustsec.org/packages/log.html is 404: no advisory filed
+PASS  rustsec.org/packages/env_logger.html is 404: no advisory filed
+PASS  rustsec.org/packages/fern.html is 404: no advisory filed
+PASS  rustsec.org/packages/log4rs.html is 404: no advisory filed
+PASS  rustsec.org/packages/slog.html is 404: no advisory filed
+PASS  rustsec.org/packages/redactable.html is 404: no advisory filed
+PASS  rustsec.org/packages/tracing.html HTTP status = '200'
+PASS  RUSTSEC-2023-0078 page states: Type INFO Unsound
+PASS  RUSTSEC-2023-0078 page states: Patched >=0.1.40
+PASS  RUSTSEC-2023-0078 page states: Unaffected <=0.1.37
+PASS  0.1.44 is outside the affected range >=0.1.38 <0.1.40: no open advisory
+PASS  rustsec.org/packages/tracing-subscriber.html HTTP status = '200'
+PASS  RUSTSEC-2025-0055 page states: CVE-2025-58160
+PASS  RUSTSEC-2025-0055 page states: format-injection
+PASS  RUSTSEC-2025-0055 page states: Patched >=0.3.20
+PASS  0.3.23 is at or above the patched floor 0.3.20: no open advisory
+
+PASS=161 FAIL=0 SKIP=0 TOTAL=161

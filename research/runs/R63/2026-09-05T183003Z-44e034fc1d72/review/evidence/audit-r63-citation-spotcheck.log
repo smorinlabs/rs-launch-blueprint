@@ -1,0 +1,13 @@
+citation spot-check retrieval: 2026-09-13T08:41:11Z
+crates/indicatif http=200
+crates/indicatif/versions http=200
+github/console-rs-indicatif http=200
+github/console-rs-indicatif-open-issues http=200
+github/TheNeikos-spinner http=200
+rustsec/indicatif http=404
+indicatif recent_downloads= 47566868
+indicatif downloads= 215860629
+indicatif newest_unyanked= 0.18.6 2026-07-01T13:45:24.733589Z rust_version= 1.85
+indicatif github= archived= False stars= 5212 pushed_at= 2026-09-10T15:39:00Z
+indicatif open_issue_total_count= 79
+spinner github= archived= True pushed_at= 2020-04-20T19:13:44Z

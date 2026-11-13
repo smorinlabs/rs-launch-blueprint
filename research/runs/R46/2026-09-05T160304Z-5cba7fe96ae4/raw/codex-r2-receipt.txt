@@ -1,0 +1,5 @@
+[raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/raw/codex.md) — corrected; all 15 fields preserved.  
+SHA-256: `bad0a654a7685722bb9bc9569c98abe74fc4c5d041564212bf811ae3c1536548`  
+1. Fixed and tested the checker: clean input exits `0`; prohibited headers exit `1`.  
+2. Marked Ubuntu/macOS execution gates unverified throughout.  
+3. Requeried repository endpoints with User-Agent; still rate-limited, so maintenance is explicitly unverified.

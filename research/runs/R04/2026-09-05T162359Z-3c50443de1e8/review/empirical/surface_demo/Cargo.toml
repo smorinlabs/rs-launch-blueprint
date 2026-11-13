@@ -1,0 +1,11 @@
+[package]
+name = "surface_demo"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+description = "R04 fixture: curated public surface enforced by module privacy"
+
+[dependencies]
+
+[workspace]

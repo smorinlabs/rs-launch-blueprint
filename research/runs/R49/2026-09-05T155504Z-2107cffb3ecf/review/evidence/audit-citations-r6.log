@@ -1,0 +1,21 @@
+URL: https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/manifest.md
+needle: The default if neither field is specified is to include all files from the
+RESULT: present bytes=25478
+
+URL: https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/cargo-targets.md
+needle: The `name` field specifies the name of the target
+RESULT: present bytes=15513
+
+URL: https://doc.rust-lang.org/cargo/reference/environment-variables.html
+needle: CARGO_BIN_EXE_
+RESULT: present bytes=58566
+
+URL: https://doc.rust-lang.org/cargo/commands/cargo-package.html
+needle: This will rebuild your package from scratch
+RESULT: present bytes=46421
+
+URL: https://doc.rust-lang.org/cargo/commands/cargo-install.html
+needle: Install all binaries
+RESULT: present bytes=50518
+
+all-five-citation-spotchecks=passed

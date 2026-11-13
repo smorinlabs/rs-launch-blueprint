@@ -1,0 +1,6 @@
+/private/tmp/r69-yanked-shellcheck.umLV32:108:1: note: This function is never invoked. Check usage (or ignored if invoked indirectly). [SC2329]
+/private/tmp/r69-yanked-shellcheck.umLV32:142:3: note: Note that A && B || C is not if-then-else. C may run when A is true. [SC2015]
+/private/tmp/r69-yanked-shellcheck.umLV32:145:3: note: Note that A && B || C is not if-then-else. C may run when A is true. [SC2015]
+/private/tmp/r69-yanked-shellcheck.umLV32:252:8: note: Expressions don't expand in single quotes, use double quotes for that. [SC2016]
+/private/tmp/r69-yanked-shellcheck.umLV32:262:8: note: Expressions don't expand in single quotes, use double quotes for that. [SC2016]
+shellcheck without directive exit=1

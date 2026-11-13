@@ -1,0 +1,121 @@
+# R49 — packaged-file mechanism and package-name/bin-name divergence in well-regarded Rust projects
+# independent re-measurement; manifests fetched with: gh api repos/<o>/<r>/contents/<path> (default branch)
+retrieved: 2026-09-10T15:29:38Z
+
+=== ripgrep — BurntSushi/ripgrep :: Cargo.toml (stars: 68148) ===
+  package name : name = "ripgrep"
+  packaged-file mechanism:
+    16:exclude = [
+  [[bin]] blocks:
+    [[bin]]
+    bench = false
+    path = "crates/core/main.rs"
+    name = "rg"
+
+=== bat — sharkdp/bat :: Cargo.toml (stars: 60399) ===
+  package name : name = "bat"
+  packaged-file mechanism:
+    10:exclude = ["assets/syntaxes/*", "assets/themes/*"]
+  [[bin]] blocks:
+    (no explicit [[bin]] block — auto-discovered)
+
+=== just — casey/just :: Cargo.toml (stars: 35726) ===
+  package name : name = "just"
+  packaged-file mechanism:
+    9:exclude = ["/book", "/etc", "!/etc/completion-registration-script.bash", "/www"]
+  [[bin]] blocks:
+    [[bin]]
+    path = "src/main.rs"
+    name = "just"
+    test = false
+    # The public documentation is minimal and doesn't change between
+    # platforms, so we only build them for linux on docs.rs to save
+    # their build machines some cycles.
+
+=== mdbook — rust-lang/mdBook :: Cargo.toml (stars: 22127) ===
+  package name : name = "mdbook"
+  packaged-file mechanism:
+    82:exclude = ["/guide/*"]
+  [[bin]] blocks:
+    [[bin]]
+    doc = false
+    name = "mdbook"
+
+=== wasmtime-cli — bytecodealliance/wasmtime :: Cargo.toml (stars: 18616) ===
+  package name : name = "wasmtime-cli"
+  packaged-file mechanism:
+    14:exclude = [
+    217:exclude = [
+  [[bin]] blocks:
+    [[bin]]
+    name = "wasmtime"
+    path = "src/bin/wasmtime.rs"
+    doc = false
+
+=== typos-cli — crate-ci/typos :: crates/typos-cli/Cargo.toml (stars: 4125) ===
+  package name : name = "typos-cli"
+  packaged-file mechanism:
+    (neither include nor exclude at the top level of this manifest)
+  [[bin]] blocks:
+    [[bin]]
+    name = "typos"
+    path = "src/bin/typos-cli/main.rs"
+    doc = false
+
+=== fd-find — sharkdp/fd :: Cargo.toml (stars: 44354) ===
+  package name : name = "fd-find"
+  packaged-file mechanism:
+    5:exclude = ["/benchmarks/*"]
+  [[bin]] blocks:
+    [[bin]]
+    name = "fd"
+    path = "src/main.rs"
+
+=== helix-term — helix-editor/helix :: helix-term/Cargo.toml (stars: 46164) ===
+  package name : name = "helix-term"
+  packaged-file mechanism:
+    4:include = ["src/**/*", "README.md"]
+  [[bin]] blocks:
+    [[bin]]
+    name = "hx"
+    path = "src/main.rs"
+
+=== atuin — atuinsh/atuin :: crates/atuin/Cargo.toml (stars: 31579) ===
+  package name : name = "atuin"
+  packaged-file mechanism:
+    14:exclude = ["vendor/bash-preexec/.github", "vendor/bash-preexec/test"]
+  [[bin]] blocks:
+    (no explicit [[bin]] block — auto-discovered)
+
+=== any 'include' key anywhere in each fetched manifest (checks raw/opus's claim that typos uses include) ===
+12:include.workspace = true
+  -- typos workspace root:
+5:default-members = ["crates/typos-cli"]
+13:include = [
+
+=== [lib] blocks in the surveyed manifests ===
+  atuin: (no [lib] block)
+  bat: (no [lib] block)
+  fd-find: (no [lib] block)
+  helix-term: (no [lib] block)
+  just:
+[lib]
+    doctest = false
+  mdbook: (no [lib] block)
+  ripgrep: (no [lib] block)
+  typos-cli: (no [lib] block)
+  wasmtime-cli:
+[lib]
+    doctest = false
+
+=== tally over the 9 manifests fetched above (corrected) ===
+  CORRECTION to the first tally written above: typos-cli carries `include.workspace = true`
+  and the crate-ci/typos workspace root carries `include = [ ... ]`, so typos-cli DOES use an
+  allow-list, inherited rather than written in its own manifest. raw/opus's "typos uses include"
+  is therefore right and my first pass, which grepped only the member manifest, was wrong.
+  packaged-file mechanism: exclude (deny-list) 7 of 9 — ripgrep, bat, just, mdbook, wasmtime-cli, fd-find, atuin
+                           include (allow-list) 2 of 9 — helix-term, typos-cli (inherited from the workspace root)
+                           Cargo default with neither field: 0 of 9
+  explicit [[bin]] block: 7 of 9 (bat and atuin auto-discover)
+  explicit [lib] block:   2 of 9 (just, wasmtime-cli — both only to set doctest = false)
+  package name != bin name: 5 of 9 — ripgrep/rg, wasmtime-cli/wasmtime, typos-cli/typos, fd-find/fd, helix-term/hx

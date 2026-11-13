@@ -1,0 +1,52 @@
+{
+  "changes": [
+    {
+      "expected_sha256": "a3a86d7c27c2bd15285a0a87f2d91a871e38710b78a2fb623ad449618eb39ff0",
+      "staged": "research/CLAUDE.md",
+      "target": "research/CLAUDE.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/DECISION.md",
+      "target": "research/topics/47-contributors-recipe-mode/DECISION.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/acceptance.json",
+      "target": "research/topics/47-contributors-recipe-mode/acceptance.json"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/audit-codex.md",
+      "target": "research/topics/47-contributors-recipe-mode/audit-codex.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/audit-fable.md",
+      "target": "research/topics/47-contributors-recipe-mode/audit-fable.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/evidence/2026-09-05T160304Z-99a3dd6456c0-audit-terra.log",
+      "target": "research/topics/47-contributors-recipe-mode/evidence/2026-09-05T160304Z-99a3dd6456c0-audit-terra.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/evidence/2026-09-05T160304Z-99a3dd6456c0-contributors-please-1.4.3-recipe-acceptance.log",
+      "target": "research/topics/47-contributors-recipe-mode/evidence/2026-09-05T160304Z-99a3dd6456c0-contributors-please-1.4.3-recipe-acceptance.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/raw/codex-2026-09-05T160304Z-99a3dd6456c0.md",
+      "target": "research/topics/47-contributors-recipe-mode/raw/codex-2026-09-05T160304Z-99a3dd6456c0.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/47-contributors-recipe-mode/raw/terra-2026-09-05T160304Z-99a3dd6456c0.md",
+      "target": "research/topics/47-contributors-recipe-mode/raw/terra-2026-09-05T160304Z-99a3dd6456c0.md"
+    }
+  ],
+  "dependency_hashes": {},
+  "item": "R47",
+  "run_id": "2026-09-05T160304Z-99a3dd6456c0"
+}

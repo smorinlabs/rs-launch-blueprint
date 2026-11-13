@@ -1,0 +1,27 @@
+# R86 negative control 3 — a misspelled `needs` output reference. actionlint
+# TYPE-CHECKS the relay between the preflight's declared `outputs:` and the
+# consumer's reference, so this must be rejected. That is what makes the
+# candidates' clean lint a statement about the wiring and not only the syntax.
+name: Control - misspelled needs output
+on:
+  pull_request:
+    types: [opened]
+permissions: {}
+jobs:
+  credential-preflight:
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      credential: ${{ steps.detect.outputs.credential }}
+    steps:
+      - name: Detect
+        id: detect
+        run: echo "credential=none" >> "$GITHUB_OUTPUT"
+  consumer:
+    needs: credential-preflight
+    if: needs.credential-preflight.outputs.credentail == 'present'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Nothing
+        run: echo "unreachable"

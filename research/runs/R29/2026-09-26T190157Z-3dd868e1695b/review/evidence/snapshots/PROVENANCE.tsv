@@ -1,0 +1,52 @@
+file	endpoint	retrieved_utc	status
+crates-dprint.json	GET https://crates.io/api/v1/crates/dprint	2026-09-27T02:58:30Z	200
+crates-dprint-plugin-json.json	GET https://crates.io/api/v1/crates/dprint-plugin-json	2026-09-27T02:58:31Z	200
+crates-dprint-plugin-markdown.json	GET https://crates.io/api/v1/crates/dprint-plugin-markdown	2026-09-27T02:58:31Z	200
+crates-dprint-plugin-toml.json	GET https://crates.io/api/v1/crates/dprint-plugin-toml	2026-09-27T02:58:31Z	200
+crates-pretty_yaml.json	GET https://crates.io/api/v1/crates/pretty_yaml	2026-09-27T02:58:32Z	200
+crates-taplo-cli.json	GET https://crates.io/api/v1/crates/taplo-cli	2026-09-27T02:58:32Z	200
+crates-taplo.json	GET https://crates.io/api/v1/crates/taplo	2026-09-27T02:58:32Z	200
+crates-tombi-cli.json	GET https://crates.io/api/v1/crates/tombi-cli	2026-09-27T02:58:33Z	200
+crates-rumdl.json	GET https://crates.io/api/v1/crates/rumdl	2026-09-27T02:58:33Z	200
+crates-yamlfmt.json	GET https://crates.io/api/v1/crates/yamlfmt	2026-09-27T02:58:34Z	404
+crates-dprint-plugin-yaml.json	GET https://crates.io/api/v1/crates/dprint-plugin-yaml	2026-09-27T02:58:34Z	404
+repo-tamasfe-taplo.json	GET https://api.github.com/repos/tamasfe/taplo	2026-09-27T02:58:34Z	gh-exit-0
+repo-dprint-dprint.json	GET https://api.github.com/repos/dprint/dprint	2026-09-27T02:58:35Z	gh-exit-0
+repo-g-plane-pretty_yaml.json	GET https://api.github.com/repos/g-plane/pretty_yaml	2026-09-27T02:58:35Z	gh-exit-0
+repo-dprint-dprint-plugin-toml.json	GET https://api.github.com/repos/dprint/dprint-plugin-toml	2026-09-27T02:58:36Z	gh-exit-0
+repo-tombi-toml-tombi.json	GET https://api.github.com/repos/tombi-toml/tombi	2026-09-27T02:58:36Z	gh-exit-0
+taplo-issue-715.json	GET https://api.github.com/repos/tamasfe/taplo/issues/715	2026-09-27T02:58:37Z	gh-exit-0
+taplo-issue-715-comments.json	GET https://api.github.com/repos/tamasfe/taplo/issues/715/comments?per_page=100	2026-09-27T02:58:37Z	gh-exit-0
+taplo-release-0.10.0.json	GET https://api.github.com/repos/tamasfe/taplo/releases/tags/0.10.0	2026-09-27T02:58:37Z	gh-exit-0
+dprint-release-0.57.4.json	GET https://api.github.com/repos/dprint/dprint/releases/tags/0.57.4	2026-09-27T02:58:38Z	gh-exit-0
+pretty_yaml-issue-4.json	GET https://api.github.com/repos/g-plane/pretty_yaml/issues/4	2026-09-27T02:58:38Z	gh-exit-0
+pretty_yaml-issue-4-comments.json	GET https://api.github.com/repos/g-plane/pretty_yaml/issues/4/comments	2026-09-27T02:58:39Z	gh-exit-0
+pretty_yaml-release-v0.6.0.json	GET https://api.github.com/repos/g-plane/pretty_yaml/releases/tags/v0.6.0	2026-09-27T02:58:39Z	gh-exit-0
+dprint-plugin-json-release-0.24.0.json	GET https://api.github.com/repos/dprint/dprint-plugin-json/releases/tags/0.24.0	2026-09-27T02:58:40Z	gh-exit-0
+dprint-plugin-markdown-release-0.24.0.json	GET https://api.github.com/repos/dprint/dprint-plugin-markdown/releases/tags/0.24.0	2026-09-27T02:58:40Z	gh-exit-0
+dprint-plugin-toml-release-0.8.0.json	GET https://api.github.com/repos/dprint/dprint-plugin-toml/releases/tags/0.8.0	2026-09-27T02:58:40Z	gh-exit-0
+binstall-hosting.rs	GET https://api.github.com/repos/cargo-bins/cargo-binstall/contents/crates/binstalk-fetchers/src/gh_crate_meta/hosting.rs?ref=v1.23.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:41Z	gh-exit-0
+release-please-CHANGELOG.md	GET https://api.github.com/repos/googleapis/release-please/contents/CHANGELOG.md (Accept: application/vnd.github.raw)	2026-09-27T02:58:41Z	gh-exit-0
+dprint-dprint.json	GET https://api.github.com/repos/dprint/dprint/contents/dprint.json (Accept: application/vnd.github.raw)	2026-09-27T02:58:42Z	gh-exit-0
+dprint-cli.md	GET https://api.github.com/repos/dprint/dprint/contents/website/src/cli.md (Accept: application/vnd.github.raw)	2026-09-27T02:58:42Z	gh-exit-0
+dprint-config.md	GET https://api.github.com/repos/dprint/dprint/contents/website/src/config.md (Accept: application/vnd.github.raw)	2026-09-27T02:58:42Z	gh-exit-0
+dprint-crate-Cargo.toml	GET https://api.github.com/repos/dprint/dprint/contents/crates/dprint/Cargo.toml (Accept: application/vnd.github.raw)	2026-09-27T02:58:43Z	gh-exit-0
+dprint-rust-toolchain.toml	GET https://api.github.com/repos/dprint/dprint/contents/rust-toolchain.toml (Accept: application/vnd.github.raw)	2026-09-27T02:58:43Z	gh-exit-0
+deno-dprint.json	GET https://api.github.com/repos/denoland/deno/contents/.dprint.json (Accept: application/vnd.github.raw)	2026-09-27T02:58:43Z	gh-exit-0
+rustup-ci.yaml	GET https://api.github.com/repos/rust-lang/rustup/contents/.github/workflows/ci.yaml (Accept: application/vnd.github.raw)	2026-09-27T02:58:44Z	gh-exit-0
+style-guide-cargo.md	GET https://api.github.com/repos/rust-lang/rust/contents/src/doc/style-guide/src/cargo.md (Accept: application/vnd.github.raw)	2026-09-27T02:58:44Z	gh-exit-0
+dprint-plugin-toml-resolve_config.rs	GET https://api.github.com/repos/dprint/dprint-plugin-toml/contents/src/configuration/resolve_config.rs?ref=0.8.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:45Z	gh-exit-0
+dprint-plugin-toml-cargo.rs	GET https://api.github.com/repos/dprint/dprint-plugin-toml/contents/src/cargo.rs?ref=0.8.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:45Z	gh-exit-0
+pretty_yaml-dprint_plugin-Cargo.toml	GET https://api.github.com/repos/g-plane/pretty_yaml/contents/dprint_plugin/Cargo.toml?ref=v0.6.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:45Z	gh-exit-0
+pretty_yaml-dprint_plugin-lib.rs	GET https://api.github.com/repos/g-plane/pretty_yaml/contents/dprint_plugin/src/lib.rs?ref=v0.6.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:46Z	gh-exit-0
+pretty_yaml-dprint_plugin-config.rs	GET https://api.github.com/repos/g-plane/pretty_yaml/contents/dprint_plugin/src/config.rs?ref=v0.6.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:46Z	gh-exit-0
+pretty_yaml-LICENSE	GET https://api.github.com/repos/g-plane/pretty_yaml/contents/LICENSE?ref=v0.6.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:46Z	gh-exit-0
+pretty_yaml-workspace-Cargo.toml	GET https://api.github.com/repos/g-plane/pretty_yaml/contents/Cargo.toml?ref=v0.6.0 (Accept: application/vnd.github.raw)	2026-09-27T02:58:47Z	gh-exit-0
+rustsec-dprint	GET https://rustsec.org/packages/dprint.html	2026-09-27T02:58:47Z	404
+rustsec-dprint-plugin-json	GET https://rustsec.org/packages/dprint-plugin-json.html	2026-09-27T02:58:47Z	404
+rustsec-dprint-plugin-markdown	GET https://rustsec.org/packages/dprint-plugin-markdown.html	2026-09-27T02:58:47Z	404
+rustsec-dprint-plugin-toml	GET https://rustsec.org/packages/dprint-plugin-toml.html	2026-09-27T02:58:47Z	404
+rustsec-pretty_yaml	GET https://rustsec.org/packages/pretty_yaml.html	2026-09-27T02:58:47Z	404
+rustsec-taplo	GET https://rustsec.org/packages/taplo.html	2026-09-27T02:58:47Z	404
+rustsec-taplo-cli	GET https://rustsec.org/packages/taplo-cli.html	2026-09-27T02:58:47Z	404
+rustsec-time	GET https://rustsec.org/packages/time.html	2026-09-27T02:58:48Z	200

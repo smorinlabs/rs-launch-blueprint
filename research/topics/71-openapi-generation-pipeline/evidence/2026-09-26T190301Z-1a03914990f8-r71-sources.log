@@ -1,0 +1,142 @@
+# retrieved_at_utc=2026-09-27T03:42:30Z
+
+## P. py precedent at pin b55b8c26364cb0f42e56116e6780921976334751 (the Opus leg's pin) and at main
+P pin commit b55b8c26364cb0f42e56116e6780921976334751 date=2026-09-22T06:35:19Z
+P main commit b55b8c26364cb0f42e56116e6780921976334751 date=2026-09-22T06:35:19Z
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:2:# tests/web/test_openapi_snapshot.py keeps docs/api/openapi.json honest;
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:10:    paths:
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:11:      - docs/api/openapi.json
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:21:    name: oasdiff-breaking
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:22:    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:28:        # Written INSIDE the workspace: the oasdiff action is a Docker action
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:29:        # and only /github/workspace is mounted — /tmp would not be visible.
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:34:          spec="origin/$BASE_REF:docs/api/openapi.json"
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:35:          if git show "$spec" > base-openapi.json 2>/dev/null; then
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:41:              > base-openapi.json
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:43:      - name: oasdiff breaking changes
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:44:        uses: oasdiff/oasdiff-action/breaking@v0.1.15
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:46:          base: base-openapi.json
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:47:          revision: docs/api/openapi.json
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:48:          fail-on: ERR
+P smorinlabs/py-launch-blueprint@main:.github/workflows/api-contract.yml:44:        uses: oasdiff/oasdiff-action/breaking@v0.1.15
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:22:EVERY non-2xx response body is an ``application/problem+json`` document with
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:23:the same shape, including FastAPI's own 422 validation errors and bare
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:52:PROBLEM_CONTENT_TYPE = "application/problem+json"
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:84:    """Build an ``application/problem+json`` response."""
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:97:    """Make the OpenAPI schema tell the truth about 422s (WEB-01 + WEB-04).
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:100:    FastAPI's default ``HTTPValidationError`` + ``application/json`` —
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:104:    original_openapi = app.openapi
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:106:    def openapi_with_problems() -> dict[str, Any]:
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:109:        schema = original_openapi()
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:116:                response_422 = operation.get("responses", {}).get("422")
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:117:                if response_422 is not None:
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:118:                    response_422["description"] = "Validation Error (RFC 9457)"
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:119:                    response_422["content"] = {
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:125:        components.pop("HTTPValidationError", None)
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:172:            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/app.py:77:def _operation_id(route: APIRoute) -> str:
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/app.py:80:    return f"{prefix}{route.name}"
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/app.py:119:        generate_unique_id_function=_operation_id,
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:14:from scripts.export_openapi import SNAPSHOT_VERSION
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:22:    # info.version = __version__). Assert that here so pinning the snapshot to a
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:25:    assert generated["info"]["version"] == __version__
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:26:    # The committed snapshot pins info.version to a sentinel so it stays a pure
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:30:    generated["info"]["version"] = SNAPSHOT_VERSION
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:32:    assert generated == committed, (
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:33:        "docs/api/openapi.json is stale — run `just export-openapi` and commit"
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:scripts/export_openapi.py:23:SNAPSHOT_VERSION = "0.0.0"
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:scripts/export_openapi.py:45:    spec["info"]["version"] = SNAPSHOT_VERSION
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:Justfile:318:@export-openapi:
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:Justfile:319:    uv run --extra web python scripts/export_openapi.py
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:2:  "openapi": "3.1.0",
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:16:        "operationId": "ops-healthz",
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:38:        "operationId": "ops-readyz",
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:70:        "operationId": "projects-list_projects",
+P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:147:        "operationId": "projects-get_project",
+
+## O. OpenAPI Specification 3.1.1, Info Object 'version' field (OAI/OpenAPI-Specification)
+O OAI/OpenAPI-Specification@main:versions/3.1.1.md:352:| <a name="info-version"></a>version | `string` | **REQUIRED**. The version of the OpenAPI Document (which is distinct from the [OpenAPI Specification version](#oas-version) or the version of the API being described or the version of the OpenAPI Description). |
+O OAI/OpenAPI-Specification@main:versions/3.1.1.md:978:| <a name="operation-id"></a>operationId | `string` | Unique string used to identify the operation. The id MUST be unique among all operations described in the API. The operationId value is **case-sensitive**. Tools and libraries MAY use the operationId to uniquely identify an operation, therefore, it is RECOMMENDED to follow common programming naming conventions. |
+O OAI/OpenAPI-Specification@main:versions/3.1.1.md:2380:| <a name="link-operation-id"></a>operationId | `string` | The name of an _existing_, resolvable OAS operation, as defined with a unique `operationId`. This field is mutually exclusive of the `operationRef` field. |
+
+## Q. oasdiff-action v0.1.17 'breaking' action: engine pin, spec upload, telemetry
+Q oasdiff/oasdiff-action@v0.1.17:breaking/Dockerfile:1:FROM tufin/oasdiff:v1.32.1
+Q oasdiff/oasdiff-action@v0.1.17:breaking/Dockerfile:2:RUN apk add --no-cache curl jq
+Q oasdiff/oasdiff-action@v0.1.17:breaking/action.yml:59:  review:
+Q oasdiff/oasdiff-action@v0.1.17:breaking/action.yml:60:    description: 'Upload the comparison to oasdiff.com and link straight to a side-by-side review of these changes. The specs are encrypted client-side and the key stays in the URL fragment, so the server cannot read them. Set to false to skip the upload entirely, so no spec leaves CI; the change detection and inline annotations are unaffected.'
+Q oasdiff/oasdiff-action@v0.1.17:breaking/action.yml:62:    default: 'true'
+Q oasdiff/oasdiff-action@v0.1.17:breaking/action.yml:73:  using: 'docker'
+Q oasdiff/oasdiff-action@v0.1.17:breaking/entrypoint.sh:24:readonly review="${16}"
+Q oasdiff/oasdiff-action@v0.1.17:breaking/entrypoint.sh:49:    printf '{"event":"review_delivery","props":{"mode":"%s","platform":"github-action","action_ref":"%s"}}'         "$delivery_mode" "${GITHUB_ACTION_REF:-unknown}"         | curl -s -m 5 -o /dev/null -X POST -H "Content-Type: application/json"             "https://www.oasdiff.com/api/telemetry" --data-binary @- 2>/dev/null || true
+
+## R. oasdiff v1.32.1 rule levels and severity override
+R oasdiff/oasdiff@v1.32.1:checker/rules.go:184:		newBackwardCompatibilityRule(APIPathRemovedWithoutDeprecationId, ERR, APIRemovedCheck, DirectionNone, AreaPaths, KindExistence, EffectNarrows, nil, "paths.*:remove"),
+R oasdiff/oasdiff@v1.32.1:checker/rules.go:188:		newBackwardCompatibilityRule(APIRemovedWithoutDeprecationId, ERR, APIRemovedCheck, DirectionNone, AreaPaths, KindExistence, EffectNarrows, nil, "paths.*.*:remove"),
+R oasdiff/oasdiff@v1.32.1:checker/rules.go:616:		newBackwardCompatibilityRule(APIOperationIdRemovedId, INFO, APIOperationIdUpdatedCheck, DirectionNone, AreaPaths, KindExistence, EffectNone, nil, "paths.*.*.operationId:unset,change"),
+R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:45:See also [Customizing Severity Levels](#customizing-severity-levels)
+R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:57:If a check's default severity does not match your API's compatibility policy, change it with [Customizing Severity Levels](#customizing-severity-levels).
+R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:62:- To exit with return code 1 if ERR-level changes are found, add the `--fail-on ERR` flag.  
+R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:68:oasdiff breaking --fail-on ERR data/openapi-test1.yaml data/openapi-test3.yaml
+R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:120:You can specify the configuration file name in the oasdiff command-line with the `--warn-ignore` flag for WARNINGS or the `--err-ignore` flag for ERRORS.  
+R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:154:## Customizing Severity Levels
+R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:159:oasdiff changelog data/checker/api_security_added_revision.yaml data/checker/api_security_added_base.yaml --severity-levels oasdiff-levels.txt
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:4:3.2 specs are read too; see [OpenAPI 3.2](#openapi-32) below.
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:6:OpenAPI 3.1 support is generally available starting with `v1.15.0`. Previous beta tags (`v1.15.0-openapi31.beta.*` and `v2.2.0-openapi31.beta.*`) are superseded.
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:50:## OpenAPI 3.2
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:52:oasdiff reads 3.2 specs. The OpenAPI Initiative guarantees strict compatibility within 3.x going
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:53:forward (3.2.x, 3.3.x, ...), so a consumer that correctly reads 3.1 reads 3.2 too, and everything
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:56:If a 3.2 construct is reported wrongly, or a change to one is not reported at all, see
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:57:[Feedback](#feedback) below and put `[3.2]` in the title.
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:73:The `upgrade` subcommand rewrites a 3.0 spec into the latest 3.x canonical form (currently 3.2.0). The transforms are idempotent, so running it on an already-canonical spec just bumps the version string.
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:75:It targets the latest 3.x rather than 3.1 because of the compatibility guarantee above, so one migration covers the next few versions. See [Why the target is 3.2](https://www.oasdiff.com/docs/openapi-31-migration).
+R oasdiff/oasdiff@v1.32.1:docs/OPENAPI-31.md:118:Found an issue? [Open one here](https://github.com/oasdiff/oasdiff/issues/new?template=bug_report.md&title=[3.1]%20) with `[3.1]` in the title, or [here](https://github.com/oasdiff/oasdiff/issues/new?template=bug_report.md&title=[3.2]%20) with `[3.2]` for the 3.2 features above. 3.2 support is still being built out, so a report that a construct is unhandled is as useful as one that it is handled wrongly.
+R oasdiff/oasdiff@v1.32.1:LICENSE:1:                                 Apache License
+R oasdiff/oasdiff@v1.32.1:LICENSE:178:   APPENDIX: How to apply the Apache License to your work.
+R oasdiff/oasdiff@v1.32.1:LICENSE:180:      To apply the Apache License to your work, attach the following
+R oasdiff/oasdiff@v1.32.1:LICENSE:191:   Licensed under the Apache License, Version 2.0 (the "License");
+
+## U. utoipa 6.0.0 sources: Modify trait, OpenApiRouter::split_for_parts, operation_id default
+U juhaku/utoipa@utoipa-6.0.0:utoipa/src/lib.rs:1007:///     fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+U juhaku/utoipa@utoipa-6.0.0:utoipa/src/lib.rs:1037:///     fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+U juhaku/utoipa@utoipa-6.0.0:utoipa/src/lib.rs:1044:pub trait Modify {
+U juhaku/utoipa@utoipa-6.0.0:utoipa/src/lib.rs:1050:    fn modify(&self, openapi: &mut openapi::OpenApi);
+U juhaku/utoipa@utoipa-axum-0.3.0:utoipa-axum/src/router.rs:169:    pub fn with_openapi(openapi: utoipa::openapi::OpenApi) -> Self {
+U juhaku/utoipa@utoipa-axum-0.3.0:utoipa-axum/src/router.rs:215:    pub fn routes(mut self, (schemas, mut paths, method_router): UtoipaMethodRouter<S>) -> Self {
+U juhaku/utoipa@utoipa-axum-0.3.0:utoipa-axum/src/router.rs:389:    pub fn split_for_parts(self) -> (axum::Router<S>, utoipa::openapi::OpenApi) {
+
+## V. adopter manifests (who uses what, read from their own Cargo.toml)
+V rust-lang/crates.io@main:Cargo.toml:82:axum = { version = "=0.8.9", features = ["macros", "matched-path"] }
+V rust-lang/crates.io@main:Cargo.toml:173:utoipa = { version = "=6.0.0", features = ["chrono"] }
+V rust-lang/crates.io@main:Cargo.toml:174:utoipa-axum = "=0.3.0"
+V meilisearch/meilisearch@main:crates/meilisearch/Cargo.toml:94:utoipa = { version = "5.5.0", features = [
+V meilisearch/meilisearch@main:crates/meilisearch/Cargo.toml:103:utoipa-scalar = { version = "0.3.0", optional = true, features = ["actix-web"] }
+V loco-rs/loco-openapi-Initializer@main:Cargo.toml:30:axum = { version = "0.8.1" }
+V loco-rs/loco-openapi-Initializer@main:Cargo.toml:33:utoipa = { version = "5.0.0", features = ["yaml"] }
+V loco-rs/loco-openapi-Initializer@main:Cargo.toml:34:utoipa-axum = { version = "0.2.0" }
+V loco-rs/loco-openapi-Initializer@main:Cargo.toml:35:utoipa-swagger-ui = { version = "9.0.0", features = [
+V loco-rs/loco-openapi-Initializer@main:Cargo.toml:39:utoipa-redoc = { version = "6.0.0", features = ["axum"], optional = true }
+V loco-rs/loco-openapi-Initializer@main:Cargo.toml:40:utoipa-scalar = { version = "0.3.0", features = ["axum"], optional = true }
+V oxidecomputer/dropshot@main:dropshot/Cargo.toml:105:expectorate = "1.2.0"
+V rust-lang/crates.io stars=3703 pushed_at=2026-09-27T00:24:33Z
+V meilisearch/meilisearch stars=59418 pushed_at=2026-09-24T16:27:41Z
+V loco-rs/loco stars=9266 pushed_at=2026-09-24T11:26:24Z
+V oxidecomputer/omicron openapi/ entries=17
+
+## W. rust-lang/crates.io (same axum/utoipa/utoipa-axum pins): where its passes run, info.version, snapshot form
+W rust-lang/crates.io main=067b45e1a15fc1b97f7321792b86bdf8d6371d7c
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:53:        version = "0.0.0",
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:55:    modifiers(&SecurityAddon),
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:74:impl Modify for SecurityAddon {
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:76:        let components = openapi.components.get_or_insert_default();
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:118:        apply_visibility(&mut doc, params.internal.is_some());
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:128:fn apply_visibility(openapi: &mut OpenApiDoc, include_internal: bool) {
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:129:    openapi.paths.paths.retain(|_, item| {
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/router.rs:16:    let (router, openapi) = BaseOpenApi::router()
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/router.rs:113:        .split_for_parts();
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/router.rs:138:            get(openapi::handler).layer(Extension(Arc::new(openapi))),
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/tests/openapi.rs:2:use insta::{assert_json_snapshot, assert_snapshot};
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/tests/openapi.rs:8:    let response = anon.get::<()>("/api/openapi.json").await;
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/tests/openapi.rs:10:    assert_json_snapshot!(response.json());
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/tests/openapi.rs:17:    let response = anon.get::<()>("/api/openapi.json?internal").await;
+W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/tests/openapi.rs:19:    assert_json_snapshot!(response.json());
+# done

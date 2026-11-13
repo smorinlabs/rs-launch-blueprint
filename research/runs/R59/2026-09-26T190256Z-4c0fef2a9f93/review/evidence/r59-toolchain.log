@@ -1,0 +1,21 @@
+# R59 check T — toolchain and host
+run (UTC): 2026-09-28T20:01:38Z
+host: Darwin 25.4.0 arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+bash: 5.3.20(1)-release
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+shellcheck: version: 0.11.0
+macOS: 26.4 25E246
+rustup toolchains:
+stable-aarch64-apple-darwin (active, default)
+1.91.1-aarch64-apple-darwin
+1.93.0-aarch64-apple-darwin
+1.96-aarch64-apple-darwin
+1.96.0-aarch64-apple-darwin
+1.97.1-aarch64-apple-darwin
+PASS T01 — default rustc is 1.98.x — expected=[98] actual=[98]
+PASS T02 — stable-minus-2 floor implied by this stable — expected=[1.96] actual=[1.96]
+PASS T03 — rustc 1.96.0 installed for the floor build — expected=[rustc 1.96.0] actual=[rustc 1.96.0]
+PASS T04 — host is macOS arm64 (no ubuntu-latest run in this synthesis) — expected=[Darwin arm64] actual=[Darwin arm64]
+
+SUMMARY: 4 checks, 0 failed, 0 skipped

@@ -1,0 +1,7 @@
+[Audit](.../review/audit-codex.md) — SHA-256 `38b095cb5af1f67dbd47af41a69b61c8387e2527ab29d58aaa83334de262053f`
+
+Verdict: **reject**.
+
+Rerun log: [audit-error-and-exit-code-contract.log](.../review/evidence/audit-error-and-exit-code-contract.log); corrected E13/E14 and advisory control exit 0.
+
+Finding: reviewed fixture locks 20 packages and scans 22 crates, with no `etcetera`; decision claims 22, 23, and `etcetera` 1.87.0. Runtime behavior remains correctly unproven for P03.

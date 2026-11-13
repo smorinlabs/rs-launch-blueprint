@@ -1,0 +1,67 @@
+==============================================================
+R65 color-enablement-chain — revision 4 supplementary checks
+==============================================================
+
+## R4.0 Toolchain
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+os: Darwin arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+
+## R4.1 Tags exist before any file is read from them
+PASS  tag rust-cli/anstyle@anstream-v1.0.0 exists
+PASS  tag rust-cli/anstyle@anstyle-query-v1.1.5 exists
+
+## R4.2 J1 — tier 7 is a DISJUNCTION: term_supports_color OR clicolor_enabled OR is_ci
+     Verbatim, crates/anstream/src/auto.rs:211-214 @ anstream-v1.0.0:
+                   } else if raw.is_terminal()
+                       && (anstyle_query::term_supports_color()
+                           || clicolor_enabled
+                           || anstyle_query::is_ci())
+PASS  anstream tier 7 begins with this stream's own is_terminal() (line 211)  [matched: } else if raw.is_terminal()]
+PASS  anstream tier 7 operand 1: term_supports_color() (line 212)  [matched: && (anstyle_query::term_supports_color()]
+PASS  anstream tier 7 operand 2: clicolor_enabled (line 213)  [matched: || clicolor_enabled]
+PASS  anstream tier 7 operand 3: is_ci() (line 214)  [matched: || anstyle_query::is_ci())]
+PASS  anstream clicolor_enabled is CLICOLOR set to a non-0 value (line 203)  [matched: let clicolor_enabled = clicolor.unwrap_or(false);]
+PASS  tier 7's three operands are joined by exactly two || tokens (a disjunction)  [count=2]
+PASS  anstyle-query term_supports_color is a TERM test (line 55)  [matched: pub fn term_supports_color() -> bool {]
+PASS  anstyle-query returns false when TERM is unset (line 61)  [matched: None => return false,]
+PASS  anstyle-query returns false for TERM=dumb (line 63)  [matched: if k == "dumb" {]
+PASS  anstyle-query documents WHY the CI operand exists (the ground for declining a TERM tier) (line 123)  [matched: /// CI is a common environment where, despite being piped, ansi color codes are supported]
+PASS  anstyle-query is_ci signature (line 128)  [matched: pub fn is_ci() -> bool {]
+PASS  anstyle-query is_ci tests PRESENCE of CI, not its value (line 134)  [matched: std::env::var_os("CI").is_some()]
+PASS  is_ci() body compares CI against no value (presence test confirmed)
+
+## R4.3 J3 — the per-stream effective choice a consumer can read
+PASS  anstream current_choice reports what is ACTIVE, not what was requested (line 184)  [matched: This doesn't report what is requested but what is currently active.]
+PASS  anstream current_choice is gated on the auto feature (line 186)  [matched: #[cfg(feature = "auto")]]
+PASS  anstream current_choice signature (line 187)  [matched: pub fn current_choice(&self) -> ColorChoice {]
+PASS  anstream current_choice: a pass-through stream reports AlwaysAnsi (line 189)  [matched: StreamInner::PassThrough(_) => ColorChoice::AlwaysAnsi,]
+PASS  anstream current_choice: a stripping stream reports Never (line 190)  [matched: StreamInner::Strip(_) => ColorChoice::Never,]
+
+## R4.4 J3 — the two assumptions R85 records on this item, quoted from its published decision
+PASS  R85 published decision found at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/topics/85-rich-terminal-row-niceties/DECISION.md
+PASS  R85 assumption 1 — R65 must expose a readable 'accepts escape codes' value  [matched: **R65** must expose something the CLI can read as "this stream will accept escape codes"]
+PASS  R85 assumption 1 — the boolean composition R85 would use  [matched: color_enabled && supports_hyperlinks::on(Stdout)]
+PASS  R85 assumption 2 — FORCE_HYPERLINK, which R65 may not have scoped  [matched: R65 additionally acquires an input it may not have scoped: `FORCE_HYPERLINK`]
+PASS  R85 assumption 2 — honored independently of NO_COLOR/FORCE_COLOR  [matched: honors independently of `NO_COLOR`/`FORCE_COLOR` (`src/lib.rs:14,66`)]
+PASS  R85 repeats FORCE_HYPERLINK as its own P03 validation item  [matched: **`FORCE_HYPERLINK` in R65's precedence chain.**]
+PASS  R85 is the resolved consumer that composes with this chain's colour choice  [matched: combined with whatever color choice R65]
+
+## R4.5 The one standards sentence revision 4 newly quotes, read from the COMMITTED snapshot
+     (no network fetch; the snapshot is the evidence, as in the primary script's section 5)
+     sha256: 4ce0cfb7f8c79fcf35cb86993863a739df8b8dd0fa49c2f02c4f39eed8db8992
+PASS  no-color.org argues against a TERM tier (the third ground for declining one)  [matched: Why not just set $TERM to dumb or xterm without color support?]
+PASS  no-color.org: the terminal should print colour when instructed  [matched: The terminal is capable of color and should be able to print color when instructed.]
+
+## R4.6 This revision's own text carries the qualifications it claims
+PASS  criterion 9 is scoped to CI and CLICOLOR both unset  [matched: with `CI` and `CLICOLOR` both unset** (not merely set to `0` — see `## Engines` item 2), nothing else set ⇒ no colour]
+PASS  criterion 11 exercises the config tier against NO_COLOR  [matched: Config file `color = "always"`, `NO_COLOR=1` set]
+PASS  criterion 12 exercises the config tier against the force tiers  [matched: Config file `color = "never"`, `FORCE_COLOR=1` and `CLICOLOR_FORCE=1` set]
+PASS  the decision names R85 as a consumer  [matched: rich-terminal-row-niceties`, resolved,]
+PASS  the decision rules FORCE_HYPERLINK out of this chain  [matched: **Ruled out of this chain, explicitly.**]
+PASS  the decision declines a template-owned TERM tier and says so  [matched: **A template-owned `TERM` tier was considered and is declined.**]
+
+==============================================================
+TOTAL: 35 passed, 0 failed
+==============================================================

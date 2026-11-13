@@ -1,0 +1,19 @@
+{
+  "crate": "warp",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/warp",
+    "versions": "https://crates.io/api/v1/crates/warp/versions"
+  },
+  "recent_downloads": 5134574,
+  "downloads": 47961126,
+  "repository": "https://github.com/seanmonstar/warp",
+  "versions_total": 43,
+  "newest_non_yanked": {
+    "num": "0.4.3",
+    "created_at": "2026-05-04T19:33:48.290142Z",
+    "yanked": false,
+    "rust_version": null,
+    "license": "MIT"
+  }
+}

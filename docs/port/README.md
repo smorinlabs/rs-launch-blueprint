@@ -52,6 +52,11 @@ realistic acceptance example. P02 reviews inherited mechanisms under the
 10. `ts-research-method-review.md` — how the TypeScript port's research was
     actually run, what to copy, and what it got wrong; the source of the
     couplings rule, the owner review phase, and the audit files.
+11. `BASELINE-REVIEW.md` — P02-T01: every `COMMON → REUSE` and `ADOPT` row
+    adjudicated under A5 (principle, agreement level, pinned source evidence,
+    current Rust fitness, classification), the `BASELINE-REVIEW:` findings, an
+    adversarial sample by a second model family, the reconciliation applied to
+    the ledger and prompts, and the owner questions it raised.
 
 ## Verdict vocabulary (closed set — enforced by `scripts/check-research-tree.sh`)
 
@@ -74,7 +79,8 @@ hook" is a pattern; `ruff` and `oxlint`/`oxfmt` are tools. Swapping the tool is
 ## Prompt sections (enforced: exactly these, in order, outside code fences)
 
 `## Objective` · `## Context` · `## Out of scope` · `## Couplings` (`- id: R##`,
-`- owns: a, b`, `- consumes: R##: param; owner: param`) · `## Questions` ·
+`- owns: a, b`, `- consumes: R##: param; owner: param`, plus the effort, engine,
+evidence-check and acceptance-prerequisite mirrors from `research/EXECUTION.json`) · `## Questions` ·
 `## Required evidence` · `## Answer template` · `## Constraints` — spec §7.
 Parameter names are lowercase-kebab slugs.
 
@@ -89,4 +95,16 @@ Parameter names are lowercase-kebab slugs.
 
 `scripts/check-research-tree.sh` (add `--require-owner-review` from Phase 3.5
 on) enforces all of the above; `scripts/test-check-research-tree.sh` is its
-regression suite (53 cases, each asserting the exit status).
+original regression suite (53 cases, each asserting the exit status). P02 adds
+`research/EXECUTION.json` policy validation and strict resolved-topic evidence
+under [the acceptance schema](../planning/p02/acceptance-schema.md).
+`scripts/test-research-validation.py` exercises answer and acceptance failures;
+`scripts/test-research-answer-parser.py` checks Markdown boundaries and current
+decision history;
+`scripts/test-research-runner.py` exercises offline run recovery and publication;
+`scripts/test-research-package.py` packages a completed run directory into a
+staged publication and checks it with the strict validator;
+`scripts/test-doxa-no-retry.py` proves the paid-run wrapper allows one create
+attempt per provider.
+These checks establish record integrity. Source quality, execution truth, and
+architectural fitness remain review responsibilities.

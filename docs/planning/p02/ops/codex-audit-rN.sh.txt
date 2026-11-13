@@ -1,0 +1,42 @@
+#!/bin/zsh
+# usage: codex-audit-rN.sh <ITEM> <RUN_ID> <N> "<DESC>" "<REVCTX>" "<NOTES>" — round-N Codex empirical audit.
+# RECONSTRUCTED 2026-09-17 after the scratchpad wipe, from the prompt observed in a running audit's argv
+# and from the artifacts every Wave 0 audit left (audit-codex.r<N-1>.md archive, -r<N>-{started,ended,exit,receipt,transcript}).
+# Exercise once on a low-risk round before trusting it.
+set -u
+ITEM=$1; RUN_ID=$2; N=$3; DESC=$4; REVCTX=$5; NOTES=$6
+REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+d=$REPO/research/runs/$ITEM/$RUN_ID
+cd "$d" || exit 9
+unset GH_TOKEN GITHUB_TOKEN
+SHA=$(shasum -a 256 review/DECISION.md | cut -d' ' -f1)
+P=$((N-1))
+if [[ -f review/audit-codex.md && $N -gt 1 && ! -f review/audit-codex.r$P.md ]]; then cp review/audit-codex.md review/audit-codex.r$P.md; fi
+date -u +%Y-%m-%dT%H:%M:%SZ > review/audit-codex-r$N-started.txt
+/Users/stevemorin/.local/share/mise/installs/node/26.5.0/bin/codex exec --skip-git-repo-check --color never -m gpt-5.6-terra \
+ -c 'model_reasoning_effort="high"' -c 'approval_policy="never"' --sandbox workspace-write \
+ -c 'sandbox_workspace_write.network_access=true' -C "$d" -o review/audit-codex-r$N-receipt.txt \
+ "Read $REPO/docs/superpowers/plans/p02-roles/empirical-auditor.md and follow it exactly. You are the EMPIRICAL auditor for item $ITEM, round $N: $DESC. Your run directory is $d.
+
+Your actor id is exactly: audit-codex-$RUN_ID-r$N
+Your model id is exactly: gpt-5.6-terra
+Your family is: openai
+
+The decision you are auditing is review/DECISION.md, sha256 $SHA. Bind your audit to that exact value in the decision-sha256 header field. If the previous round's audit exists it has been archived as review/audit-codex.r$P.md; read it so you know what was already reproduced and what was rejected.
+
+REVISION CONTEXT: $REVCTX
+
+WHAT TO PRESS HARDEST: $NOTES
+
+STANDING RULES FOR THIS PROGRAMME:
+- A pipeline reports its LAST command's status, so a failing check can print success. Use 'set -o pipefail' and assert on content; a check that cannot fail is not evidence; name /usr/bin/grep beside any count.
+- Do not assert that a log reproduces. Rerun it and DIFF it. Rerun into your own paths under review/evidence/ (audit-*-r$N.*), never into a cited artifact. Also rerun from a clean 'git archive HEAD' extraction where the decision claims archive reproducibility; a SKIP is named, never counted as a pass.
+- The owner ruled on 2026-09-12 (Q7.B) that there is NO licence check for any tool or library the template uses; fitness gate 1 is recorded as inapplicable. Raise no licence finding.
+- This is a research programme: the template does not exist yet. Do not reject a decision for failing to build a working template; do reject claims its logs do not show.
+- GitHub REST: use the base URL http://127.0.0.1:8765 in place of https://api.github.com (a local proxy that authenticates for you; send no Authorization header; do not use gh api); cite the real endpoint. Never print or write your environment.
+- Write only review/audit-codex.md (header fields decision-sha256, actor, model, family, verdict, unresolved-findings, then ## Rerun, ## Findings, ## Assessment) and files under review/evidence/. Do not edit the decision. Do not git commit. Never create a nested git repository.
+
+Reply with at most 8 lines: audit path, its sha256, verdict, the rerun exit code and log path, and the findings." > review/audit-codex-r$N-transcript.txt 2>&1 < /dev/null
+echo $? > review/audit-codex-r$N-exit.txt
+date -u +%Y-%m-%dT%H:%M:%SZ > review/audit-codex-r$N-ended.txt
+echo "$ITEM r$N codex exit=$(cat review/audit-codex-r$N-exit.txt)"

@@ -1,0 +1,213 @@
+{
+  "repo": "tokio-rs/axum",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "rule": "prompt table: 10 most recently opened issues; first comment whose author_association is OWNER/MEMBER/COLLABORATOR, excluding bots and the issue author",
+  "issues": [
+    {
+      "author": "mladedav",
+      "created_at": "2026-09-07T08:48:42Z",
+      "number": 3880,
+      "comments": []
+    },
+    {
+      "author": "mladedav",
+      "created_at": "2026-09-04T18:53:24Z",
+      "number": 3878,
+      "comments": [
+        {
+          "assoc": "NONE",
+          "author": "webdevsamran",
+          "created_at": "2026-09-06T17:09:36Z",
+          "type": "User"
+        },
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-09-08T07:56:26Z",
+          "type": "User"
+        },
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-09-09T08:18:30Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "Darckfast",
+      "created_at": "2026-07-25T19:17:33Z",
+      "number": 3846,
+      "comments": [
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-07-26T20:15:42Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "m-novotny",
+      "created_at": "2026-07-14T01:13:21Z",
+      "number": 3834,
+      "comments": []
+    },
+    {
+      "author": "hgiesel",
+      "created_at": "2026-07-11T22:10:30Z",
+      "number": 3832,
+      "comments": [
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-07-12T07:55:05Z",
+          "type": "User"
+        },
+        {
+          "assoc": "NONE",
+          "author": "hgiesel",
+          "created_at": "2026-07-12T09:57:39Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "bardiharborow",
+      "created_at": "2026-07-09T04:43:05Z",
+      "number": 3826,
+      "comments": [
+        {
+          "assoc": "NONE",
+          "author": "bardiharborow",
+          "created_at": "2026-07-09T05:35:47Z",
+          "type": "User"
+        },
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-07-09T06:45:24Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "DarkFenX",
+      "created_at": "2026-07-05T13:47:13Z",
+      "number": 3817,
+      "comments": [
+        {
+          "assoc": "NONE",
+          "author": "DarkFenX",
+          "created_at": "2026-07-05T14:22:44Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "mladedav",
+      "created_at": "2026-07-01T07:10:18Z",
+      "number": 3814,
+      "comments": [
+        {
+          "assoc": "NONE",
+          "author": "ByteBaker",
+          "created_at": "2026-07-05T19:23:04Z",
+          "type": "User"
+        },
+        {
+          "assoc": "NONE",
+          "author": "ByteBaker",
+          "created_at": "2026-07-05T20:35:19Z",
+          "type": "User"
+        },
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-07-06T16:06:17Z",
+          "type": "User"
+        },
+        {
+          "assoc": "NONE",
+          "author": "ByteBaker",
+          "created_at": "2026-07-06T16:20:40Z",
+          "type": "User"
+        },
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-07-06T18:32:00Z",
+          "type": "User"
+        },
+        {
+          "assoc": "NONE",
+          "author": "ByteBaker",
+          "created_at": "2026-07-06T18:58:47Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "halo-space",
+      "created_at": "2026-06-26T06:54:31Z",
+      "number": 3809,
+      "comments": [
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-06-30T19:49:47Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "breard-r",
+      "created_at": "2026-06-16T08:01:59Z",
+      "number": 3799,
+      "comments": [
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-06-16T11:26:16Z",
+          "type": "User"
+        },
+        {
+          "assoc": "CONTRIBUTOR",
+          "author": "yunz-dev",
+          "created_at": "2026-06-17T09:32:33Z",
+          "type": "User"
+        },
+        {
+          "assoc": "COLLABORATOR",
+          "author": "mladedav",
+          "created_at": "2026-06-17T09:36:01Z",
+          "type": "User"
+        },
+        {
+          "assoc": "CONTRIBUTOR",
+          "author": "yunz-dev",
+          "created_at": "2026-06-17T09:44:17Z",
+          "type": "User"
+        },
+        {
+          "assoc": "CONTRIBUTOR",
+          "author": "farrosfr",
+          "created_at": "2026-07-20T06:44:37Z",
+          "type": "User"
+        },
+        {
+          "assoc": "NONE",
+          "author": "DarkFenX",
+          "created_at": "2026-07-30T16:45:36Z",
+          "type": "User"
+        },
+        {
+          "assoc": "CONTRIBUTOR",
+          "author": "yunz-dev",
+          "created_at": "2026-08-01T11:04:52Z",
+          "type": "User"
+        }
+      ]
+    }
+  ]
+}

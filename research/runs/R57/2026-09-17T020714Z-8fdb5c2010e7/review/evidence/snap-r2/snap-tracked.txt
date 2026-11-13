@@ -1,0 +1,9 @@
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/advisory-directories.md
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/advisory-dirs.md
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/etcetera-crate.json
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/etcetera-deps.json
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/etcetera-versions.json
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/rustsec-anyhow.txt
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/rustsec-directories.txt
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/rustsec-etcetera.txt
+research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/evidence/snap/spike-macos-arm64.txt

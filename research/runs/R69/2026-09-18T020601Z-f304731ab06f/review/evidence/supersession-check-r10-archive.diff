@@ -1,0 +1,17 @@
+--- research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/evidence/supersession-check-r10.log	2026-09-17 19:25:18
++++ /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r69r10/super-archive.out	2026-09-17 19:25:35
+@@ -43,10 +43,9 @@
+ PASS S9-audit-fable.md: review/audit-fable.md is absent; revision 10 gets fresh audits
+ 
+ -- 10. the carried evidence scripts are unmoved in git --
+-  carried evidence scripts compared: 7
+-PASS S10a: carried evidence scripts == 7
+-PASS S10b: carried scripts with no blob at HEAD's source path == 0
+-PASS S10c: carried scripts whose bytes differ from HEAD's blob == 0
++SKIP S10a: no .git in this tree (a git archive extraction); git blob comparison not possible
++SKIP S10b: no .git in this tree (a git archive extraction); git blob comparison not possible
++SKIP S10c: no .git in this tree (a git archive extraction); git blob comparison not possible
+ 
+ == SUMMARY ==
+-CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0
++CHECKS RUN: 23 PASS: 20 FAIL: 0 SKIP: 3

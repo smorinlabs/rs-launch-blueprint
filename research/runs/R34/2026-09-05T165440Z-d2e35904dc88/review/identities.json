@@ -1,0 +1,43 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T165440Z-d2e35904dc88",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T165440Z-d2e35904dc88",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T165440Z-d2e35904dc88",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T165440Z-d2e35904dc88-r1",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T165440Z-d2e35904dc88-r1",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": ["cargo", "generate-lockfile"],
+    "cwd": "research/runs/R34/2026-09-05T165440Z-d2e35904dc88/review/evidence",
+    "toolchain": "cargo 1.98.0 and rustc 1.98.0 on macOS 26.4 arm64 (Darwin 25.4.0), against a two-file manifest fixture, with the edition-to-resolver chain read in the toolchain's own shipped documentation. Nothing was installed, no workflow was written, nothing was scheduled and no issue was opened.",
+    "output_log": "review/evidence/resolver-fallback-chain.log",
+    "exit_code": 0
+  }
+}

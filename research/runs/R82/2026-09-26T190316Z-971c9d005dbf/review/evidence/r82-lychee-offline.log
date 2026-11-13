@@ -1,0 +1,76 @@
+# r82-lychee-offline — run 2026-09-28T04:36:11Z
+# host: Darwin 25.4.0 arm64
+
+## L0 fetch and verify the pinned release asset
+url: https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/lychee-aarch64-apple-darwin.tar.gz
+downloaded sha256: c9d3740ea2d891854d37116c9fba840f37b6e7c89d330e7db84ac333631c4977
+release API digest: sha256:c9d3740ea2d891854d37116c9fba840f37b6e7c89d330e7db84ac333631c4977
+sidecar .sha256:    c9d3740ea2d891854d37116c9fba840f37b6e7c89d330e7db84ac333631c4977
+ok   digest matches both
+binary: bin/lychee-aarch64-apple-darwin/lychee
+version: lychee 0.24.2
+
+## lychee.toml: byte-identical to the TOML block in review/DECISION.md
+exclude_path = ["target"]
+# Hosts that reject automated checkers or rate-limit hard. Add one regex per host,
+# each with a comment naming the observed failure.
+exclude = []
+ok   extracted 4 lines
+
+## L1 hygiene args, proposed lychee.toml, fixture with a broken relative link
+L1  cwd=<fixture>  lychee --offline --no-progress --root-dir <scratch>/f1 .
+     exit=2
+     | Issues found in 1 input. Find details below.
+     | 
+     | [./README.md]:
+     | [ERROR] file://<scratch>/f1/docs/missing.md (at 4:25) | File not found. Check if file exists and path is correct
+     | 
+     | 🔍 4 Total (in 2ms) 🔗 4 Unique ✅ 2 OK 🚫 1 Error 👻 1 Excluded
+     | 
+
+## L1v the L1 run with --verbose added (names what L1 counts as excluded)
+L1v  cwd=<fixture>  lychee --offline --no-progress --root-dir <scratch>/f1 . --verbose
+     exit=2
+     | [ERROR] file://<scratch>/f1/docs/missing.md (at 4:25) | File not found. Check if file exists and path is correct
+     | [EXCLUDED] https://example.com/some/page (at 5:17) | This is due to your 'exclude' values
+     | Issues found in 1 input. Find details below.
+     | 
+     | [./README.md]:
+     | [ERROR] file://<scratch>/f1/docs/missing.md (at 4:25) | File not found. Check if file exists and path is correct
+     | 
+     | 🔍 4 Total (in 1ms) 🔗 4 Unique ✅ 2 OK 🚫 1 Error 👻 1 Excluded
+     | 
+
+## L2 same fixture without the broken relative link
+L2  cwd=<fixture>  lychee --offline --no-progress --root-dir <scratch>/f2 .
+     exit=0
+     | 🔍 3 Total (in 1ms) 🔗 3 Unique ✅ 2 OK 🚫 0 Errors 👻 1 Excluded
+     | 
+
+## L3 control: L1 fixture with exclude_path = [] (proves the config file is read)
+     config: 1:exclude_path = []
+L3  cwd=<fixture>  lychee --offline --no-progress --root-dir <scratch>/f3 .
+     exit=2
+     | Issues found in 2 inputs. Find details below.
+     | 
+     | [./README.md]:
+     | [ERROR] file://<scratch>/f3/docs/missing.md (at 4:25) | File not found. Check if file exists and path is correct
+     | 
+     | [./target/doc/decoy.md]:
+     | [ERROR] file://<scratch>/f3/target/doc/not-there.md (at 1:1) | File not found. Check if file exists and path is correct
+     | 
+     | 🔍 5 Total (in 1ms) 🔗 5 Unique ✅ 2 OK 🚫 2 Errors 👻 1 Excluded
+     | 
+
+## L4 scheduled-job flags, network mode, against a closed localhost port
+precheck: 127.0.0.1:1 refuses connections
+L4  cwd=<fixture>  lychee --cache --max-cache-age 1d --cache-exclude-status 429\,\ 500.. --max-retries 3 --retry-wait-time 2 --timeout 20 --accept 100..=103\,\ 200..=299\,\ 429 --no-progress --root-dir <scratch>/f4 .
+     exit=2
+     | Issues found in 1 input. Find details below.
+     | 
+     | [./README.md]:
+     | [ERROR] http://127.0.0.1:1/gone (at 2:3) | Connection refused - server may be down or port blocked
+     | 
+     | 🔍 2 Total (in 202ms) 🔗 2 Unique ✅ 1 OK 🚫 1 Error
+     | 
+     .lycheecache written: yes

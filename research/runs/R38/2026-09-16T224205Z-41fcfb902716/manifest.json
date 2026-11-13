@@ -1,0 +1,51 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-16T22:42:05Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-16T22:42:05Z",
+      "state": "ready"
+    },
+    {
+      "at": "2026-09-16T22:43:48Z",
+      "publication": {
+        "acceptance_sha256": "d141a0a60d222017f2f05833f91c7d8d85ee44d954373a734d679da3febb6677",
+        "decision_sha256": "c2e9b6e1f1cf096b640ecd2925c8f79010bf7e875a9ce91d18a1d3ad84b3ce24",
+        "transaction": "39034c63222b4d56a4d8c23900e89a29"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "a1659e6deb075eb0837cf8d63fc3fed052faf093fbc44664d020d3eac2349f47",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "c2dc3421cd0fc51cf312365311d78891e73dcf49078ba93e6e2c6da40ae4e502",
+    "registry": "abd9a0428bf0c2be2878f0218112c6d083dbeef77306e20bba949119a92b3788"
+  },
+  "item": "R38",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md",
+  "publication": {
+    "acceptance_sha256": "d141a0a60d222017f2f05833f91c7d8d85ee44d954373a734d679da3febb6677",
+    "decision_sha256": "c2e9b6e1f1cf096b640ecd2925c8f79010bf7e875a9ce91d18a1d3ad84b3ce24",
+    "transaction": "39034c63222b4d56a4d8c23900e89a29"
+  },
+  "remaining_budget": "USD 0.00 (carried-forward republication; no provider submission)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-16T224205Z-41fcfb902716",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "focused",
+  "updated_at": "2026-09-16T22:43:48Z"
+}

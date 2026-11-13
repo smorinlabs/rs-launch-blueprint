@@ -1,0 +1,262 @@
+# R01 revision-2 empirical-auditor rerun
+# date: 2026-09-10
+# actor: audit-codex-2026-09-05T155123Z-52a17c034dad-r2
+# model: gpt-5.6-terra
+# decision-sha256: 8025fd5b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
+# source fixture: review/empirical/seam_fixture
+# independent copy: /private/tmp/r01-audit-codex-r2-52a17c034dad/seam_fixture
+# copy comparison: diff -rq --exclude target source copy => no output (identical)
+
+## Host toolchain
+
+$ command -v cargo
+/opt/homebrew/bin/cargo
+$ cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+$ rustc -vV
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+binary: rustc
+commit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea
+commit-date: 2026-08-18
+host: aarch64-apple-darwin
+release: 1.98.0
+LLVM version: 22.1.8
+
+## Check 1 — format and dyn-compatible positive form
+
+# cwd: /private/tmp/r01-audit-codex-r2-52a17c034dad/seam_fixture
+$ cargo fmt --check
+exit=0
+$ cargo clippy --locked --all-targets -- -D warnings
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+    Checking itoa v1.0.18
+    Checking pin-project-lite v0.2.17
+   Compiling libc v0.2.189
+    Checking futures-core v0.3.34
+    Checking bytes v1.12.1
+   Compiling serde_core v1.0.229
+    Checking once_cell v1.21.4
+   Compiling httparse v1.10.1
+    Checking log v0.4.34
+   Compiling zmij v1.0.23
+   Compiling serde v1.0.229
+    Checking tower-service v0.3.3
+    Checking futures-channel v0.3.34
+    Checking atomic-waker v1.1.2
+    Checking sync_wrapper v1.0.2
+   Compiling serde_json v1.0.151
+    Checking smallvec v1.16.0
+    Checking slab v0.4.12
+    Checking tower-layer v0.3.3
+    Checking tracing-core v0.1.36
+    Checking futures-task v0.3.34
+    Checking percent-encoding v2.3.2
+    Checking httpdate v1.0.3
+    Checking futures-util v0.3.34
+    Checking ryu v1.0.23
+    Checking form_urlencoded v1.2.2
+    Checking mime v0.3.17
+    Checking memchr v2.8.3
+    Checking tracing v0.1.44
+    Checking matchit v0.8.4
+    Checking http v1.5.0
+    Checking http-body v1.1.0
+    Checking http-body-util v0.1.5
+    Checking axum-core v0.5.6
+    Checking mio v1.2.3
+    Checking socket2 v0.6.5
+   Compiling syn v3.0.5
+    Checking serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+    Checking tokio v1.53.1
+    Checking hyper v1.11.1
+    Checking tower v0.5.3
+    Checking serde_urlencoded v0.7.1
+    Checking hyper-util v0.1.20
+    Checking axum v0.8.9
+    Checking seam_fixture v0.1.0 (/private/tmp/r01-audit-codex-r2-52a17c034dad/seam_fixture)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 12.29s
+exit=0
+
+## Check 2 — negative diagnostics
+
+# cwd: /private/tmp/r01-audit-codex-r2-52a17c034dad/negative-impl
+# input: a path-dependent crate using the unchanged copied fixture declarations
+$ cargo check --quiet
+error[E0046]: not all trait items implemented, missing: `get`
+ --> src/main.rs:5:1
+  |
+5 | impl ProjectsPort for Incomplete {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `get` in implementation
+  |
+  = help: implement the missing item: `fn get(&self, _: &str) -> Result<Option<Project>, PortError> { todo!() }`
+
+For more information about this error, try `rustc --explain E0046`.
+error: could not compile `negative-impl` (bin "negative-impl") due to 1 previous error
+exit=101
+
+# cwd: /private/tmp/r01-audit-codex-r2-52a17c034dad/negative-dyn
+$ cargo check --quiet
+error[E0038]: the trait `NotDynCompatible` is not dyn compatible
+  --> src/main.rs:14:36
+   |
+14 |     let erased: std::sync::Arc<dyn NotDynCompatible> = std::sync::Arc::new(A);
+   |                                    ^^^^^^^^^^^^^^^^ `NotDynCompatible` is not dyn compatible
+   |
+note: for a trait to be dyn compatible it needs to allow building a vtable
+      for more information, visit <https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility>
+  --> src/main.rs:3:8
+   |
+ 1 | trait NotDynCompatible: Send + Sync {
+   |       ---------------- this trait is not dyn compatible...
+ 2 |     fn name(&self) -> String;
+ 3 |     fn pick<T>(&self, value: T) -> T;
+   |        ^^^^ ...because method `pick` has generic type parameters
+   = help: consider moving `pick` to another trait
+   = help: only type `A` implements `NotDynCompatible`; consider using it directly instead.
+
+For more information about this error, try `rustc --explain E0038`.
+error: could not compile `negative-dyn` (bin "negative-dyn") due to 1 previous error
+exit=101
+
+## Check 3 — lockfile resolution, declared MSRV and licences
+
+# cwd: /private/tmp/r01-audit-codex-r2-52a17c034dad/seam_fixture
+$ cargo metadata --locked --format-version 1 | jq -r '.packages[] | select(.name != "seam_fixture") | [.name, .version, (.rust_version // "none"), (.license // "none")] | @tsv' | sort
+atomic-waker	1.1.2	1.36	Apache-2.0 OR MIT
+axum	0.8.9	1.80	MIT
+axum-core	0.5.6	1.78	MIT
+bytes	1.12.1	1.57	MIT
+form_urlencoded	1.2.2	1.51	MIT OR Apache-2.0
+futures-channel	0.3.34	1.71	MIT OR Apache-2.0
+futures-core	0.3.34	1.36	MIT OR Apache-2.0
+futures-task	0.3.34	1.71	MIT OR Apache-2.0
+futures-util	0.3.34	1.71	MIT OR Apache-2.0
+http	1.5.0	1.57.0	MIT OR Apache-2.0
+http-body	1.1.0	1.61	MIT
+http-body-util	0.1.5	1.61	MIT
+httparse	1.10.1	none	MIT OR Apache-2.0
+httpdate	1.0.3	1.56	MIT OR Apache-2.0
+hyper	1.11.1	1.63	MIT
+hyper-util	0.1.20	1.64	MIT
+itoa	1.0.18	1.68	MIT OR Apache-2.0
+libc	0.2.189	1.65	MIT OR Apache-2.0
+log	0.4.34	1.71.0	MIT OR Apache-2.0
+matchit	0.8.4	none	MIT AND BSD-3-Clause
+memchr	2.8.3	1.61	Unlicense OR MIT
+mime	0.3.17	none	MIT OR Apache-2.0
+mio	1.2.3	1.71	MIT
+once_cell	1.21.4	1.65	MIT OR Apache-2.0
+percent-encoding	2.3.2	1.51	MIT OR Apache-2.0
+pin-project-lite	0.2.17	1.37	Apache-2.0 OR MIT
+proc-macro2	1.0.107	1.71	MIT OR Apache-2.0
+quote	1.0.47	1.71	MIT OR Apache-2.0
+ryu	1.0.23	1.71	Apache-2.0 OR BSL-1.0
+serde	1.0.229	1.56	MIT OR Apache-2.0
+serde_core	1.0.229	1.56	MIT OR Apache-2.0
+serde_derive	1.0.229	1.71	MIT OR Apache-2.0
+serde_json	1.0.151	1.71	MIT OR Apache-2.0
+serde_path_to_error	0.1.20	1.61	MIT OR Apache-2.0
+serde_urlencoded	0.7.1	none	MIT/Apache-2.0
+slab	0.4.12	1.51	MIT
+smallvec	1.16.0	none	MIT OR Apache-2.0
+socket2	0.6.5	1.70	MIT OR Apache-2.0
+syn	3.0.5	1.71	MIT OR Apache-2.0
+sync_wrapper	1.0.2	none	Apache-2.0
+tokio	1.53.1	1.71	MIT
+tokio-macros	2.7.2	1.71	MIT
+tower	0.5.3	1.64.0	MIT
+tower-layer	0.3.3	none	MIT
+tower-service	0.3.3	none	MIT
+tracing	0.1.44	1.65.0	MIT
+tracing-core	0.1.36	1.65.0	MIT
+unicode-ident	1.0.24	1.71	(MIT OR Apache-2.0) AND Unicode-3.0
+wasi	0.11.1+wasi-snapshot-preview1	none	Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+windows-link	0.2.1	1.71	MIT OR Apache-2.0
+windows-sys	0.61.2	1.71	MIT OR Apache-2.0
+zmij	1.0.23	1.71	MIT
+exit=0
+$ cargo metadata --locked --format-version 1 | jq -r '.packages[] | select(.name != "seam_fixture") | .rust_version // empty' | sort -V | tail -n 1
+1.80
+$ cargo tree --locked --edges normal
+seam_fixture v0.1.0 (/private/tmp/r01-audit-codex-r2-52a17c034dad/seam_fixture)
+├── axum v0.8.9
+│   ├── axum-core v0.5.6
+│   ├── bytes v1.12.1
+│   ├── form_urlencoded v1.2.2
+│   ├── futures-util v0.3.34
+│   ├── http v1.5.0
+│   ├── http-body v1.1.0
+│   ├── http-body-util v0.1.5
+│   ├── hyper v1.11.1
+│   ├── hyper-util v0.1.20
+│   ├── itoa v1.0.18
+│   ├── matchit v0.8.4
+│   ├── memchr v2.8.3
+│   ├── mime v0.3.17
+│   ├── percent-encoding v2.3.2
+│   ├── pin-project-lite v0.2.17
+│   ├── serde_core v1.0.229
+│   ├── serde_json v1.0.151
+│   ├── serde_path_to_error v0.1.20
+│   ├── serde_urlencoded v0.7.1
+│   ├── sync_wrapper v1.0.2
+│   ├── tokio v1.53.1
+│   ├── tower v0.5.3
+│   ├── tower-layer v0.3.3
+│   ├── tower-service v0.3.3
+│   └── tracing v0.1.44
+├── serde v1.0.229
+├── serde_json v1.0.151
+└── tokio v1.53.1
+exit=0
+# The full package set is the 53-row metadata output above. This tree view records each
+# direct edge from the fixture and establishes that serde 1.0.229 and serde_json 1.0.151
+# are members of the one locked resolution. The decision relies only on the serde member subtree:
+# serde, serde_core, serde_derive, serde_json, proc-macro2, quote, syn, unicode-ident,
+# itoa, memchr and zmij; its highest declared rust-version is 1.71.
+
+## Check 4 — RustSec advisory scan
+
+# cwd: /private/tmp/r01-audit-codex-r2-52a17c034dad/seam_fixture
+$ cargo audit --version
+cargo-audit-audit 0.22.1
+$ cargo audit
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+error: couldn't fetch advisory database: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+Caused by:
+  -> failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+  -> attempted to take an exclusive lock on a read-only path
+exit=1
+# The direct command was blocked by the sandbox advisory-cache lock before it scanned Cargo.lock.
+# A copy of that advisory database is the same database content at a writable path.
+$ cargo audit --db /private/tmp/r01-audit-codex-r2-52a17c034dad/advisory-db
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /private/tmp/r01-audit-codex-r2-52a17c034dad/advisory-db)
+    Updating crates.io index
+warning: couldn't update crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+    Scanning Cargo.lock for vulnerabilities (53 crate dependencies)
+exit=0
+
+## Citation spot-checks
+
+$ curl --location --silent --show-error --user-agent 'Mozilla/5.0 audit-codex-r2' --output /dev/null --write-out 'http=%{http_code} final=%{url_effective}' https://doc.rust-lang.org/reference/items/traits.html
+http=200 final=https://doc.rust-lang.org/reference/items/traits.html
+$ curl --location --silent --show-error --user-agent 'Mozilla/5.0 audit-codex-r2' --output /dev/null --write-out 'http=%{http_code} final=%{url_effective}' https://doc.rust-lang.org/reference/types/trait-object.html
+http=200 final=https://doc.rust-lang.org/reference/types/trait-object.html
+$ curl --location --silent --show-error --user-agent 'Mozilla/5.0 audit-codex-r2' --output /dev/null --write-out 'http=%{http_code} final=%{url_effective}' https://serde.rs/data-model.html
+http=200 final=https://serde.rs/data-model.html
+$ curl --location --silent --show-error --user-agent 'Mozilla/5.0 audit-codex-r2' --output /dev/null --write-out 'http=%{http_code} final=%{url_effective}' https://crates.io/api/v1/crates/serde/versions
+http=200 final=https://crates.io/api/v1/crates/serde/versions
+$ curl --location --silent --show-error --user-agent 'Mozilla/5.0 audit-codex-r2' --output /dev/null --write-out 'http=%{http_code} final=%{url_effective}' https://crates.io/api/v1/crates/serde_json/versions
+http=200 final=https://crates.io/api/v1/crates/serde_json/versions
+
+## Decision boundary check
+
+$ awk '/^\\| The composition root erases/{on=1} on && /^\\|/{count++} on && !/^\\|/{if (count) {print count; exit}}' review/DECISION.md
+6
+# The six rows label production erasure, shared CLI/web service, web request path, template
+# OS/MSRV matrix, async-trait dyn compatibility and erased-boundary cost as unproven P03 work.

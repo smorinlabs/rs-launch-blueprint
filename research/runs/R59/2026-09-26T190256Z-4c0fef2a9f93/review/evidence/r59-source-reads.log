@@ -1,0 +1,59 @@
+# R59 check S — pinned published sources
+run (UTC): 2026-09-28T20:01:38Z
+host: Darwin 25.4.0 arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+
+## file-rotate 0.8.0 (/tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0)
+  src/lib.rs:425:        fs::create_dir_all(basepath.parent().unwrap()).expect("create dir");
+PASS S01 — new(): directory creation panics on failure — expected=[yes] actual=[yes]
+  src/lib.rs:446:            let _ = fs::create_dir_all(path).expect("create dir");
+PASS S02 — ensure_log_directory_exists(): same expect on every rotate — expected=[yes] actual=[yes]
+  src/lib.rs:485:        self.file = open_options.open(&self.basepath).ok();
+PASS S03 — open_file(): open errors are discarded with .ok() — expected=[yes] actual=[yes]
+  src/lib.rs:553:        assert!(old_path.exists());
+PASS S04 — move_file_with_suffix(): asserts the old path exists — expected=[yes] actual=[yes]
+  src/lib.rs:554:        assert!(!new_path.exists());
+PASS S05 — move_file_with_suffix(): asserts the new path does not exist — expected=[yes] actual=[yes]
+  src/lib.rs:707:                if self.count > bytes {
+PASS S06 — BytesSurpassed rotates only after the count exceeds the limit — expected=[yes] actual=[yes]
+  src/lib.rs:721:        Ok(written)
+PASS S07 — write() reports the full length whatever was written — expected=[yes] actual=[yes]
+PASS S08 — no unsafe token in file-rotate src/ — expected=[0] actual=[0]
+PASS S09 — file-rotate declares no rust-version — expected=[0] actual=[0]
+
+## tracing-subscriber 0.3.23 (/tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-subscriber-0.3.23)
+  fmt/fmt_layer.rs:752:            log_internal_errors: false,
+PASS S10 — fmt::Layer::default() sets log_internal_errors: false — expected=[yes] actual=[yes]
+  fmt/fmt_layer.rs:362:    /// Defaults to true.
+PASS S11 — ...while the setter's doc comment says 'Defaults to true' — expected=[yes] actual=[yes]
+  fmt/fmt_layer.rs:1051:                if self.log_internal_errors {
+PASS S12 — a writer error is printed only if log_internal_errors — expected=[yes] actual=[yes]
+  fmt/fmt_layer.rs:743:        let ansi = cfg!(feature = "ansi") && env::var("NO_COLOR").map_or(true, |v| v.is_empty());
+PASS S13 — default ANSI is on when the feature is enabled and NO_COLOR is unset or empty — expected=[yes] actual=[yes]
+PASS S14 — tracing-subscriber declares rust-version 1.65.0 — expected=["1.65.0"] actual=["1.65.0"]
+
+## tracing-appender 0.2.5 (/tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-appender-0.2.5)
+PASS S15 — Rotation has exactly five kinds: MINUTELY, HOURLY, DAILY, WEEKLY, NEVER — expected=[5] actual=[5]
+  rolling.rs:501:    pub const MINUTELY: Self = Self(RotationKind::Minutely);
+  rolling.rs:503:    pub const HOURLY: Self = Self(RotationKind::Hourly);
+  rolling.rs:505:    pub const DAILY: Self = Self(RotationKind::Daily);
+  rolling.rs:507:    pub const WEEKLY: Self = Self(RotationKind::Weekly);
+  rolling.rs:509:    pub const NEVER: Self = Self(RotationKind::Never);
+PASS S16 — no size-trigger identifier in rolling.rs (max_size|max_bytes|size_limit|file_size) — expected=[0] actual=[0]
+PASS S17 — tracing-appender declares rust-version 1.63.0 — expected=["1.63.0"] actual=["1.63.0"]
+
+## unsafe census (gate 3), /usr/bin/grep -w over every src/**/*.rs, full listing
+tracing-subscriber 0.3.23 lines-with-unsafe per file:
+src/fmt/mod.rs:2
+src/fmt/fmt_layer.rs:1
+src/reload.rs:3
+src/layer/layered.rs:7
+src/layer/mod.rs:10
+src/filter/layer_filters/mod.rs:3
+PASS S18 — tracing-subscriber: files containing unsafe — expected=[6] actual=[6]
+PASS S19 — tracing-subscriber: lines containing unsafe — expected=[26] actual=[26]
+PASS S20 — tracing-subscriber: unsafe tokens (some lines hold two) — expected=[28] actual=[28]
+PASS S21 — tracing-appender 0.2.5: no unsafe in src/ — expected=[0] actual=[0]
+PASS S22 — owned RotatingFile + resolver (probe src/lib.rs): no unsafe — expected=[0] actual=[0]
+
+SUMMARY: 22 checks, 0 failed, 0 skipped

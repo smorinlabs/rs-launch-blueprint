@@ -1,0 +1,44 @@
+=== R51 registry checks
+date-utc: 2026-09-27T04:19:53Z
+grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+curl:     curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+SKIP  D1a — this host has no network reach to the documented endpoints
+SKIP  D1b — this host has no network reach to the documented endpoints
+SKIP  D1c — this host has no network reach to the documented endpoints
+SKIP  D1d — this host has no network reach to the documented endpoints
+SKIP  D1e — this host has no network reach to the documented endpoints
+SKIP  D2a — this host has no network reach to the documented endpoints
+SKIP  D3a — this host has no network reach to the documented endpoints
+SKIP  D3b — this host has no network reach to the documented endpoints
+SKIP  D3c — this host has no network reach to the documented endpoints
+SKIP  D3-latest — this host has no network reach to the documented endpoints
+SKIP  D3-nonroot — this host has no network reach to the documented endpoints
+SKIP  D3-debug — this host has no network reach to the documented endpoints
+SKIP  D3-debug-nonroot — this host has no network reach to the documented endpoints
+SKIP  D4a — this host has no network reach to the documented endpoints
+SKIP  D4b — this host has no network reach to the documented endpoints
+SKIP  D5a — this host has no network reach to the documented endpoints
+SKIP  D5b — this host has no network reach to the documented endpoints
+SKIP  D5c — this host has no network reach to the documented endpoints
+SKIP  D5d — this host has no network reach to the documented endpoints
+SKIP  D5e — this host has no network reach to the documented endpoints
+SKIP  D6a — this host has no network reach to the documented endpoints
+SKIP  D6b — this host has no network reach to the documented endpoints
+gh-call-1-utc: 2026-09-27T04:20:13Z
+PASS  G1a — cargo-chef's manifest read at tag v0.1.78 (1170 bytes)
+PASS  G1b — rust-version keys in cargo-chef's manifest at v0.1.78 (gate 2 FAILS): 0
+PASS  G1c — the same search finds 1 edition key(s), so G1b's zero is not a failed read
+PASS  G1d — cargo-chef's declared edition: edition = "2018"
+gh-call-2-utc: 2026-09-27T04:20:35Z
+PASS  G2a — items returned by the ten-most-recent listing: 10
+PASS  G2b — all 6 issues among the ten most recent items carry 0 comments (the at-risk signal)
+PASS  G2c — the rubric's ten-issue sample is only 6 deep here, and is reported as such
+gh-call-2b-utc: 2026-09-27T04:20:57Z
+issue-sample-numbers: 367 366 365 363 361 359 356 355 353 350 
+PASS  G2d — issues in the rubric's ten-most-recently-opened sample: 10
+PASS  G2e — all 10 of 10 sampled issues (2026-04-01 to 2026-09-10) carry 0 comments: unanswered 10 of 10
+gh-call-3-utc: 2026-09-27T04:21:19Z
+PASS  G3a — cargo-chef open issues by the prompt's endpoint: 35
+
+grep-version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+SUMMARY: PASS=10 FAIL=0 SKIP=22 TOTAL=32

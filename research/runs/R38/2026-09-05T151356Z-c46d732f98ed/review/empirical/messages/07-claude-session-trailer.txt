@@ -1,0 +1,3 @@
+ci: pin the commit-lint action by sha
+
+Claude-Session: https://claude.ai/code/session_013Dvsi7FhLemRfUyFSQi87Aabcdefghijklmnopqrstuvwxyz0123456789

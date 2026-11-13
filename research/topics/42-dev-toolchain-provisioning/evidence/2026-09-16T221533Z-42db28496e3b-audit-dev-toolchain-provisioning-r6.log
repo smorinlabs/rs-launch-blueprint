@@ -1,0 +1,97 @@
+# R42 revision-6 empirical audit -- mechanical parameter-line audit
+# Actor: audit-codex-2026-09-05T155503Z-4141a35b69e0-r6
+# Model: gpt-5.6-terra; family: openai.
+# CWD: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R42/2026-09-05T155503Z-4141a35b69e0
+# Scope: revision 6 only. The decision recorded no new empirical check. Per the
+# task constraint, the Linux VM was not started, no presence-test matrix or
+# earlier empirical check was rerun, and nothing was installed.
+
+## Decision and Revision-5 identity
+
+```text
+$ shasum -a 256 review/DECISION.md
+ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f  review/DECISION.md
+
+$ git show 27556ab:research/runs/R42/2026-09-05T155503Z-4141a35b69e0/review/DECISION.md | shasum -a 256
+189bb6e3ee4cd786ebfc9b677f780213733fd3a599821c993e17639818a4c677  -
+```
+
+Both pre-archive Revision-5 audit headers name
+`189bb6e3ee4cd786ebfc9b677f780213733fd3a599821c993e17639818a4c677`, approve,
+and report `unresolved-findings: none`. `review/audit-fable.md` states that the
+item is ready to publish.
+
+## Exact parameter values
+
+The comparison reads every character after ` = ` in each declaration and the
+registry table's value cell. The registry is
+`../../../../docs/port/PARAMETERS.md` from this run directory.
+
+```text
+msrv-policy
+decision: 'stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI'
+registry: 'stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI'
+byte-for-byte: True
+
+rust-edition
+decision: '2024'
+registry: '2024'
+byte-for-byte: True
+
+target-os-matrix
+decision: 'ubuntu-latest, macos-latest'
+registry: 'ubuntu-latest, macos-latest'
+byte-for-byte: True
+
+license
+decision: 'MIT OR Apache-2.0'
+registry: 'MIT OR Apache-2.0'
+byte-for-byte: True
+```
+
+`package-manager-invocation` is a researched value owned by R42. Its live
+registry cell is correctly `—` before publication. The packageer copies the
+decision declaration into the staged registry before the strict validator runs:
+
+```text
+decision value == staged registry value: True
+bare/non-placeholder/no pipe: True
+```
+
+The declaration is one line and contains no Markdown formatting, citation, or
+commentary after its value.
+
+## Revision boundary and preservation checks
+
+```text
+$ git diff --quiet 27556ab 2b8e2ce -- raw review/evidence
+exit=0 (no raw report or pre-existing evidence change)
+
+$ git diff --check 27556ab 2b8e2ce -- review/DECISION.md
+exit=0
+
+$ git diff --no-ext-diff --unified=0 27556ab 2b8e2ce -- review/DECISION.md | rg '^@@'
+@@ -1 +1 @@
+@@ -287,5 +287,5 @@ re-verify: 2027-03-10, or any earlier event listed immediately above
+@@ -293,0 +294,83 @@ re-verify: 2027-03-10, or any earlier event listed immediately above
+@@ -671,0 +755,37 @@ earlier check was rerun.
+```
+
+The permitted parameter move retains both required details in `## Parameters`:
+
+```text
+review/DECISION.md:369: Windows support is noted where it exists and is not required
+review/DECISION.md:373-374: the owner ruling whether gate 1 reaches separate-process developer tools is unproven item 7
+```
+
+`review/identities.json` continues to bind the unchanged raw sources to
+`raw/codex.md`, `raw/opus.md`, and `raw/doxa.md`, with Doxa's three normalized
+provider reports present. Before this audit file was written, the offline state
+scanner reported R42 as awaiting fresh empirical and judgment audits, not as
+having a parameter-line mismatch.
+
+## Result
+
+Exit code: 0. No finding. Revision 6 corrects the fixed-line packaging defect,
+keeps the owned value publishable, retains the required moved content, and does
+not make a P03 implementation claim.

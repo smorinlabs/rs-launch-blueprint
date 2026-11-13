@@ -1,0 +1,69 @@
+INFO .git is absent - this is a git archive extraction; no assertion below needs git
+PASS I100 R02's run DECISION.md is at sha256 9e8f8e8c11ffb9b3..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I101 R05's run DECISION.md is at sha256 3ca4b81abf4df024..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I102 R10's run DECISION.md is at sha256 3ebb09ce641aed0d..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I103 R44's run DECISION.md is at sha256 ea398ddaecf3f303..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I104 R50's run DECISION.md is at sha256 316dd29d9681948a..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I105 R68's run DECISION.md is at sha256 070b7ae10b4a3de4..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I106 R69's run DECISION.md is at sha256 d34ab6e8339b6f41..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I107 R86's run DECISION.md is at sha256 5a63655c595a4bfe..., the hash its OWNER-ACCEPTANCES.md row accepted
+PASS I108 revision 1 is preserved at review/R11-r1-snapshot.md with the sha256 its OWNER-ACCEPTANCES.md row accepted (5fbd77d090a7...), so the acceptance binds revision 1 only
+PASS I110 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:254: the facade, which hosts the serve binary, depends on cli, core and the optional web member - so a cli or core change reaches the serve binary
+PASS R3-I3 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:163: R02 publishes four crates, so each member directory is a package whose contents the detector must not skip
+PASS I111 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:257: crates/web depends on crates/core - the edge that makes revision 1's web key fail open
+PASS I112 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: R02 writes the serve binary's source as src/bin/serve.rs where revision 1 wrote src/bin/rslbp-serve.rs; no accepted decision fixes the path, which the fail-closed key no longer needs
+PASS I113 research/runs/R10/2026-09-17T020715Z-b3b67fdb5328/review/DECISION.md:100: R10's restore key hashes every installed toolchain's rustc -vV, so a toolchain matrix leg would NOT collide with the stable leg - the correction to revision 1's floor paragraph
+PASS I114 research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md: R69 revision 10 (accepted, unpublished) keys web skip-gating on crates/web/** - revision 2 keeps that key and makes it a subset of a fail-closed rule
+PASS I115 docs/port/PARAMETERS.md: the live registry still carries revision 9's src/web/** bytes - the assumes line reproduces them
+PASS I116 docs/port/BASELINE-REVIEW.md: F033's OS cross-product remains an owner question (queued as open question 4)
+PASS I120 all three pinned raw reports (codex, opus, doxa) hash to the sha256 in their file names
+PASS I121 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:12: the Codex leg's self-reported model identity
+PASS I122 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:60: the Codex principle that exposes revision 1's fail-open web key
+PASS I123 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:68: Codex reads R10 as open - true of publication, but R10 revision 1 is owner-accepted, which is why Codex never prices its design against R10's threshold
+PASS I124 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:102: the Codex topology: one job per capability
+PASS I125 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:558: the Codex base leg tests workspace-scoped with the feature off, which R02 check B3 says compiles crates/web anyway - no root-scoped proof that the default build carries no web
+PASS I126 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:91: the Codex leg raises one BASELINE-REVIEW line, on F033
+PASS I127 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:46: the Codex summary of ts names one ci job and omits the advisory bun-lane job (asserted in r11-r2-sources.sh S22a)
+PASS I128 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/opus-36d462cd961a530c107ab672b893fcfefb844ad153edf41d7d8350dd11ced5be.md:974: the Opus skip-list revision 1 corrected on the packaging allow-list
+PASS I129 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/opus-36d462cd961a530c107ab672b893fcfefb844ad153edf41d7d8350dd11ced5be.md:230: the Opus candidate's floor job id is msrv, not msrv-floor
+PASS I130 the pinned Doxa file carries the seven BASELINE-REVIEW lines revision 2 accounts for: OpenAI at 349 (F038), 351 (F040), 353 (F033); Perplexity at 1514 (F033); Gemini at 2177 (F038), 2178 (F040), 2179 (F033)
+PASS R4-I3 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/doxa-30efbab77a136c5c39f3cfa72ee266aff3c8b237c9467620921dea5699a3af30.md:2183: the Gemini leg recommends a single job gated by a detector - it can skip (audit F3)
+PASS R4-I4 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/doxa-30efbab77a136c5c39f3cfa72ee266aff3c8b237c9467620921dea5699a3af30.md:2186: Gemini's heavy ci job is gated through needs and if
+PASS R4-I5 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/doxa-30efbab77a136c5c39f3cfa72ee266aff3c8b237c9467620921dea5699a3af30.md:2186: and the same line folds formatting, a check that compiles nothing, into the gated job - the first of the two points Disagreement 1 adjudicates against C
+PASS R5-I2 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/doxa-30efbab77a136c5c39f3cfa72ee266aff3c8b237c9467620921dea5699a3af30.md:2185: the Gemini detector names what counts, allow-list wording (audit F3)
+PASS R5-I3 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/doxa-30efbab77a136c5c39f3cfa72ee266aff3c8b237c9467620921dea5699a3af30.md:2186: and Gemini's ci job runs only when a listed path changes, so an unlisted path skips it - the polarity Disagreement B settles against
+PASS I131 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/doxa-30efbab77a136c5c39f3cfa72ee266aff3c8b237c9467620921dea5699a3af30.md:410: the OpenAI leg SHA-pinned dorny/paths-filter - revision 1's claim that no Doxa leg read the pinning policy was wrong for this leg
+PASS I132a research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:103: the Codex capability list, continued
+PASS I132b research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md:141: Codex puts a cache step in every Cargo-consuming job
+PASS I132c arithmetic over the job list transcribed from Codex raw lines 102-106, 548 and 559 (each phrase asserted present): 8 cache-bearing job ids on ubuntu-latest and 10 job-runner pairs before any gate slot - above R10's recorded threshold of about six per OS, against this decision's 3 ids and 4 pairs (r11-cache-budget.sh B2, B3)
+PASS I140 the header line names revision 7
+PASS I141 exactly the four H2 sections in order; no ## Supersedes, because revision 2 reverses no published entry
+PASS I142 one re-verify line, one ### Principles and implementation, no ##### heading
+PASS I143 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/DECISION.md: fitness gate 1 carries the prescribed wording
+PASS I144 exactly one owns line, free of backticks and pipes (8119 bytes)
+PASS I145 the owns line carries both revision-2 changes (fail-closed web, !cancelled() steps) and the unchanged positive-predicate and merge_group clauses
+PASS I146 all five assumes lines are byte-identical to both docs/port/PARAMETERS.md and this run's inputs/parameters.json
+PASS R3-I1 the owns line forbids any skip-list entry that matches package content (audit F3)
+PASS R3-I2 the one node version ## Empirical check records (v26.9.0, with jq-1.8.2) is the one r11-r2-dorny.log line 1 prints (audit EA-1, F1)
+PASS R4-I1 the owns line states that both polarities skip on a failed or skipped plan, keeps the positive form on its corrected grounds, and hands over the detector-failure constraint; the withdrawn empty-string rationale is gone (audit F1)
+PASS R4-I2 the owns line carries the audit's replacement Markdown clause, and neither the owns line nor revision note 3 still says Markdown is skippable only at the repository root (audit F2)
+PASS R5-I1 the owns line carries --no-renames and the rename clause (audit F2), the structural fail-closed clause (audit F1) and the consumer-side and producer-side lint wording (audit O1); the lint-only wording is gone
+PASS R5-I4 the Gemini row of the engine table records its path polarity as allow-list wording at the lines R5-I2 and R5-I3 assert (audit F3)
+PASS R5-I5 the Gemini paragraph says it differs from C's topology on exactly two points, the unqualified 'exactly two points' is gone, and Disagreement B extends its adjudication to Gemini (audit F3)
+PASS R6-I1 research/topics/20-third-party-action-pinning-policy/DECISION.md:105-108: R20's SHA-pin rule reads a repository-root zizmor.yml and runs zizmor over .github/ - an input wider than .github/workflows/ (audit F2)
+PASS R6-I2 research/topics/20-third-party-action-pinning-policy/DECISION.md:119: R20's comment rule compiles nothing, so an always-run hygiene step can host it
+PASS R6-I3 research/topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md:4: R29's files include the root manifests and Markdown, which a docs-only or Cargo.toml-only change edits (audit F1)
+PASS R6-I4 R04's published decision puts one cargo-semver-checks-action@v2 job in ci.yml (line 51) and leaves its placement to R11 (line 35) (audit O1)
+PASS R6-I5 docs/port/COMMONALITY.md: the actionlint config rows are R09's (F056) and the workflow-lint hook is R40's (F170), so the decision names those owners rather than inventing one
+PASS R6-I6 the owns line extends fail-closed to every required gate, puts R29's and R20's slots in hygiene, and states what workflows contains; the compile-only and workflow-tree-only wording is gone (audit F1, F2)
+PASS R6-I7 the slot table has R29, R20 and R04 rows, and the R29 row no longer offers workflow-lint as an alternative (audit F1, O1)
+PASS R6-I8 the job diagram places R29's and R20's slots in hygiene, no longer in workflow-lint (audit F1)
+PASS R6-I9 the Gemini adjudication's point (i) matches C as drawn, and the headline's no-extra-action claim is scoped to this decision's own additions (audit F1, O1)
+PASS R7-I1 research/topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md:4: R82's gate includes link checks, which compile nothing, beside rustdoc, which does (audit F1)
+PASS R7-I2 research/topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md: R82 is an open consumer of ci-job-structure (line 23), so it declares its link check's input; an external check's cadence goes to R34 (line 17)
+PASS R7-I3 the owns line puts R82's link check in hygiene and says docs gates no job; revision 6's 'gates only together with code' is gone (audit F1)
+PASS R7-I4 the slot table has its own R82 row and no docs-gate path gate, criterion 14 and the diagram name R82's link check in hygiene, and the unconsumed docs output is flagged for the controller (audit F1)
+PASS R7-I5 the R2-L5 sentence states the counts r11-r2-actionlint.sh R2-L5 asserts for the current fixture, and revision 6's stale 'nine occurrences on eight lines' is gone from it (EA6-1)
+PASS I147 no CONFLICT: line - no consumed value needs to change
+
+PASS=66 FAIL=0 SKIP=0 TOTAL=66

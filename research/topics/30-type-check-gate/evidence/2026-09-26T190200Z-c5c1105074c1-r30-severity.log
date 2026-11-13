@@ -1,0 +1,181 @@
+# r30-severity.sh  run 2026-09-27T07:25:08Z  host Darwin arm64
+# CARGO_HOME=/tmp/cargo-s34-R30-r3
+# 1.96.0: cargo 1.96.0 (30a34c682 2026-05-25) / rustc 1.96.0 (ac68faa20 2026-05-25)
+# 1.97.1: cargo 1.97.1 (c980f4866 2026-06-30) / rustc 1.97.1 (8bab26f4f 2026-07-14)
+# stable (PATH): cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) / rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+# CARGO_TARGET_DIR=<ws>/target
+
+# --- W1: CARGO_BUILD_WARNINGS=deny per toolchain (one unused-variable warning in the tree)
+
+== W1 1.96.0 plain
+$ tcargo 1.96.0 check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+warning: unused variable: `unused`
+warning: `app` (lib) generated 1 warning (run `cargo fix --lib -p app` to apply 1 suggestion)
+warning: `app` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.61s
+units re-checked: 2
+exit=0 (expected 0) PASS
+
+== W1 1.96.0 CARGO_BUILD_WARNINGS=deny
+$ with CARGO_BUILD_WARNINGS=deny tcargo 1.96.0 check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+warning: `app` (lib test) generated 1 warning (run `cargo fix --lib -p app --tests` to apply 1 suggestion)
+warning: `app` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+units re-checked: 0
+exit=0 (expected 0) PASS
+
+== W1 1.97.1 plain
+$ tcargo 1.97.1 check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+warning: unused variable: `unused`
+warning: `app` (lib) generated 1 warning (1 duplicate)
+warning: `app` (lib test) generated 1 warning (run `cargo fix --lib -p app --tests` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.42s
+units re-checked: 2
+exit=0 (expected 0) PASS
+
+== W1 1.97.1 CARGO_BUILD_WARNINGS=deny
+$ with CARGO_BUILD_WARNINGS=deny tcargo 1.97.1 check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+error: `app` (lib test) generated 1 warning (run `cargo fix --lib -p app --tests` to apply 1 suggestion)
+error: `app` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+error: warnings are denied by `build.warnings` configuration
+units re-checked: 0
+exit=101 (expected 101) PASS
+
+== W1 1.98.1 plain
+$ cargo check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+warning: unused variable: `unused`
+warning: `app` (lib) generated 1 warning (run `cargo fix --lib -p app` to apply 1 suggestion)
+warning: `app` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.29s
+units re-checked: 2
+exit=0 (expected 0) PASS
+
+== W1 1.98.1 CARGO_BUILD_WARNINGS=deny
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+error: `app` (lib test) generated 1 warning (run `cargo fix --lib -p app --tests` to apply 1 suggestion)
+error: `app` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+error: warnings are denied by `build.warnings` configuration
+units re-checked: 0
+exit=101 (expected 101) PASS
+
+== W1 1.96.0 RUSTFLAGS=-Dwarnings (works on the floor)
+$ with RUSTFLAGS=-Dwarnings tcargo 1.96.0 check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+error: unused variable: `unused`
+error: could not compile `app` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `app` (lib test) due to 1 previous error
+units re-checked: 2
+exit=101 (expected 101) PASS
+
+# --- W2: committed config-file form, [build] warnings = "deny"
+
+== W2 1.96.0 with .cargo/config.toml build.warnings=deny (key unknown to 1.96)
+$ tcargo 1.96.0 check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+warning: `app` (lib test) generated 1 warning (run `cargo fix --lib -p app --tests` to apply 1 suggestion)
+warning: `app` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.03s
+units re-checked: 0
+exit=0 (expected 0) PASS
+
+== W2 1.98.1 with .cargo/config.toml — every plain local build now fails
+$ cargo check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+error: `app` (lib) generated 1 warning (run `cargo fix --lib -p app` to apply 1 suggestion)
+error: `app` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+error: warnings are denied by `build.warnings` configuration
+units re-checked: 0
+exit=101 (expected 101) PASS
+
+# --- W3: fingerprint effect on 1.98.1, fresh target dir
+
+== W3a plain (cold)
+$ cargo check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+warning: unused variable: `unused`
+warning: `app` (lib test) generated 1 warning (1 duplicate)
+warning: `app` (lib) generated 1 warning (run `cargo fix --lib -p app` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s
+units re-checked: 2
+exit=0 (expected 0) PASS
+
+== W3b CARGO_BUILD_WARNINGS=deny after plain — expect 0 units re-checked, warning replayed as failure
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+error: `app` (lib) generated 1 warning (run `cargo fix --lib -p app` to apply 1 suggestion)
+error: `app` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+error: warnings are denied by `build.warnings` configuration
+units re-checked: 0
+exit=101 (expected 101) PASS
+
+== W3c plain again — expect 0 units re-checked
+$ cargo check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+warning: `app` (lib) generated 1 warning (run `cargo fix --lib -p app` to apply 1 suggestion)
+warning: `app` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+units re-checked: 0
+exit=0 (expected 0) PASS
+
+== W3d RUSTFLAGS=-Dwarnings after plain — expect every unit re-checked (new fingerprint)
+$ env RUSTFLAGS=-Dwarnings cargo check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+error: unused variable: `unused`
+error: could not compile `app` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `app` (lib test) due to 1 previous error
+units re-checked: 2
+exit=101 (expected 101) PASS
+
+== W3e plain after RUSTFLAGS — plain artifacts still present, 0 re-checked
+$ cargo check --workspace --all-targets --locked --keep-going
+warning: unused variable: `unused`
+warning: `app` (lib test) generated 1 warning (run `cargo fix --lib -p app --tests` to apply 1 suggestion)
+warning: `app` (lib) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+units re-checked: 0
+exit=0 (expected 0) PASS
+
+# --- W4: with the warning fixed, the denying gate is green on every toolchain
+
+== W4 1.96.0 CARGO_BUILD_WARNINGS=deny, clean tree
+$ with CARGO_BUILD_WARNINGS=deny tcargo 1.96.0 check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.26s
+units re-checked: 2
+exit=0 (expected 0) PASS
+
+== W4 1.97.1 CARGO_BUILD_WARNINGS=deny, clean tree
+$ with CARGO_BUILD_WARNINGS=deny tcargo 1.97.1 check --workspace --all-targets --locked --keep-going
+    Checking leaf v0.1.0 (<ws>/crates/leaf)
+    Checking app v0.1.0 (<ws>)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.33s
+units re-checked: 2
+exit=0 (expected 0) PASS
+
+== W4 1.98.1 CARGO_BUILD_WARNINGS=deny, clean tree
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+    Checking app v0.1.0 (<ws>)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s
+units re-checked: 1
+exit=0 (expected 0) PASS
+
+# summary: failures=0

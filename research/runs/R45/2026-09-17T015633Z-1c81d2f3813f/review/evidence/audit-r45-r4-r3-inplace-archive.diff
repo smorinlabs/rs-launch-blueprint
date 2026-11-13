@@ -1,0 +1,78 @@
+--- review/evidence/audit-r45-r4-r3-inplace.log	2026-09-16 17:00:01
++++ review/evidence/audit-r45-r4-r3-archive.log	2026-09-16 17:01:48
+@@ -1,11 +1,11 @@
+ # r45-r18-credential-gate-r3.log
+-captured: 2026-09-16T23:59:59Z
++captured: 2026-09-17T00:01:42Z
+ host toolchain:
+   rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+   cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+   OS: macOS 26.4 arm64
+   gh: gh version 2.98.0 (2026-08-20)
+-working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
++working directory: /private/tmp/r45-audit-r4-archive.fepZim
+ files read: R18 owner-accepted decision; R18 published decision; owner-decisions.md; R45 revision 3; R45 revision 2 via git
+ 
+ === D1 — R18's owner-accepted decision is the file W0-R18 binds ===
+@@ -157,7 +157,9 @@
+ revision-2 script exit: 0
+ --- every differing line, so the drift is on the record rather than summarised ---
+ < captured: 2026-09-10T23:00:33Z
+-> captured: 2026-09-16T23:59:59Z
++> captured: 2026-09-17T00:01:43Z
++< working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
++> working directory: /private/tmp/r45-audit-r4-archive.fepZim
+ < 11:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | `vars.ENABLE_CLAUDE_REVIEW == 'true'` **and** `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == 
+ > 38:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | **preflight `if:`** — `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == false` (revision 3). **`
+ < 6. **Bundle or two independent decisions?** `doxa-openai` argues independence; `opus` supplies the only actual *argument* either way, and it is a design coupling: dropping `synchronize` removes automatic re-review after a fix-up push, and the replacement is a write-access user typing `@claude please re-review`, which is F052. **That argument holds only if `synchronize` is dropped** — if P03 restores it, the bundling 
+@@ -176,13 +178,21 @@
+ < 1192:    * `skipReview: "AUTOMATIC"` - Skips automatic reviews, only triggers via `@greptileai`
+ > 1388:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
+ > 1852:    * Force refresh: Create PR with `@greptileai review`
++< REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
++< PY=~/c/py-launch-blueprint
++< TS=~/c/ts-launch-blueprint
++> REPO=/private/tmp/r45-audit-r4-archive.fepZim
++> PY=/private/tmp/r45-audit-r4-py.9SynQw
++> TS=/private/tmp/r45-audit-r4-ts.waUeWs
+ --- and then region by region, because a flat diff cannot tell a live corpus from a republished file ---
+-  D16a  PASS  log header below the capture time: toolchain and working directory
+-        observed: identical
++  D16a  FAIL  log header below the capture time: toolchain and working directory
++        observed: 2 differing line(s)
++        expected: identical
+   D16b  PASS  C3 to C7, which read pinned git objects and a pinned action ref
+         observed: identical
+-  D16c  PASS  everything from '=== end of checks ===' on, emitted source included
+-        observed: identical
++  D16c  FAIL  everything from '=== end of checks ===' on, emitted source included
++        observed: 6 differing line(s)
++        expected: identical
+   D16d  FAIL  C8 still counts 40 @greptileai
+         0 occurrences of: @greptileai occurrences:   40
+   D16e  PASS  C8 still counts 0 @greptile-apps
+@@ -223,7 +233,7 @@
+         observed: identical
+ 
+ === end of checks ===
+-failed checks: 1
++failed checks: 3
+ 
+ === script source (emitted by this script, so the log is self-contained) ===
+ #!/usr/bin/env bash
+@@ -246,13 +256,13 @@
+ # for, which would turn a content assertion into a vacuous one.
+ set -uo pipefail
+ 
+-REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
++REPO=/private/tmp/r45-audit-r4-archive.fepZim
+ R18="$REPO/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/DECISION.md"
+ R18PUB="$REPO/research/topics/18-ai-assisted-review-workflows/DECISION.md"
+ OWN="$REPO/docs/planning/p02/owner-decisions.md"
+ R45DIR="$REPO/research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5"
+ R45DEC="$R45DIR/review/DECISION.md"
+-R45R2SH="$R45DIR/review/evidence/r45-check.sh"
++R45R2SH="$R45DIR/review/evidence/r45-check.archive.sh"
+ R45R2LOG="$R45DIR/review/evidence/r18-trigger-phrase-pin.log"
+ R18SHA=c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e   # the sha256 W0-R18 binds
+ REV2COMMIT=396c734479575bb4de3524f7a837294bcf8bacca                      # the commit holding R45 revision 2

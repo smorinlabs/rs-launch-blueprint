@@ -1,0 +1,42 @@
+retrieved: 2026-09-14T23:36:40Z
+repo: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+## which programs are reachable here
+PATH binary:           /usr/bin/grep
+  its --version:       grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+bare `grep` under this script interpreter (bash): /usr/bin/grep
+second implementation: embedded in /Users/stevemorin/.local/share/claude/versions/2.1.263
+  its --version:       ugrep 7.8.4 aarch64-apple-macosx +neon/AArch64; -P:pcre2jit; -z:zlib,bzip2,zstd,brotli,7z,tar/pax/cpio/zip
+ASSERT ok   the PATH grep is the binary this item's lists name
+
+## the blobs under test
+ASSERT ok   revision-2 blob sha256
+ASSERT ok   revision-4 blob sha256
+
+## the same patterns under both implementations
+[1/1] revision-2, recorded revision-3 pattern
+      /usr/bin/grep -> 8 29 30 32 36 37 61 90 94 110 132 150 162 167 182 191 197 204 231 243 264 273 278 290 297 301 338 354 363 413 456 516 607 610 616 652 665 680 716 730
+ASSERT ok   revision-2, recorded revision-3 pattern (/usr/bin/grep)
+[2/2] revision-2, recorded revision-3 pattern -> SAME under the embedded ugrep
+[1/1] revision-2, corrected word-bounded pattern
+      /usr/bin/grep -> 182 363 607 610 616
+ASSERT ok   revision-2, corrected word-bounded pattern (/usr/bin/grep)
+[2/2] revision-2, corrected word-bounded pattern -> SAME under the embedded ugrep
+[1/1] revision-4, corrected word-bounded pattern
+      /usr/bin/grep -> 12 29 70 92 298 489 733 736 745 794
+ASSERT ok   revision-4, corrected word-bounded pattern (/usr/bin/grep)
+[2/2] revision-4, corrected word-bounded pattern -> SAME under the embedded ugrep
+[1/1] revision-4, licen
+      /usr/bin/grep -> 8 9 11 24 29 30 39 63 67 70 72 85 87 102 104 156 260 264 294 308 374 437 464 468 488 490 559 723 726 729 741 744 794
+ASSERT ok   revision-4, licen (/usr/bin/grep)
+[2/2] revision-4, licen -> SAME under the embedded ugrep
+
+## where the two implementations genuinely disagree
+[1/1] recursive search, /usr/bin/grep -> ignored/licence.md visible.md
+ASSERT ok   recursive: /usr/bin/grep reads the ignore-listed file
+[2/2] recursive search, embedded ugrep -> visible.md
+ASSERT ok   recursive: the embedded ugrep omits the ignore-listed file
+[2/2] explicitly named ignore-listed file: /usr/bin/grep -> ignored/licence.md ; ugrep -> ignored/licence.md
+ASSERT ok   explicitly named files are read by both
+
+RESULT: all assertions passed

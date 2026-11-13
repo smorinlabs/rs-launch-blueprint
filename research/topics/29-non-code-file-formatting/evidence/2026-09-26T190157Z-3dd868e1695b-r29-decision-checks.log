@@ -1,0 +1,13 @@
+DECISION.md:      267 lines, sha256 4b8dac24ff10d60d5b7a692ac1d0cfc3050d931636b713f7220cc7d14893cd9b
+PASS C1a — title line names date, item, slug, kind, tier and revision 2
+PASS C1b — H2 set is Decision, Parameters, Empirical check, Engines in that order, the same as published R11
+PASS C1c — revision-2 and revision-1 notes, both actor lines with model, licence-gate line; no Supersedes
+PASS C1d — ## Decision holds ### Principles and implementation and exactly one re-verify: line
+PASS C2a — each assumes line is byte-identical to inputs/parameters.json, one per parameter
+PASS C2b — no owns line and no CONFLICT: line
+PASS C3a — prerequisite DECISION.md and acceptance.json hashes equal inputs/prerequisites.json
+PASS C3b — inputs/prompt.md hashes to the manifest's recorded prompt hash
+PASS C3c — the live topic prompt differs from the run snapshot only by the Muse substitution (engines line and one tier-guidance sentence)
+PASS C4 — every raw and prerequisite line citation resolves to its quoted text, and none is unlisted
+PASS C5 — staffing facts: policy snapshot names codex+opus for R29, no R29 engine override, manifest requires codex+opus, raw holds muse.md+opus.md
+r29-decision-checks: PASS=11 FAIL=0

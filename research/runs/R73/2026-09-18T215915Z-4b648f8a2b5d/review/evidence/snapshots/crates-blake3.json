@@ -1,0 +1,334 @@
+{
+ "crate": {
+  "downloads": 184054587,
+  "id": "blake3",
+  "max_version": "1.8.7",
+  "name": "blake3",
+  "recent_downloads": 44485979,
+  "repository": "https://github.com/BLAKE3-team/BLAKE3"
+ },
+ "versions": [
+  {
+   "created_at": "2026-08-20T09:09:56.903547Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.7",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2026-08-05T22:41:21.607422Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.6",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2026-04-25T00:51:44.008579Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.5",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2026-03-30T17:11:47.299485Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.4",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2026-01-08T18:05:53.736842Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2025-04-21T00:22:38.151026Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2025-04-03T06:19:17.684975Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2025-03-31T05:21:41.867644Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.8.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2025-03-18T18:30:40.244398Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.7.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-27T18:57:25.608061Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.6.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-17T23:32:21.340736Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.6.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-11-27T02:42:15.030734Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.5.5",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-08-19T17:56:55.236291Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.5.4",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-07-15T05:18:30.582994Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.5.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-07-12T17:19:29.113095Z",
+   "license": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+   "num": "1.5.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-03-12T07:59:03.629393Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.5.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-09-21T03:37:47.359298Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.5.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-07-06T21:47:05.192515Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.4.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-06-08T20:26:51.763614Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.4.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-11-26T06:00:43.062433Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.3.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-11-21T01:01:41.808144Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.3.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-01-25T17:16:36.999487Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.3.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-01-08T05:26:57.507407Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.3.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-11-05T19:03:32.671033Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.2.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-10-21T21:45:12.468128Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.1.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-07-25T17:20:03.916612Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "1.0.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-05-25T16:25:47.494426Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.8",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-10-01T14:28:40.866276Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.7",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-07-29T23:30:43.985917Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.6",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-07-10T16:39:13.239085Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.5",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-05-23T18:50:59.497736Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.4",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-04-28T15:35:14.277605Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-04-14T05:46:37.780226Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-04-02T14:56:52.376818Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-03-30T05:04:20.060840Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.3.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-03-29T06:15:08.349840Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.2.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-02-25T17:52:07.501801Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.2.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-02-14T16:36:17.826984Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.2.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-02-12T20:18:54.973056Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.2.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-02-10T21:08:35.181694Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.1.5",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-02-03T17:35:29.691129Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.1.4",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-01-23T03:01:48.639174Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.1.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-01-17T20:58:02.938562Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.1.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-01-13T20:14:24.824897Z",
+   "license": "CC0-1.0 OR Apache-2.0",
+   "num": "0.1.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-01-09T16:48:58.277793Z",
+   "license": "Apache-2.0",
+   "num": "0.1.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-09-17T19:59:37.308360Z",
+   "license": "MIT",
+   "num": "0.0.0",
+   "rust_version": null,
+   "yanked": false
+  }
+ ]
+}

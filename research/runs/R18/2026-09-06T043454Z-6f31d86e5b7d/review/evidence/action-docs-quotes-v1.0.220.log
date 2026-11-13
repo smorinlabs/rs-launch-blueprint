@@ -1,0 +1,225 @@
+# action-docs-quotes-v1.0.220.log
+retrieved: 2026-09-10T05:16:32Z (UTC)
+
+=== docs/security.md — access control / bots ===
+3-## Access Control
+4-
+5:- **Repository Access**: The action can only be triggered by users with write access to the repository. This is checked for issue, pull request, comment, and review events, and for `workflow_run` events, where both the workflow actor and the actor that started the upstream run are checked. `workflow_dispatch`, `repository_dispatch`, and `schedule` events are not checked separately — GitHub itself requires write access to dispatch a workflow, and scheduled runs have no external actor.
+6:- **Bot User Control**: By default, GitHub Apps and bots cannot trigger this action for security reasons. Use the `allowed_bots` parameter to enable specific bots or all bots
+7:  - **⚠️ Allowed bots are not checked for repository permissions.** A bot that matches an entry does **not** need to be installed on your repository or have write access. On a **public repository**, external parties — including GitHub Apps created by anyone — may be able to trigger workflow events such as opening issues, commenting, or reviewing pull requests. If your workflow listens on those events and `allowed_bots` is set to `'*'`, any such App can invoke this action with a prompt it controls.
+8-  - Prefer an explicit list over `'*'`
+9-  - Only list App names you trust
+10-  - If you need `'*'`, scope workflow `permissions:` to the minimum required
+11-- **⚠️ Non-Write User Access (RISKY)**: The `allowed_non_write_users` parameter allows bypassing the write permission requirement. **This is a significant security risk and should only be used for workflows with extremely limited permissions** (e.g., issue labeling workflows that only have `issues: write` permission). This feature:
+12-  - Only works when `github_token` is provided as input (not with GitHub App authentication)
+13-  - Accepts either a comma-separated list of specific usernames or `*` to allow all users
+14-  - **Should be used with extreme caution** as it bypasses the primary security mechanism of this action
+15-  - Is designed for automation workflows where user permissions are already restricted by the workflow's permission scope
+--
+23-## Using this action with `pull_request_target` or `workflow_run`
+24-
+25:For `workflow_run` events, the action checks the repository access of the actor that started the upstream run (for example, the author of the fork pull request that triggered your CI workflow) in addition to the workflow actor. If that actor does not have write access, the action stops before running Claude. To run on `workflow_run` events downstream of pull requests from contributors without write access, add those users to `allowed_non_write_users` and pass `github_token: ${{ secrets.GITHUB_TOKEN }}` — see the notes on that input above and keep the workflow's permissions minimal.
+26-
+27-`pull_request_target` and `workflow_run` execute with the **base repository's secrets**. If your workflow checks out the PR head (`ref: ${{ github.event.pull_request.head.sha }}` for `pull_request_target`, `ref: ${{ github.event.workflow_run.head_sha }}` for `workflow_run`) into `$GITHUB_WORKSPACE` before this action, the action and Claude run with that checkout as the working directory.
+28-
+29-**Do not check out an untrusted ref into the workspace root before this action.** Use one of these patterns instead:
+30-
+31-```yaml
+32-# Preferred — check out the base ref (default).
+33-- uses: actions/checkout@v6 # no `ref:` → base branch
+
+=== docs/security.md — token used for GitHub API writes ===
+9-  - Only list App names you trust
+10-  - If you need `'*'`, scope workflow `permissions:` to the minimum required
+11-- **⚠️ Non-Write User Access (RISKY)**: The `allowed_non_write_users` parameter allows bypassing the write permission requirement. **This is a significant security risk and should only be used for workflows with extremely limited permissions** (e.g., issue labeling workflows that only have `issues: write` permission). This feature:
+12:  - Only works when `github_token` is provided as input (not with GitHub App authentication)
+13-  - Accepts either a comma-separated list of specific usernames or `*` to allow all users
+14-  - **Should be used with extreme caution** as it bypasses the primary security mechanism of this action
+15-  - Is designed for automation workflows where user permissions are already restricted by the workflow's permission scope
+16-  - When set, Claude does a best-effort scrub of Anthropic, cloud, and GitHub Actions secrets from subprocess environments. On Linux runners with bubblewrap available, subprocesses additionally run with PID-namespace isolation. This reduces but does not eliminate prompt injection risk — keep workflow permissions minimal and validate all outputs. Set `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: 0` in your workflow or job `env:` block to opt out.
+17-  - Optionally set `CLAUDE_CODE_SCRIPT_CAPS` in your workflow `env:` block to limit how many times Claude can call specific scripts per run. Value is JSON: `{"script-name.sh": maxCalls}`. Example: `CLAUDE_CODE_SCRIPT_CAPS: '{"edit-issue-labels.sh":2}'` allows at most 2 calls to `edit-issue-labels.sh`. Useful for write-capable helper scripts.
+18:  - When using `allowed_non_write_users`, always pass `github_token: ${{ secrets.GITHUB_TOKEN }}`. The auto-generated workflow token is scoped to the job's declared permissions and expires when the job completes. **Do not use a personal access token** — a static token does not rotate between runs and could be partially or fully recovered over time via prompt injection. Restricting allowed tools via `claude_args` reduces the rate of recovery but may not eliminate the risk. We recommend restricting allowed tools (e.g. `claude_args: '--allowedTools "Bash(gh issue view:*)"'`) to the minimum required when using `allowed_non_write_users`.
+19-- **Token Permissions**: The GitHub app receives only a short-lived token scoped specifically to the repository it's operating in
+20-- **No Cross-Repository Access**: Each action invocation is limited to the repository where it was triggered
+21-- **Limited Scope**: The token cannot access other repositories or perform actions beyond the configured permissions
+22-
+23-## Using this action with `pull_request_target` or `workflow_run`
+24-
+25:For `workflow_run` events, the action checks the repository access of the actor that started the upstream run (for example, the author of the fork pull request that triggered your CI workflow) in addition to the workflow actor. If that actor does not have write access, the action stops before running Claude. To run on `workflow_run` events downstream of pull requests from contributors without write access, add those users to `allowed_non_write_users` and pass `github_token: ${{ secrets.GITHUB_TOKEN }}` — see the notes on that input above and keep the workflow's permissions minimal.
+26-
+27-`pull_request_target` and `workflow_run` execute with the **base repository's secrets**. If your workflow checks out the PR head (`ref: ${{ github.event.pull_request.head.sha }}` for `pull_request_target`, `ref: ${{ github.event.workflow_run.head_sha }}` for `workflow_run`) into `$GITHUB_WORKSPACE` before this action, the action and Claude run with that checkout as the working directory.
+28-
+29-**Do not check out an untrusted ref into the workspace root before this action.** Use one of these patterns instead:
+30-
+31-```yaml
+32-# Preferred — check out the base ref (default).
+33-- uses: actions/checkout@v6 # no `ref:` → base branch
+34-- uses: anthropics/claude-code-action@v1
+35-```
+
+=== docs/setup.md — Workload Identity Federation (verbatim §) ===
+# Setup Guide
+
+## Manual Setup (Direct API)
+
+**Requirements**: You must be a repository admin to complete these steps.
+
+1. Install the Claude GitHub app to your repository: https://github.com/apps/claude
+2. Add authentication to your repository secrets ([Learn how to use secrets in GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)):
+   - Either `ANTHROPIC_API_KEY` for API key authentication
+   - Or `CLAUDE_CODE_OAUTH_TOKEN` for OAuth token authentication (Pro and Max users can generate this by running `claude setup-token` locally)
+3. Copy the workflow file from [`examples/claude.yml`](../examples/claude.yml) into your repository's `.github/workflows/`
+
+> Don't want to store a static API key at all? See [Workload Identity Federation](#workload-identity-federation) below.
+
+## Workload Identity Federation
+
+Workload Identity Federation (WIF) lets the action authenticate to the Claude API by exchanging the workflow's GitHub Actions OIDC token for a short-lived Anthropic access token — no `ANTHROPIC_API_KEY` secret to create, store, or rotate.
+
+### One-time setup in the Claude Console
+
+You need admin access to your Anthropic organization (Console → **Settings → Workload identity**):
+
+1. **Register an issuer** for GitHub Actions with issuer URL `https://token.actions.githubusercontent.com` (JWKS source: `discovery`).
+2. **Create a service account** (Settings → Service accounts) and add it to the workspace it should act in. Note the `svac_...` ID.
+3. **Create a federation rule** targeting that service account, matched to your repository's OIDC claims (for example a subject prefix of `repo:your-org/your-repo:`). Note the `fdrl_...` rule ID.
+
+See the [Workload Identity Federation documentation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation) for full details.
+
+### Workflow configuration
+
+```yaml
+jobs:
+  claude-response:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write # required: used to fetch the GitHub OIDC token
+    steps:
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_federation_rule_id: fdrl_xxxxxxxxxxxx
+          anthropic_organization_id: 00000000-0000-0000-0000-000000000000
+          anthropic_service_account_id: svac_xxxxxxxxxxxx
+          # Optional when the federation rule targets a single workspace:
+          anthropic_workspace_id: wrkspc_xxxxxxxxxxxx
+```
+
+These values are identifiers, not credentials, so they can live directly in the workflow file (or in repository variables).
+
+Notes:
+
+- The workflow must grant `id-token: write` permission so the action can fetch a GitHub OIDC token. The default GitHub App authentication path already requires this permission.
+- Do not set `anthropic_api_key` or `claude_code_oauth_token` alongside the federation inputs — a static credential takes precedence and federation will not be used.
+- The GitHub OIDC token is requested with audience `https://api.anthropic.com` by default, so set the federation rule's expected audience to that value (or leave the rule's audience unmatched). Use `anthropic_oidc_audience` only if your rule expects a different audience.
+- Inline comment classification (`classify_inline_comments`) currently requires `anthropic_api_key`; with federation it is skipped and unconfirmed inline comments are posted directly.
+
+## Using a Custom GitHub App
+
+
+=== docs/faq.md — mode detection / triggering ===
+11-### Why does Claude say I don't have permission to trigger it?
+12-
+13:Only users with **write permissions** to the repository can trigger Claude. This is a security feature to prevent unauthorized use. Make sure the user commenting has at least write access to the repository.
+14-
+15-### Why can't I assign @claude to an issue on my repository?
+16-
+17-If you're in a public repository, you should be able to assign to Claude without issue. If it's a private organization repository, you can only assign to users in your own organization, which Claude isn't. In this case, you'll need to make a custom user in that case.
+18-
+19-### Why am I getting OIDC authentication errors?
+20-
+21-If you're using the default GitHub App authentication, you must add the `id-token: write` permission to your workflow:
+22-
+23-```yaml
+--
+131-## Configuration and Tools
+132-
+133:### How does automatic mode detection work?
+134-
+135-The action intelligently detects whether to run in interactive mode or automation mode:
+136-
+137-- **With `prompt` input**: Runs in automation mode - executes immediately without waiting for @claude mentions
+138:- **Without `prompt` input**: Runs in interactive mode - waits for @claude mentions in comments
+139-
+140-This automatic detection eliminates the need to manually configure modes.
+141-
+142-Example:
+143-
+144-```yaml
+145-# Automation mode - runs automatically
+146-prompt: "Review this PR for security vulnerabilities"
+147-# Interactive mode - waits for @claude mention
+148-# (no prompt provided)
+
+=== examples/pr-review-comprehensive.yml permissions ===
+13:    permissions:
+14-      contents: read
+15-      pull-requests: write
+16-      id-token: write
+17-    steps:
+18-      - name: Checkout repository
+19-        uses: actions/checkout@v6
+20-        with:
+21-          fetch-depth: 1
+
+=== examples/claude.yml permissions + if ===
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read # Required for Claude to read CI results on PRs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          # Optional: Customize the trigger phrase (default: @claude)
+          # trigger_phrase: "/claude"
+
+          # Optional: Trigger when specific user is assigned to an issue
+          # assignee_trigger: "claude-bot"
+
+          # Optional: Configure Claude's behavior with CLI arguments
+          # claude_args: |
+          #   --model claude-opus-4-1-20250805
+          #   --max-turns 10
+          #   --allowedTools "Bash(npm install),Bash(npm run build),Bash(npm run test:*),Bash(npm run lint:*)"
+          #   --system-prompt "Follow our coding standards. Ensure all new code has tests. Use TypeScript for new files."
+
+          # Optional: Advanced settings configuration
+          # settings: |
+          #   {
+          #     "env": {
+          #       "NODE_ENV": "test"
+          #     }
+          #   }

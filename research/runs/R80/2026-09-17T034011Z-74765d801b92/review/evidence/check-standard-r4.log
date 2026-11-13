@@ -1,0 +1,78 @@
+=== R80 check-standard-r4.sh ===
+date(UTC): 2026-09-28T05:51:52Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+python3: Python 3.14.7
+git metadata: present
+PASS V1 — the H1 is the date-first revision-7 title; review/R80-r6-snapshot.md holds revision 6 byte-for-byte (sha256 4b63412a…, the digest the revision-6 audits judged), review/R80-r5-snapshot.md holds revision 5 byte-for-byte (sha256 6ee8ad17…, the digest both revision-5 audits judged), review/R80-r4-snapshot.md holds revision 4 byte-for-byte (sha256 f0320a3a…, the digest both revision-4 audits judged) and review/R80-r3-snapshot.md holds revision 3 (sha256 184d2b17…)
+shape_errors=0
+op_state=submitting
+op_raw_sha256=absent
+op_request_id=9d63b9c66e354800a931ac35871f647d
+raw/muse.md sha256: 395c1426cd8db1e2d46588dcd364caac86a0beca6ca3119d5b7a56333672b012
+PASS V2 — raw/muse.md is on disk at sha256 395c1426…, retrieved 2026-09-25, and passes validate_answer_text("bundle") with 0 errors; operation state: uncollected: operations/muse.json is 'submitting' with no raw_sha256
+required_engines=muse,opus
+migrations=2
+migration from=codex to=muse reason=muse bulk substitution (owner decision Q5.A 2026-09-21)
+previous_required_engines=codex,opus
+Traceback (most recent call last):
+  File "<stdin>", line 8, in <module>
+KeyError: 'from'
+FAIL V3 — the engine substitution is not recorded as the decision states
+inputs/prompt.md sha256: 584f099495ce31852dc7f29617c8dcc42e33b26450a5846464f23c011d3912d2; live prompt: 584f099495ce31852dc7f29617c8dcc42e33b26450a5846464f23c011d3912d2
+  info: inputs/EXECUTION.json equals research/EXECUTION.json
+  info: inputs/CLAUDE.md differs from the live research/CLAUDE.md (re-freezing inputs/ is the controller's)
+  info: inputs/PARAMETERS.md differs from the live docs/port/PARAMETERS.md (re-freezing inputs/ is the controller's)
+FAIL V4 — I-prompt: the frozen prompt is not the live prompt, or does not name muse + opus
+raw/muse.md lines starting 'CONFLICT:': 0
+PASS V5 — raw/muse.md recommends built 0.8.1 with a build.rs, a HealthzBody with rustc_version, git_sha and uptime_seconds, a two-state Check { ok: bool }, and says built passes all six gates — yet raises 0 CONFLICT: lines against R49's published 'no build.rs and no build-orchestration crate', and itself concedes rustc_version needs a build script
+R22 accepted bytes at: research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/R22-r1-snapshot.md
+  info: R22's working DECISION.md H1 today: # 2026-09-26 — R22 — runtime-version-accessor (pattern, Light) — decision (revision 5)
+PASS V6 — R22 revision 1 (0e7ea78e…) is owner-accepted (OWNER-ACCEPTANCES row, W1-R22 option A) and puts pub const VERSION in the facade's src/lib.rs, read by the web surface's health response; its re-verify fires on R02 selecting a multi-crate workspace, which R02 revision 2 did; and R69 revision 11's owned value at line 1885 declares web = ["dep:rs-launch-blueprint-web"] on the facade, so crates/web cannot import the facade's constant without a cycle
+PASS V7 — R55 (revision 3, 5d358c1f…) and R57 (revision 2, 44e94504…) are published: the topic DECISION.md files carry exactly the accepted bytes and the index marks both resolved
+  positive control, one line piping into grep -q: count 1, grep status 0
+  early-exit grep pipelines in check-offline.sh: 0 (grep status 1)
+  early-exit grep pipelines in check-probe.sh: 0 (grep status 1)
+  early-exit grep pipelines in check-live.sh: 0 (grep status 1)
+  early-exit grep pipelines in check-standard-r2.sh: 0 (grep status 1)
+  early-exit grep pipelines in check-standard-r3.sh: 0 (grep status 1)
+  early-exit grep pipelines in check-standard-r4.sh: 0 (grep status 1)
+PASS V8 — no line in the six scripts pipes into grep -q; every such assertion reads a here-string or a file, so no second writer can take SIGPIPE. The scan is falsifiable: its positive control counts 1, and all six scans exited without a grep error
+PASS V9 — both probe workspaces carry a committed Cargo.lock pinning axum 0.8.9, tokio 1.53.1, serde 1.0.229, serde_json 1.0.151, tower 0.5.3 and the two transitive crates at revision 1's measured hyper-util 0.1.20 and smallvec 1.16.1; both build scripts pass --locked on the offline and the online path, and both logs record it
+ov05_count=11 stated=11
+ov05_ok=True
+q=health logged=6488 prose_sites_matching=1 of 1
+q=probe logged=5273 prose_sites_matching=1 of 1
+q=liveness logged=28347 prose_sites_matching=1 of 1
+liveness_snapshot=28347
+census_ok=True
+PASS V10 — the OVERRIDE (OV-05) count the prose states equals the count in the file, and each of the three census denominators the prose quotes equals the one check-live.log recorded (the liveness figure also equals the committed snapshot); the unsupported 28,356 appears nowhere
+archive assertion diffs (bytes): offline 0, probe 0, live 96
+PASS V11 — revision 1's archive assertion diffs are 0, 0 and 96 bytes; the 96 bytes are the live script's mode banner — the figures the revision-4 prose states
+PASS V12 — the decision carries exactly one re-verify line, and it now fires on a re-bind of R02, R05 or R03, on R22/R02 settling the constant's package, and on collection of the Muse operation
+  pinned     check-offline.sh
+  pinned     check-offline.log
+  pinned     check-probe.sh
+  pinned     check-probe.log
+  pinned     check-live.sh
+  pinned     check-live.log
+  pinned     check-live.r4-fetch.log
+  pinned     check-live.r4-snapshots.log
+  pinned     check-standard-r2.sh
+  pinned     check-standard-r2.log
+  pinned     check-standard-r3.sh
+  pinned     check-standard-r3.log
+  pinned     shellcheck-r4.log
+  pinned     probe/manifests-a/Cargo.lock
+  pinned     probe/manifests-b/Cargo.lock
+  pinned     probe/core-src/lib.rs
+  pinned     probe/web-src/lib.rs
+  pinned     probe/web-tests/probes.rs
+  pinned     probe/facade-src/lib.rs
+  pinned     probe/facade-tests/version_hazard.rs
+  pinned     probe-r2/web-src/lib.rs
+  pinned     probe-r2/web-tests/conformance.rs
+PASS V13 — all 22 revision-4 evidence artifacts — five scripts and their paired logs, the two revision-4 live reruns, the shellcheck record, both lockfiles and all nine probe sources — hash to the digests recorded here, the offline, revision-2 and revision-3 scripts and logs at their revision-7 bytes
+  revision-3 script re-run into a separate file: 7 PASS, 0 FAIL
+PASS V14 — re-running the revision-3 script into check-standard-r3.r4-rerun.log yields 7 PASS and 0 FAIL, with its nested revision-2 (42) and offline (28) re-runs passing outright
+
+=== 12 PASS, 2 FAIL, 0 SKIP ===

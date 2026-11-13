@@ -1,0 +1,572 @@
+name: CI
+
+permissions: {}
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_GIT_FETCH_WITH_CLI: true
+  CARGO_NET_RETRY: 10
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  RUSTFLAGS: -D warnings
+  RUSTUP_MAX_RETRIES: 10
+  CARGO_LLVM_COV_DENY_WARNINGS: 1
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -CeEuxo pipefail {0}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  tidy:
+    uses: taiki-e/github-actions/.github/workflows/tidy.yml@dc24bff2366e8ddeea5e0e4168df3d6f4b93f596 # 2026.8.8
+    permissions:
+      security-events: write # for github/codeql-action/*
+    with:
+      check-external-types: false # TODO
+      docs: false
+  miri:
+    needs: tidy
+    uses: taiki-e/github-actions/.github/workflows/rust-miri.yml@e6a1170cbd07eb898017958967912976fce18f2d # 2026.7.3
+  msrv:
+    needs: tidy
+    uses: taiki-e/github-actions/.github/workflows/rust-msrv.yml@dc24bff2366e8ddeea5e0e4168df3d6f4b93f596 # 2026.8.8
+  release-dry-run:
+    needs: tidy
+    uses: taiki-e/github-actions/.github/workflows/rust-release-dry-run.yml@e6a1170cbd07eb898017958967912976fce18f2d # 2026.7.3
+
+  test:
+    needs: tidy
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rust: '1.87'
+          - rust: stable
+          - rust: beta
+          - rust: nightly
+          - rust: nightly
+            os: macos-latest
+          - rust: nightly
+            os: windows-latest
+          - rust: nightly-i686-pc-windows-msvc
+            os: windows-latest
+          - rust: nightly
+            os: windows-latest
+            target: x86_64-pc-windows-gnullvm
+          - rust: nightly
+            os: windows-11-arm
+            target: aarch64-pc-windows-gnullvm
+    runs-on: ${{ matrix.os || 'ubuntu-24.04' }}
+    timeout-minutes: 60
+    env:
+      __CARGO_TEMPORARY_BUILD_DIR_NEW_LAYOUT_OPT_OUT: 1 # opt-out for https://github.com/rust-lang/cargo/pull/17272 to fix tests
+    steps:
+      - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
+      - uses: taiki-e/install-action@5b4d68e2e660441203ab128a23676f1e4faf1532 # v2.86.3
+        with:
+          tool: rust@${{ matrix.rust }},cargo-hack,cargo-minimal-versions,nextest
+          fallback: none
+      - uses: taiki-e/setup-cross-toolchain-action@12b7ad4acfa95a1476779d6c06699b96ec1691f8 # v1.42.0
+        with:
+          target: ${{ matrix.target }}
+        if: matrix.target != ''
+      - run: cargo test --workspace --all-features
+      # TODO: move this test to tests/test.rs
+      - run: cargo install --path . --debug
+      - name: Test cargo llvm-cov nextest
+        run: |
+          unset RUSTFLAGS
+          if [[ -z "${TARGET}" ]]; then
+            TARGET=$(rustc -vV | grep -E '^host:' | cut -d' ' -f2)
+          fi
+          cargo llvm-cov nextest --text --fail-under-lines 50
+          cargo llvm-cov nextest --text --fail-under-lines 50 --profile default --cargo-profile dev
+          cargo llvm-cov nextest --text --fail-under-lines 50 --profile ci
+          cargo llvm-cov nextest --text --fail-under-lines 50 --profile ci --cargo-profile dev
+          cargo clean
+          cd -- ../real1
+          cargo llvm-cov nextest-archive --archive-file a.tar.zst
+          cargo llvm-cov nextest --archive-file a.tar.zst --text --fail-under-lines 70
+          cargo llvm-cov report --nextest-archive-file a.tar.zst --fail-under-lines 70
+          cargo clean
+          rm -- a.tar.zst
+          cargo llvm-cov nextest-archive --archive-file a.tar.zst --release
+          cargo llvm-cov nextest --archive-file a.tar.zst --text --fail-under-lines 70
+          cargo llvm-cov report --nextest-archive-file a.tar.zst --fail-under-lines 70
+          cargo clean
+          rm -- a.tar.zst
+          cargo llvm-cov nextest-archive --archive-file a.tar.zst --cargo-profile custom
+          cargo llvm-cov nextest --archive-file a.tar.zst --text --fail-under-lines 70
+          cargo llvm-cov report --nextest-archive-file a.tar.zst --fail-under-lines 70
+          cargo clean
+          rm -- a.tar.zst
+          cargo llvm-cov nextest-archive --archive-file a.tar.zst --target "${TARGET}"
+          cargo llvm-cov nextest --archive-file a.tar.zst --text --fail-under-lines 70
+          cargo llvm-cov report --nextest-archive-file a.tar.zst --fail-under-lines 70
+          cargo clean
+          rm -- a.tar.zst
+          cd -- ../build_dir
+          cargo llvm-cov nextest --text --fail-under-lines 100
+          cargo llvm-cov nextest --text --fail-under-lines 100 --profile default --cargo-profile dev
+          cargo llvm-cov nextest --text --fail-under-lines 100 --profile ci
+          cargo llvm-cov nextest --text --fail-under-lines 100 --profile ci --cargo-profile dev
+          cargo clean
+        env:
+          TARGET: ${{ matrix.target }}
+        working-directory: tests/fixtures/crates/bin_crate
+      - name: Test nightly-specific options, old Cargo compatibility
+        run: |
+          retry() {
+            for i in {1..10}; do
+              if "$@"; then
+                return 0
+              else
+                sleep "${i}"
+              fi
+            done
+            "$@"
+          }
+          unset RUSTFLAGS
+          if [[ -z "${TARGET}" ]]; then
+            TARGET=$(rustc -vV | grep -E '^host:' | cut -d' ' -f2)
+          fi
+
+          # Test nightly-specific options
+          retry git clone --depth 1 https://github.com/taiki-e/easytime.git
+          pushd -- easytime >/dev/null
+          cargo llvm-cov test --doctests --text --fail-under-lines 30
+          popd >/dev/null
+          pushd -- tests/fixtures/crates/cargo_config >/dev/null
+          # TODO: --fail-under-branches?
+          cargo llvm-cov test --branch --text --fail-under-lines 80
+          # TODO: Unstable MC/DC support has been removed in https://github.com/rust-lang/rust/pull/144999
+          # cargo llvm-cov test --mcdc --text --fail-under-lines 80
+          popd >/dev/null
+          pushd -- easytime >/dev/null
+          cargo llvm-cov test --branch --doctests --text --fail-under-lines 30
+          # TODO: Unstable MC/DC support has been removed in https://github.com/rust-lang/rust/pull/144999
+          # cargo llvm-cov test --mcdc --doctests --text --fail-under-lines 30
+          popd >/dev/null
+
+          # Test minimum runnable Cargo version.
+          case "${TARGET}" in
+            *-windows-gnullvm) ;; # target unavailable on Rust 1.60.
+            *)
+              retry rustup toolchain add 1.60 --no-self-update
+              pushd -- easytime >/dev/null
+              cargo +1.60 llvm-cov test --fail-under-lines 30
+              popd >/dev/null
+              ;;
+          esac
+        env:
+          TARGET: ${{ matrix.target }}
+        if: startsWith(matrix.rust, 'nightly')
+      - name: Test --dep-coverage
+        run: |
+          cargo llvm-cov --bins --dep-coverage=regex --fail-under-lines 2 -- regex_vec
+          cargo llvm-cov --bins --dep-coverage=regex-syntax --fail-under-lines 20 -- regex_vec
+          cargo llvm-cov --bins --dep-coverage=regex --fail-under-lines 2 -- regex_vec
+          cargo llvm-cov --bins --dep-coverage=regex,regex-syntax --fail-under-lines 20 -- regex_vec
+      - run: cargo hack build --workspace --no-private --feature-powerset --no-dev-deps
+      - run: cargo minimal-versions build --workspace --no-private --detach-path-deps=skip-exact --all-features
+        # TODO(windows-gnullvm): winapi 0.3.5 (dep of old version of termcolor)
+        if: matrix.target != 'aarch64-pc-windows-gnullvm'
+      - name: Test show-env --sh on bash
+        run: |
+          bash --version
+          if [[ "$(uname -s)" == 'Darwin' ]]; then
+            # macOS's /bin/bash is too old.
+            cargo llvm-cov show-env --sh > env.sh
+            # shellcheck disable=SC1091
+            . ./env.sh
+          else
+            # shellcheck disable=SC1090
+            source <(cargo llvm-cov show-env --sh)
+          fi
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        working-directory: tests/fixtures/crates/bin_crate
+      - name: Test show-env --sh on sh
+        run: |
+          set -eux
+          cargo llvm-cov show-env --sh > env.sh
+          # shellcheck disable=SC1091
+          . ./env.sh
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: sh
+        working-directory: tests/fixtures/crates/bin_crate
+        if: startsWith(matrix.os, 'ubuntu') || matrix.os == '' || startsWith(matrix.os, 'macos')
+      - name: Test show-env --pwsh on pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          pwsh --version
+          function set_env() {
+            [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '')]
+            param()
+            Invoke-Expression (cargo llvm-cov show-env --pwsh | Out-String)
+          }
+          set_env
+          env
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: pwsh
+        working-directory: tests/fixtures/crates/bin_crate
+      # TODO: --pwsh currently supports PowerShell 6+
+      # - name: Test show-env --pwsh on powershell
+      #   run: |
+      #     $PSVersionTable.PSVersion
+      #     $PSDefaultParameterValues['*:Encoding'] = 'utf8'
+      #     Invoke-Expression (cargo llvm-cov show-env --pwsh | Out-String)
+      #     env
+      #     cargo llvm-cov clean --workspace
+      #     cargo build
+      #     cargo run -- 1
+      #     cargo llvm-cov report --fail-under-lines 57
+      #     cargo llvm-cov clean --workspace
+      #     cargo build
+      #     cargo run -- 2
+      #     cargo llvm-cov report --fail-under-lines 57
+      #   shell: powershell
+      #   working-directory: tests/fixtures/crates/bin_crate
+      #   if: startsWith(matrix.os, 'windows')
+      - name: Test show-env --cmd
+        run: |
+          cargo llvm-cov show-env --cmd > env.bat
+          call env.bat
+          env
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: cmd # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: startsWith(matrix.os, 'windows')
+      - name: Install other shells (Ubuntu)
+        run: |
+          retry() {
+            for i in {1..10}; do
+              if "$@"; then
+                return 0
+              else
+                sleep "${i}"
+              fi
+            done
+            "$@"
+          }
+          retry curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://apt.fury.io/nushell/gpg.key \
+            | sudo gpg --dearmor -o /etc/apt/keyrings/fury-nushell.gpg
+          sudo tee -- /etc/apt/sources.list.d/fury-nushell.list \
+            <<<"deb [signed-by=/etc/apt/keyrings/fury-nushell.gpg] https://apt.fury.io/nushell/ /"
+          retry sudo apt-get -o Acquire::Retries=10 -qq update
+          retry sudo apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends csh fish nushell tcsh xonsh zsh
+        if: startsWith(matrix.os, 'ubuntu') || matrix.os == ''
+      - name: Install other shells (macOS)
+        run: |
+          brew install fish nushell tcsh xonsh
+        if: startsWith(matrix.os, 'macos')
+      - name: Install other shells (Windows)
+        run: |
+          C:/msys64/usr/bin/pacman -S --noconfirm fish tcsh zsh
+          printf '%s\n' 'C:\msys64\usr\bin' >>"${GITHUB_PATH}"
+        # TODO: C:/msys64/usr/bin/pacman: No such file or directory
+        if: startsWith(matrix.os, 'windows') && matrix.os != 'windows-11-arm'
+      - name: Test show-env --sh on zsh
+        run: |
+          set -eux
+          zsh --version
+          source <(cargo llvm-cov show-env --sh)
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: zsh {0} # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: matrix.os != 'windows-11-arm'
+      - name: Test show-env --csh on csh
+        run: |
+          cargo llvm-cov show-env --csh > env.csh
+          cat -- env.csh
+          source ./env.csh
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: bsd-csh {0} # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: startsWith(matrix.os, 'ubuntu') || matrix.os == ''
+      - name: Test show-env --csh on tcsh
+        run: |
+          tcsh --version
+          cargo llvm-cov show-env --csh > env.csh
+          cat -- env.csh
+          source ./env.csh
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: tcsh {0} # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: matrix.os != 'windows-11-arm'
+      - name: Test show-env --fish
+        run: |
+          cargo llvm-cov show-env --fish > env.fish
+          cat -- env.fish
+          source env.fish
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: fish {0} # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: matrix.os != 'windows-11-arm'
+      # Split step and use absolute path to work around https://www.nushell.sh/book/thinking_in_nu.html#example-dynamically-generating-source
+      - name: Test show-env --nu (generate env)
+        run: |
+          cargo llvm-cov show-env --nu | save -f /tmp/env.nu
+          cat -- /tmp/env.nu
+        shell: nu {0} # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: (!startsWith(matrix.os, 'windows'))
+      - name: Test show-env --nu
+        run: |
+          source /tmp/env.nu
+          echo $env
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: nu {0} # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: (!startsWith(matrix.os, 'windows'))
+      - name: Test show-env --xonsh
+        run: |
+          cargo llvm-cov show-env --xonsh > env.xsh
+          cat -- env.xsh
+          source env.xsh
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 1
+          cargo llvm-cov report --fail-under-lines 57
+          cargo llvm-cov clean --workspace
+          cargo build
+          cargo run -- 2
+          cargo llvm-cov report --fail-under-lines 57
+        shell: xonsh {0} # zizmor: ignore[misfeature] used for compatibility testing
+        working-directory: tests/fixtures/crates/bin_crate
+        if: (!startsWith(matrix.os, 'windows'))
+
+  test-nextest:
+    needs: tidy
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rust: nightly
+          # - rust: nightly
+          #   os: windows-latest
+    runs-on: ${{ matrix.os || 'ubuntu-24.04' }}
+    timeout-minutes: 60
+    steps:
+      - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
+      - uses: taiki-e/install-action@5b4d68e2e660441203ab128a23676f1e4faf1532 # v2.86.3
+        with:
+          tool: rust@${{ matrix.rust }},nextest
+          fallback: none
+      - run: cargo install --path . --debug
+      - name: Test nextest
+        run: |
+          retry() {
+            for i in {1..10}; do
+              if "$@"; then
+                return 0
+              else
+                sleep "${i}"
+              fi
+            done
+            "$@"
+          }
+          retry git clone --depth 1 https://github.com/nextest-rs/nextest.git
+          pushd -- nextest >/dev/null
+          # https://github.com/nextest-rs/nextest/blob/174cf9f7a4334b56cb94e31a6962f656ae01a513/.github/workflows/coverage.yml
+          cargo llvm-cov --no-report nextest
+          cargo llvm-cov --no-report --doc
+          cargo llvm-cov report --doctests --lcov --output-path lcov.info
+          popd >/dev/null
+
+  test-llvm:
+    needs: tidy
+    strategy:
+      fail-fast: false
+      matrix:
+        # See also LLVM version table in https://github.com/taiki-e/portable-atomic/blob/HEAD/tools/matrix.sh.
+        include:
+          - llvm: '14'
+            os: ubuntu-22.04
+          - llvm: '15'
+            os: ubuntu-22.04
+          - llvm: '16'
+          - llvm: '17'
+          - llvm: '18'
+          - llvm: '19'
+          - llvm: '20'
+          - llvm: '21'
+          - llvm: '22'
+          - llvm: '23'
+    runs-on: ${{ matrix.os || 'ubuntu-24.04' }}
+    timeout-minutes: 60
+    steps:
+      - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
+      - uses: taiki-e/install-action@5b4d68e2e660441203ab128a23676f1e4faf1532 # v2.86.3
+        with:
+          tool: rust@stable
+          fallback: none
+      - name: Install LLVM
+        run: |
+          retry() {
+            for i in {1..10}; do
+              if "$@"; then
+                return 0
+              else
+                sleep "${i}"
+              fi
+            done
+            "$@"
+          }
+          if type -P clang-"${LLVM_VERSION}" >/dev/null; then
+            exit 0
+          fi
+          codename=$(grep -E '^VERSION_CODENAME=' /etc/os-release | cut -d= -f2)
+          sudo mkdir -pm755 -- /etc/apt/keyrings
+          retry curl --proto '=https' --tlsv1.2 -fsSL --retry 10 https://apt.llvm.org/llvm-snapshot.gpg.key \
+            | sudo gpg --dearmor -o /etc/apt/keyrings/llvm-snapshot.gpg >/dev/null
+          sudo tee -- "/etc/apt/sources.list.d/llvm-toolchain-${codename}-${LLVM_VERSION}.list" >/dev/null \
+            <<<"deb [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] https://apt.llvm.org/${codename}/ llvm-toolchain-${codename}-${LLVM_VERSION} main"
+          retry sudo apt-get -o Acquire::Retries=10 -qq update
+          apt_packages=(
+            clang-"${LLVM_VERSION}"
+            libc++-"${LLVM_VERSION}"-dev
+            libc++abi-"${LLVM_VERSION}"-dev
+            libclang-"${LLVM_VERSION}"-dev
+            lld-"${LLVM_VERSION}"
+            llvm-"${LLVM_VERSION}"
+            llvm-"${LLVM_VERSION}"-dev
+          )
+          if ! sudo apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends "${apt_packages[@]}"; then
+            retry sudo apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 upgrade -y
+            retry sudo apt-get -o Acquire::Retries=10 -o Dpkg::Use-Pty=0 install -y --no-install-recommends "${apt_packages[@]}"
+          fi
+        env:
+          LLVM_VERSION: ${{ matrix.llvm }}
+      - run: cargo install --path . --debug
+      - name: Test
+        run: |
+          retry() {
+            for i in {1..10}; do
+              if "$@"; then
+                return 0
+              else
+                sleep "${i}"
+              fi
+            done
+            "$@"
+          }
+          export CC="clang-${LLVM_VERSION}"
+          export CXX="clang++-${LLVM_VERSION}"
+          export LLVM_COV="llvm-cov-${LLVM_VERSION}"
+          export LLVM_PROFDATA="llvm-profdata-${LLVM_VERSION}"
+          case "${LLVM_VERSION}" in
+            1[4-7])
+              retry rustup toolchain add 1.60 1.65 1.70 1.73 1.77 --no-self-update
+              cargo clean
+              cargo +1.60 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              cargo clean
+              cargo +1.65 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              cargo clean
+              cargo +1.70 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              cargo clean
+              cargo +1.73 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              cargo clean
+              cargo +1.77 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              ;;
+            18)
+              retry rustup toolchain add 1.78 1.81 --no-self-update
+              cargo clean
+              cargo +1.78 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              cargo clean
+              cargo +1.81 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              ;;
+            19 | 2[0-2])
+              retry rustup toolchain add 1.82 1.98 --no-self-update
+              cargo clean
+              cargo +1.82 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              cargo clean
+              cargo +1.98 llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              ;;
+            *)
+              retry rustup toolchain add beta nightly --no-self-update
+              cargo clean
+              cargo +beta llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              cargo clean
+              cargo +nightly llvm-cov test --text --include-ffi --fail-under-lines 70 -vv
+              ;;
+          esac
+        env:
+          LLVM_VERSION: ${{ matrix.llvm }}
+        working-directory: tests/fixtures/crates/ffi

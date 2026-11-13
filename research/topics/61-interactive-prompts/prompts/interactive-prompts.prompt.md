@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-016(6) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — `@inquirer/prompts` checkbox with context `{ output: process.stderr }`, questionary-parity `Choice{name,value}` objects, empty-selection exit 0, plus a documented non-TTY/`--no-input` path behind one injectable seam; chosen over `@clack/prompts` for its documented stderr output-stream context and first-party testing package.
 - Behavioral fork under the shared `--no-input` flag (F360, split from F275 at the Phase 4 review): py refuses to proceed with a `ConfigError` unless `--yes` was passed (`src/py_launch_blueprint/cli/options.py:273`); ts skips the prompt and selects every fetched result (`src/commands/projects.ts:146`, D-016(6)). Ledger row F360 (`docs/port/COMMONALITY.md`), verdict `DIVERGENT`.
 
+### Baseline review (2026-09-04)
+- F278 (`-y`/`--yes`, `ADOPT`) stays independent of the prompt crate (the bypass returns before any prompt); its composition with `--no-input` and the confirm prompt is this item's already-scoped question (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which CLI-parsing framework hosts the commands these prompts attach to; R60 (`cli-parsing-framework`) owns that bundle — this item's crate choice only needs to compose with whatever R60 selects.
 - The exit-code contract for a prompt cancelled mid-interaction (^C during a multi-select); R67 (`error-and-exit-code-contract`) owns F299 — this item decides only whether/which interactive-prompt crate is adopted and how each prompt type is shaped, not the cancellation exit code.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R61
 - owns:
 - consumes:
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R67 (`error-and-exit-code-contract`) owns F299 (interactive-prompt cancellation), which is contingent on this item adopting an interactive-prompt crate at all — R67 needs to know only whether a crate exists, not any registered parameter value from this item.
 
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
@@ -64,6 +71,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -74,7 +87,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

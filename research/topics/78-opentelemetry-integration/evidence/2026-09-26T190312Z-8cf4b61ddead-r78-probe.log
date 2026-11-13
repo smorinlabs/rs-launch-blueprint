@@ -1,0 +1,114 @@
+# r78-probe — run 2026-09-27T04:17:17Z (UTC)
+# host: Darwin 25.4.0 arm64; macOS 26.4
+# rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew); cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew); rustup 1.96.0: rustc 1.96.0 (ac68faa20 2026-05-25)
+# CARGO_HOME=/tmp/cargo-s13-R78
+
+## 1. Build
+resolved: axum v0.8.9;opentelemetry v0.33.0;reqwest v0.13.5;tokio v1.53.1;tracing-opentelemetry v0.34.0;tracing-subscriber v0.3.23
+PASS B01 collector (OTLP/HTTP protobuf receiver) builds
+PASS B02 svc builds with --features otel (web + recommended OTel set) on local stable
+PASS B03 svc builds with --features web only
+build wall time (debug, collector + both svc builds, warm or cold cache): 30 s
+binary sizes (debug, unstripped, bytes): svc-web 12592488 ; svc-otel 16960824
+
+## 2. Feature absence and a single OTel line (cargo tree)
+PASS T00 both cargo tree listings are non-empty
+OTel crates in the web-only tree: 0
+PASS T01 web-only dependency tree contains no OpenTelemetry crate
+cargo tree -i opentelemetry (web only): exit 101 — error: package ID specification `opentelemetry` did not match any packages
+opentelemetry versions in the otel tree: opentelemetry v0.33.0
+PASS T02 exactly one opentelemetry version, and it is 0.33.x
+tracing-opentelemetry in the otel tree: tracing-opentelemetry v0.34.0
+PASS T03 tracing-opentelemetry resolves to 0.34.x
+duplicated crates (depth-0 roots of cargo tree -d): syn v2.0.119;syn v3.0.6
+duplicate (opentelemetry|opentelemetry_sdk|http|reqwest|hyper|tracing-subscriber) entries: 0
+PASS T04 no duplicate opentelemetry/http/reqwest/hyper/tracing-subscriber versions in the otel tree
+tower-http in the otel tree (arrives through reqwest; R75 selects tower-http): tower-http v0.6.11
+tower-http in the web-only tree: tower-http v0.6.11
+opentelemetry_sdk feature "metrics" activations in the otel tree: 1
+PASS T05 http-proto switches on opentelemetry_sdk/metrics despite default-features = false
+strings svc-web | grep -c opentelemetry: 0
+PASS T06 the web-only binary contains no 'opentelemetry' string
+
+## 3. MSRV floor: rustup 1.96.0 compiles the locked otel tree
+rustup run 1.96.0 cargo check -p svc --features otel: exit 0
+PASS M01 the recommended set compiles under Rust 1.96.0 (the stable-minus-2 floor)
+
+## 4. End to end: incoming traceparent -> server span -> work -> outbound -> downstream -> OTLP/HTTP export
+#    OTEL_BSP_SCHEDULE_DELAY=60000 so no periodic export fires: spans reach the collector only through the SIGTERM shutdown flush.
+response: demo ok work=42 downstream=200 trace_id=4bf92f3577b34da6a3ce929d0e0e4736
+spans at the collector before SIGTERM: 0
+exit status after SIGTERM: 143 (shutdown took 11 ms)
+--- collector received:
+{"service":"probe-web","scope":"r78-probe","name":"http.server.request","kind":2,"traceId":"0e73e23c702abd549e8246ecd35fa0b5","spanId":"7ea90e39542496d3","parentSpanId":"","route":"/downstream","status":"200"}
+{"service":"probe-web","scope":"r78-probe","name":"demo.work","kind":1,"traceId":"4bf92f3577b34da6a3ce929d0e0e4736","spanId":"b84a289c7a4b974f","parentSpanId":"432e2a91a4377b08","route":"","status":""}
+{"service":"probe-web","scope":"r78-probe","name":"http.server.request","kind":2,"traceId":"4bf92f3577b34da6a3ce929d0e0e4736","spanId":"0e74b374b244a62e","parentSpanId":"7e5aae067d1e41fc","route":"/downstream","status":"200"}
+{"service":"probe-web","scope":"r78-probe","name":"http.client.request","kind":3,"traceId":"4bf92f3577b34da6a3ce929d0e0e4736","spanId":"7e5aae067d1e41fc","parentSpanId":"432e2a91a4377b08","route":"","status":"200"}
+{"service":"probe-web","scope":"r78-probe","name":"http.server.request","kind":2,"traceId":"4bf92f3577b34da6a3ce929d0e0e4736","spanId":"432e2a91a4377b08","parentSpanId":"00f067aa0ba902b7","route":"/demo","status":"200"}
+--- service log:
+2026-09-27T04:18:01.945784Z  INFO svc: probe listening port=34227
+2026-09-27T04:18:01.988372Z  INFO http.server.request{otel.kind="server" http.request.method=GET http.route=/demo}: svc: demo request completed trace_id=4bf92f3577b34da6a3ce929d0e0e4736 downstream_status=200
+2026-09-27T04:18:02.003972Z  INFO svc: otel_shutdown_ok elapsed_ms=1
+2026-09-27T04:18:02.003998Z  INFO svc: probe exiting exit_code=143
+readiness-probe spans in their own root traces: 1
+PASS E01 response is 200 with the downstream call succeeding
+PASS E02 no span reached the collector before SIGTERM (batch delay 60 s)
+PASS E03 SIGTERM exit status is 143 (R69/R67 registered value)
+PASS E04 exactly 4 spans carry the incoming trace id (server, work, client, downstream server)
+PASS E05 the /demo SERVER span (kind 2) has parentSpanId = incoming parent 00f067aa0ba902b7
+PASS E06 demo.work is a child of the /demo server span
+PASS E07 the outbound CLIENT span (kind 3) is a child of the /demo server span
+PASS E08 the /downstream SERVER span's parent is the CLIENT span (header injected and re-extracted)
+PASS E09 resource service.name = probe-web on every span
+PASS E10 only the probe's own spans were exported (no hyper/reqwest/h2/opentelemetry spans)
+PASS E11 the /demo span recorded http.response.status_code = 200
+PASS E12 the request's log line carries trace_id = the incoming trace id (log correlation)
+PASS E13 shutdown flush reported ok
+
+## 5. Runtime flag off: otel compiled in, endpoint set, PROBE_OTEL_ENABLED unset
+200s: 20/20; exit 143; spans at collector: 0
+  log: 2026-09-27T04:18:02.543933Z  INFO svc: otel_off reason="runtime flag unset"
+PASS D01 flag off: all 20 requests 200
+PASS D02 flag off: the collector receives nothing
+PASS D03 flag off: no WARN line at all
+PASS D04 flag off: SIGTERM exit 143
+
+## 6. Unconfigured endpoint: flag on, no OTEL_EXPORTER_OTLP_* variable at all
+200s: 3/3; exit 143; spans received on 127.0.0.1:4318 with the incoming trace id: 12
+PASS D05 an otel build with the flag on and NO endpoint variable exports to localhost:4318
+
+## 7. OTEL_SDK_DISABLED=true: SDK alone vs the template's one-line guard
+guard off: 200s 2/2; spans exported despite OTEL_SDK_DISABLED=true: 9
+PASS D06 the SDK itself ignores OTEL_SDK_DISABLED=true (spans still exported)
+guard on: 200s 2/2; spans exported: 0
+PASS D07 with the template guard, OTEL_SDK_DISABLED=true exports nothing and serves
+
+## 8. Invalid endpoint: exporter build error degrades to one warning
+  log: 2026-09-27T04:18:04.583875Z  WARN svc: otel_unavailable error=invalid exporter configuration: OTEL_EXPORTER_OTLP_ENDPOINT: invalid endpoint '::not a url': invalid uri character
+200s: 20/20; exit 143
+PASS D08 invalid endpoint: exactly one otel_unavailable warning
+PASS D09 invalid endpoint: all 20 requests 200 and SIGTERM exit 143
+
+## 9. Collector unreachable (closed port): serving is unaffected, shutdown is bounded
+flag-off baseline: 100/100 200s in 1705 ms; unreachable collector: 100/100 200s in 1729 ms
+exit 143; SIGTERM-to-exit 454 ms with PROBE_OTEL_SHUTDOWN_MS=2000
+exporter diagnostics in the log: 6 lines mentioning opentelemetry; first three:
+  log: 2026-09-27T04:18:07.795290Z  WARN opentelemetry-otlp: name="Export.Failed.Exhausted" operation="HttpTracesClient.Export" retries=3 OTLP export exhausted retries - telemetry data will be lost
+  log: 2026-09-27T04:18:07.795327Z ERROR opentelemetry_sdk: name="BatchSpanProcessor.ExportError" error="Operation failed: HTTP export failed: network error"
+  log: 2026-09-27T04:18:08.845740Z  WARN opentelemetry-otlp: name="Export.Failed.Exhausted" operation="HttpTracesClient.Export" retries=3 OTLP export exhausted retries - telemetry data will be lost
+  log: 2026-09-27T04:18:09.906254Z  INFO svc: otel_shutdown_ok elapsed_ms=442
+PASS D10 unreachable collector: all 100 requests 200
+PASS D11 unreachable collector: 100 requests take under 3x the flag-off baseline + 2 s
+PASS D12 unreachable collector: SIGTERM exit 143
+PASS D13 unreachable collector: SIGTERM-to-exit under 2 s budget + 3 s slack
+PASS D14 unreachable collector: export failure is visible in the log
+
+## 10. Web-only build with OTel configuration present
+  log: 2026-09-27T04:18:10.374579Z  INFO svc: otel_off reason="feature otel not compiled"
+  log: 2026-09-27T04:18:10.374798Z  WARN svc: otel_ignored: OTEL_EXPORTER_OTLP_ENDPOINT is set but this binary was built without the otel feature
+200s: 10/10; exit 143; spans at collector: 0
+PASS W01 web-only build serves all 10 requests and exits 143
+PASS W02 web-only build exports nothing
+PASS W03 web-only build warns once that OTel configuration is ignored
+
+# TOTAL checks=41 pass=41 fail=0

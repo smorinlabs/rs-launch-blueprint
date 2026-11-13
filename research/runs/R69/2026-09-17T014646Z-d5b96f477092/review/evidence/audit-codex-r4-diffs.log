@@ -1,0 +1,12 @@
+MATCH state
+MATCH shape-inplace-1
+MATCH shape-inplace-2
+MATCH shape-inplace-3
+DIFF rc=1 shape-temp-index-archive
+DIFF rc=1 shape-head-archive
+MATCH shape-flock
+MATCH figures
+MATCH issues
+MATCH bacon
+MATCH parameters
+MATCH retained-r3-and-five-inputs

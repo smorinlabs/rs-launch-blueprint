@@ -1,0 +1,86 @@
+ryl 0.22.0
+yamllint 1.38.0
+yamlfmt 0.17.2 (398e72a)
+== Y1 clean workflow (on: key, one-space SHA-pin comment) and clean dependabot.yml
+    
+PASS Y1-ryl (exit=0, expected zero)
+    
+PASS Y1-yamllint (exit=0, expected zero)
+== Y2 duplicated schedule key in .github/dependabot.yml
+    .github/dependabot.yml
+      7:5       error    duplication of key "schedule" in mapping  (key-duplicates)
+PASS Y2-ryl (exit=1, expected nonzero)
+    .github/dependabot.yml
+      7:5       error    duplication of key "schedule" in mapping  (key-duplicates)
+PASS Y2-yamllint (exit=1, expected nonzero)
+-- Y2f the YAML formatter's lint mode on the same file (raw/opus.md: exit 0)
+    
+PASS Y2f-yamlfmt (exit=0, expected zero)
+== Y3 whole-tree walk from the root reaches the hidden .github/ directory (hook/CI parity)
+    ./.github/dependabot.yml
+      7:5       error    duplication of key "schedule" in mapping  (key-duplicates)
+PASS Y3-ryl (exit=1, expected nonzero)
+    ./.github/dependabot.yml
+      7:5       error    duplication of key "schedule" in mapping  (key-duplicates)
+PASS Y3-yamllint (exit=1, expected nonzero)
+== Y4 YAML 1.1 truthy value 'yes' in a non-workflow file (raw/opus.md: unverified for ryl)
+-- under raw/opus.md's config, truthy stays at the default preset's warning level: reported, exit 0
+    cfg/settings.yml
+      2:12      warning  truthy value should be one of [false, true]  (truthy)
+PASS Y4-ryl (exit=0, expected zero)
+    cfg/settings.yml
+      2:12      warning  truthy value should be one of [false, true]  (truthy)
+PASS Y4-yamllint (exit=0, expected zero)
+-- Y4e the synthesis config: the same file with truthy raised to level: error
+    cfg|   truthy:
+    cfg|     level: error
+    cfg|     allowed-values: ["true", "false"]
+    cfg|     check-keys: false
+    cfg/settings.yml
+      2:12      error    truthy value should be one of [false, true]  (truthy)
+PASS Y4e-ryl (exit=1, expected nonzero)
+    cfg/settings.yml
+      2:12      error    truthy value should be one of [false, true]  (truthy)
+PASS Y4e-yamllint (exit=1, expected nonzero)
+-- Y4c the synthesis config still passes the clean workflow's on: key
+    
+PASS Y4c-ryl (exit=0, expected zero)
+    
+PASS Y4c-yamllint (exit=0, expected zero)
+== Y5 spacing violations raw/muse.md probed (two spaces after colon, no space after comma)
+    cfg/style.yml
+      2:10      error    too few spaces after comma  (commas)
+      1:6       error    too many spaces after colon  (colons)
+PASS Y5-ryl (exit=1, expected nonzero)
+    cfg/style.yml
+      1:6       error    too many spaces after colon  (colons)
+      2:10      error    too few spaces after comma  (commas)
+PASS Y5-yamllint (exit=1, expected nonzero)
+== Y6 missing final newline
+    cfg/nonl.yml
+      1:5       error    no new line character at the end of file  (new-line-at-end-of-file)
+PASS Y6-ryl (exit=1, expected nonzero)
+    cfg/nonl.yml
+      1:5       error    no new line character at the end of file  (new-line-at-end-of-file)
+PASS Y6-yamllint (exit=1, expected nonzero)
+== Y7 without the comments override, the one-space pin comment is reported
+-- ryl -c strict.yamllint (exit code and output recorded; default preset level is warning)
+.github/workflows/ci.yml
+  9:73      warning  too few spaces before comment: expected 2  (comments)
+
+    ryl exit=0
+.github/workflows/ci.yml
+  9:73      warning  too few spaces before comment: expected 2  (comments)
+
+    yamllint exit=0
+== Y8 ryl with no discoverable config: duplicate key (checks the 'no rules by default' claim)
+error: no configuration found and ryl enables no rules by default; create a config that enables rules, or use 'extends: default' for the standard rule set
+    ryl (no config) exit=2
+== Y9 the CI whole-tree walk skips gitignored build output (target/ holding invalid YAML)
+    
+PASS Y9-ryl (exit=0, expected zero)
+-- the same file linted explicitly is reported (the walk, not the rules, skipped it)
+    target/gen/out.yml
+      2:1       error    duplication of key "a" in mapping  (key-duplicates)
+PASS Y9b-ryl (exit=1, expected nonzero)
+TOTAL PASS=19 FAIL=0

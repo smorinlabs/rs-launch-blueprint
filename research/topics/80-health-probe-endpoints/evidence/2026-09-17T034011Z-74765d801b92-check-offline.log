@@ -1,0 +1,50 @@
+=== R80 check-offline.sh ===
+date(UTC): 2026-09-27T07:34:34Z
+repo root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+python3: Python 3.14.7
+git metadata: present
+PASS O1 — raw/opus.md digests to the sha256 the manifest registers (dd3bdeae9566ae10ea300c1c2e6727264075523cb2ccce1e95eea9eccc06a0fb)
+errors=0
+PASS O2 — validate_answer_text(raw/opus.md, "bundle") returns no shape errors
+assumes_lines=7
+BYTE-IDENTICAL rust-edition (4 chars)
+BYTE-IDENTICAL msrv-policy (118 chars)
+BYTE-IDENTICAL target-os-matrix (27 chars)
+BYTE-IDENTICAL license (17 chars)
+BYTE-IDENTICAL build-tool-output-shape (1818 chars)
+BYTE-IDENTICAL http-transport-injection-seam (763 chars)
+BYTE-IDENTICAL web-extra-surface (2638 chars)
+mismatches=0
+PASS O3 — all seven '- assumes' values in DECISION.md are byte-identical to their docs/port/PARAMETERS.md rows
+PASS O4 — DECISION.md carries 0 '- owns' lines, matching the prompt's empty '- owns:' coupling (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS O5 — R69 revision 10's '- owns web-extra-surface' sits at line 1791 and names crates/web/, while the live registry row still carries revision 9's src/web/ form — the publication lag this decision records in prose
+PASS O6 — R49's published build-tool-output-shape carries the no-build.rs clause that excludes built, vergen and shadow-rs on fit
+PASS O7 — the ledger rows are as the prompt states: F308 ADOPT owned by no item, F328 and F329 DIVERGENT and owned by R80
+PASS O8 — R60's published decision records the owner ruling as option (b) (--version -o json), with the 'doctor' verb only as unselected option (c) — so the CLI doctor subcommand is owned by no item
+PASS O9 — owner-decisions section 13 records acceptances for R55, R57, R02, R05, R03 and R56 — so R55 and R57 are accepted, not open (both since published)
+PASS O10 — the controller's deferral of the Codex leg is recorded as owner ruling W1-CODEX3 (2026-09-18)
+PASS O11 — the owner's 2026-09-12 licence ruling (Q7.B) is on the record, which is what makes fitness gate 1 inapplicable here
+PASS O12 — R70's in-flight raw report both reserves the envelope to one extension member ('code') and hands /readyz's failure body to R80 — the coupling this decision states and does not decide
+PASS O13 — R51's in-flight raw report answers the shell-free-probe question with a static busybox applet and an exec-form HEALTHCHECK against /healthz — stated here, decided by R51
+PASS O14 — R79's in-flight raw report names a three-path ops exclusion set (/metrics, /healthz, /readyz), so a third unversioned ops route is coming
+PASS O15 — R77's in-flight raw report owns the drain deadline (RSLBP_WEB_GRACEFUL_SHUTDOWN_SECONDS) and mentions a readiness-propagation or pre-drain pause on 0 lines (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD) — so no item owns that value today
+PASS O16 — R67's append-only catalog carries RSLB104 and RSLB203 and 0 rows naming a doctor or diagnostics code (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD) — the CLI doctor exit code is unassigned
+acceptance rows matching the pinned (revision, sha256): 3 of 3
+accepted bytes found at: R02 r2 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md; R05 r3 research/runs/R05/2026-09-17T033527Z-bfacc9e801a5/review/R05-r3-snapshot.md; R03 r1 research/runs/R03/2026-09-17T033527Z-cd9e6a9555b6/review/DECISION.md
+PASS O17 — the owner-acceptance rows still record R02 revision 2 (9e8f8e8c…, an evidence-only re-bind of revision 1), R05 revision 3 (3ca4b81a…) and R03 revision 1 (610e3338…), and a file with exactly those bytes is on disk for each — raw/opus.md cites R02 r1 and R05 r2, which this decision corrects
+PASS O18 — R02 revision 2's four-package workspace names crates/core, the only member both front ends can reach
+PASS O19 — R05 revision 3 (the accepted bytes O17 located) routes the web feature's async handlers to the synchronous core through tokio::task::spawn_blocking
+PASS O20 — py at b08bccfb55d05f15e46a83b52c5660b1881d19f5 serves /healthz and a readyz that answers 503 — the source precedent F328/F329 record
+PASS O21 — py's run_diagnostics is defined once in core/diagnostics.py and called from BOTH web/app.py and cli/main.py — the 'one source of truth with the CLI' pattern this item ports
+PASS O22 — py's web test DOES cover the 503 branch (test_readyz_failure_is_a_problem_with_diagnostics), and reaches it only by monkeypatching run_diagnostics with a hand-built failing report — raw/opus.md's claim that no such test exists is wrong, while its underlying point (no real environment reaches the branch) is what the substitution demonstrates
+py distinct check names found: 4 of 4; error-capable statuses: 1; unconditional error statuses: 0
+PASS O27 — py's run_diagnostics builds all four named checks (python, platform, config-file, token) and exactly one of them — python, gated on MIN_PYTHON = (3, 12) — can be error (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD); Rust has no runtime-toolchain analogue to port
+PASS O23 — ts at cb1cbcb2e88b898e8c081b0abbfabc1630079c00 matches healthz|readyz in 0 files under src/ — F303's 'ts has no web service' holds, so nothing cross-repo is owed to ts here
+PASS O24 — the owner reference's C15 row asks for /healthz and /readyz with a DB check, and its Cargo.toml declares edition 2021 — the two rows this decision agrees with and differs from
+R55 diagnostics-term hits: 0; R57: 0
+PASS O28 — neither R55's published revision 3 nor R57's published revision 2 names run_diagnostics, doctor, readyz or CheckStatus on any line (0 and 0, counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD) — the check list that could reach CheckStatus::Error is unowned
+PASS O25 — DECISION.md carries exactly one 're-verify:' line, one '## Supersedes' and six '^## ' lines, one of them inside the conformance note's fence (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS O26 — DECISION.md records fitness gate 1 in the exact form the revision rules require
+
+=== 28 PASS, 0 FAIL, 0 SKIP ===

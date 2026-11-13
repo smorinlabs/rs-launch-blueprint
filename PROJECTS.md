@@ -27,7 +27,7 @@
 - [x] [P01-T07a] Phase 3.5 input — `docs/port/DIVERGENCE-ANALYSIS.md`: one row per research item giving the py state, the ts state, why they differ (cause class A–G), the Rust question, and the original cross-repo comparison scope (`harmonize`); feeds `OWNER-REVIEW.md`. Amendment A5 replaces the original one-value question with explicit agreement levels and evidence-backed native designs
 - [x] [P01-T07] Phase 3.5 — owner technology-selection review: `docs/port/OWNER-REVIEW.md`, one row per item (not waivable); `scripts/check-research-tree.sh --require-owner-review` green
 - [x] [P01-TS03] Phase 4 — independent reviewer agent spot-checks ≥15 `COMMON → REUSE` rows and sampled `path:line` citations against both repos, confirms `COVERAGE.md` complete, reads every non-REUSE row adversarially; findings fixed
-- [x] [P01-T05] Phase 5 — PR reviewed by owner, merged, `pull --ff-only`, worktree removed; tag v0.1.0
+- [x] [P01-T05] Phase 5 — PR reviewed and merged; `v0.1.0` created and pushed 2026-09-05 under the owner's explicit authorization (annotated tag `fd5e839`, peeled to merge commit `2f3569051af2c2089f60f6cad129bc6e55482c30`, verified on origin). `rs-launch-blueprint-research` and its untracked handoffs retained as the approved cleanup exception.
 - [ ] Regression Test Status
 
 ### Deliverable
@@ -47,9 +47,9 @@ $ scripts/test-check-research-tree.sh | tail -1
 
 ## [ ] Project P02: Execute research program (v0.2.0)
 **Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`. Each decision demonstrates the intended principle at its declared agreement level with an appropriate native design and a realistic acceptance example.
-- Gate: P01 merged and tagged `v0.1.0`; only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
-- Engines and invocation: exactly as recorded in `research/RUNBOOK.md` §2 — Claude Opus, Codex and Doxa deep research per item, in parallel, each a subagent, synthesized by a non-producer; Doxa runs are paid and each wave is confirmed by the owner before submission.
-- Plan: written with `superpowers:writing-plans` after v0.1.0 — not part of P01's plan.
+- Gate: P01 merged and tagged `v0.1.0` (satisfied 2026-09-05); paid batches authorized in `docs/planning/p02/APPROVAL.md` (pilot USD 40; bulk Deep ceiling USD 300). Only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
+- Engines and invocation: `research/EXECUTION.json` and `research/RUNBOOK.md` §2 define the approved 6 Light / 53 Focused / 25 Deep allocation and three-engine R38 pilot. Durable wrappers save results to files; fresh contexts synthesize and audit. Doxa batches require separate spend approval.
+- Approved execution method: `docs/planning/p02/PROPOSAL.md`, approval recorded in `docs/planning/p02/APPROVAL.md`; active contract is design amendment A6 and `research/RUNBOOK.md`. This supersedes the earlier instruction to defer all P02 planning until the tag.
 
 **Out of Scope**
 - Any Rust code, `Cargo.toml`, CI workflow, or template file (the port itself)
@@ -57,12 +57,18 @@ $ scripts/test-check-research-tree.sh | tail -1
 - Items dropped in Phase 3.5
 
 ### Tests & Tasks
-- [ ] [P02-T01] First review REUSE/ADOPT baselines for agreement-level mistakes and record/reconcile `BASELINE-REVIEW:` findings under A5; then run the pilot item end-to-end (prompt → three raw answers in parallel → `scripts/check-answer-shape.sh` on each → synthesized `DECISION.md` with `## Engines` → both audits) — this run is binding, unlike P01-TS07
-- [ ] [P02-T02] Run all remaining items in dependency waves (`RUNBOOK.md` §1 rules: keystones such as R69 first, independent items in parallel under the §2 cap), every engine per item; raw answers saved under `topics/<nn>-<slug>/raw/`
+- [x] [P02-T08] Review and approve the tiered execution method; owner approval 2026-09-04 (`docs/planning/p02/APPROVAL.md`)
+- [x] [P02-T09] Reconcile spec, runbook, all prompts and policy; validate strict acceptance, durable recovery and shared publication locally; prepare the complete diff (`docs/planning/p02/implementation-review.md`, 100 tests passed); committed 2026-09-04 under the owner's commit direction, which replaced per-commit approval (`docs/planning/p02/APPROVAL.md` addendum)
+- [~] [P02-T10] Verify execution routes, credentials and create-retry behavior; record and obtain a concrete paid readiness/pilot budget before Doxa submission
+      2026-09-04: Claude Opus/Fable routes verified by CLI probe; Codex `gpt-6-astra`/`gpt-5.6-terra`/`gpt-5.6-luna` resolve by CLI header; Doxa provider keys present (env) and `o3-deep-research`/`deep-research-preview-04-2026` visible to the keys; create retries isolated by `scripts/doxa_no_retry.py` (tests in `scripts/test-doxa-no-retry.py`); envelope prepared in `docs/planning/p02/paid-envelope.md` — owner spend approval still open
+- [~] [P02-T01] First review REUSE/ADOPT baselines for agreement-level mistakes and record/reconcile `BASELINE-REVIEW:` findings under A5; then run R38 as the pilot end-to-end
+      2026-09-04: all 97 REUSE/ADOPT rows adjudicated (`docs/port/BASELINE-REVIEW.md`: 18 worker findings plus 11 challenges from the Codex gpt-6-astra adversarial sample, adjudicated by the controller); 28 ledger rows annotated (2 reclassified), 20 prompts and the dependency record reconciled; owner questions listed there. R38 pilot: tag and envelope cleared 2026-09-05; decision revision 3 is fully audited on Codex and Opus (both verdicts approve) but cannot publish because the policy requires the third engine and Doxa is blocked on exhausted OpenAI credits and Perplexity quota (prompt → three raw answers in parallel → `scripts/check-answer-shape.sh` on each → synthesized `DECISION.md` with `## Engines` → both audits) — this run is binding, unlike P01-TS07
+- [ ] [P02-T02] Run remaining items as their own prerequisites become current and accepted, under the approved tier policy and capacity limits; save original outputs in unique run directories and accepted reports under each topic's `raw/`
+      2026-09-07: three items published (R23, R47, R04) through `research_runner.py publication apply`; all 32 prerequisite-free items have their Codex report collected; R06 awaits synthesis; R41 and R46 have revision 2 awaiting fresh audit pairs. Execution record: `docs/planning/p02/execution-ledger.md`; handoff: `docs/handoffs/2026-09-07-p02-research-execution.md`
 - [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
-- [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; the producer of a decision never audits it
+- [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; distinct fresh auditors approve the exact decision revision with no unresolved findings, and neither auditor produced raw evidence or synthesis
 - [ ] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
-- [ ] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
+- [x] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
 - [ ] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0`
 - [ ] [P02-TS01] Every `DECISION.md` has an `## Empirical check` whose command was actually executed and whose output is pasted
 - [ ] [P02-TS02] A reviewer verifies the principle-to-design mapping and agreement level in every decision, then re-reads every OVERRIDE item's "Override justified" field; any `no` flips the ledger row back to the inherited verdict and records the reversal under `### OV-nn`
@@ -78,7 +84,8 @@ OK: research tree structure valid
 ### Automated Verification
 - `scripts/check-research-tree.sh --require-owner-review` exits 0 with every index row `resolved`
 - Every raw answer in `research/topics/*/raw/*.md` passes `scripts/check-answer-shape.sh` for its item's kind (with `override` where the ledger says OVERRIDE).
-- `scripts/check-research-tree.sh` checks decision structure and audit-file presence. P02-TS01 separately requires review of the executed empirical check.
+- `scripts/check-research-tree.sh` validates policy, prompt shape, current acceptance hashes, recorded identities and approving audits through `scripts/research_validation.py`. P02-TS01 and reviewers separately establish actual execution, source quality and semantic fitness.
+- `scripts/test-research-validation.py` and `scripts/test-research-runner.py` exercise malformed evidence, stale inputs, recovery and publication refusals using offline fixtures.
 
 ### Manual Verification
 - Owner reads every OVERRIDE decision and every `audit-*.md` that disagrees with its decision

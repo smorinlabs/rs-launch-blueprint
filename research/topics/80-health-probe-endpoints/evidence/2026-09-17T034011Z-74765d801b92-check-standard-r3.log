@@ -1,0 +1,42 @@
+=== R80 check-standard-r3.sh ===
+date(UTC): 2026-09-27T18:20:04Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+python3: Python 3.14.7
+git metadata: present
+PASS R1 — the H1 is the date-first title of the current revision, 6
+  'OVERRIDE (OV-04)' occurrences: 0; 'OVERRIDE (OV-05)': 11
+PASS R2 — this item's override is named OVERRIDE (OV-05) — 11 times, including its own H4 heading — and OVERRIDE (OV-04) appears 0 times (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+  ov04_lines=11
+  ov04_occurrences=11
+  regions note<150 alloc=790..830 history>=1636
+  stray=none
+PASS R3 — all eleven surviving OV-04 occurrences sit in the revision-3 note (revision 4's note, above it, names the old number 0 times), the allocation paragraph or the history — the three places that name R77's override, revision 2's superseded choice or the collision. None is in the rule table, the conformance note or the override's argument
+  h2_unfenced=5
+  supersedes=1
+  reverify=1
+  current_h2=Decision|Parameters|Empirical check|Engines
+PASS R4 — the decision's shape is unmoved, counted outside code fences as the publication validator counts: five H2s, one Supersedes, one re-verify line, and the current entry's four H2s in order
+  assumes=7 owns=0 Argument=1 Options=1 gate1=1
+PASS R5 — the substance is unmoved: seven '- assumes' lines, no '- owns' line, one **Argument:** and one **Options:** block, and the gate-1 wording intact
+  unchanged  check-offline.sh
+  unchanged  check-offline.log
+  unchanged  check-probe.sh
+  unchanged  check-probe.log
+  unchanged  check-live.sh
+  unchanged  check-live.log
+  unchanged  shellcheck.log
+  unchanged  probe/core-src/lib.rs
+  unchanged  probe/web-src/lib.rs
+  unchanged  probe/web-tests/probes.rs
+  unchanged  probe/facade-src/lib.rs
+  unchanged  probe/facade-tests/version_hazard.rs
+  unchanged  check-standard-r2.sh
+  unchanged  check-standard-r2.log
+  unchanged  probe-r2/web-src/lib.rs
+  unchanged  probe-r2/web-tests/conformance.rs
+  unchanged  shellcheck-r2.log
+PASS R6 — all seventeen artifacts of revisions 1 and 2 — three scripts plus the revision-2 script, their logs, the shellcheck records and all seven probe sources — are byte-identical to the bytes revision 6 cites
+  revision-2 script re-run into a separate file: 42 PASS, 0 FAIL
+PASS R7 — re-running the revision-2 script into check-standard-r2.r3-rerun.log yields all 42 checks PASS and 0 FAIL, its nested offline re-run (C9) included
+
+=== 7 PASS, 0 FAIL, 0 SKIP ===

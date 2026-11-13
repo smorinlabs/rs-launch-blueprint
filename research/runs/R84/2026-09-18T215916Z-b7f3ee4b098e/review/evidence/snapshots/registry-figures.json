@@ -1,0 +1,444 @@
+{
+ "crates": {
+  "cargo-progenitor": {
+   "downloads_all_time": 17339,
+   "endpoint": "https://crates.io/api/v1/crates/cargo-progenitor (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-10T04:03:50.177509Z",
+    "edition": "2024",
+    "license": "MPL-2.0",
+    "num": "0.15.0",
+    "rust_version": "1.88"
+   },
+   "non_yanked_versions": 14,
+   "recent_downloads_90d": 2635,
+   "repository": "https://github.com/oxidecomputer/progenitor.git",
+   "versions_declaring_rust_version": 3
+  },
+  "lance-namespace-reqwest-client": {
+   "downloads_all_time": 2955972,
+   "endpoint": "https://crates.io/api/v1/crates/lance-namespace-reqwest-client (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-14T02:48:10.114118Z",
+    "edition": "2021",
+    "license": "Apache-2.0",
+    "num": "0.13.0",
+    "rust_version": null
+   },
+   "non_yanked_versions": 46,
+   "recent_downloads_90d": 1718864,
+   "repository": null,
+   "versions_declaring_rust_version": 0
+  },
+  "meteora-api": {
+   "downloads_all_time": 20,
+   "endpoint": "https://crates.io/api/v1/crates/meteora-api (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-08-22T07:03:24.210183Z",
+    "edition": "2024",
+    "license": "MIT",
+    "num": "0.1.0",
+    "rust_version": "1.88"
+   },
+   "non_yanked_versions": 1,
+   "recent_downloads_90d": 20,
+   "repository": "https://github.com/ChiefWoods/meteora-ag-api",
+   "versions_declaring_rust_version": 1
+  },
+  "oas3": {
+   "downloads_all_time": 2228868,
+   "endpoint": "https://crates.io/api/v1/crates/oas3 (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-05-06T04:08:15.118416Z",
+    "edition": "2021",
+    "license": "MIT",
+    "num": "0.22.0",
+    "rust_version": "1.87"
+   },
+   "non_yanked_versions": 29,
+   "recent_downloads_90d": 988730,
+   "repository": "https://github.com/x52dev/oas3-rs",
+   "versions_declaring_rust_version": 24
+  },
+  "oas3-gen": {
+   "downloads_all_time": 29425,
+   "endpoint": "https://crates.io/api/v1/crates/oas3-gen (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-08-23T00:30:52.245735Z",
+    "edition": "2024",
+    "license": "MIT",
+    "num": "0.28.0",
+    "rust_version": "1.89"
+   },
+   "non_yanked_versions": 47,
+   "recent_downloads_90d": 14583,
+   "repository": "https://github.com/eklipse2k8/oas3-gen",
+   "versions_declaring_rust_version": 47
+  },
+  "openapi-gen": {
+   "downloads_all_time": 1921,
+   "endpoint": "https://crates.io/api/v1/crates/openapi-gen (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2025-07-27T16:16:45.166222Z",
+    "edition": "2024",
+    "license": "MIT",
+    "num": "0.3.1",
+    "rust_version": null
+   },
+   "non_yanked_versions": 4,
+   "recent_downloads_90d": 27,
+   "repository": "https://github.com/paulvandermeijs/openapi-gen",
+   "versions_declaring_rust_version": 0
+  },
+  "openapi-generator-cli": {
+   "downloads_all_time": 68,
+   "endpoint": "https://crates.io/api/v1/crates/openapi-generator-cli (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-07-03T17:17:13.585539Z",
+    "edition": "2024",
+    "license": "MIT OR Apache-2.0",
+    "num": "0.1.2",
+    "rust_version": null
+   },
+   "non_yanked_versions": 3,
+   "recent_downloads_90d": 68,
+   "repository": "https://github.com/strawberyy-coconut/openapi-generator-cli",
+   "versions_declaring_rust_version": 0
+  },
+  "openapi-model-generator": {
+   "downloads_all_time": 2501,
+   "endpoint": "https://crates.io/api/v1/crates/openapi-model-generator (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-07-10T12:06:13.273263Z",
+    "edition": "2021",
+    "license": "MIT OR Apache-2.0",
+    "num": "0.6.3",
+    "rust_version": null
+   },
+   "non_yanked_versions": 15,
+   "recent_downloads_90d": 345,
+   "repository": "https://github.com/denislituev/openapi-model-generator",
+   "versions_declaring_rust_version": 0
+  },
+  "openapi-nexus": {
+   "downloads_all_time": 1156,
+   "endpoint": "https://crates.io/api/v1/crates/openapi-nexus (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-08-22T18:05:31.796089Z",
+    "edition": "2024",
+    "license": "MIT OR Apache-2.0",
+    "num": "0.2.3",
+    "rust_version": "1.90"
+   },
+   "non_yanked_versions": 33,
+   "recent_downloads_90d": 634,
+   "repository": "https://github.com/rust-codegen-group/openapi-nexus",
+   "versions_declaring_rust_version": 22
+  },
+  "openapi-to-rust": {
+   "downloads_all_time": 46601,
+   "endpoint": "https://crates.io/api/v1/crates/openapi-to-rust (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-26T14:29:43.235280Z",
+    "edition": "2024",
+    "license": "MIT",
+    "num": "0.19.0",
+    "rust_version": "1.88.0"
+   },
+   "non_yanked_versions": 35,
+   "recent_downloads_90d": 45945,
+   "repository": "https://github.com/gpu-cli/openapi-to-rust",
+   "reverse_dependencies": 0,
+   "versions_declaring_rust_version": 35
+  },
+  "openapiv3": {
+   "downloads_all_time": 13265134,
+   "endpoint": "https://crates.io/api/v1/crates/openapiv3 (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2025-06-02T15:56:56.085268Z",
+    "edition": "2021",
+    "license": "MIT/Apache-2.0",
+    "num": "2.2.0",
+    "rust_version": null
+   },
+   "non_yanked_versions": 24,
+   "recent_downloads_90d": 3044094,
+   "repository": "https://github.com/glademiller/openapiv3",
+   "versions_declaring_rust_version": 0
+  },
+  "paperclip": {
+   "downloads_all_time": 943215,
+   "endpoint": "https://crates.io/api/v1/crates/paperclip (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-04-20T21:31:23.499455Z",
+    "edition": "2018",
+    "license": "MIT OR Apache-2.0",
+    "num": "0.9.7",
+    "rust_version": null
+   },
+   "non_yanked_versions": 18,
+   "recent_downloads_90d": 93206,
+   "repository": "https://github.com/paperclip-rs/paperclip",
+   "versions_declaring_rust_version": 0
+  },
+  "ploidy": {
+   "downloads_all_time": 629,
+   "endpoint": "https://crates.io/api/v1/crates/ploidy (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-06-16T07:50:32.781145Z",
+    "edition": "2024",
+    "license": "Apache-2.0",
+    "num": "0.15.0",
+    "rust_version": "1.89"
+   },
+   "non_yanked_versions": 24,
+   "recent_downloads_90d": 153,
+   "repository": "https://github.com/linabutler/ploidy",
+   "versions_declaring_rust_version": 16
+  },
+  "progenitor": {
+   "downloads_all_time": 5347412,
+   "endpoint": "https://crates.io/api/v1/crates/progenitor (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-10T04:03:39.997953Z",
+    "edition": "2024",
+    "license": "MPL-2.0",
+    "num": "0.15.0",
+    "rust_version": "1.88"
+   },
+   "non_yanked_versions": 20,
+   "recent_downloads_90d": 1370974,
+   "repository": "https://github.com/oxidecomputer/progenitor.git",
+   "versions_declaring_rust_version": 3
+  },
+  "progenitor-client": {
+   "downloads_all_time": 6315674,
+   "endpoint": "https://crates.io/api/v1/crates/progenitor-client (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-10T04:02:57.772178Z",
+    "edition": "2024",
+    "license": "MPL-2.0",
+    "num": "0.15.0",
+    "rust_version": "1.88"
+   },
+   "non_yanked_versions": 19,
+   "recent_downloads_90d": 1660705,
+   "repository": "https://github.com/oxidecomputer/progenitor.git",
+   "versions_declaring_rust_version": 3
+  },
+  "reqwest": {
+   "downloads_all_time": 745739282,
+   "endpoint": "https://crates.io/api/v1/crates/reqwest (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-08T20:55:26.479356Z",
+    "edition": "2021",
+    "license": "MIT OR Apache-2.0",
+    "num": "0.13.5",
+    "rust_version": "1.85.0"
+   },
+   "non_yanked_versions": 126,
+   "recent_downloads_90d": 194371193,
+   "repository": "https://github.com/seanmonstar/reqwest",
+   "versions_declaring_rust_version": 48
+  },
+  "reqwest-middleware": {
+   "downloads_all_time": 83634703,
+   "endpoint": "https://crates.io/api/v1/crates/reqwest-middleware (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-05-19T15:11:50.613768Z",
+    "edition": "2018",
+    "license": "MIT OR Apache-2.0",
+    "num": "0.5.2",
+    "rust_version": null
+   },
+   "non_yanked_versions": 23,
+   "recent_downloads_90d": 18085724,
+   "repository": "https://github.com/TrueLayer/reqwest-middleware",
+   "versions_declaring_rust_version": 0
+  },
+  "spargen": {
+   "downloads_all_time": 5353,
+   "endpoint": "https://crates.io/api/v1/crates/spargen (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-24T22:38:18.472382Z",
+    "edition": "2021",
+    "license": "MIT OR Apache-2.0",
+    "num": "0.5.0",
+    "rust_version": "1.88"
+   },
+   "non_yanked_versions": 7,
+   "recent_downloads_90d": 5353,
+   "repository": "https://github.com/getkono/spargen",
+   "versions_declaring_rust_version": 7
+  },
+  "utoipa": {
+   "downloads_all_time": 48861111,
+   "endpoint": "https://crates.io/api/v1/crates/utoipa (+ /versions)",
+   "newest_non_yanked": {
+    "created_at": "2026-09-22T22:30:17.822880Z",
+    "edition": "2021",
+    "license": "MIT OR Apache-2.0",
+    "num": "6.0.0",
+    "rust_version": "1.88"
+   },
+   "non_yanked_versions": 59,
+   "recent_downloads_90d": 15557670,
+   "repository": "https://github.com/juhaku/utoipa",
+   "versions_declaring_rust_version": 16
+  }
+ },
+ "github": {
+  "OpenAPITools/openapi-generator": {
+   "archived": false,
+   "endpoint": "https://api.github.com/repos/OpenAPITools/openapi-generator",
+   "open_issues_total_count": 5122,
+   "pushed_at": "2026-09-25T23:14:32Z",
+   "stargazers_count": 26764
+  },
+  "getkono/spargen": {
+   "archived": false,
+   "endpoint": "https://api.github.com/repos/getkono/spargen",
+   "open_issues_total_count": 105,
+   "pushed_at": "2026-09-25T16:00:13Z",
+   "stargazers_count": 4
+  },
+  "gpu-cli/openapi-to-rust": {
+   "archived": false,
+   "endpoint": "https://api.github.com/repos/gpu-cli/openapi-to-rust",
+   "open_issues_total_count": 3,
+   "pushed_at": "2026-09-26T14:33:40Z",
+   "stargazers_count": 37
+  },
+  "openapi-to-rust issues mentioning timeout": {
+   "titles": [
+    [
+     41,
+     "fix: correct nullability, SSE, base URL, and dependency defects found by live API testing",
+     "closed"
+    ]
+   ],
+   "total_count": 1
+  },
+  "openapi-to-rust recent issues": {
+   "closed": 10,
+   "endpoint": "https://api.github.com/search/issues?q=repo:gpu-cli/openapi-to-rust+is:issue&sort=created&order=desc&per_page=10 (+ /issues/<n>/comments)",
+   "issues": [
+    {
+     "author": "adriendellagaspera",
+     "author_association": "NONE",
+     "closed_after_days": 6.71,
+     "created_at": "2026-09-19T21:25:34Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 80,
+     "state": "closed"
+    },
+    {
+     "author": "adriendellagaspera",
+     "author_association": "NONE",
+     "closed_after_days": 6.71,
+     "created_at": "2026-09-19T21:23:58Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 79,
+     "state": "closed"
+    },
+    {
+     "author": "adriendellagaspera",
+     "author_association": "NONE",
+     "closed_after_days": 6.71,
+     "created_at": "2026-09-19T21:22:45Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 78,
+     "state": "closed"
+    },
+    {
+     "author": "adriendellagaspera",
+     "author_association": "NONE",
+     "closed_after_days": 6.72,
+     "created_at": "2026-09-19T21:21:11Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 77,
+     "state": "closed"
+    },
+    {
+     "author": "rjpnz-create",
+     "author_association": "NONE",
+     "closed_after_days": 0.51,
+     "created_at": "2026-09-14T00:58:57Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 74,
+     "state": "closed"
+    },
+    {
+     "author": "b-per",
+     "author_association": "NONE",
+     "closed_after_days": 0.22,
+     "created_at": "2026-09-08T09:10:52Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 70,
+     "state": "closed"
+    },
+    {
+     "author": "lightsofapollo",
+     "author_association": "CONTRIBUTOR",
+     "closed_after_days": 0.46,
+     "created_at": "2026-08-27T03:23:37Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 65,
+     "state": "closed"
+    },
+    {
+     "author": "lightsofapollo",
+     "author_association": "CONTRIBUTOR",
+     "closed_after_days": 1.85,
+     "created_at": "2026-08-26T20:43:22Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 63,
+     "state": "closed"
+    },
+    {
+     "author": "lightsofapollo",
+     "author_association": "CONTRIBUTOR",
+     "closed_after_days": 0.13,
+     "created_at": "2026-08-26T20:19:10Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 62,
+     "state": "closed"
+    },
+    {
+     "author": "Spikhalskiy",
+     "author_association": "NONE",
+     "closed_after_days": 1.04,
+     "created_at": "2026-08-25T19:15:58Z",
+     "first_maintainer_comment_after_days": null,
+     "number": 60,
+     "state": "closed"
+    }
+   ],
+   "median_days_to_close": 1.445,
+   "median_days_to_first_maintainer_comment": null,
+   "no_maintainer_comment": 10
+  },
+  "oxidecomputer/progenitor": {
+   "archived": false,
+   "endpoint": "https://api.github.com/repos/oxidecomputer/progenitor",
+   "open_issues_total_count": 93,
+   "pushed_at": "2026-09-26T15:17:43Z",
+   "stargazers_count": 1013
+  },
+  "progenitor#1268": {
+   "created_at": "2025-12-29T10:27:31Z",
+   "state": "open",
+   "title": "Support for OpenAPI `v3.1.0`"
+  },
+  "progenitor#762": {
+   "created_at": "2024-04-04T17:04:16Z",
+   "state": "open",
+   "title": "Support OpenAPI 3.1.0"
+  }
+ },
+ "notes": [
+  "openapi-to-rust live versions published 2026-02-13..2026-09-14: 33",
+  "rust-lang/rust latest release tag: 1.98.1 (2026-09-03T13:14:07Z)"
+ ],
+ "retrieved": "2026-09-26"
+}

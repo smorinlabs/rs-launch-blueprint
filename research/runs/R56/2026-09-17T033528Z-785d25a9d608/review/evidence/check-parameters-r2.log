@@ -1,0 +1,41 @@
+date-utc: 2026-09-18T16:34:11Z
+decision: research/runs/R56/2026-09-17T033528Z-785d25a9d608/review/DECISION.md
+decision sha256: c2b4da75656ec364cc6c1fc019de7eee1eb76dbe081617c9d0510c19aa91c058
+PASS PA1 assumes-line-count — 5
+PASS PA2 assumes-byte-identical-to-registry — diff against lines regenerated from docs/port/PARAMETERS.md is empty
+PASS PA3 no-owns-line — 0
+PASS PA4 h2-set — Decision, Parameters, Empirical check, Engines — in order, with no Supersedes
+PASS PA5 principles-h3 — 1
+PASS PA6 title — 1
+PASS PA6b no-supersedes — 0
+PASS PA6c revision-note — 1
+PASS PA6d revision-history — 1
+PASS PA7 one-re-verify-line — 1
+PASS PA8.1 sensitive-pattern-absent — no file under review/ contains it, excluding both check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.2 sensitive-pattern-absent — no file under review/ contains it, excluding both check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.3 sensitive-pattern-absent — no file under review/ contains it, excluding both check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.4 sensitive-pattern-absent — no file under review/ contains it, excluding both check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.5 sensitive-pattern-absent — no file under review/ contains it, excluding both check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA9 fixture-absent-from-every-log — 0
+PASS PA10 fixture-only-in-the-four-expected-files — audit-fable.md DECISION.md evidence/check-probe.sh evidence/probe/src/main.rs 
+PASS PA10b r2-fixture-absent-from-every-log — 0
+PASS PA10c r2-fixture-only-in-the-two-expected-files — DECISION.md evidence/check-probe-r2.sh evidence/probe-r2/src/main.rs 
+PASS PA10b r2-fixture-absent-from-every-log — 0
+PASS PA10c r2-fixture-only-in-the-two-expected-files — DECISION.md evidence/check-probe-r2.sh evidence/probe-r2/src/main.rs 
+PA12-detail revision-1 artifact sha256 values:
+  check-standard.sh            04bf4f067001db2e090098b3512925a7f3a682d85739597c47b5b7dbcb4b847a
+  check-standard.log           568253018c581bb98d189c55787276a48dd4ceb1af62dbd048dbc03c58a8fb69
+  check-siblings.sh            672483deee1f095d4225847f08a63b79d748c417a3a42b6ecd04d83d56c57a02
+  check-siblings.log           5a9634b5ff4e7843c45c04848309f69e6bbb78445f1dadec0a2d7ab76afc7d79
+  check-registry.sh            17156fcb53f0dcc005613a44fa056dd4bbdbe8eab292d49934f6b19c3229acf1
+  check-registry.log           d5765ea8ed197f368f82e265a0dd428046667dc8a57865249bff78b99c611a70
+  check-probe.sh               7ab23442ec1a170d11ac92771fed2318931f47dd8a15361424b910608eb7653c
+  check-probe.log              ec5bf07be3f421e8d4db63f57b586b290db8500e08b61b2e85adb90e9f1f1a26
+  check-parameters.sh          1b09b4d2cb9ff844ffeaa23a796941d28256f8302a3cc9e6c5525544bacafe77
+  check-parameters.log         50ddf40ef017334ccbb08c2d1266ae90a44a3a603fe39583bb3700586b223b2b
+  refresh-snapshots.sh         bf5c34cbd1d8f3edfa7788afd40416afaabe832e725f1b2130b8d6eb40bd58b2
+  probe/Cargo.toml             5c1c4c8f2694d16c0a2e570a98a7aa12991055b76ae0d9935d7b1aa2a1ded4cd
+  probe/Cargo.lock             0748393d7ab4708fe84ab7fe785b3c71881f2a7fe55a8f8ed354b99e8ccbde72
+  probe/src/main.rs            f252c136dd484c44cfb54e28afad1e11581de1fa17ed94abfff668483d557ef3
+PASS PA11 no-leaks — 0
+CHECK_FAILURES=0

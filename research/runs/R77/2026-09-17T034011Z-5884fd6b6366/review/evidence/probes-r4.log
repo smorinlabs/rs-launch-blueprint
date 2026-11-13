@@ -1,0 +1,67 @@
+# R77 probes, revision 4 — 2026-09-27T06:22:20Z
+## T — the inherited target directory is removed before any build
+# inherited CARGO_TARGET_DIR: /tmp/cargo-s27-R77-r4-target
+PASS T1 CARGO_TARGET_DIR is unset for every cargo call below
+# rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+# cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+# host: Darwin arm64
+
+## N — negative control: a missing binary is a FAIL, never 0 bytes
+PASS N1 size_of reports nothing for a binary that was never built
+PASS N2 size_of reports nothing for a zero-byte file
+
+## P6r4 — package count and stripped release size, build status checked
+mechanism           packages stripped_bytes
+PASS P6r4 baseline builds in release
+PASS P6r4 baseline produced a non-empty binary at the target directory this script chose
+baseline                   8         286048
+PASS P6r4 package count for baseline (8)
+PASS P6r4 envy builds in release
+PASS P6r4 envy produced a non-empty binary at the target directory this script chose
+envy                       9         302624
+PASS P6r4 package count for envy (9)
+PASS P6r4 confique builds in release
+PASS P6r4 confique produced a non-empty binary at the target directory this script chose
+confique                  12         302544
+PASS P6r4 package count for confique (12)
+PASS P6r4 confignodefault builds in release
+PASS P6r4 confignodefault produced a non-empty binary at the target directory this script chose
+confignodefault           11         369248
+PASS P6r4 package count for confignodefault (11)
+PASS P6r4 figment builds in release
+PASS P6r4 figment produced a non-empty binary at the target directory this script chose
+figment                   16         385968
+PASS P6r4 package count for figment (16)
+PASS P6r4 configdefault builds in release
+PASS P6r4 configdefault produced a non-empty binary at the target directory this script chose
+configdefault             55         418960
+PASS P6r4 package count for configdefault (55)
+PASS P6r4 confignodefault26 builds in release
+PASS P6r4 confignodefault26 produced a non-empty binary at the target directory this script chose
+confignodefault26         11         369248
+PASS P6r4 package count for confignodefault26 (11)
+stripped-size deltas over the baseline: envy=16576 confique=16496 config-0.15.25-no-default=83200 figment=99920 config-0.15.25-default=132912 config-0.15.26-no-default=83200
+PASS P6r4 config 0.15.25 without default features costs more than 50 KB (83200 B > 50000)
+PASS P6r4 figment costs more than 50 KB (99920 B > 50000)
+PASS P6r4 envy costs less than 50 KB (16576 B < 50000)
+PASS P6r4 confique costs less than 50 KB (16496 B < 50000)
+PASS P6r4 config 0.15.25 with default features costs more than 100 KB (132912 B > 100000)
+PASS P6r4 config 0.15.26 without default features costs more than 50 KB (83200 B > 50000)
+
+## P3r4 and P7 — config 0.15.26: error string, injected seam, separator
+PASS P7 probe crate builds against config 0.15.26
+process RSLBP_WEB_PORT=Some("eighty")
+p3-process | ERR | invalid type: string "eighty", expected an integer for key `port` in the environment
+process RSLBP_WEB_PORT=None
+p3-injected | ERR | invalid type: string "eighty", expected an integer for key `port` in the environment
+p7-runner-up-shape | OK | Multi { port: 9000, graceful_shutdown_seconds: 3 }
+p7-muse-shape | OK | Multi { port: 9000, graceful_shutdown_seconds: 8 }
+p7-trailing-underscore | OK | Multi { port: 8000, graceful_shutdown_seconds: 8 }
+PASS P3r4.1 config 0.15.26 prints revision 1's 0.15.25 string verbatim, from the process environment
+PASS P3r4.2 the process environment is clean for the injected run
+PASS P3r4.3 config 0.15.26 reports the same error from the injected map alone (the seam holds)
+PASS P7.1 runner-up shape (no separator) reads the multi-word field
+PASS P7.2 Muse's .separator("_") shape silently drops the multi-word field to its default
+PASS P7.3 a prefix passed with its trailing underscore matches nothing (Muse's own observation)
+
+PASS=37 FAIL=0 SKIP=0 TOTAL=37

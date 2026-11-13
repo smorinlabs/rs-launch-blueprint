@@ -1,0 +1,37 @@
+date-utc: 2026-09-17T15:39:22Z
+PASS S0 object-type — f9de0437baece3383e73ca2c5f48b7ab399b51c7 is a blob
+PASS S1 blob-length — 773 lines
+S1-detail sha256 of the extracted blob text: 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f
+PASS S2 R10.1-heading — line 544 contains [**R10.1 — Authentication & identity. (MUST / SHOULD)**]
+PASS S3 R10.1-auth-group — line 545 contains [Authentication lives under an `auth` group]
+PASS S4 R10.1-precedence — line 545 contains [Credentials **MUST** resolve in the order flag-supplied token]
+PASS S5 R10.1-env-tier — line 545 contains [env > stored credential]
+PASS S6 R10.1-no-flag — line 545 contains [a token **MUST NOT** be passed as a plain flag value (R5.5)]
+PASS S7 R10.1-stored — line 545 contains [Stored credentials **SHOULD** use the OS keychain when available, falling back to a `0600` file under `$XDG_STATE_HOME/acme/` (R5.3)]
+PASS S8 R10.1-exit-4 — line 545 contains [Auth failures exit `4` (R6.1)]
+PASS S9  section10-heading — line 540 contains [### §10 Networked tools]
+PASS S10 section10-scope — line 542 contains [This section applies only to CLIs that talk to a remote API or service]
+PASS S11 R5.5-heading — line 326 contains [**R5.5 — Secrets. (MUST)**]
+PASS S12 R5.5-argv — line 327 contains [Secrets (tokens, passwords, keys) **MUST NOT** be accepted as plain command-line flags or positionals, because argv is visible in process listings]
+PASS S13 R5.5-channels — line 327 contains [Accept them via environment variable, a file path, a credential helper, or stdin]
+PASS S14 R5.5-good — line 328 contains [acme login --token-file ./tok]
+PASS S15 R5.5-bad — line 329 contains [acme login --token sk_live_abc123]
+PASS S16 R5.6-heading — line 331 contains [**R5.6 — Secret redaction in output. (MUST)**]
+PASS S17 R5.6-mask — line 332 contains [Secret values (tokens, passwords, keys) **MUST** be masked in all output]
+PASS S18 R5.4-curated — line 322 contains [Only a **curated subset** of settings **SHOULD** read from the environment]
+PASS S19 conformance — line 50 contains [A CLI **conforms** when it satisfies every **MUST** rule]
+PASS S20 waiver — line 50 contains [A SHOULD waiver **MUST** name the rule ID, describe the deviation, explain the rationale, and record the owner/date]
+PASS S21 row26-auth — line 88 contains [| 26 | Authentication | `auth login/logout/status`; token precedence flag-file > env > stored; keychain-first, `0600` file fallback |]
+PASS S22 row26-derived — line 88 contains [| derived |]
+PASS S23 row8-orglocked — line 70 contains [| org-locked |]
+S24-detail cli-standards worktree top level: cli-design-standard.md docs LICENSE README.md 
+S24-detail total matching lines (binary /usr/bin/grep): 1; outside the execution ledger: 0
+PASS S24 no-ci-standard — no CI-standard document is referenced anywhere outside docs/planning/p02/execution-ledger.md, which records this same finding (1 total match(es))
+PASS S25 std-repo-holds-one-standard — cli-standards holds cli-design-standard.md and no CI standard file
+PASS S26 py-adr-title — docs/adr/0002-no-secrets-in-config-file.md at b08bccfb contains [secrets]
+PASS S27 py-token-flag — src/py_launch_blueprint/cli/options.py at b08bccfb contains ["--token"]
+PASS S28 ts-file-tier — src/lib/config.ts at cb1cbcb2 contains [tokenSource = 'file']
+PASS S29 ts-mode-check — src/lib/config.ts at cb1cbcb2 contains [0o077]
+PASS S30 ts-token-flag — src/router.ts at cb1cbcb2 contains [--token <token>]
+PASS S31 ts-chmod-pair — src/lib/config.ts at cb1cbcb2 contains [chmodSync]
+CHECK_FAILURES=0

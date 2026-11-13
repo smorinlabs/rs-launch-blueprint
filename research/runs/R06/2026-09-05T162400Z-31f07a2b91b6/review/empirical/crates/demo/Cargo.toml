@@ -1,0 +1,13 @@
+[package]
+name = "demo"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# A real registry crate whose own source uses `unsafe` heavily; it must build
+# cleanly under the workspace `forbid`, proving the policy is crate-local.
+memchr = "2"
+
+[lints]
+workspace = true

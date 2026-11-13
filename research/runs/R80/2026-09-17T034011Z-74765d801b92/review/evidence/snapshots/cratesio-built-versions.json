@@ -1,0 +1,124 @@
+{
+  "versions": [
+    {
+      "num": "0.8.1",
+      "yanked": false,
+      "rust_version": "1.87",
+      "created_at": "2026-05-21T20:10:07.082823Z"
+    },
+    {
+      "num": "0.8.0",
+      "yanked": false,
+      "rust_version": "1.81",
+      "created_at": "2025-05-01T16:18:03.400997Z"
+    },
+    {
+      "num": "0.7.7",
+      "yanked": false,
+      "rust_version": "1.74",
+      "created_at": "2025-02-16T21:43:31.231288Z"
+    },
+    {
+      "num": "0.7.6",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2025-02-09T16:25:20.973268Z"
+    },
+    {
+      "num": "0.7.5",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2024-10-17T19:50:38.531571Z"
+    },
+    {
+      "num": "0.7.4",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2024-07-07T18:19:24.415503Z"
+    },
+    {
+      "num": "0.7.3",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2024-05-21T19:08:40.175234Z"
+    },
+    {
+      "num": "0.7.2",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2024-04-09T18:29:19.904962Z"
+    },
+    {
+      "num": "0.7.1",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2023-10-14T07:43:23.663520Z"
+    },
+    {
+      "num": "0.7.0",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2023-09-09T11:05:45.139713Z"
+    },
+    {
+      "num": "0.6.1",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2023-06-19T21:11:56.445369Z"
+    },
+    {
+      "num": "0.6.0",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2023-02-09T10:06:36.960995Z"
+    },
+    {
+      "num": "0.5.3",
+      "yanked": true,
+      "rust_version": null,
+      "created_at": "2023-02-08T13:22:18.578479Z"
+    },
+    {
+      "num": "0.5.2",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2022-12-03T10:14:05.816334Z"
+    },
+    {
+      "num": "0.5.1",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2021-05-27T21:39:51.299529Z"
+    },
+    {
+      "num": "0.5.0",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2021-05-01T11:25:09.510828Z"
+    },
+    {
+      "num": "0.4.4",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2020-12-01T13:12:11.900189Z"
+    },
+    {
+      "num": "0.4.3",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2020-08-19T15:17:09.076097Z"
+    },
+    {
+      "num": "0.4.2",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2020-05-27T20:16:31.781493Z"
+    },
+    {
+      "num": "0.4.1",
+      "yanked": false,
+      "rust_version": null,
+      "created_at": "2020-04-21T20:53:59.375881Z"
+    }
+  ]
+}

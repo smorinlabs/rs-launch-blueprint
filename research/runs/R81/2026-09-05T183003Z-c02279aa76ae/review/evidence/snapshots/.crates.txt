@@ -1,0 +1,6 @@
+mdbook             newest_unyanked=0.5.4     license=MPL-2.0   rust_version=1.88.0
+cobalt-bin         newest_unyanked=0.20.4    license=MIT       rust_version=1.85
+mdbook-mermaid     newest_unyanked=0.17.1    license=MPL-2.0   rust_version=None
+mdbook-admonish    newest_unyanked=1.20.0    license=MIT       rust_version=1.76.0
+mdbook-alerts      newest_unyanked=0.8.0     license=MIT       rust_version=None
+zola               NO_UNYANKED total_versions=1 newest=0.1.1 yanked=True

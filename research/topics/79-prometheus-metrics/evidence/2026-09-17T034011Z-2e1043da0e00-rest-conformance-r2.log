@@ -1,0 +1,213 @@
+== environment ==
+date-utc: 2026-09-19T01:33:00Z
+repository root resolved by walking up from the script path: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+context: a git worktree (.git is a FILE, which is why the test is -e and not -d)
+grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+== the REST API Design Standard v2.0.0, at the pinned blob ==
+named by owner ruling W2-REST: commit 0850d43e45d919ef5e37f7174c4212b46013c49f, blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+blob read: 3427 lines, sha256 4d3ea4e898f79a358e16e8ddadcb9b4a5b3726032d1f36c00fb73311c4e79958
+PASS  the pinned blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 exists in /Users/stevemorin/c/rest-standards and was read
+PASS  re-hashing the bytes reproduces the pinned blob id (content identity, not a filename)
+PASS  the pinned commit 0850d43e45d919ef5e37f7174c4212b46013c49f exists in /Users/stevemorin/c/rest-standards
+
+== every rule this decision quotes, asserted at its line in the blob ==
+PASS  R1.5 at :219 — "Every rule in this standard applies at every tier unless t"
+PASS  R1.6 at :233 — "MUST carry a stated reason in the conformance"
+PASS  R1.6 at :237 — "The switch vocabulary: `webhooks` · `async-operations` ·"
+PASS  R1.6 at :258 — "A switch never waives a guard."
+PASS  R1.7 at :271 — "No silent deviation."
+PASS  R1.7 at :275 — "silent deviation from any rule strength is nonconformance"
+PASS  R1.7 at :291 — "<rule ID> · <rule strength> · what differs · why · app"
+PASS  R1.8 at :312 — "A conforming API MUST NOT use a reserved"
+PASS  R1.9 at :319 — "a mutating request carrying the `dry_run` parameter"
+PASS  R2.1 at :443 — "An API MUST present a resource-oriented surface"
+PASS  R2.1 at :447 — "There is no RPC carve-out for any service class."
+PASS  R2.2 at :456 — "Collection resources MUST use plural nouns"
+PASS  R2.4 at :477 — "Path segments MUST use kebab-case"
+PASS  R2.5 at :488 — "MUST NOT reference more"
+PASS  R2.6 at :499 — "Canonical URIs have no trailing slash"
+PASS  R2.9 at :525 — "Path segments identify resources; query parameters modify "
+PASS  R2.10 at :533 — "Personally identifiable information MUST NOT appear in any"
+PASS  R2.11 at :542 — "A non-CRUD operation MUST use the sub-path verb form"
+PASS  R3.3 at :599 — "logging and metrics side effects do not violate safety."
+PASS  R3.10 at :693 — "A resource that supports conditional update MUST emit a st"
+PASS  R3.10 at :695 — "Exception:** resources never updated by clients."
+PASS  R4.1 at :742 — "Every API MUST publish an OpenAPI document as the contract"
+PASS  R4.3 at :762 — "Every JSON response body MUST have an object at the top le"
+PASS  R4.3 at :763 — "Exception:** non-JSON media types."
+PASS  R4.10 at :846 — "The default media type — served when a request carries n"
+PASS  R4.10 at :850 — "406 Not Acceptable"
+PASS  R4.11 at :856 — "Every response whose content was selected by a request hea"
+PASS  R4.11 at :858 — "Exception:** responses with no negotiation."
+PASS  R4.17 at :864 — "Where an API serves cross-origin browser clients"
+PASS  R7.1 at :1259 — "Every response MUST carry an explicit `Cache-Control` head"
+PASS  R7.3 at :1283 — "Authenticated or mutable resources default to"
+PASS  R7.3 at :1286 — "no-store` is reserved for genuinely sensitive payloads"
+PASS  R8.1 at :1317 — "APIs MUST be served only over TLS 1.2 or higher"
+PASS  R8.2 at :1323 — "Access tokens MUST NOT be accepted or emitted in URI query"
+PASS  R8.6 at :1356 — "Every request MUST be authorized against the specific obje"
+PASS  R8.12 at :1422 — "Secrets, credentials, and PII MUST NOT appear in problem"
+PASS  R9.1 at :1435 — "An API MUST use one uniform version-marker placement"
+PASS  R11.7 at :1752 — "Every response, including errors, MUST carry the `request-"
+PASS  R11.8 at :1759 — "W3C Trace Context `traceparent` MUST be propagated"
+PASS  R13.3 at :1935 — "`stream` is a reserved request-modifier name"
+PASS  R13.3 at :1938 — "MUST reject the request with `400`"
+PASS  R4.10 at :2218 — "R4.10's default clause carries no BCP 14 keyword"
+PASS  AppB at :2799 — "Attempt conformance first."
+PASS  AppB at :2805 — "requirement-strength rules go to the standard's owner"
+PASS  the committed snapshot of the quoted rule lines is byte-identical to the blob
+
+== the rule text, as this decision quotes it, printed from the snapshot ==
+      | R1.5   :219   Every rule in this standard applies at every tier unless the rule itself
+      | R1.6   :233   rules as not applicable — MUST carry a stated reason in the conformance
+      | R1.6   :237   The switch vocabulary: `webhooks` · `async-operations` · `bulk-operations` ·
+      | R1.6   :258   **A switch never waives a guard.** A rule whose whole purpose is to define
+      | R1.7   :271   **R1.7 — No silent deviation.** An API deviates from this standard only in
+      | R1.7   :275   conformance note; silent deviation from any rule strength is nonconformance
+      | R1.7   :291   - <rule ID> · <rule strength> · what differs · why · approver · date
+      | R1.8   :312   **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+      | R1.9   :319   a mutating request carrying the `dry_run` parameter — with any value — to
+      | R2.1   :443   **R2.1** An API MUST present a resource-oriented surface: noun resources,
+      | R2.1   :447   method overlay. There is no RPC carve-out for any service class.
+      | R2.2   :456   **R2.2** Collection resources MUST use plural nouns (`/customers`,
+      | R2.4   :477   **R2.4** Path segments MUST use kebab-case (`/sales-order-items`), pattern
+      | R2.5   :488   parent. One sub-resource level is the norm; a path MUST NOT reference more
+      | R2.6   :499   **R2.6** Canonical URIs have no trailing slash. A trailing slash MUST NOT
+      | R2.9   :525   **R2.9** Path segments identify resources; query parameters modify the
+      | R2.10  :533   **R2.10** Personally identifiable information MUST NOT appear in any URI —
+      | R2.11  :542   **R2.11** A non-CRUD operation MUST use the sub-path verb form
+      | R3.3   :599   logging and metrics side effects do not violate safety.
+      | R3.10  :693   **R3.10** A resource that supports conditional update MUST emit a strong
+      | R3.10  :695   `If-Match`). **Exception:** resources never updated by clients.
+      | R4.1   :742   **R4.1** Every API MUST publish an OpenAPI document as the contract source
+      | R4.3   :762   **R4.3** Every JSON response body MUST have an object at the top level —
+      | R4.3   :763   never a bare array. **Exception:** non-JSON media types.
+      | R4.10  :846   **R4.10** The default media type — served when a request carries no
+      | R4.10  :850   the endpoint supports SHOULD receive `406 Not Acceptable` rather than a
+      | R4.11  :856   **R4.11** Every response whose content was selected by a request header
+      | R4.11  :858   **Exception:** responses with no negotiation.
+      | R4.17  :864   **R4.17** Where an API serves cross-origin browser clients, every
+      | R7.1   :1259  **R7.1** Every response MUST carry an explicit `Cache-Control` header —
+      | R7.3   :1283  1. Authenticated or mutable resources default to
+      | R7.3   :1286  2. `no-store` is reserved for genuinely sensitive payloads. Blanket
+      | R8.1   :1317  **R8.1** APIs MUST be served only over TLS 1.2 or higher, preferring 1.3;
+      | R8.2   :1323  **R8.2** Access tokens MUST NOT be accepted or emitted in URI query
+      | R8.6   :1356  **R8.6** Every request MUST be authorized against the specific object,
+      | R8.12  :1422  **R8.12** Secrets, credentials, and PII MUST NOT appear in problem
+      | R9.1   :1435  **R9.1** An API MUST use one uniform version-marker placement: the major
+      | R11.7  :1752  **R11.7** Every response, including errors, MUST carry the `request-id`
+      | R11.8  :1759  **R11.8** W3C Trace Context `traceparent` MUST be propagated;
+      | R13.3  :1935  **R13.3** `stream` is a reserved request-modifier name (§1.10) meaning
+      | R13.3  :1938  member, with any value — MUST reject the request with `400`, and MUST NOT
+      | R4.10  :2218  
+      | AppB   :2799  1. **Attempt conformance first.** The process exists for genuine
+      | AppB   :2805     requirement-strength rules go to the standard's owner, because they
+
+== the scope finding: the standard has no vocabulary for an operational endpoint ==
+PASS  the word 'Prometheus' is absent from all 3427 lines of the standard
+PASS  the word 'telemetry' is absent from all 3427 lines of the standard
+PASS  the word 'scrape' is absent from all 3427 lines of the standard
+PASS  the word 'exposition' is absent from all 3427 lines of the standard
+PASS  the word 'healthz' is absent from all 3427 lines of the standard
+PASS  the word 'readyz' is absent from all 3427 lines of the standard
+PASS  the word 'liveness' is absent from all 3427 lines of the standard
+PASS  the word 'readiness' is absent from all 3427 lines of the standard
+PASS  the word 'monitoring' is absent from all 3427 lines of the standard
+PASS  the word 'instrumentation' is absent from all 3427 lines of the standard
+      | occurrences of the stem "metric": 3 (lines below)
+      | 599:logging and metrics side effects do not violate safety.
+      | 1398:| Replay window | 300 s past / 60 s future, asymmetric + mandatory dedup cache held at least the past window; NTP required; the window alone is never sufficient. Does not reopen the ratified webhook tolerance convention (R12.8) | Interactive high-value signing → 30–60 s; server-provided nonces remove skew; unmanaged clocks or store-and-forward → up to 15 min, never without dedup; signature omits body → add RFC 9530 binding |
+      | 1637:5. Any asymmetric-signature requirement routes to the RFC 9421 branch:
+PASS  the only rule-bearing use of 'metrics' is R3.3's safety exception at :599
+PASS  the applicability-switch vocabulary is still the closed four-name set (no operational switch)
+
+== the decision's own conformance claims ==
+DECISION.md sha256 1551c96d483f7be26ca0d50d1df2caa32d4542ccf66e0423ad40e5827ae2e215
+PASS  R2.4 — the path segment 'metrics' satisfies the standard's kebab-case pattern
+PASS  R2.5 — /metrics references 1 resource segment(s), within the ceiling of three
+PASS  R1.8 — 'metrics' collides with none of the eight reserved action verbs
+PASS  R7.1/R7.3 — the decision names the explicit Cache-Control value the handler sets
+PASS  R13.3 — the decision quotes the stream rejection guard it now implements
+PASS  R13.3 — the decision names the reserved modifier the handler rejects
+PASS  R11.7 — the decision names the correlation header /metrics must carry
+PASS  R11.8 — the decision names the trace header that must be propagated
+PASS  OV-07(a) — the decision names the exposition media type it serves instead of JSON
+PASS  the controller-allocated OV-07 is recorded as an override
+PASS  OV-07's first departure is labelled
+PASS  OV-07's second departure is labelled
+PASS  each override carries an **Argument:**
+PASS  each override carries an **Options:**
+PASS  the decision names the owner ruling that occasioned this revision
+PASS  the decision pins the standard's blob id
+PASS  the decision pins the standard's commit
+PASS  exactly one OVERRIDE heading, and it carries the controller-allocated OV-07
+PASS  the conformance table points at both departures of OV-07 from their own rule rows
+PASS  no OVERRIDE heading carries a number other than the allocated OV-07
+PASS  a §1.9-shaped deviation row is recorded for R4.10
+PASS  a §1.9-shaped deviation row is recorded for R8.6
+-- the OV allocation search, re-executed --
+      | census computed over the markdown corpus; listing withheld because it varies
+      | with other agents uncommitted work. The assertions below are what is claimed.
+PASS  the controller-allocated OV-07 is claimed by no other item
+PASS  the controller's allocation table still reads 'OV-07 R79'
+      | ledger: 1073:OV-07 R79
+      | ledger: 1074:OV-07 R79
+-- the owner ruling is where this decision cites it --
+PASS  W2-REST is at docs/port/OWNER-REVIEW.md:187, the line this decision cites
+PASS  the owner ruling itself names the blob this script reads
+
+== every revision-1 artifact, pinned by digest and proven byte-identical ==
+      | cargo-probes.sh            sha256 7b3f8c7a9bcf162fdb28585defa2a97a67752dc935681ee7f5b32899628726bb
+PASS  revision-1 artifact present and hashed: cargo-probes.sh
+      | cargo-probes.log           sha256 3c774ff4709a09471e6afc30f9c7d6dd56a2cfc7854d77225a283950daf7340e
+PASS  revision-1 artifact present and hashed: cargo-probes.log
+      | crate-sources.sh           sha256 b37596e6b2b081a5e7348038a89b6da8697ac17fadcfa94e31fac5edfc0b420f
+PASS  revision-1 artifact present and hashed: crate-sources.sh
+      | crate-sources.log          sha256 b56b02d940d228b62ff0a951dba22cbd70e0fc0d92fa99426ccbe8113619a231
+PASS  revision-1 artifact present and hashed: crate-sources.log
+      | github-api.sh              sha256 07996833b0966e2b9c5e53cfbdbafce2a6ab63894c8fb83172bdecf98cbd6e50
+PASS  revision-1 artifact present and hashed: github-api.sh
+      | github-api.log             sha256 63280348c28287f30a8e85d4e93041712028c98c78d14b48e97a83abdbcdb31d
+PASS  revision-1 artifact present and hashed: github-api.log
+      | decision-self-check.sh     sha256 78d65e0318d3ed52626a3216295fae24a006c3318307f350b8ca5f6d02a91868
+PASS  revision-1 artifact present and hashed: decision-self-check.sh
+      | decision-self-check.log    sha256 660fc83c71092129ad5e82b6ee538594d5eeb847344d0a9111706052b8d88b01
+PASS  revision-1 artifact present and hashed: decision-self-check.log
+      | scrape-sample.txt          sha256 46a110a43794c8c70974ab72de4ce27533ec97867e26c90b2d8d40947a6e1bec
+PASS  revision-1 artifact present and hashed: scrape-sample.txt
+PASS  the four revision-1 lockfile snapshots are still present
+PASS  the fourteen revision-1 registry and GitHub snapshots are still present
+PASS  decision-self-check.sh is unedited: it still asserts revision 1's H1, which is why it is superseded
+
+== the revision-1 self-check set, re-executed against revision 2 ==
+PASS  H1 is the date-first revision-2 form
+PASS  raw/opus.md still matches the sha256 the controller's task message names
+PASS  H2 sections are exactly Decision, Parameters, Empirical check, Engines, in order
+PASS  no '## Supersedes' section, and the decision says why in its revision note
+PASS  exactly one '### Principles and implementation' H3
+PASS  '### Principles and implementation' sits inside '## Decision'
+PASS  exactly one line begins 're-verify:'
+PASS  the re-verify line is the final content line of '## Decision'
+PASS  the re-verify line carries a trigger on the standard's pinned blob
+PASS  the exact gate-1 'inapplicable' string is still recorded
+PASS  no line asserts a gate-1 pass verdict
+-- parameter lines, byte-compared with docs/port/PARAMETERS.md --
+PASS  no '- owns' line, matching the prompt's empty '- owns:' coupling
+PASS  the assumed parameter set is still exactly the four fixed parameters
+PASS  'msrv-policy' is byte-identical to its registry row (118 bytes), unmoved by revision 2
+PASS  'rust-edition' is byte-identical to its registry row (4 bytes), unmoved by revision 2
+PASS  'target-os-matrix' is byte-identical to its registry row (27 bytes), unmoved by revision 2
+PASS  'license' is byte-identical to its registry row (17 bytes), unmoved by revision 2
+PASS  web-extra-surface is still consumed in prose, not declared as an '- assumes' line
+-- decision shape, via the module's own decision validator --
+PASS  _validate_decision_text(DECISION.md, "R79") returns no diagnostics
+-- hygiene --
+PASS  no email address in the decision or any evidence script
+PASS  no token-shaped bytes in the decision, the scripts or the logs
+PASS  no target/ tree and no nested repository under review/evidence/
+PASS  every evidence script, revision 1 and revision 2, is shellcheck-clean
+PASS  research/CLAUDE.md row R79 is still 'prometheus-metrics', kind 'crate'
+
+== summary ==
+PASS=122 FAIL=0 SKIP=0 TOTAL=122

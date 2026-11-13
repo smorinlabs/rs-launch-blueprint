@@ -1,0 +1,56 @@
+=== R51 reproduction record
+date-utc: 2026-09-27T07:36:45Z
+grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+scripts rerun: r51-sources
+
+--- r51-sources.sh: fresh run against the committed r51-sources.log
+fresh exit code: 0
+fresh    SUMMARY: PASS=162 FAIL=0 SKIP=0 TOTAL=162
+committed SUMMARY: PASS=162 FAIL=0 SKIP=0 TOTAL=162
+RESULT r51-sources: identical outside the volatile classes
+volatile lines, committed then fresh:
+  c: date-utc: 2026-09-27T07:36:40Z
+  c: PASS  S6c — the recursive search reaches 17 files (S6a/S6b's zeros are not vacuous)
+  c: override-scan-files: 173
+  c: override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-08) OVERRIDE (OV-09) OVERRIDE (OV-10) OVERRIDE (OV-11) OVERRIDE (OV-13) OVERRIDE (OV-14) OVERRIDE (OV-16) OVERRIDE (OV-17) 
+  c: PASS  S9c — the scan covered 173 decision and port files
+  c: observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 4)
+  c: observed-r77-live-host-line: line(s) 1091 
+  c: observed-r77-live-defaults: line(s) 782 
+  c: observed-r77-live-option-c: line(s) 1000 
+  c: observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 4)
+  c: observed-r80-live-no-probe-rule: line(s) 627 
+  c: observed-r80-live-healthz-lines: 33
+  c: observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 4)
+  c: observed-r68-live-premise-lines: 1
+  f: date-utc: 2026-09-27T07:36:45Z
+  f: PASS  S6c — the recursive search reaches 17 files (S6a/S6b's zeros are not vacuous)
+  f: override-scan-files: 173
+  f: override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-08) OVERRIDE (OV-09) OVERRIDE (OV-10) OVERRIDE (OV-11) OVERRIDE (OV-13) OVERRIDE (OV-14) OVERRIDE (OV-16) OVERRIDE (OV-17) 
+  f: PASS  S9c — the scan covered 173 decision and port files
+  f: observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 4)
+  f: observed-r77-live-host-line: line(s) 1091 
+  f: observed-r77-live-defaults: line(s) 782 
+  f: observed-r77-live-option-c: line(s) 1000 
+  f: observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 4)
+  f: observed-r80-live-no-probe-rule: line(s) 627 
+  f: observed-r80-live-healthz-lines: 33
+  f: observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 4)
+  f: observed-r68-live-premise-lines: 1
+
+--- r51-container.log (the revision-2 run, carried unchanged) against r51-container.r1.log (revision 1)
+r51-container.log: SUMMARY: PASS=54 FAIL=0 SKIP=0 TOTAL=54  docker:   29.8.0
+r51-container.r1.log: SUMMARY: PASS=54 FAIL=0 SKIP=0 TOTAL=54  docker:   29.5.2
+RESULT container: the same check ids carry the same verdicts in both runs
+measured lines, revision 1 then revision 2 (not compared; see the header):
+  measured-binary-size	1271048	1271368
+  measured-disk-usage-debian-slim	-	166539349
+  measured-disk-usage-main	-	57769769
+  measured-size-busybox-delta	813471	812604
+  measured-size-debian-slim	40163283	36869229
+  measured-size-main	12312852	12302310
+  measured-size-noprobe	11499381	11489706
+  measured-wall-incremental-no-mounts	28s	17s
+  measured-wall-incremental-with-mounts	15s	10s
+
+reproduction-exit: 0

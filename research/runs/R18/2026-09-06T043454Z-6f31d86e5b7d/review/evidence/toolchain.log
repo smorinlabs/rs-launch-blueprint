@@ -1,0 +1,22 @@
+# toolchain.log — R18 empirical check environment
+date(local): 2026-09-09 22:15:15 PDT
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+$ rustc --version
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+$ cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+$ sw_vers
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
+$ uname -srm
+Darwin 25.4.0 arm64
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+$ gh --version
+gh version 2.98.0 (2026-08-20)
+$ jq --version
+jq-1.8.2

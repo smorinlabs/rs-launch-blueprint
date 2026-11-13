@@ -1,0 +1,39 @@
+
+========== 0. Toolchain ==========
+toolchain and platform written to ./toolchain.txt (kept off stdout so reruns diff clean)
+
+========== 1. The crate builds offline against the pinned dependency ==========
+PASS cargo build --offline exit status (expected 0, got 0; binary: /usr/bin/grep)
+PASS lockfile pins thiserror 2.0.20 (expected 1, got 1; binary: /usr/bin/grep)
+version = "2.0.20"
+
+========== 2. P1-P3 — the runtime claims ==========
+PASS cargo test --test absence_vs_failure exit status (expected 0, got 0; binary: /usr/bin/grep)
+
+--- the test names and the result line, verbatim from cargo (timings stripped) ---
+test absence_is_rslb301_exit3_names_the_input_and_has_no_source ... ok
+test empty_list_is_success_not_absence ... ok
+test local_io_failure_is_rslb101_exit1 ... ok
+test present_is_ok ... ok
+test transport_failure_is_rslb102_exit1_and_keeps_its_cause_chain ... ok
+test transpose_converts_the_other_nesting ... ok
+test unavailable_adapter_state_is_a_failure_not_an_absence ... ok
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elided>
+PASS tests passed (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 3. P4 — omitting the translation does not compile ==========
+
+--- tests/forgot_translation.rs — `Ok(port.get(id)?)`, the ok_or_else dropped ---
+PASS forgot_translation exit status is non-zero (expected non-zero, got non-zero; binary: /usr/bin/grep)
+error[E0308]: `?` operator has incompatible types
+|        ^^^^^^^^^^^^^ expected `Project`, found `Option<Project>`
+PASS compiler error is E0308 (mismatched ? types) (expected 1, got 1; binary: /usr/bin/grep)
+PASS and it names the two types (expected 1, got 1; binary: /usr/bin/grep)
+
+--- tests/question_mark_on_option.rs — `?` applied to the Option itself ---
+PASS question_mark_on_option exit status is non-zero (expected non-zero, got non-zero; binary: /usr/bin/grep)
+error[E0277]: the `?` operator can only be used on `Result`s, not `Option`s, in a function that returns `Result`
+PASS compiler error is E0277 (Option has no From into the domain error) (expected 1, got 1; binary: /usr/bin/grep)
+
+========== RESULT ==========
+ALL CHECKS PASSED

@@ -1,0 +1,59 @@
+INFO repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r11-arch.tw8QBD
+INFO grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+INFO .git is absent - this is a git archive extraction; no assertion below needs git
+PASS I01 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: check B3 - workspace membership, not the root package feature, decides which members are built, so a --workspace command on a CLI-only pull request already compiles axum and tokio
+PASS I02 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: the four-package workspace projection, from which the root-scoped -p list in the fixture is taken
+PASS I03 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: R02's own re-verify line hands check B3 to this item
+PASS I04 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: the F116 placement is provisional on a P03 measurement, so this item names a tier for it rather than fixing one
+PASS I05 research/runs/R05/2026-09-17T033527Z-bfacc9e801a5/review/DECISION.md: criterion 9 - cargo test and cargo test --features web on both runners, with the job shape left here
+PASS I06 research/runs/R10/2026-09-17T020715Z-b3b67fdb5328/review/DECISION.md: the pinned action reference the fixture reproduces verbatim in every cache-bearing job
+PASS I07 research/runs/R10/2026-09-17T020715Z-b3b67fdb5328/review/DECISION.md: criterion A3 - a second toolchain must produce distinct cache entries, which a separate job id gets for free and a matrix leg does not
+PASS I08 research/runs/R10/2026-09-17T020715Z-b3b67fdb5328/review/DECISION.md: add-job-id-key defaults to true, so the cache partition follows the job graph this item fixes
+PASS I09 research/runs/R50/2026-09-17T020715Z-b7ef95f12806/review/DECISION.md: one job, one runner - the shape the fixture hosts
+PASS I10 research/runs/R50/2026-09-17T020715Z-b7ef95f12806/review/DECISION.md: the web leg is a step of the same job conditioned on this item's web filter, which is what the fixture's second install step is
+PASS I11 research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md: revision 10's owned value moves the keys to crates/web/**, which is what the fixture's web key matches
+PASS I12 research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md: R69 asks ci.yml for both, shape owned here, which is why the check job carries a --no-default-features step
+PASS I13 docs/port/PARAMETERS.md: the LIVE registry still carries revision 9's src/web/** bytes, which is why the assumes line below reproduces them and the prose says revision 10 moves them
+PASS I14 research/topics/49-build-target-declaration/DECISION.md: the [package] include allow-list - all five are packaging inputs, which is why none of them is skippable
+PASS I15 research/topics/42-dev-toolchain-provisioning/DECISION.md: the toolchain file the stable compile job depends on existing, so this item installs nothing for the stable leg
+PASS I16 research/topics/20-third-party-action-pinning-policy/DECISION.md: the pin rule: actions/checkout@v7 may stay on a tag, Swatinem/rust-cache must carry a full SHA and a version comment - both as the fixture writes them
+PASS I17 research/topics/17-secret-scanning-ci-workflow/DECISION.md: R17 hands its runner choice here, so this decision answers it
+PASS I18 research/runs/R44/2026-09-17T020715Z-ff8c50edbd69/review/DECISION.md: R44 hands its job-versus-step question here too
+PASS I19 research/runs/R68/2026-09-17T033528Z-e504b7806e0c/review/DECISION.md: the release flow is a separate workflow file, so no release job enters ci.yml
+PASS I20 research/runs/R86/2026-09-17T033528Z-db9e2a74f9a0/review/DECISION.md: R86's preflight publishes a literal consumed by a positive predicate - the clause this item's detector mirrors
+PASS I21 research/topics/18-ai-assisted-review-workflows/DECISION.md: R18 revision 6 found the fail-open negated gate in its own draft; this item reproduces the platform fact and adds that actionlint will not catch it
+PASS I22 docs/planning/p02/execution-ledger.md: the owner's 2026-09-11 option-B ruling - the precedent that an always-run job gating dependents is this programme's accepted device
+PASS I23 docs/port/COMMONALITY.md: F038 is this item (DIVERGENT, py-only): CI-owned workflow-file structure plus path-filtered skip-gating
+PASS I24 docs/port/COMMONALITY.md: F040 is this item
+PASS I25 docs/port/COMMONALITY.md: F041 is R12's, not this item's - this file holds no aggregate job
+PASS I26 docs/port/COMMONALITY.md: F049 is R13's; this item gives it a placement rule, not a decision
+PASS I27 docs/port/COMMONALITY.md: F033's note assigns the floor mechanism here
+PASS I28 docs/port/BASELINE-REVIEW.md: the reconciliation row: this item places the floor job on one runner as a default and does not widen to the OS cross-product
+PASS I29 docs/port/BASELINE-REVIEW.md: the restatement of F033 to 'floor plus current stable', with the mechanism left here
+PASS I30 docs/port/OWNER-REVIEW.md: the ruling under which fitness gate 1 is recorded inapplicable
+PASS I31 docs/planning/p02/owner-decisions.md: the reference architecture is a standing research input, not a binding standard
+PASS I32 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/inputs/owner-reference-axum-companion-stack-2026-09-16.md: C12 row 1 of 6 - AGREE on the order, DIFFER on the packaging: fmt is lifted into a no-compile job; sqlx is inapplicable, this template has no database
+PASS I33 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/inputs/owner-reference-axum-companion-stack-2026-09-16.md: C14 row 2 of 6 - AGREE; R42 already commits the file and -D warnings is on both clippy steps
+PASS I34 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/inputs/owner-reference-axum-companion-stack-2026-09-16.md: C3 row 3 of 6 - AGREE as a slot: openapi-snap is gated on the web key; the command inside is R71/R84
+PASS I35 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/inputs/owner-reference-axum-companion-stack-2026-09-16.md: C15 row 4 of 6 - DIFFER as a hand-off: no container or deploy job enters ci.yml; R51 owns the image and R68 the release workflow
+PASS I36 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/inputs/owner-reference-axum-companion-stack-2026-09-16.md: Recommendations 7, row 5 of 6 - AGREE on three of four, each a named slot; the sqlx clause is inapplicable
+PASS I37 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/inputs/owner-reference-axum-companion-stack-2026-09-16.md: the reference Cargo.toml, row 6 of 6 - DIFFER by the owner's own precedence rule: rust-edition is 2024 and the floor follows msrv-policy
+PASS I40 ci.candidate.yml: R10's pinned reference appears verbatim
+PASS I41 ci.candidate.yml: R02 check B3 is honoured: the feature-off test is root-scoped, so the property is proven rather than assumed
+PASS I42 ci.candidate.yml: R69's --no-default-features ask is an ordered step of the compile job
+PASS I43 ci.candidate.yml: the third trigger, without which a merge queue deadlocks at Expected
+PASS I44 ci.candidate.yml: workflow-level deny-all with a per-job re-grant; the scopes are R08's
+PASS I45 ci.candidate.yml carries no on.<event>.paths or paths-ignore filter of any kind
+PASS I46 the fixture contains zero negated needs-output predicates; every gate is a positive == 'true' test
+PASS I50 DECISION.md carries exactly the four H2 sections in order and no ## Supersedes, which a first revision must not have
+PASS I51 DECISION.md carries exactly one line beginning 're-verify: '
+PASS I52 DECISION.md carries no ##### heading, so the bundle validator's members-window rule cannot be violated
+PASS I53 research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/DECISION.md: fitness gate 1 is recorded with the prescribed wording rather than deleted
+PASS I54 exactly one '- owns ci-job-structure = ' line, and its bytes contain no backtick and no pipe, so the registry table cell and the byte-for-byte validator both accept it
+PASS I55-msrv-policy the assumes line is byte-identical to the live registry row (118 bytes)
+PASS I55-rust-edition the assumes line is byte-identical to the live registry row (4 bytes)
+PASS I55-target-os-matrix the assumes line is byte-identical to the live registry row (27 bytes)
+PASS I55-license the assumes line is byte-identical to the live registry row (17 bytes)
+PASS I55-web-extra-surface the assumes line is byte-identical to the live registry row (2638 bytes)
+
+PASS=54 FAIL=0 SKIP=0 TOTAL=54

@@ -1,0 +1,12 @@
+# shellcheck version: 0.11.0 at /Users/stevemorin/.local/bin/shellcheck, default severity, run from review/evidence/
+OK r11-actionlint.sh
+OK r11-cache-budget.sh
+OK r11-detector.sh
+OK r11-platform-docs.sh
+OK r11-programme-inputs.sh
+OK r11-r2-actionlint.sh
+OK r11-r2-detector.sh
+OK r11-r2-dorny.sh
+OK r11-r2-inputs.sh
+OK r11-r2-sources.sh
+OK r11-tool-figures.sh

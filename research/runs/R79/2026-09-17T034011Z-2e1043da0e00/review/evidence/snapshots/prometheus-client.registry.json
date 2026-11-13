@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-09-01T16:58:53.769209Z",
+  "downloads": 43412696,
+  "license": "Apache-2.0 OR MIT",
+  "name": "prometheus-client",
+  "num": "0.25.1",
+  "recent_downloads": 9695759,
+  "rust_version": null
+}

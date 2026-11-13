@@ -1,0 +1,22 @@
+HTTP/2 200 
+content-length: 1609
+content-type: application/vnd.oci.image.index.v1+json
+etag: "sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3"
+access-control-expose-headers: Docker-Content-Digest
+access-control-expose-headers: WWW-Authenticate
+access-control-expose-headers: Link
+access-control-expose-headers: X-Ms-Correlation-Request-Id
+docker-content-digest: sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3
+docker-distribution-api-version: registry/2.0
+strict-transport-security: max-age=31536000; includeSubDomains
+x-content-type-options: nosniff
+x-ms-client-request-id: 
+x-ms-correlation-request-id: 49041eb9-9c55-438b-a72d-69253ecd4976
+x-ms-request-id: d988b663-ad89-4621-8d4a-f52ed572d315
+strict-transport-security: max-age=31536000; includeSubDomains
+x-cache: CONFIG_NOCACHE
+x-mcr-env: prod
+x-mcr-privacy: https://privacy.microsoft.com/en-us/privacystatement
+x-msedge-ref: Ref A: 2C14EABD66574921860D8C3B32D12050 Ref B: BY1AA1072317052 Ref C: 2026-09-17T05:17:57Z
+date: Thu, 17 Sep 2026 05:17:57 GMT
+

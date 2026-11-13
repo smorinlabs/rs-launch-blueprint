@@ -1,0 +1,5 @@
+Audit: [review/audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/audit-codex.md)  
+Audit SHA-256: `d4cd77a1c9b32d2240b201d162db33f0c71ced1f6d17d24e6c8c6bbd478ca819`  
+Verdict: reject  
+Rerun: exit 0; [log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/evidence/audit-build-target-declaration-r4.log) matches except timestamp.  
+Finding: revision 4 correctly repairs the `cargo-binstall` provenance claim, but its claimed complete licence-identifier enumeration is incomplete (41 actual lines vs 5 recorded).

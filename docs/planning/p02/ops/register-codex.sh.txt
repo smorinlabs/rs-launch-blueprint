@@ -1,0 +1,15 @@
+#!/bin/zsh
+# usage: register-codex.sh <ITEM> <RUN_ID> — sweep, then record submitted+collect for a finished Codex research report, and commit.
+set -u
+ITEM=$1; RUN_ID=$2; REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan; cd "$REPO" || exit 9
+SP=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad
+d=$REPO/research/runs/$ITEM/$RUN_ID; rel=research/runs/$ITEM/$RUN_ID
+runner() { uv run --offline --no-project --no-python-downloads --no-cache python3 scripts/research_runner.py --json "$@"; }
+[[ -s $d/raw/codex.md && "$(cat $d/raw/codex-exit.txt)" == "0" ]] || { echo "$ITEM: no complete codex report"; exit 2; }
+zsh "$SP/sweep-token.sh" "$d" || exit 3
+tid=$(bash scripts/codex-thread-for.sh "$d" 1); [[ -n "$tid" ]] || { echo "$ITEM: no codex thread id"; exit 4; }
+runner run submitted "$ITEM" --run-id "$RUN_ID" --provider codex --actor "research-codex-$RUN_ID" --model gpt-5.6-terra --operation-id "$tid" --actual-provider codex-cli-0.153.2 --actual-model gpt-5.6-terra > /dev/null || { echo "$ITEM: submitted refused"; exit 5; }
+runner run collect "$ITEM" --run-id "$RUN_ID" --provider codex --actor "research-codex-$RUN_ID" --model gpt-5.6-terra --state succeeded --raw-file raw/codex.md > /dev/null || { echo "$ITEM: collect refused"; exit 6; }
+sha=$(shasum -a 256 "$d/raw/codex.md" | cut -c1-8); h3=$(/usr/bin/grep -c '^### ' "$d/raw/codex.md")
+git add -- "$rel/raw" "$rel/manifest.json" "$rel/operations"
+printf 'chore(research): collect the %s Codex research report\n\nCodex gpt-5.6-terra report %s, %s H3 headings (/usr/bin/grep -c), thread %s; token sweep clean.\n\nClaude-Session: https://claude.ai/code/session_01ULEUr6b17aZ6iTpWjPGtWM\n' "$ITEM" "$sha" "$h3" "$tid" | git commit -q -F - -- "$rel/raw" "$rel/manifest.json" "$rel/operations" && echo "$ITEM codex registered: $sha thread=$tid commit=$(git log --oneline -1 | cut -c1-7)"

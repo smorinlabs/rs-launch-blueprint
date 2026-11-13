@@ -1,0 +1,143 @@
+# r30-scope.sh  run 2026-09-27T07:24:59Z  host Darwin arm64
+# CARGO_HOME=/tmp/cargo-s34-R30-r3
+# stable: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) / rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+# floor: cargo 1.96.0 (30a34c682 2026-05-25) / rustc 1.96.0 (ac68faa20 2026-05-25)
+# CARGO_TARGET_DIR=<ws>/target
+
+== S0 clean tree, default features
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.40s
+exit=0 (expected 0) PASS
+
+== S0 clean tree, all features
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.25s
+exit=0 (expected 0) PASS
+
+== S1 tests/ E0308 — plain workspace check (lib+bins only)
+$ cargo check --workspace --locked
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+exit=0 (expected 0) PASS
+
+== S1 tests/ E0308 — --all-targets
+$ cargo check --workspace --all-targets --locked
+error[E0308]: mismatched types
+ --> tests/it.rs:3:20
+error: could not compile `facade` (test "it") due to 1 previous error
+exit=101 (expected 101) PASS
+
+== S2 #[cfg(test)] E0308 — plain workspace check
+$ cargo check --workspace --locked
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+exit=0 (expected 0) PASS
+
+== S2 #[cfg(test)] E0308 — --all-targets
+$ cargo check --workspace --all-targets --locked
+error[E0308]: mismatched types
+ --> crates/core/src/lib.rs:3:28
+error: could not compile `core-crate` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+exit=101 (expected 101) PASS
+
+== S3 examples/ E0308 — plain workspace check
+$ cargo check --workspace --locked
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+exit=0 (expected 0) PASS
+
+== S3 examples/ E0308 — --all-targets
+$ cargo check --workspace --all-targets --locked
+error[E0308]: mismatched types
+ --> examples/demo.rs:2:20
+error: could not compile `facade` (example "demo") due to 1 previous error
+exit=101 (expected 101) PASS
+
+== S4 web-gated E0308 — --all-targets, default features
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.07s
+exit=0 (expected 0) PASS
+
+== S4 web-gated E0308 — --all-targets --all-features
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --all-features --locked --keep-going
+error[E0308]: mismatched types
+ --> src/web.rs:2:24
+error: could not compile `facade` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `facade` (lib) due to 1 previous error
+exit=101 (expected 101) PASS
+
+== S5 feature-off-only unused import — gate with --all-features only
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.40s
+exit=0 (expected 0) PASS
+
+== S5 feature-off-only unused import — gate with default features
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+warning: unused import: `core_crate::answer as core_answer`
+ --> src/lib.rs:2:5
+error: `facade` (lib) generated 1 warning (1 duplicate)
+error: `facade` (lib test) generated 1 warning (run `cargo fix --lib -p facade --tests` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== S6 cfg(not(web)) E0308 — gate with --all-features only
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s
+exit=0 (expected 0) PASS
+
+== S6 cfg(not(web)) E0308 — gate with default features
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+error[E0308]: mismatched types
+ --> src/lib.rs:6:29
+error: could not compile `facade` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `facade` (lib test) due to 1 previous error
+exit=101 (expected 101) PASS
+
+== S7 doctest E0308 — cargo check --all-targets --all-features
+$ env CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.26s
+exit=0 (expected 0) PASS
+
+== S7 doctest E0308 — cargo test --doc
+$ cargo test --workspace --doc --locked
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.17s
+error[E0308]: mismatched types
+ --> crates/core/src/lib.rs:2:14
+error: aborting due to 1 previous error
+error: doctest failed, to rerun pass `-p core-crate --doc`
+exit=101 (expected 101) PASS
+
+== S8 two independent failing units, -j1, without --keep-going (stable)
+$ cargo check --workspace --all-targets --locked -j1
+error[E0308]: mismatched types
+ --> examples/demo.rs:2:20
+error: could not compile `facade` (example "demo") due to 1 previous error
+exit=101 (expected 101) PASS
+
+== S8 two independent failing units, -j1, with --keep-going (stable)
+$ cargo check --workspace --all-targets --locked -j1 --keep-going
+error[E0308]: mismatched types
+ --> examples/demo.rs:2:20
+error: could not compile `facade` (example "demo") due to 1 previous error
+error[E0308]: mismatched types
+ --> crates/core/src/lib.rs:3:28
+error: could not compile `core-crate` (lib test) due to 1 previous error
+exit=101 (expected 101) PASS
+
+== S8 --keep-going accepted on floor 1.96.0
+$ tcargo 1.96.0 check --workspace --all-targets --locked -j1 --keep-going
+error[E0308]: mismatched types
+ --> examples/demo.rs:2:20
+error: could not compile `facade` (example "demo") due to 1 previous error
+error[E0308]: mismatched types
+ --> crates/core/src/lib.rs:3:28
+error: could not compile `core-crate` (lib test) due to 1 previous error
+exit=101 (expected 101) PASS
+
+== S9 restored tree green again (floor 1.96.0, both configurations)
+$ tcargo 1.96.0 check --workspace --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+exit=0 (expected 0) PASS
+
+# summary: failures=0

@@ -1,0 +1,43 @@
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+toolchain: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64 (macOS 26.4)
+date-utc: 2026-09-17T15:39:23Z
+PASS P0 lockfile-is-current — 0
+PASS P1 locked-package-count — 106
+PASS P2 build — cargo build --locked succeeded
+PASS A1 create-at-0600 — mode after create_new(.mode(0o600)) = 0600
+PASS A2 no-warning-at-0600 — 0600 produces no warning
+PASS A3 warning-at-0644 — warning emitted = true
+PASS A4 warning-omits-secret — warning text does not contain the credential
+PASS A5 no-warning-at-0700 — the check is the 0o077 mask, not equality with 0600
+PASS B1 config-token-warned — 1 warning(s)
+PASS B2 config-token-dropped — `token` absent from the accepted table
+PASS B3 other-keys-survive — [output] survives the drop
+PASS B4 warning-omits-secret — warning names the key, not the value
+PASS C1 token-file-wins — source=TokenFile
+PASS C2 NEGATIVE-CONTROL missing-token-file-falls-through — source=Env (the decision forbids this: it MUST be RSLB401/4)
+PASS C3 empty-env-is-unset — source=Stored (F242 parity)
+PASS C4 no-token — source=None
+PASS D1 debug-of-secretstring-redacts — Debug of SecretString = SecretBox<str>([REDACTED])
+PASS D2 debug-of-resolved-redacts — Debug of resolved = Some(SecretBox<str>([REDACTED]))
+PROBE_FAILURES=0
+stderr: warning: key `token` in the config file is ignored: this tool never reads a credential from the config file. Use --token-file, the RSLBP_TOKEN environment variable, or `rslbp auth login`.
+PASS P3 probe-exit — 0
+PASS P4 probe-failures — PROBE_FAILURES=0
+PASS P5 probe-assertion-count — 15
+PASS P6 leak-census-/usr/bin/grep — 0
+PASS P7 tree-default — 10
+PASS P8 tree-keychain-macos — 13
+PASS P9 tree-keychain-linux — 89
+PASS P10.zbus — present in the Linux keychain tree
+PASS P10.secret-service — present in the Linux keychain tree
+PASS P10.async-executor — present in the Linux keychain tree
+PASS P10.async-io — present in the Linux keychain tree
+PASS P10.blocking — present in the Linux keychain tree
+PASS P10.polling — present in the Linux keychain tree
+PASS P10.event-listener — present in the Linux keychain tree
+PASS P11 no-tokio — no tokio in the Linux keychain tree — the runtime pulled is the smol family
+PASS P12 msrv-max-default — 1.85.0
+PASS P13 msrv-max-keychain — 1.88
+P12-detail tightest default-tree package: hashbrown 0.17.1 1.85.0
+CHECK_FAILURES=0

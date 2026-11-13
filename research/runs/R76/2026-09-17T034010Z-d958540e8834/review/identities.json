@@ -1,0 +1,46 @@
+{
+ "audits": {
+  "empirical": {
+   "actor": "codex",
+   "family": "openai",
+   "file": "review/audit-codex.r5.md",
+   "model": "gpt-6"
+  },
+  "judgment": {
+   "actor": "s1-controller",
+   "family": "meta",
+   "file": "review/audit-fable.r5.md",
+   "model": "muse-spark"
+  }
+ },
+ "empirical": {
+  "argv": [
+   "bash",
+   "review/evidence/registry-figures.sh"
+  ],
+  "cwd": "research/runs/R76/2026-09-17T034010Z-d958540e8834, the run whose evidence the r4 empirical audit reran unchanged from the repository root with CARGO_HOME=/tmp/cargo-s61-R76-evr and CARGO_TARGET_DIR=/tmp/cargo-s61-R76-evr-target (both removed and recreated) and an 1100-second alarm per invocation, fresh output only to /tmp and each file byte-compared with its committed log. The argv above is the decision's first empirical script (56 pass, 0 fail, 0 skip; cmp different: UTC timestamp, downloads, q=cors search count, moving crates.io default-branch commit). The audit also ran probe-checks.sh (29 pass, 0 fail), muse-adjudication.sh (27 pass, 0 fail), decision-self-check.sh (73 pass, 0 fail at 22:02:17 UTC; a later rerun failed one R69 line check, OBS O1) and rest-conformance-r2.sh (64 pass, 2 fail: nested self-check of the moving R69 citation, OBS O1). The output log named below is the committed registry-figures log (exit 0, RESULT: PASS, 56 assertions).",
+  "exit_code": 0,
+  "output_log": "review/evidence/registry-figures.log",
+  "toolchain": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew), cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew), macOS 26.4, arm64, 2026-09-27, gh version 2.101.0 (2026-09-15), curl 8.7.1, jq-1.8.2, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD invoked as /usr/bin/grep, as the decision toolchain record states; no rust-toolchain.toml pin."
+ },
+ "engine_reports": {
+  "muse": {
+   "actor": "research-muse-2026-09-17T034010Z-d958540e8834",
+   "family": "meta",
+   "file": "raw/muse.md",
+   "model": "muse-spark"
+  },
+  "opus": {
+   "actor": "research-opus-2026-09-17T034010Z-d958540e8834",
+   "family": "anthropic",
+   "file": "raw/opus-c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4.md",
+   "model": "claude-opus-5"
+  }
+ },
+ "evidence_checks": {},
+ "synthesis": {
+  "actor": "synth-opus-2026-09-17T034010Z-d958540e8834-r4",
+  "family": "anthropic",
+  "model": "claude-opus-5-5"
+ }
+}

@@ -1,0 +1,19 @@
+{
+  "crate": "bacon",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/bacon",
+    "versions": "https://crates.io/api/v1/crates/bacon/versions"
+  },
+  "recent_downloads": 21763,
+  "downloads": 328857,
+  "repository": "https://github.com/Canop/bacon",
+  "versions_total": 107,
+  "newest_non_yanked": {
+    "num": "3.25.0",
+    "created_at": "2026-08-23T16:21:08.727147Z",
+    "yanked": false,
+    "rust_version": "1.85",
+    "license": "AGPL-3.0"
+  }
+}

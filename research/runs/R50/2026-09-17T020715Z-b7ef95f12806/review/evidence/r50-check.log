@@ -1,0 +1,213 @@
+==============================================================
+R50 install-smoke-test — empirical check
+==============================================================
+
+--- Phase A — toolchain and host identity -------------------
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+just 1.57.0
+Darwin arm64
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
+repo root:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+run dir:    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R50/2026-09-17T020715Z-b7ef95f12806
+scratch:    <SCRATCH>
+
+--- Phase B — fixed-parameter registry parity ----------------
+PASS registry/fixed/msrv-policy (live == snapshot)
+     msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+PASS registry/fixed/rust-edition (live == snapshot)
+     rust-edition = 2024
+PASS registry/fixed/target-os-matrix (live == snapshot)
+     target-os-matrix = ubuntu-latest, macos-latest
+PASS registry/fixed/license (live == snapshot)
+     license = MIT OR Apache-2.0
+PASS registry/web-extra-surface/snapshot-is-em-dash (count 1)
+PASS registry/web-extra-surface/live-is-not-em-dash (count 0)
+PASS prompt/consumes-line-is-empty (count 1)
+PASS prompt/owns-line-is-empty (count 1)
+
+--- Phase C — ts pack-check at pin cb1cbcb2 (BASELINE-REVIEW) -
+PASS ts-pin/read-Justfile-at-cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+PASS ts-pin/header-comment-268 (/usr/bin/grep -c -F matched 1 line(s) for then pack + install into a /private/tmp)
+PASS ts-pin/header-comment-269 (/usr/bin/grep -c -F matched 1 line(s) for scratch project and smoke-test the bin + ESM lib import)
+PASS ts-pin/group-attributes-275 (/usr/bin/grep -c -F matched 1 line(s) for [group('releases'), group('build')])
+PASS ts-pin/recipe-name-276 (/usr/bin/grep -c -F matched 1 line(s) for pack-check:)
+PASS ts-pin/scratch-dir-299 (/usr/bin/grep -c -F matched 1 line(s) for SCRATCH=$(mktemp -d /private/tmp/ts-pack-check.XXXXXX))
+PASS ts-pin/pack-302 (/usr/bin/grep -c -F matched 1 line(s) for npm pack --ignore-scripts --pack-destination)
+PASS ts-pin/install-304 (/usr/bin/grep -c -F matched 1 line(s) for npm install --no-save --no-package-lock)
+PASS ts-pin/run-installed-bin-306 (/usr/bin/grep -c -F matched 1 line(s) for node_modules/.bin/{{command_name}}" --version)
+PASS ts-pin/version-equality-307 (/usr/bin/grep -c -F matched 1 line(s) for EXPECTED="{{command_name}} $VERSION")
+PASS ts-pin/lib-import-312 (/usr/bin/grep -c -F matched 1 line(s) for import("{{ts_package_name}}"))
+PASS ts-pin/pack-check-has-no-alias (count 0)
+INFO ts-pin/workflow-file-count = 8
+ci.yml
+codeql.yml
+dependency-review.yml
+difftree-pr-comment.yml
+manual-pr-security-scan.yml
+publish.yml
+release-please.yml
+update-contributors.yml
+PASS ts-pin/no-workflow-invokes-pack-check (/usr/bin/grep -c -F matched 0 lines for pack-check)
+PASS ts-pin/no-workflow-invokes-pack_check (/usr/bin/grep -c -F matched 0 lines for pack_check)
+
+--- Phase D — ledger and prompt statements the correction hits -
+PASS ledger/F222-origin-py-only (/usr/bin/grep -c -F matched 1 line(s) for | F222 | ephemeral wheel/sdist install-and-run smoke test | packaging-distribution | py-only |)
+PASS area/F222-ts-cell-em-dash (/usr/bin/grep -c -F matched 1 line(s) for uvx --from "$(ls dist/*.whl)" plbp --version` | — | py-only |)
+PASS prompt/ts-none-claim (/usr/bin/grep -c -F matched 1 line(s) for ts: none (py-only; ts's `pack-check` recipe covers packed-content assertion, not an install-and-run step)
+
+--- Phase E — cargo install flag surface ---------------------
+PASS cargo-install-help/exit (exit 0)
+PASS cargo-install-help/has---path (/usr/bin/grep -c -F matched 1 line(s) for --path)
+PASS cargo-install-help/has---root (/usr/bin/grep -c -F matched 1 line(s) for --root)
+PASS cargo-install-help/has---locked (/usr/bin/grep -c -F matched 2 line(s) for --locked)
+PASS cargo-install-help/has---debug (/usr/bin/grep -c -F matched 1 line(s) for --debug)
+PASS cargo-install-help/has---no-track (/usr/bin/grep -c -F matched 1 line(s) for --no-track)
+PASS cargo-install-help/has---target-dir (/usr/bin/grep -c -F matched 1 line(s) for --target-dir)
+PASS cargo-install-help/has---features (/usr/bin/grep -c -F matched 1 line(s) for --features)
+PASS cargo-install-help/dry-run-is-unstable (/usr/bin/grep -c -F matched 1 line(s) for unstable)
+
+--- Phase F — option C on a workspace-rooted package ----------
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging r50spike v0.4.2 (<SCRATCH>/ws)
+    Packaged <N> files, <SIZE> (1.0KiB compressed)
+PASS optionC/package/exit (exit 0)
+PASS optionC/package/no-verify-skips-the-second-compile (/usr/bin/grep -c -F matched 0 lines for Verifying)
+PASS optionC/package/crate-archive-exists (target/package/r50spike-0.4.2.crate)
+PASS optionC/package/no-verify-leaves-no-extracted-copy (no target/package/r50spike-0.4.2/)
+
+  F1 — cargo package WITH verification, inside a workspace
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging r50spike v0.4.2 (<SCRATCH>/ws)
+    Packaged <N> files, <SIZE> (1.0KiB compressed)
+   Verifying r50spike v0.4.2 (<SCRATCH>/ws)
+   Compiling r50spike v0.4.2 (<SCRATCH>/ws/target/package/r50spike-0.4.2)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+PASS optionC/package-with-verify/exit (exit 0)
+PASS optionC/package-with-verify/verifies (/usr/bin/grep -c -F matched 1 line(s) for Verifying r50spike)
+PASS optionC/package-with-verify/second-compile (/usr/bin/grep -c -F matched 1 line(s) for Compiling r50spike)
+PASS optionC/package-with-verify/extracted-copy-exists (target/package/r50spike-0.4.2/)
+
+  F2a — install from the IN-TREE extracted copy, root-package workspace
+  Installing r50spike v0.4.2 (<SCRATCH>/ws/target/package/r50spike-0.4.2)
+   Compiling r50spike v0.4.2 (<SCRATCH>/ws/target/package/r50spike-0.4.2)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+  Installing <SCRATCH>/root-intree/bin/rslbpspike
+   Installed package `r50spike v0.4.2 (<SCRATCH>/ws/target/package/r50spike-0.4.2)` (executable `rslbpspike`)
+warning: be sure to add `<SCRATCH>/root-intree/bin` to your PATH to be able to run the installed binaries
+PASS in-tree/root-package-workspace/install (exit 0)
+PASS in-tree/root-package-workspace/no-wrong-workspace-error (/usr/bin/grep -c -F matched 0 lines for member of the wrong workspace)
+PASS in-tree/root-package-workspace/no-believes-in-workspace-error (/usr/bin/grep -c -F matched 0 lines for believes it's in a workspace)
+
+  F2b — install from the IN-TREE extracted copy, virtual workspace
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging r50spike v0.4.2 (<SCRATCH>/vws/crates/app)
+    Packaged <N> files, <SIZE> (1.0KiB compressed)
+   Verifying r50spike v0.4.2 (<SCRATCH>/vws/crates/app)
+   Compiling r50spike v0.4.2 (<SCRATCH>/vws/target/package/r50spike-0.4.2)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+PASS in-tree/virtual-workspace/package (exit 0)
+  Installing r50spike v0.4.2 (<SCRATCH>/vws/target/package/r50spike-0.4.2)
+   Compiling r50spike v0.4.2 (<SCRATCH>/vws/target/package/r50spike-0.4.2)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+  Installing <SCRATCH>/root-vws/bin/rslbpspike
+   Installed package `r50spike v0.4.2 (<SCRATCH>/vws/target/package/r50spike-0.4.2)` (executable `rslbpspike`)
+warning: be sure to add `<SCRATCH>/root-vws/bin` to your PATH to be able to run the installed binaries
+PASS in-tree/virtual-workspace/install (exit 0)
+PASS in-tree/virtual-workspace/no-wrong-workspace-error (/usr/bin/grep -c -F matched 0 lines for member of the wrong workspace)
+
+  F3 — install from a copy extracted OUTSIDE the package tree
+r50spike-0.4.2/Cargo.lock
+r50spike-0.4.2/Cargo.toml
+r50spike-0.4.2/Cargo.toml.orig
+r50spike-0.4.2/src/helper.rs
+r50spike-0.4.2/src/lib.rs
+r50spike-0.4.2/src/main.rs
+PASS optionC/archive-carries-Cargo.lock (/usr/bin/grep -c -F matched 1 line(s) for r50spike-0.4.2/Cargo.lock)
+PASS optionC/archive-carries-Cargo.toml (/usr/bin/grep -c -F matched 2 line(s) for r50spike-0.4.2/Cargo.toml)
+  Installing r50spike v0.4.2 (<SCRATCH>/extract/r50spike-0.4.2)
+   Compiling r50spike v0.4.2 (<SCRATCH>/extract/r50spike-0.4.2)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+  Installing <SCRATCH>/root-ok/bin/rslbpspike
+   Installed package `r50spike v0.4.2 (<SCRATCH>/extract/r50spike-0.4.2)` (executable `rslbpspike`)
+warning: be sure to add `<SCRATCH>/root-ok/bin` to your PATH to be able to run the installed binaries
+PASS optionC/outside-install/exit (exit 0)
+PASS optionC/outside-install/dev-profile (/usr/bin/grep -c -F matched 1 line(s) for `dev` profile [unoptimized + debuginfo])
+PASS optionC/outside-install/installed-binary-is-executable (<SCRATCH>/root-ok/bin/rslbpspike)
+PASS optionC/outside-install/exactly-one-binary-installed (count 1)
+r50spike 0.4.2
+PASS optionC/run-installed/exit (exit 0)
+PASS optionC/run-installed/stdout-carries-the-manifest-version (/usr/bin/grep -c -F matched 1 line(s) for 0.4.2)
+
+--- Phase G — AC7 negative control: a hole in `include` -------
+PASS AC7/package/exit (exit 0)
+warning: manifest has no documentation, homepage or repository
+  |
+  = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+   Packaging r50spike v0.4.2 (<SCRATCH>/hole)
+warning: ignoring library `r50spike` as `src/lib.rs` is not included in the published package
+    Packaged <N> files, <SIZE> (953B compressed)
+r50spike-0.4.2/Cargo.lock
+r50spike-0.4.2/Cargo.toml
+r50spike-0.4.2/Cargo.toml.orig
+r50spike-0.4.2/src/main.rs
+PASS AC7/packaged-set-omits-helper (/usr/bin/grep -c -F matched 0 lines for r50spike-0.4.2/src/helper.rs)
+  Installing r50spike v0.4.2 (<SCRATCH>/hole-extract/r50spike-0.4.2)
+   Compiling r50spike v0.4.2 (<SCRATCH>/hole-extract/r50spike-0.4.2)
+error[E0583]: file not found for module `helper`
+ --> src/main.rs:1:1
+  |
+1 | mod helper;
+  | ^^^^^^^^^^^
+  |
+  = help: to create the module `helper`, create file "src/helper.rs" or "src/helper/mod.rs"
+  = note: if there is a `mod helper` elsewhere in the crate already, import it with `use crate::...` instead
+
+For more information about this error, try `rustc --explain E0583`.
+error: could not compile `r50spike` (bin "rslbpspike") due to 1 previous error
+error: failed to compile `r50spike v0.4.2 (<SCRATCH>/hole-extract/r50spike-0.4.2)`, intermediate artifacts can be found at `<SCRATCH>/tdir-hole`.
+To reuse those artifacts with a future compilation, set the environment variable `CARGO_BUILD_BUILD_DIR` to that path.
+PASS AC7/optionC-fails-on-the-hole (exit 101)
+  Installing r50spike v0.4.2 (<SCRATCH>/hole)
+   Compiling r50spike v0.4.2 (<SCRATCH>/hole)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+  Installing <SCRATCH>/root-hole-B/bin/rslbpspike
+   Installed package `r50spike v0.4.2 (<SCRATCH>/hole)` (executable `rslbpspike`)
+warning: be sure to add `<SCRATCH>/root-hole-B/bin` to your PATH to be able to run the installed binaries
+PASS AC7/optionB-passes-on-the-same-hole (exit 0)
+PASS AC7/optionB-installed-a-binary-from-the-unpackaged-tree
+
+--- Phase H — required-features: exit 0 having installed nothing -
+  Installing r50spike v0.4.2 (<SCRATCH>/reqfeat)
+   Compiling r50spike v0.4.2 (<SCRATCH>/reqfeat)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+warning: none of the package's binaries are available for install using the selected features
+  bin "rslbpspike" requires the features: `web`
+Consider enabling some of the needed features by passing, e.g., `--features="web"`
+PASS reqfeat/exit-is-zero (exit 0)
+PASS reqfeat/warns-no-binaries-available (/usr/bin/grep -c -F matched 1 line(s) for none of the package's binaries are available for install using the selected features)
+PASS reqfeat/nothing-was-installed (no <SCRATCH>/root-rq/bin/rslbpspike)
+  Installing r50spike v0.4.2 (<SCRATCH>/reqfeat)
+   Compiling r50spike v0.4.2 (<SCRATCH>/reqfeat)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in <T>s
+  Installing <SCRATCH>/root-rq-on/bin/rslbpspike
+   Installed package `r50spike v0.4.2 (<SCRATCH>/reqfeat)` (executable `rslbpspike`)
+warning: be sure to add `<SCRATCH>/root-rq-on/bin` to your PATH to be able to run the installed binaries
+PASS reqfeat/with-feature-on/exit (exit 0)
+PASS reqfeat/with-feature-on/binary-installed
+
+--- Phase I — nothing outside the scratch root was installed ---
+PASS safety/no-install-into-cargo-home (no $CARGO_HOME/bin/rslbpspike)
+PASS safety/no-cargo-publish-invocation-in-this-script (count 0)
+
+==============================================================
+r50-check: all assertions passed
+==============================================================

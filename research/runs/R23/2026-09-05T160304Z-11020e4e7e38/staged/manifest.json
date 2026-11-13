@@ -1,0 +1,52 @@
+{
+  "changes": [
+    {
+      "expected_sha256": "31a19e71ca9592be335161acdf0caaa3ae13ec0202ea38633ff192319def4cbf",
+      "staged": "research/CLAUDE.md",
+      "target": "research/CLAUDE.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/DECISION.md",
+      "target": "research/topics/23-lockfile-version-sync/DECISION.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/acceptance.json",
+      "target": "research/topics/23-lockfile-version-sync/acceptance.json"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/audit-codex.md",
+      "target": "research/topics/23-lockfile-version-sync/audit-codex.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/audit-fable.md",
+      "target": "research/topics/23-lockfile-version-sync/audit-fable.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/evidence/2026-09-05T160304Z-11020e4e7e38-audit-lockfile-version-sync.log",
+      "target": "research/topics/23-lockfile-version-sync/evidence/2026-09-05T160304Z-11020e4e7e38-audit-lockfile-version-sync.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/evidence/2026-09-05T160304Z-11020e4e7e38-cargo-lock-sync-acceptance.log",
+      "target": "research/topics/23-lockfile-version-sync/evidence/2026-09-05T160304Z-11020e4e7e38-cargo-lock-sync-acceptance.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/raw/codex-2026-09-05T160304Z-11020e4e7e38.md",
+      "target": "research/topics/23-lockfile-version-sync/raw/codex-2026-09-05T160304Z-11020e4e7e38.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/23-lockfile-version-sync/raw/terra-2026-09-05T160304Z-11020e4e7e38.md",
+      "target": "research/topics/23-lockfile-version-sync/raw/terra-2026-09-05T160304Z-11020e4e7e38.md"
+    }
+  ],
+  "dependency_hashes": {},
+  "item": "R23",
+  "run_id": "2026-09-05T160304Z-11020e4e7e38"
+}

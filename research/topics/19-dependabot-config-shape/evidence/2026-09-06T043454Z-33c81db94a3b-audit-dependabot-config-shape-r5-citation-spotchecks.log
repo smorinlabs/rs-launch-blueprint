@@ -1,0 +1,27 @@
+R19 revision-5 empirical citation spot checks (curl)
+retrieved 2026-09-15T08:11:33Z
+1 github/docs pinned contents endpoint
+blob 01d39a3ada2b59a5c820d16facb465df52f22476
+snapshot-cmp exit 0; git-blob 01d39a3ada2b59a5c820d16facb465df52f22476
+line-187-cooldown-content exit 0
+2 dependabot-core Cargo classifier at literal pin
+cargo-pre-1.0-classifier exit 1
+3 Cargo resolver documentation
+resolver-msrv-setting exit 0
+4 GitHub Dependabot grouping guidance
+wildcard-guidance exit 0
+5 dependabot-core issue #9681 state and scope
+9681
+open
+Add update types for Cargo-style (in)compatible version upgrades
+issue-9681-number-and-open exit 0
+6 dependabot-core issue #7912 remains open
+7912
+open
+Version comment in SHA-pinned github actions is not updated if it's incorrect
+issue-7912-number-and-open exit 0
+7 dependabot-core issue #14716 remains open
+14716
+open
+GitHub Actions: SHA-pinned actions updated to untagged branch HEAD commit when current SHA lacks a direct tag, leaving version comment stale
+issue-14716-number-and-open exit 0

@@ -1,0 +1,70 @@
+# CodeQL static analysis — inherited workflow shape (F027, COMMON → REUSE):
+# trigger set, runtime visibility gate and permissions are the source repos'.
+# R16 adds the `config-file:` input on the Init step and pins the action to the
+# release whose bundle the empirical check executed (v4.37.9 -> 2.26.4); the Rust values
+# `languages: rust` / `build-mode: none` are the extractor's sole build mode.
+#
+# Advanced setup: this workflow + .github/codeql/codeql-config.yml ARE the
+# CodeQL config. The repo's "default setup" (Settings > Code security) must
+# stay disabled, or the SARIF upload is rejected with a configuration error.
+
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 4 * * 0'  # weekly, Sunday 04:00 UTC
+  public:
+
+permissions: {}
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository-visibility:
+    name: inspect repository visibility
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      is-public: ${{ steps.visibility.outputs.result }}
+    steps:
+      - name: Inspect repository visibility
+        id: visibility
+        uses: actions/github-script@v9
+        with:
+          result-encoding: string
+          script: |
+            const { data: repository } = await github.rest.repos.get(context.repo);
+            return repository.visibility === "public";
+
+  analyze:
+    needs: repository-visibility
+    if: ${{ needs.repository-visibility.outputs.is-public == 'true' }}
+    name: analyze (rust)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Init CodeQL
+        uses: github/codeql-action/init@v4.37.9
+        with:
+          languages: rust
+          build-mode: none
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4.37.9
+        with:
+          category: "/language:rust"

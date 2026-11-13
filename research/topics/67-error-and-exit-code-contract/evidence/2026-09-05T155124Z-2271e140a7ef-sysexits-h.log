@@ -1,0 +1,34 @@
+# BSD sysexits.h — read from the FreeBSD source of record, retrieved 2026-09-09
+$ curl https://cgit.freebsd.org/src/plain/include/sysexits.h
+HTTP 200
+93:#define EX_OK		0	/* successful termination */
+95:#define EX__BASE	64	/* base value for error messages */
+97:#define EX_USAGE	64	/* command line usage error */
+98:#define EX_DATAERR	65	/* data format error */
+99:#define EX_NOINPUT	66	/* cannot open input */
+100:#define EX_NOUSER	67	/* addressee unknown */
+101:#define EX_NOHOST	68	/* host name unknown */
+102:#define EX_UNAVAILABLE	69	/* service unavailable */
+103:#define EX_SOFTWARE	70	/* internal software error */
+104:#define EX_OSERR	71	/* system error (e.g., can't fork) */
+105:#define EX_OSFILE	72	/* critical OS file missing */
+106:#define EX_CANTCREAT	73	/* can't create (user) output file */
+107:#define EX_IOERR	74	/* input/output error */
+108:#define EX_TEMPFAIL	75	/* temp failure; user is invited to retry */
+109:#define EX_PROTOCOL	76	/* remote error in protocol */
+110:#define EX_NOPERM	77	/* permission denied */
+111:#define EX_CONFIG	78	/* configuration error */
+113:#define EX__MAX	78	/* maximum listed value */
+
+$ grep -n -A4 'EX_USAGE\|EX_CONFIG' (with surrounding comment)
+93-#define EX_OK		0	/* successful termination */
+94-
+95-#define EX__BASE	64	/* base value for error messages */
+96-
+97:#define EX_USAGE	64	/* command line usage error */
+--
+107-#define EX_IOERR	74	/* input/output error */
+108-#define EX_TEMPFAIL	75	/* temp failure; user is invited to retry */
+109-#define EX_PROTOCOL	76	/* remote error in protocol */
+110-#define EX_NOPERM	77	/* permission denied */
+111:#define EX_CONFIG	78	/* configuration error */

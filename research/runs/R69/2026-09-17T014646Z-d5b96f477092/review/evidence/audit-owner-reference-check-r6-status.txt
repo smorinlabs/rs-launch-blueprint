@@ -1,0 +1,5 @@
+inplace-script-rc=0
+inplace-diff-rc=0
+archive-extract-rc=0
+archive-script-rc=0
+archive-diff-rc=0

@@ -1,0 +1,218 @@
+## environment
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+git:  git version 2.50.1 (Apple Git-155)
+
+## the pin
+blob re-hashed from the extracted bytes: 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+PASS S01 the extracted bytes hash to the pinned blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+sha256 of the extracted file: 4d3ea4e898f79a358e16e8ddadcb9b4a5b3726032d1f36c00fb73311c4e79958
+lines: 3427
+
+## version
+  :3 **Version 2.0.0.** Version 1.0.0 was released 2026-08-10 after Gates C, D,
+PASS S02 line 3 carries: **Version 2.0.0.**
+
+## 1.9 deviations — the instrument an override must use
+  :271 **R1.7 — No silent deviation.** An API deviates from this standard only in
+PASS S03 line 271 carries: **R1.7 — No silent deviation.**
+  :272 writing. Every deviation from a **SHOULD** MUST be recorded in the API's
+PASS S04 line 272 carries: writing. Every deviation from a **SHOULD** MUST be recorded
+  :273 conformance note with its reason. A deviation from a **MUST** makes the API
+PASS S05 line 273 carries: conformance note with its reason. A deviation from a **MUST** makes the API
+  :274 nonconformant unless it is recorded as an approved exception in the
+PASS S06 line 274 carries: nonconformant unless it is recorded as an approved exception in the
+  :275 conformance note; silent deviation from any rule strength is nonconformance
+PASS S07 line 275 carries: conformance note; silent deviation from any rule strength is nonconformance
+
+## 1.10 reserved names — R1.8 and the query-parameter register
+  :312 **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+PASS S08 line 312 carries: **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+  :313 name for any purpose other than the meaning registered here, and when it
+PASS S09 line 313 carries: name for any purpose other than the meaning registered here, and when it
+  :314 offers the corresponding capability it MUST use the reserved name rather
+PASS S10 line 314 carries: offers the corresponding capability it MUST use the reserved name rather
+  :315 than a synonym (same concept, same name — everywhere). Reserved names are
+PASS S11 line 315 carries: than a synonym (same concept, same name — everywhere). Reserved names are
+  :336 | `cursor` | Opaque pagination position | Request-side name for cursor pagination; cursors are opaque and non-constructable (`AC-013`) | Addendum A2.3, completing `AC-013`/`AC-014` `[POLICY]` |
+PASS S12 line 336 carries: | `cursor` | Opaque pagination position | Request-side name for cursor pagination
+  :337 | `limit` | Requested page size | Request-side name; each collection documents its default and maximum (`OP-009`) | Addendum A2.3 `[POLICY]` |
+PASS S13 line 337 carries: | `limit` | Requested page size | Request-side name; each collection documents its default and maximum
+
+## the register does not name a page index
+  occurrences of `page`: 0
+PASS S14 the standard nowhere reserves or names a `page` query parameter
+  occurrences of `offset`: 0
+PASS S15 the standard nowhere reserves or names an `offset` query parameter
+  occurrences of `size`: 0
+PASS S16 the standard nowhere reserves or names a `size` query parameter
+
+## 6.1 the collection envelope
+  :1129 ## 6. Collections, pagination, filtering, and sorting
+PASS S17 line 1129 carries: ## 6. Collections, pagination, filtering, and sorting
+  :1133 **R6.1** Every collection response MUST return a top-level object carrying
+PASS S18 line 1133 carries: **R6.1** Every collection response MUST return a top-level object carrying
+  :1134 both the items and the continuation state — never a bare array — so that
+PASS S19 line 1134 carries: both the items and the continuation state — never a bare array — so that
+  :1135 metadata can be added without a breaking change.
+PASS S20 line 1135 carries: metadata can be added without a breaking change.
+  :1154 **R6.2** An empty collection returns `200 OK` with an empty items array —
+PASS S21 line 1154 carries: **R6.2** An empty collection returns `200 OK` with an empty items array —
+  :1155 never `404 Not Found`. A **streamed** empty collection returns `200 OK` with
+PASS S22 line 1155 carries: never `404 Not Found`.
+
+## 6.2 pagination
+  :1170 **R6.3** Pagination SHOULD use opaque, non-constructable cursors — offset
+PASS S23 line 1170 carries: **R6.3** Pagination SHOULD use opaque, non-constructable cursors — offset
+  :1171 pagination is incorrect under concurrent mutation. **Exception:** small or
+PASS S24 line 1171 carries: pagination is incorrect under concurrent mutation. **Exception:** small or
+  :1172 stable collections; UI requiring jump-to-page. The exception applies only
+PASS S25 line 1172 carries: stable collections; UI requiring jump-to-page. The exception applies only
+  :1173 where the contract documents the property claimed — a bounded size or an
+PASS S26 line 1173 carries: where the contract documents the property claimed — a bounded size or an
+  :1174 append-only/immutable mutation pattern. The corresponding client
+PASS S27 line 1174 carries: append-only/immutable mutation pattern.
+  :1180 **R6.4** Pagination state lives only in the body representation — the
+PASS S28 line 1180 carries: **R6.4** Pagination state lives only in the body representation — the
+  :1182 RFC 8288 `Link` headers MUST NOT be emitted for pagination — dual emission
+PASS S29 line 1182 carries: RFC 8288 `Link` headers MUST NOT be emitted for pagination
+  :1194 **R6.5** The pagination request parameters are `cursor` and `limit`
+PASS S30 line 1194 carries: **R6.5** The pagination request parameters are `cursor` and `limit`
+  :1195 (§1.10). Each collection MUST document its default and maximum `limit`
+PASS S31 line 1195 carries: (§1.10). Each collection MUST document its default and maximum `limit`
+  :1196 (the enforcement obligation is R11.1). **This binds a streamed collection
+PASS S32 line 1196 carries: (the enforcement obligation is R11.1).
+
+## 6.3 ordering
+  :1207 **R6.6** Every collection MUST document a total, stable default order,
+PASS S33 line 1207 carries: **R6.6** Every collection MUST document a total, stable default order,
+  :1208 with ties broken by an immutable key (`id`). A cursor over
+PASS S34 line 1208 carries: with ties broken by an immutable key (`id`). A cursor over
+  :1209 nondeterministic order silently skips or duplicates rows, so this rule is
+PASS S35 line 1209 carries: nondeterministic order silently skips or duplicates rows, so this rule is
+
+## what "non-constructable" means in this standard — a contract, not cryptography
+  :1175 obligation not to construct or modify cursors is R12.5.
+PASS S56 line 1175 carries: obligation not to construct or modify cursors is R12.5.
+  :336 | `cursor` | Opaque pagination position | Request-side name for cursor pagination; cursors are opaque and non-constructable (`AC-013`) | Addendum A2.3, completing `AC-013`/`AC-014` `[POLICY]` |
+PASS S57 line 336 carries: cursors are opaque and non-constructable (`AC-013`)
+  :2497 | `AC-013` | R6.3, R12.5 | B2 |
+PASS S58 line 2497 carries: | `AC-013` | R6.3, R12.5 | B2 |
+  example cursor b3BhcXVlLW5vdC1jb25zdHJ1Y3RhYmxl decodes to: opaque-not-constructable
+PASS S59 the standard example cursor at line 3050 is plain base64 of the text opaque-not-constructable
+
+## the one section 6 MUST NOT with no capability here to bind
+  :1235 **R6.9** Filter parameters MUST NOT expose storage or query-engine
+PASS S60 line 1235 carries: **R6.9** Filter parameters MUST NOT expose storage or query-engine
+  :2499 | `AC-015` | R6.9 | B2 |
+PASS S61 line 2499 carries: | `AC-015` | R6.9 | B2 |
+
+## section 6 rules this item does not exercise: R6.7 and R6.10 are MAY; R6.8
+## fixes the filter grammar and carries no MAY (revision 3, audit finding 5)
+  :1215 **R6.7** Offering sorting is MAY. When offered, the syntax is fixed: the
+PASS S36 line 1215 carries: **R6.7** Offering sorting is MAY.
+  :1226 **R6.8** Collection list endpoints filter via per-field equality
+PASS S37 line 1226 carries: **R6.8** Collection list endpoints filter via per-field equality
+  :1244 **R6.10** Offering sparse fieldsets is MAY — a fixed response shape is a
+PASS S38 line 1244 carries: **R6.10** Offering sparse fieldsets is MAY
+  | **R6.8** Collection list endpoints filter via per-field equality
+  | parameters plus the bracket range operators `[gte]`, `[gt]`, `[lte]`,
+  | `[lt]`, combined AND-only (§1.10). A structured query DSL is permitted
+  | only as a separately documented search endpoint, never mixed into
+  | collection listing.
+  RFC 2119 keywords in R6.8 (lines 1226-1230): 0
+PASS S62 R6.8 at lines 1226-1230 carries no MAY, MUST or SHOULD — it is not a MAY rule
+
+## what the conformance note records under N/A declarations
+  :293 N/A declarations:
+PASS S63 line 293 carries: N/A declarations:
+  :294 - <rule ID or switch> · why it cannot apply
+PASS S64 line 294 carries: - <rule ID or switch> · why it cannot apply
+  :2934 N/A declarations: none beyond the switch reasons above.
+PASS S65 line 2934 carries: N/A declarations: none beyond the switch reasons above.
+  :233 rules as not applicable — MUST carry a stated reason in the conformance
+PASS S66 line 233 carries: rules as not applicable — MUST carry a stated reason in the conformance
+  :286   (every switch declared off carries a one-line reason)
+PASS S67 line 286 carries:   (every switch declared off carries a one-line reason)
+
+## 5.3 which status a rejected window carries
+  :939 **R5.3** `422 Unprocessable Content` SHOULD be used for semantically
+PASS S39 line 939 carries: **R5.3** `422 Unprocessable Content` SHOULD be used for semantically
+  :940 invalid but well-formed requests, `409 Conflict` for conflicts with
+PASS S40 line 940 carries: invalid but well-formed requests
+  :941 current resource state; `400 Bad Request` remains correct for malformed
+PASS S41 line 941 carries: current resource state; `400 Bad Request` remains correct for malformed
+  :942 syntax.
+PASS S42 line 942 carries: syntax.
+  :2847 | Malformed syntax | 400 |
+PASS S43 line 2847 carries: | Malformed syntax | 400 |
+  :2853 | Semantically invalid | 422 |
+PASS S44 line 2853 carries: | Semantically invalid | 422 |
+
+## 11.1 the enforcement obligation behind the maximum
+  :1678 **R11.1** An API MUST publish and enforce a maximum page size, expansion
+PASS S45 line 1678 carries: **R11.1** An API MUST publish and enforce a maximum page size, expansion
+  :1679 depth, and bulk item count.
+PASS S46 line 1679 carries: depth, and bulk item count.
+
+## 12.5 the client obligation that makes a cursor opaque
+  :1807 **R12.5** Clients MUST treat cursors (R6.3) as opaque: never construct,
+PASS S47 line 1807 carries: **R12.5** Clients MUST treat cursors (R6.3) as opaque: never construct,
+
+## how the standard itself renders a conforming collection
+  :2861 **Collections.** `cursor` + `limit` in; `items` + continuation out;
+PASS S48 line 2861 carries: **Collections.** `cursor` + `limit` in; `items` + continuation out;
+  :2895 | R6.1, R6.5 | A shared collection envelope schema (`items` + continuation member); shared `cursor`/`limit` query parameters with documented default and maximum |
+PASS S49 line 2895 carries: | R6.1, R6.5 | A shared collection envelope schema (`items` + continuation member); shared `cursor`/`limit` query parameters with documented default and maximum |
+  :3039   "items": [
+PASS S50 line 3039 carries:   "items": [
+  :3050   "next_cursor": "b3BhcXVlLW5vdC1jb25zdHJ1Y3RhYmxl"
+PASS S51 line 3050 carries:   "next_cursor": "b3BhcXVlLW5vdC1jb25zdHJ1Y3RhYmxl"
+  :3058 `GET /v1/orders?cursor=…&limit=50` and the cursor is opaque (R6.3,
+PASS S52 line 3058 carries: `GET /v1/orders?cursor=…&limit=50` and the cursor is opaque (R6.3,
+  :3414 | Empty collection | List with a filter matching nothing | 200 + empty `items` | R6.2 |
+PASS S53 line 3414 carries: | Empty collection | List with a filter matching nothing | 200 + empty `items` | R6.2 |
+  :2718 | R6.5 | `cursor` and `limit` names; default and maximum documented — including for a collection delivered as a stream, where the documented maximum is enforced per page and not waived by incremental delivery |
+PASS S54 line 2718 carries: | R6.5 | `cursor` and `limit` names; default and maximum documented
+  :2716 | R6.3 | Cursor pagination (recommendation-strength, with documented bounded/append-only and jump-to-page exceptions); cursors opaque and non-constructable |
+PASS S55 line 2716 carries: | R6.3 | Cursor pagination (recommendation-strength, with documented bounded/append-only and jump-to-page exceptions); cursors opaque and non-constructable |
+
+## R13.3, the stream rejection guard: not scoped by the streaming switch,
+## bound per endpoint (revision 4, audit finding 1)
+  :258 **A switch never waives a guard.** A rule whose whole purpose is to define
+PASS S68 line 258 carries: **A switch never waives a guard.**
+  :262 `R1.9` (the `dry_run` rejection guard) and `R13.3` (the `stream` rejection
+PASS S69 line 262 carries: `R1.9` (the `dry_run` rejection guard) and `R13.3` (the `stream` rejection
+  :263 guard). Both bind **per endpoint**, not per API: an API that streams on some
+PASS S70 line 263 carries: guard). Both bind **per endpoint**, not per API
+  :1896 **Switch scope.** Rules R13.1, R13.2, R13.4–R13.11, and R13.12–R13.17 are
+PASS S71 line 1896 carries: **Switch scope.** Rules R13.1, R13.2, R13.4–R13.11, and R13.12–R13.17 are
+  :1898 `streaming` applicability switch (§1.8), as is R12.10. **R13.3 is not** — it
+PASS S72 line 1898 carries: `streaming` applicability switch (§1.8), as is R12.10. **R13.3 is not**
+  :1899 binds **every endpoint that does not implement streaming, whatever the API's
+PASS S73 line 1899 carries: binds **every endpoint that does not implement streaming, whatever the API's
+  :1935 **R13.3** `stream` is a reserved request-modifier name (§1.10) meaning
+PASS S74 line 1935 carries: **R13.3** `stream` is a reserved request-modifier name (§1.10)
+  :1937 streaming and receives `stream` — as a query parameter or a request-body
+PASS S75 line 1937 carries: streaming and receives `stream` — as a query parameter or a request-body
+  :1938 member, with any value — MUST reject the request with `400`, and MUST NOT
+PASS S76 line 1938 carries: member, with any value — MUST reject the request with `400`, and MUST NOT
+  :1939 silently answer with a non-streamed response.
+PASS S77 line 1939 carries: silently answer with a non-streamed response.
+  :2776 | R13.3 | `stream` on a non-streaming endpoint rejected with `400`, never silently ignored; on a streaming endpoint, a `stream` modifier disagreeing with the negotiated representation rejected with `400` *(binds per endpoint, whatever the `streaming` switch says)* |
+PASS S78 line 2776 carries: | R13.3 | `stream` on a non-streaming endpoint rejected with `400`, never silently ignored;
+  :3422 | Stream guard | `stream=true` to an endpoint without streaming | 400, never a silently non-streamed 200 | R13.3 |
+PASS S79 line 3422 carries: | Stream guard | `stream=true` to an endpoint without streaming | 400, never a silently non-streamed 200 | R13.3 |
+
+## R7.1 and R11.7, headers every response must carry, which other items
+## add and this item's tests must not constrain (revision 5, audit JA4-02)
+  :1259 **R7.1** Every response MUST carry an explicit `Cache-Control` header —
+PASS S80 line 1259 carries: **R7.1** Every response MUST carry an explicit `Cache-Control` header —
+  :1752 **R11.7** Every response, including errors, MUST carry the `request-id`
+PASS S81 line 1752 carries: **R11.7** Every response, including errors, MUST carry the `request-id`
+  :1753 correlation header (§1.10).
+PASS S82 line 1753 carries: correlation header (§1.10).
+
+## totals
+PASS 82
+FAIL 0
+SKIP 0

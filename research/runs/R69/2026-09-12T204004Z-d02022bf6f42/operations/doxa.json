@@ -1,0 +1,16 @@
+{
+  "actor": "research-doxa-2026-09-12T204004Z-d02022bf6f42",
+  "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+  "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_0f35fca190a9affa006aa5b8cacd4487d0a558b2710e1fa9af running; perplexity job fd682459-916c-423b-84b3-6c8e275a8b2a running; gemini job v1_Chd6TGlsYXB1UEQ5aWR6N0lQbFpHOS1BaxIXekxpbGFwdVBEOWlkejdJUGxaRzktQWs running",
+  "at": "2026-09-12T20:40:39Z",
+  "collected_at": "2026-09-13T07:26:17Z",
+  "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+  "operation_id": "research-20260912-134041-a1150ec8a7594fa0",
+  "provider": "doxa",
+  "raw": "research/runs/R69/2026-09-12T204004Z-d02022bf6f42/raw/doxa-356ae5aa488bc6dac1201523f8163351729b3791e848a7a38f7f76939ffe2f82.md",
+  "raw_sha256": "356ae5aa488bc6dac1201523f8163351729b3791e848a7a38f7f76939ffe2f82",
+  "reason": "op research-20260912-134041-a1150ec8a7594fa0 submitted 2026-09-12T20:40Z, all three providers completed the same day; collected 2026-09-13 by a resume from the doxa/ cwd. NOTE FOR THE RECORD: the first resume attempt used --json, which short-circuits to a stale checkpoint snapshot and reported all three providers still 'running' 24h after they had finished; a plain 'resume --no-cancel-on-interrupt' polled the providers and saved all three within seconds. Direct read-only provider queries confirmed completion independently of Doxa (openai resp_0f35fca190a9affa006aa5b8cacd4487d0a558b2710e1fa9af completed, 193235 total tokens; perplexity fd682459-916c-423b-84b3-6c8e275a8b2a COMPLETED in 341s). raw = doxa/combined.md, built by the controller in the format of doxa_research.output.OutputManager.generate_combined_report; the builder was verified by regenerating R49's committed combined.md byte-for-byte (sha256 9dbc22219bfcdc5b62657a7c03b400516a3914ca47fcbe6ea5190206db7654a3). Per-provider shape: all three OK, validation passed, 0 lossless heading repairs. Regrouped bundle-shaped raw/doxa.normalized.md: FAIL \u2014 'bundle H5 member field is outside a named member'. DIAGNOSED, not waved through: the regrouped digest is organised thematically under six H2 sections, and Gemini's members are emitted under '## Compatibility and Parameters' (merged-file line 1332) rather than under '## Framework and Tooling Members'; scripts/research_validation.py closes the '### Members' window at the next H1-H3 heading, so 60 H5 member fields fall outside it. This is a layout defect in the supplementary digest only. The authoritative artifacts are the three per-provider normalized files, which all pass, and raw/doxa.md, which is the verbatim concatenation and is what the synthesizer reads. saved-file sha256: openai 4c8be564d978ab1937174618f1a7ae71a5bd7eff37b77fc51908302a8ac42a4f; perplexity e55526d00c3349166f1166f925182413ca41c12b8ac95ffc020ca91402b2a136; gemini 28f6036895de08725b48b22f4e1bf5a17dfca2df690551c83c9b5ece8915b7c6;  usage in operations/doxa-usage.json",
+  "request_id": "be604bc130444c4e87f3aed819165240",
+  "returned_at": "2026-09-12T20:40:46Z",
+  "state": "succeeded"
+}

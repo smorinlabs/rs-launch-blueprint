@@ -1,0 +1,59 @@
+PASS C-muse-30
+PASS C-muse-52
+PASS C-muse-56
+PASS C-muse-60
+PASS C-muse-60b
+PASS C-muse-60c
+PASS C-muse-76
+PASS C-muse-92
+PASS C-muse-94
+PASS C-muse-96
+PASS C-muse-98
+PASS C-muse-102-111
+PASS C-muse-102
+PASS C-muse-107
+PASS C-muse-113-117
+PASS C-muse-121
+PASS C-muse-147
+PASS C-opus-5
+PASS C-opus-50
+PASS C-opus-78
+PASS C-opus-84
+PASS C-opus-130-136
+PASS C-opus-198-205
+PASS C-opus-248
+PASS C-opus-321-327
+PASS C-opus-343
+PASS C-opus-345
+PASS C-opus-346
+PASS C-opus-347
+PASS C-opus-351-363
+PASS C-opus-359
+PASS C-opus-360
+PASS C-opus-361
+PASS C-opus-373-380
+PASS C-opus-381
+PASS C-opus-423-438
+PASS C-opus-545
+PASS C-r11-180
+PASS C-comm-31
+PASS C-comm-47
+PASS C-runbook-73-76
+PASS C-runbook-98-103
+PASS C-div-91
+PASS C-div-91b
+PASS C-div-91c
+PASS C-div-251
+PASS C-div-251b
+PASS C-div-251c
+PASS C-r17-93
+PASS C-r17-165
+PASS C-r38-113
+PASS C-r17-nomg published R17 DECISION.md has no merge_group mention
+PASS C-br-7-8
+PASS C-br-7-8b
+PASS C-bs-6-8
+line citations checked: 47
+every DECISION line citation is covered
+PASS C-complete every file:line citation in DECISION.md has an anchored check
+RESULT PASS=56 FAIL=0 SKIP=0

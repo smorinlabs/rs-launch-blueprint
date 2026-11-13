@@ -1,0 +1,542 @@
+# R25 — release-please source and schema read at pinned tag v17.11.2 (retrieved 2026-09-09)
+# working directory: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rp-src  (session scratchpad; nothing written inside the repository)
+# fetch: curl -sS -A 'rs-launch-blueprint-p02-R25-synthesizer' https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/<path>
+
+## HTTP status per file
+200  schemas/config.json
+200  src/versioning-strategies/default.ts
+200  src/version.ts
+200  src/strategies/rust.ts
+200  src/strategies/base.ts
+200  src/strategies/node.ts
+200  src/strategies/python.ts
+200  src/manifest.ts
+200  docs/manifest-releaser.md
+200  README.md
+exit=0
+
+## schemas/config.json — definitions.ReleaserConfigOptions.properties (verbatim descriptions)
+bump-minor-pre-major => {"description": "Breaking changes only bump semver minor if version < 1.0.0", "type": "boolean"}
+bump-patch-for-minor-pre-major => {"description": "Feature changes only bump semver patch if version < 1.0.0", "type": "boolean"}
+initial-version => {"description": "Releases the initial library with a specified version", "type": "string"}
+release-as => {"description": "[DEPRECATED] Override the next version of this package. Consider using a `Release-As` commit instead.", "type": "string"}
+versioning => {"description": "Versioning strategy. Defaults to `default`", "type": "string"}
+exit=0
+
+## src/versioning-strategies/default.ts — DefaultVersioningStrategy.determineReleaseType (verbatim)
+  determineReleaseType(
+    version: Version,
+    commits: ConventionalCommit[]
+  ): VersionUpdater {
+    // iterate through list of commits and find biggest commit type
+    let breaking = 0;
+    let features = 0;
+    for (const commit of commits) {
+      const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+      if (releaseAs) {
+        // commits are handled newest to oldest, so take the first one (newest) found
+        this.logger.debug(
+          `found Release-As: ${releaseAs.text}, forcing version`
+        );
+        return new CustomVersionUpdate(
+          Version.parse(releaseAs.text).toString()
+        );
+      }
+      if (commit.breaking) {
+        breaking++;
+      } else if (commit.type === 'feat' || commit.type === 'feature') {
+        features++;
+      }
+    }
+
+    if (breaking > 0) {
+      if (version.isPreMajor && this.bumpMinorPreMajor) {
+        return new MinorVersionUpdate();
+      } else {
+        return new MajorVersionUpdate();
+      }
+    } else if (features > 0) {
+      if (version.isPreMajor && this.bumpPatchForMinorPreMajor) {
+        return new PatchVersionUpdate();
+      } else {
+        return new MinorVersionUpdate();
+      }
+    }
+    return new PatchVersionUpdate();
+  }
+    return this.determineReleaseType(version, commits).bump(version);
+  }
+
+## src/versioning-strategies/default.ts — constructor defaults (absent flag == false)
+51:    this.bumpMinorPreMajor = options.bumpMinorPreMajor === true;
+52:    this.bumpPatchForMinorPreMajor = options.bumpPatchForMinorPreMajor === true;
+
+## src/version.ts — isPreMajor
+86:  get isPreMajor(): boolean {
+87-    return this.major < 1;
+88-  }
+89-}
+
+## src/strategies/rust.ts — initialReleaseVersion
+133:  protected initialReleaseVersion(): Version {
+134-    return Version.parse('0.1.0');
+135-  }
+136-
+
+## src/strategies/base.ts — initialReleaseVersion default and buildNewVersion branch
+754:   * Override this to handle the initial version of a new library.
+755-   */
+756-  protected initialReleaseVersion(): Version {
+757-    if (this.initialVersion) {
+758-      return Version.parse(this.initialVersion);
+759-    }
+760-
+761-    return Version.parse('1.0.0');
+762-  }
+  protected async buildNewVersion(
+    conventionalCommits: ConventionalCommit[],
+    latestRelease?: Release
+  ): Promise<Version> {
+    if (this.releaseAs) {
+      this.logger.warn(
+        `Setting version for ${this.path} from release-as configuration`
+      );
+      return Version.parse(this.releaseAs);
+    }
+
+    const releaseAsCommit = conventionalCommits.find(conventionalCommit =>
+      conventionalCommit.notes.find(note => note.title === 'RELEASE AS')
+    );
+    if (releaseAsCommit) {
+      const note = releaseAsCommit.notes.find(
+        note => note.title === 'RELEASE AS'
+      );
+      if (note) {
+        return Version.parse(note.text);
+      }
+    }
+
+    if (latestRelease) {
+      return await this.versioningStrategy.bump(
+        latestRelease.tag.version,
+        conventionalCommits
+      );
+    }
+
+    return this.initialReleaseVersion();
+  }
+
+## src/strategies/node.ts — no initialReleaseVersion override
+0
+## src/strategies/python.ts — initialReleaseVersion
+200:  protected initialReleaseVersion(): Version {
+201-    return Version.parse('0.1.0');
+202-  }
+203-}
+
+## src/manifest.ts — config key -> strategy option mapping, and per-package fallback
+101:  bumpMinorPreMajor?: boolean;
+102:  bumpPatchForMinorPreMajor?: boolean;
+164:  'bump-minor-pre-major'?: boolean;
+165:  'bump-patch-for-minor-pre-major'?: boolean;
+1395:    bumpMinorPreMajor: config['bump-minor-pre-major'],
+1396:    bumpPatchForMinorPreMajor: config['bump-patch-for-minor-pre-major'],
+1748:    bumpMinorPreMajor:
+1749:      pathConfig.bumpMinorPreMajor ?? defaultConfig.bumpMinorPreMajor,
+1750:    bumpPatchForMinorPreMajor:
+1751:      pathConfig.bumpPatchForMinorPreMajor ??
+1752:      defaultConfig.bumpPatchForMinorPreMajor,
+
+## src/manifest.ts — 'backfill latest release tags from manifest' (why a seeded manifest entry is the LAST released version)
+    // backfill latest release tags from manifest
+    for (const path in this.repositoryConfig) {
+      const latestRelease = releasesByPath[path];
+      if (
+        !latestRelease &&
+        this.releasedVersions[path] &&
+        this.releasedVersions[path].toString() !== '0.0.0'
+      ) {
+        const version = this.releasedVersions[path];
+        const strategy = strategiesByPath[path];
+        const component = await strategy.getComponent();
+        this.logger.info(
+          `No latest release found for path: ${path}, component: ${component}, but a previous version (${version.toString()}) was specified in the manifest.`
+        );
+        releasesByPath[path] = {
+          tag: new TagName(
+            version,
+            component,
+            this.repositoryConfig[path].tagSeparator,
+            this.repositoryConfig[path].includeVInTag
+          ),
+          sha: '',
+          notes: '',
+        };
+
+## docs/manifest-releaser.md — default first-release version, and the Initial Version bootstrap
+
+The resulting PR will assume a default starting version for your package
+(currently 0.1.0 for "node") and will collect all the commits (in the history
+of the default/configured branch) to parse out conventional commits for
+changelog generation.
+
+If that is not the desired behavior for your first release PR, read on!
+##### Initial Version
+
+The simplest way to tell release-please the current version for a package
+it has never released before is to manually add an entry into
+`.release-please-manifest.json`. This change should be made directly on the
+default/configured branch or on a separate, user-created branch/PR which is then
+merged into the default/configured branch.
+
+```js
+{
+  "path/to/pkg": "1.1.1"
+}
+
+```
+release-please will now use "1.1.1" as the last-released/current version for
+"path/to/pkg" and suggest the next version according to conventional commits it
+has found since the last merged release PR (or "bootstrap-sha" if this is the
+first run).
+
+
+## docs/manifest-releaser.md — flag prose and the release-as caveat
+
+  // manually set next version to be "1.2.3" ignoring conventional commits.
+  // absence defaults to conventional commits derived next version.
+  // Note: once the release PR is merged you should either remove this or
+  // update it to a higher version. Otherwise subsequent `manifest-pr` runs
+  // will continue to use this version even though it was already set in the
+  // last release.
+  "release-as": "1.2.3",
+
+  // BREAKING CHANGE only bumps semver minor if version < 1.0.0
+  // absence defaults to false
+  "bump-minor-pre-major": true,
+
+  // feat commits bump semver patch instead of minor if version < 1.0.0
+  // absence defaults to false
+  "bump-patch-for-minor-pre-major": true,
+
+
+## README.md — rust release type row, and Release-As commit footer
+## How do I change the version number?
+
+When a commit to the main branch has `Release-As: x.x.x` (case insensitive) in the **commit body**, Release Please will open a new pull request for the specified version.
+
+**Empty commit example:**
+
+`git commit --allow-empty -m "chore: release 2.0.0" -m "Release-As: 2.0.0"` results in the following commit message:
+
+```txt
+chore: release 2.0.0
+
+Release-As: 2.0.0
+```
+| `rust`              | A Rust repository, with a Cargo.toml (either as a crate or workspace, although note that workspaces require a [manifest driven release](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md) and the "cargo-workspace" plugin) and a CHANGELOG.md |
+
+## Version actually reached by googleapis/release-please-action v5.0.0, and the floor's rust.ts
+dependencies[release-please] = ^17.6.0
+  protected initialReleaseVersion(): Version {
+    return Version.parse('0.1.0');
+  }
+exit=0
+
+## src/strategies/rust.ts — does the Rust strategy override versioningStrategy? (grep, empty == no override)
+$ grep -n 'versioningStrategy' src/strategies/rust.ts
+grep exit=1 (1 == no match)
+$ grep -n 'class Rust extends' src/strategies/rust.ts
+27:export class Rust extends BaseStrategy {
+$ grep -n 'this.versioningStrategy =' src/strategies/base.ts
+138:    this.versioningStrategy =
+139-      options.versioningStrategy ||
+140-      new DefaultVersioningStrategy({logger: this.logger});
+$ grep -n 'DefaultVersioningStrategy' src/factories/versioning-strategy-factory.ts
+16:import {DefaultVersioningStrategy} from '../versioning-strategies/default';
+41:  default: options => new DefaultVersioningStrategy(options),
+
+############################################################
+# APPENDED 2026-09-10 (revision 5, check 8): version-override precedence
+# Verifying first-hand the ordering the r4 audit named, at pinned tag v17.11.2.
+# Fetched with: curl -sS -A '<ua>' https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/<path>
+# Nothing was implemented; no repository was created; all writes are under review/.
+############################################################
+
+## HTTP status per path
+200  src/strategies/base.ts  (25805 bytes)
+200  src/commit.ts  (14451 bytes)
+200  src/manifest.ts  (62902 bytes)
+200  src/versioning-strategies/default.ts  (4223 bytes)
+200  src/bin/release-please.ts  (29822 bytes)
+200  schemas/config.json  (20617 bytes)
+
+## src/strategies/base.ts:543-574 — buildNewVersion, exact ordering (the r4 audit pinned 547-573)
+543	  protected async buildNewVersion(
+544	    conventionalCommits: ConventionalCommit[],
+545	    latestRelease?: Release
+546	  ): Promise<Version> {
+547	    if (this.releaseAs) {
+548	      this.logger.warn(
+549	        `Setting version for ${this.path} from release-as configuration`
+550	      );
+551	      return Version.parse(this.releaseAs);
+552	    }
+553	
+554	    const releaseAsCommit = conventionalCommits.find(conventionalCommit =>
+555	      conventionalCommit.notes.find(note => note.title === 'RELEASE AS')
+556	    );
+557	    if (releaseAsCommit) {
+558	      const note = releaseAsCommit.notes.find(
+559	        note => note.title === 'RELEASE AS'
+560	      );
+561	      if (note) {
+562	        return Version.parse(note.text);
+563	      }
+564	    }
+565	
+566	    if (latestRelease) {
+567	      return await this.versioningStrategy.bump(
+568	        latestRelease.tag.version,
+569	        conventionalCommits
+570	      );
+571	    }
+572	
+573	    return this.initialReleaseVersion();
+574	  }
+
+## The order, stated: (1) this.releaseAs @547  (2) RELEASE AS note @554-564
+##                    (3) latestRelease -> versioningStrategy.bump @566-571
+##                    (4) initialReleaseVersion() @573
+## => the release-as VALUE and the Release-As FOOTER are two separate paths,
+##    both checked before latestRelease and before initialReleaseVersion().
+
+## Path 1 provenance — where this.releaseAs comes from
+$ grep -n 'releaseAs' src/strategies/base.ts
+74:  releaseAs?: string;
+112:  private releaseAs?: string;
+149:    this.releaseAs = options.releaseAs;
+547:    if (this.releaseAs) {
+551:      return Version.parse(this.releaseAs);
+554:    const releaseAsCommit = conventionalCommits.find(conventionalCommit =>
+557:    if (releaseAsCommit) {
+558:      const note = releaseAsCommit.notes.find(
+$ grep -n "releaseAs\|release-as" src/manifest.ts
+106:  releaseAs?: string;
+168:  'release-as'?: string;
+442:    releaseAs?: string
+448:      parseConfig(github, configFile, targetBranch, path, releaseAs),
+1403:    releaseAs: config['release-as'],
+1442: * @param {string} releaseAs Optional. Override release-as and use the given version
+1449:  releaseAs?: string
+1460:    if (releaseAs) {
+1461:      repositoryConfig[path].releaseAs = releaseAs;
+1762:    releaseAs: pathConfig.releaseAs ?? defaultConfig.releaseAs,
+-- manifest.ts:1434-1463 (the CLI/programmatic route overwrites the config key per package)
+1434	/**
+1435	 * Helper to convert fetch the manifest config from the repository and
+1436	 * parse into configuration for the Manifest.
+1437	 *
+1438	 * @param {GitHub} github GitHub client
+1439	 * @param {string} configFile Path in the repository to the manifest config
+1440	 * @param {string} branch Branch to fetch the config file from
+1441	 * @param {string} onlyPath Optional. Use only the given package
+1442	 * @param {string} releaseAs Optional. Override release-as and use the given version
+1443	 */
+1444	async function parseConfig(
+1445	  github: Scm,
+1446	  configFile: string,
+1447	  branch: string,
+1448	  onlyPath?: string,
+1449	  releaseAs?: string
+1450	): Promise<{config: RepositoryConfig; options: ManifestOptions}> {
+1451	  const config = await fetchManifestConfig(github, configFile, branch);
+1452	  const defaultConfig = extractReleaserConfig(config);
+1453	  const repositoryConfig: RepositoryConfig = {};
+1454	  for (const path in config.packages) {
+1455	    if (onlyPath && onlyPath !== path) continue;
+1456	    repositoryConfig[path] = mergeReleaserConfig(
+1457	      defaultConfig,
+1458	      extractReleaserConfig(config.packages[path])
+1459	    );
+1460	    if (releaseAs) {
+1461	      repositoryConfig[path].releaseAs = releaseAs;
+1462	    }
+1463	  }
+-- src/bin/release-please.ts:288-293 (the --release-as CLI option)
+288	function pullRequestStrategyOptions(yargs: yargs.Argv): yargs.Argv {
+289	  return yargs
+290	    .option('release-as', {
+291	      describe: 'override the semantically determined release version',
+292	      type: 'string',
+293	    })
+-- schemas/config.json:53-56 (the deprecated config key)
+53	        "release-as": {
+54	          "description": "[DEPRECATED] Override the next version of this package. Consider using a `Release-As` commit instead.",
+55	          "type": "string"
+56	        },
+
+## Path 2 provenance — where the RELEASE AS note comes from (the Release-As: commit footer)
+-- src/commit.ts:258-295
+258	      }
+259	      if (parent.type === 'token') {
+260	        parent = ancestors.pop();
+261	        let footerText = '';
+262	        const semanticFooter = node.value.toLowerCase() === 'release-as';
+263	        visit(
+264	          parent,
+265	          ['type', 'scope', 'breaking-change', 'separator', 'text', 'newline'],
+266	          (node: FooterNodes) => {
+267	            switch (node.type) {
+268	              case 'scope':
+269	                footerText += `(${node.value})`;
+270	                break;
+271	              case 'separator':
+272	                // Footers of the form Fixes #99, should not be parsed.
+273	                if (node.value.includes('#')) return;
+274	                footerText += `${node.value} `;
+275	                break;
+276	              default:
+277	                footerText += node.value;
+278	                break;
+279	            }
+280	          }
+281	        );
+282	        // Any footers that carry semantic meaning, e.g., Release-As, should
+283	        // be added to the footer field, for the benefits of post-processing:
+284	        if (semanticFooter) {
+285	          let releaseAs = '';
+286	          visit(parent, ['text'], (node: parser.Text) => {
+287	            releaseAs = node.value;
+288	          });
+289	          // record Release-As footer as a note
+290	          headerCommit.notes.push({
+291	            title: 'RELEASE AS',
+292	            text: releaseAs,
+293	          });
+294	          if (!headerCommit.footer) headerCommit.footer = '';
+295	          headerCommit.footer += `\n${footerText.toLowerCase()}`.trimStart();
+
+## SECOND check-site for the footer: DefaultVersioningStrategy.determineReleaseType
+-- src/versioning-strategies/default.ts:66-104 (RELEASE AS short-circuits BEFORE the breaking/feature count)
+66	  determineReleaseType(
+67	    version: Version,
+68	    commits: ConventionalCommit[]
+69	  ): VersionUpdater {
+70	    // iterate through list of commits and find biggest commit type
+71	    let breaking = 0;
+72	    let features = 0;
+73	    for (const commit of commits) {
+74	      const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+75	      if (releaseAs) {
+76	        // commits are handled newest to oldest, so take the first one (newest) found
+77	        this.logger.debug(
+78	          `found Release-As: ${releaseAs.text}, forcing version`
+79	        );
+80	        return new CustomVersionUpdate(
+81	          Version.parse(releaseAs.text).toString()
+82	        );
+83	      }
+84	      if (commit.breaking) {
+85	        breaking++;
+86	      } else if (commit.type === 'feat' || commit.type === 'feature') {
+87	        features++;
+88	      }
+89	    }
+90	
+91	    if (breaking > 0) {
+92	      if (version.isPreMajor && this.bumpMinorPreMajor) {
+93	        return new MinorVersionUpdate();
+94	      } else {
+95	        return new MajorVersionUpdate();
+96	      }
+97	    } else if (features > 0) {
+98	      if (version.isPreMajor && this.bumpPatchForMinorPreMajor) {
+99	        return new PatchVersionUpdate();
+100	      } else {
+101	        return new MinorVersionUpdate();
+102	      }
+103	    }
+104	    return new PatchVersionUpdate();
+
+## Consequence recorded in DECISION.md revision 5:
+## the executed probe (check 3) drives DefaultVersioningStrategy directly and is therefore
+## itself subject to the Release-As footer. No version-outcome statement in this decision --
+## released version or strategy-computed bump -- is immune to a version override.
+## Corroboration, not the proof: the r4 auditor's inverse control selected 0.7.0 for a
+## breaking commit carrying Release-As: 0.7.0 (evidence/audit-r25-r4.log).
+exit=0
+
+############################################################
+# APPENDED 2026-09-10 (revision 6): re-read of the two override paths' source mapping
+# No new probe was run; nothing was fetched. The check-8 excerpts captured above under the
+# 2026-09-10 banner (all paths HTTP 200 at pinned tag v17.11.2) were re-read directly to
+# settle how many sources each override path has.
+#
+# Path 1 -- the release-as VALUE consumed at base.ts:547-552 -- has TWO sources:
+#   (a) the deprecated configuration key: schemas/config.json:53-56 ("[DEPRECATED] Override
+#       the next version of this package"), mapped at manifest.ts:1403
+#       (releaseAs: config['release-as']);
+#   (b) the --release-as command-line option: bin/release-please.ts:290-293
+#       ("override the semantically determined release version"), which parseConfig writes
+#       over the configuration key for every package at manifest.ts:1444-1463
+#       (repositoryConfig[path].releaseAs = releaseAs, lines 1460-1461).
+#
+# Path 2 -- the Release-As: commit FOOTER consumed at base.ts:554-564 -- has ONE source:
+#   commit.ts:262 lower-cases the footer key and compares it with 'release-as', and
+#   commit.ts:284-293 pushes the single note {title: 'RELEASE AS', text: <version>}.
+#   No other producer of a 'RELEASE AS' note appears in the captured excerpts.
+#
+# => The two paths are ASYMMETRIC in their sources: 2 for the value, 1 for the footer.
+#    Revision 6 corrects the one sentence that said "two sources apiece" and changes
+#    nothing else. Path count (two), ordering, and the second check-site inside
+#    DefaultVersioningStrategy.determineReleaseType (default.ts:74-82) are unchanged.
+exit=0
+
+############################################################
+# APPENDED 2026-09-10 (revision 7): which raw reports emitted a BASELINE-REVIEW: line
+# This is a read of files already inside this run directory (raw/), not a source fetch:
+# no probe was run, no network request was made, nothing was installed. It is appended
+# here to keep the no-probe revision entries of this decision together in one log.
+# Byte-reproducible: the inputs are static files in raw/, which do not drift.
+#
+# Exact pipeline, run once per file from this run directory:
+#   $ grep -n 'BASELINE-REVIEW' "$f" | sed 's/^/#   /' | cut -c1-200
+#   for f in raw/doxa-openai.normalized.md raw/doxa-gemini.normalized.md \
+#            raw/doxa-perplexity.normalized.md raw/codex.md raw/opus.md
+#   (the sed prefix and the 200-column cut are part of the capture, so each line below is
+#    the grep line prefixed with '#   ' and truncated to 200 columns.)
+#
+# --- raw/doxa-openai.normalized.md ---
+#   82:**BASELINE-REVIEW: F070 — resolver-aligned impact tiers must be described using Release Please’s actual algorithm — retain the pre-1.0 dampening pattern for rs, but correct any wording that say
+# --- raw/doxa-gemini.normalized.md ---
+#   29:**BASELINE-REVIEW: F066, F073 — Release tool orchestration — Replace `release-please` with `release-plz`**
+#   53:However, the orchestrator tools evaluated as evidence to execute this pattern (`release-please` and `release-plz`) must be rigorously vetted against the parameters. If the owner accepts the `BA
+#   75:The research definitively recommends that **`rs-launch-blueprint` must launch at a pre-1.0 version (`0.1.0`) with dampened version bumping semantics strictly enabled**. If the baseline is maint
+#   99:*(Note: If the `BASELINE-REVIEW` proposing the shift to `release-plz` is formally accepted by the repository owner, the two `release_please_*` parameters are rendered obsolete and deprecated, a
+# --- raw/doxa-perplexity.normalized.md ---
+#   71:> BASELINE-REVIEW: F070 — pre‑1.0 semver dampening — reclassify as a common architectural pattern for new library‑shaped blueprints — evidence: SemVer’s major version zero rules[11][12], Cargo’
+# --- raw/codex.md ---
+#   26:No `BASELINE-REVIEW:` line is emitted: F070 is an open `DIVERGENT` decision, not a retained baseline being challenged.
+# --- raw/opus.md ---
+#   124:**No `BASELINE-REVIEW:` finding is emitted.** F070 is `DIVERGENT`, not `COMMON → REUSE` or `ADOPT`, so it is not a baseline row; and the analysis above confirms rather than challenges the reco
+#   192:**Web service (optional feature-gated surface).** F017's principle is that the web surface ships as an optional capability behind a Cargo feature (`docs/port/BASELINE-REVIEW.md`, F017, `retain
+#   389:- `docs/port/BASELINE-REVIEW.md` — F014, F017, F019 rows consulted for agreement-level vocabulary and the web-as-optional-capability principle
+#
+# EMITTED (three, one each):
+#   raw/doxa-openai.normalized.md:82      BASELINE-REVIEW: F070 -- resolver-aligned impact tiers ...
+#   raw/doxa-gemini.normalized.md:29      BASELINE-REVIEW: F066, F073 -- Release tool orchestration ...
+#   raw/doxa-perplexity.normalized.md:71  BASELINE-REVIEW: F070 -- pre-1.0 semver dampening ...
+# NOT EMITTED (token present only in the negative):
+#   raw/codex.md:26   "No `BASELINE-REVIEW:` line is emitted"
+#   raw/opus.md:124   "No `BASELINE-REVIEW:` finding is emitted."
+#   The grep's other two opus hits (raw/opus.md:192 and :389) are not the token at all: they
+#   name the file docs/port/BASELINE-REVIEW.md, which carries no trailing colon. The token
+#   that counts as an emitted finding is `BASELINE-REVIEW:` with the colon.
+#
+# => The emitting set is exactly those three. DECISION.md revision 7 corrects the tally
+#    from two to three at the three locations that stated it, and labels `## Engines`
+#    item 7 as the third BASELINE-REVIEW: line. The separate count at the Ownership
+#    paragraph -- "Two raw reports invented owned parameters" -- was checked against
+#    `## Engines` item 6 (doxa-gemini and doxa-perplexity) and is correct; unchanged.
+exit=0

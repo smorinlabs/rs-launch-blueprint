@@ -1,0 +1,191 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-05T18:30:03Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-05T18:30:03Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-05T18:30:03Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+        "at": "2026-09-05T18:30:03Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "12949affa4a543d391c528b4f9059b01",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-06T04:33:47Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T18:30:03Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a072d5-fde1-7953-8f5b-85408a7f2187",
+        "provider": "codex",
+        "request_id": "12949affa4a543d391c528b4f9059b01",
+        "returned_at": "2026-09-06T04:33:47Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-06T04:33:47Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T18:30:03Z",
+        "collected_at": "2026-09-06T04:33:47Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a072d5-fde1-7953-8f5b-85408a7f2187",
+        "provider": "codex",
+        "raw": "research/runs/R81/2026-09-05T183003Z-c02279aa76ae/raw/codex-68292e725a5f2d94365ebeb889c4ae4cf88ee3975a8bcbdd11dc6cd6668e190f.md",
+        "raw_sha256": "68292e725a5f2d94365ebeb889c4ae4cf88ee3975a8bcbdd11dc6cd6668e190f",
+        "reason": "",
+        "request_id": "12949affa4a543d391c528b4f9059b01",
+        "returned_at": "2026-09-06T04:33:47Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-10T15:13:44Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+        "at": "2026-09-10T15:13:44Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "0b15a42dd58b486a83eda93b9d2323f2",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-10T15:36:39Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-10T15:13:44Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-05T183003Z-c02279aa76ae:a80f5625f09deaf7",
+        "provider": "opus",
+        "request_id": "0b15a42dd58b486a83eda93b9d2323f2",
+        "returned_at": "2026-09-10T15:36:39Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-10T15:36:39Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-10T15:13:44Z",
+        "collected_at": "2026-09-10T15:36:39Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-05T183003Z-c02279aa76ae:a80f5625f09deaf7",
+        "provider": "opus",
+        "raw": "research/runs/R81/2026-09-05T183003Z-c02279aa76ae/raw/opus-a80f5625f09deaf7e9534e4f3b5a656d8e106da7ac1f2918b05fab6acc084747.md",
+        "raw_sha256": "a80f5625f09deaf7e9534e4f3b5a656d8e106da7ac1f2918b05fab6acc084747",
+        "reason": "",
+        "request_id": "0b15a42dd58b486a83eda93b9d2323f2",
+        "returned_at": "2026-09-10T15:36:39Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-16T22:37:35Z",
+      "publication": {
+        "acceptance_sha256": "8747e9e5c32f0eb84856058b75901bc483c58a598f3396468ae78e11622b09d4",
+        "decision_sha256": "4329ce48b428b70cab0bea32e71bb725471faac2c88356f3b0fa9b005fc5772e",
+        "transaction": "078ea4260afa4edab0df1d0fa1b189bd"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "1c35293a773f7e60b0c47232966c661433b845b9b21685a08792143ed8650d1a",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "0023242a0337eade8fcd4f025fe7543b84338bf82916850a3659b8d949efb4e2",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "4e7ee97dd0fbe74eb85cd233e3d09f9b4b262ab7d50042468c2f58f70a3e5545",
+    "registry": "a3a86d7c27c2bd15285a0a87f2d91a871e38710b78a2fb623ad449618eb39ff0"
+  },
+  "item": "R81",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T183003Z-c02279aa76ae",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-05T18:30:03Z",
+      "collected_at": "2026-09-06T04:33:47Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a072d5-fde1-7953-8f5b-85408a7f2187",
+      "provider": "codex",
+      "raw": "research/runs/R81/2026-09-05T183003Z-c02279aa76ae/raw/codex-68292e725a5f2d94365ebeb889c4ae4cf88ee3975a8bcbdd11dc6cd6668e190f.md",
+      "raw_sha256": "68292e725a5f2d94365ebeb889c4ae4cf88ee3975a8bcbdd11dc6cd6668e190f",
+      "reason": "",
+      "request_id": "12949affa4a543d391c528b4f9059b01",
+      "returned_at": "2026-09-06T04:33:47Z",
+      "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+      "actual_model": "claude-opus-5",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-10T15:13:44Z",
+      "collected_at": "2026-09-10T15:36:39Z",
+      "model": "claude-opus-5",
+      "operation_id": "agent:research-opus-2026-09-05T183003Z-c02279aa76ae:a80f5625f09deaf7",
+      "provider": "opus",
+      "raw": "research/runs/R81/2026-09-05T183003Z-c02279aa76ae/raw/opus-a80f5625f09deaf7e9534e4f3b5a656d8e106da7ac1f2918b05fab6acc084747.md",
+      "raw_sha256": "a80f5625f09deaf7e9534e4f3b5a656d8e106da7ac1f2918b05fab6acc084747",
+      "reason": "",
+      "request_id": "0b15a42dd58b486a83eda93b9d2323f2",
+      "returned_at": "2026-09-10T15:36:39Z",
+      "state": "succeeded"
+    }
+  },
+  "prompt_source": "research/topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md",
+  "publication": {
+    "acceptance_sha256": "8747e9e5c32f0eb84856058b75901bc483c58a598f3396468ae78e11622b09d4",
+    "decision_sha256": "4329ce48b428b70cab0bea32e71bb725471faac2c88356f3b0fa9b005fc5772e",
+    "transaction": "078ea4260afa4edab0df1d0fa1b189bd"
+  },
+  "remaining_budget": "no paid engine before the pilot publishes (Doxa admissions paused)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-05T183003Z-c02279aa76ae",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "focused",
+  "updated_at": "2026-09-16T22:37:35Z"
+}

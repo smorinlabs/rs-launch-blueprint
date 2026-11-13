@@ -1,0 +1,13 @@
+{
+  "endpoint": "https://crates.io/api/v1/crates/sccache and .../versions",
+  "retrieved": "2026-09-17 (UTC)",
+  "recent_downloads": 129817,
+  "downloads": 1335826,
+  "newest_unyanked": {
+    "num": "0.18.0",
+    "created_at": "2026-09-16T14:34:17.177895Z",
+    "license": "Apache-2.0",
+    "rust_version": "1.91.0",
+    "yanked": false
+  }
+}

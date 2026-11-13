@@ -1,0 +1,13 @@
+R69 revision-6 live-primary-source snapshot audit
+fetcher-exit=0
+OK   fetch-owner-reference-r6 completed against its primary-source endpoints
+OK   live primary-source reduced snapshot matches committed cargo-specifying-dependencies.txt
+OK   live primary-source reduced snapshot matches committed crates-axum-test.json
+OK   live primary-source reduced snapshot matches committed crates-axum-versions.json
+OK   live primary-source reduced snapshot matches committed gcp-cloudrun-container-contract.txt
+OK   live primary-source reduced snapshot matches committed gh-axum-issue-3003.json
+OK   live primary-source reduced snapshot matches committed gh-axum-issue-3809.json
+OK   live primary-source reduced snapshot matches committed gh-axum-pr-3745.json
+OK   live primary-source reduced snapshot matches committed gh-axum-pr-3819.json
+OK   live retrieval timestamp is separately recorded and not compared as evidence content
+live-primary-source rc=0

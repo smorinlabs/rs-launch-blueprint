@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): which specific tools populate each check (formatter, linter, typechecker, test runner, coverage, docs gates) is decided by their own items (e.g., R27 lint/format, R30 typecheck, R32 test harness, R35 coverage) — this item decides only the job-vs-step shape and skip-gating mechanism those checks are wired into, not which tool runs inside them. Whether an architectural-boundary-lint job (py's `import-boundaries`) exists in CI at all is R02's decision (`crate-boundary-enforcement`) — this item's job-structure answer must accommodate whatever R02 decides without deciding it here. `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
 - Prior decisions of the TypeScript port that explain the current shape: none — ts's single-job `ci.yml` (D-022(1), "CI workflow shape... push/PR to main on ubuntu-latest; checkout@v6 + setup-node@v6; named just-recipe steps plus hook-suite run-all parity step") is a wholesale simplification with no decision record discussing job-splitting or path-filtered skip-gating as a considered alternative.
 
+### Baseline review (2026-09-04)
+- F033 (`COMMON → REUSE`) now reads "floor plus current stable". Whether the `rust-version` floor is verified as a matrix leg or in a separate job falls under `ci-job-structure`; whether the floor must run on every OS in `target-os-matrix` is an open owner question, not this item's to widen (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which specific tool implements each check (formatter, linter, typechecker, test runner, coverage tool, docs gate); those are each their own item (e.g., R27, R28, R30, R32, R35, R71, R82) — this item decides only the job/step topology and skip-gating mechanism they are wired into.
 - Whether an architectural-boundary-lint job exists in CI at all; R02 (`crate-boundary-enforcement`) owns that decision — this item's job-structure answer must be able to host such a job if R02 adds one, without deciding whether it exists.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R11
 - owns: ci-job-structure
 - consumes: R69: web-extra-surface
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R02 (`crate-boundary-enforcement`) decides whether a crate-boundary/import-boundary-lint job exists in CI at all; this item's job-topology answer must have room for it either way. R12 (`aggregate-required-status-check`) consumes this item's `ci-job-structure` value to decide what an aggregate status-check job folds together. R13 (`dependency-vulnerability-scanning`) consumes this item's `ci-job-structure` value to decide whether its always-on SCA scaffold (F049) lands as a step inside a shared job or as its own dedicated job.
 
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
@@ -62,6 +69,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -72,7 +85,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

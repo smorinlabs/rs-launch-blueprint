@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): `--config` replaces discovery entirely rather than adding a layer (F233, `COMMON → REUSE`, inherited as-is — both repos already agree, this is not part of this item's decision); `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
 - Prior decisions of the TypeScript port that explain the current shape: D-017(1) and D-017(3) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — D-017(1) records the *canonical* config precedence as "`TOML <tool>_config.toml` under `$XDG_CONFIG_HOME/<tool>` with cli-standards R5.1 precedence (flags > TOOL_* env > project > user > system > defaults)," but D-017(3) shows ts's shipped `xdg-paths` module is a hand-rolled ~30-line resolver of only the per-user `$XDG_CONFIG_HOME`/`~/.config/<tool>` directory — ts's own decision record names the full chain as the target while its implementation realizes only the user tier. Treat this gap as live context for this item, not as settled.
 
+### Baseline review (2026-09-04)
+- F247 (XDG override) binds this item's directory-crate choice as a behavioral requirement: `XDG_CONFIG_HOME` must be honored on ubuntu-latest and macos-latest and ignored when empty; std-library validation can precede any crate fallback, and `directories` 6.0.0 ignores the variable on macOS while `etcetera` 0.11.0 offers an XDG strategy. Whether py's absoluteness check is part of the contract is an open owner question (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Whether an unparsable discovered layer degrades to a warning versus a crash, and whether invalid individual values are dropped; R55 (`config-error-tolerance`) owns F235/F236/F238 — this item decides how many tiers exist and where they live, not how parse/validation failures in any tier are handled.
 - Whether the config file may carry a secret/token; R56 (`config-secret-policy`) owns F239/F240/F245 — this item's discovery tiers are secret-policy-agnostic.
@@ -19,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R54
 - owns:
 - consumes: R67: error-taxonomy-exit-codes
+- effort: deep
+- engines: muse, opus, doxa
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R55 (`config-error-tolerance`) decides how a missing/unparsable/invalid layer this item discovers is handled. R56 (`config-secret-policy`) decides whether any tier this item discovers may carry a token. R57 (`xdg-directory-set`) decides the broader XDG directory set beyond config.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -62,6 +69,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -72,7 +85,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

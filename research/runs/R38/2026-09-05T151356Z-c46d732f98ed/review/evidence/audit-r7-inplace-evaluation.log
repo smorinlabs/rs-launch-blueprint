@@ -1,0 +1,149 @@
+conventional_commits_linter evaluation, date (UTC): 2026-09-15T00:59:27Z   [volatile line]
+host: Darwin 25.4.0 arm64; rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew); cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+A1       expected=conventional_commits_linter 0.17.1 observed=conventional_commits_linter 0.17.1 PASS candidate binary reports its pinned version
+A2       expected=committed 1.1.11       observed=committed 1.1.11       PASS control binary reports the selected pin
+         candidate size:  3016816 bytes   [volatile line]
+B1       expected=0                      observed=0                      PASS --help exits 0 (full text below)
+       | A tooling and language agnostic utility to lint Git commits against the Conventional Commits specification.
+       | 
+       | Usage: conventional_commits_linter [OPTIONS] <FROM>
+       | 
+       | Arguments:
+       |   <FROM>  The Git reference from where to start taking the range of commits from till HEAD to lint. The range is inclusive of HEAD and exclusive of the provided reference. '-' indicates to read the standard input and lint the input as a Git commit message.
+       | 
+       | Options:
+       |       --history-mode <HISTORY_MODE>
+       |           Specifies how commits are parsed, acceptable values are 'first' to parse only the first parent of merge commits, or 'all' to parse all parents. [default: first]
+       |       --type <COMMIT_TYPE>
+       |           Allow the Conventional Commits type to only be (`build`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `style`, `test`, `revert`), otherwise linting for the commit will fail. [default: any] [possible values: any, angular]
+       |       --output <OUTPUT>
+       |           Specifies the format for outputting results, acceptable values are quiet, pretty, and json. [default: pretty]
+       |       --verbose
+       |           Enable verbose output, respects RUST_LOG environment variable if set.
+       |       --max-commit-title-length <MAX_COMMIT_TITLE_LENGTH>
+       |           Maximum length allowed for commit message titles. Set to 0 to disable the length check. [default: 0]
+       |   -h, --help
+       |           Print help
+       |   -V, --version
+       |           Print version
+B2       expected=1                      observed=1                      PASS exactly one title/header length option exists
+B3       expected=0                      observed=0                      PASS NO body-length and NO footer-length option exists anywhere in the CLI surface
+B4       expected=1                      observed=1                      PASS --type is a two-valued fixed preset (any|angular), not a user-supplied type list
+B5       expected=2                      observed=2                      PASS --type chore is rejected by the parser: a declared eleven-member enum cannot be expressed
+       | error: invalid value 'chore' for '--type <COMMIT_TYPE>'
+       |   [possible values: any, angular]
+       | 
+       | For more information, try '--help'.
+B6       expected=0                      observed=0                      PASS the tool reads no configuration file: the whole contract must be re-stated on every argv
+candidate argv: conventional_commits_linter --type angular --max-commit-title-length 50 -   (strictest expressible form)
+control   argv: committed --config ../committed.toml --commit-file <file>   (11 types, 50/72; the path is explicit because this directory sits inside another git repository, whose root carries no committed.toml)
+C01      expected=0                      observed=0                      PASS candidate on 01-valid.txt — conforming message accepted by both
+C01-ctl  expected=0                      observed=0                      PASS control committed on the same file
+         contract: MEETS    conforming message accepted by both
+C02      expected=1                      observed=1                      PASS candidate on 02-bad-type.txt — type `wibble` rejected by both (angular preset happens to list the same eleven types)
+C02-ctl  expected=1                      observed=1                      PASS control committed on the same file
+       | [1;31mMessage[0m - "wibble(cli): add --json output flag\n"
+       | 	[1;31mX[0m - Commit title does not use an Angular type.
+         contract: MEETS    type `wibble` rejected by both (angular preset happens to list the same eleven types)
+C03      expected=1                      observed=1                      PASS candidate on 03-long-subject.txt — 71-column header rejected by both at 50
+C03-ctl  expected=1                      observed=1                      PASS control committed on the same file
+       | [1;31mMessage[0m - "feat(cli): add a subject line that is clearly longer than fifty columns\n"
+         contract: MEETS    71-column header rejected by both at 50
+C21      expected=1                      observed=1                      PASS candidate on 21-header-over-50-description-under-50.txt — 66-column header (41-column description) rejected by both: the candidate also counts the whole first line (message_length/mod.rs: commit_message.lines().next(), chars().count())
+C21-ctl  expected=1                      observed=1                      PASS control committed on the same file
+       | [1;31mMessage[0m - "refactor(observability): rename the tracing subscriber init helper\n"
+         contract: MEETS    66-column header (41-column description) rejected by both: the candidate also counts the whole first line (message_length/mod.rs: commit_message.lines().next(), chars().count())
+C04      expected=0                      observed=0                      PASS candidate on 04-long-body-line.txt — 83-column body line ACCEPTED by the candidate, rejected by committed: the candidate has no body cap at all
+C04-ctl  expected=1                      observed=1                      PASS control committed on the same file
+         contract: VIOLATES 83-column body line ACCEPTED by the candidate, rejected by committed: the candidate has no body cap at all
+C08      expected=0                      observed=0                      PASS candidate on 08-long-footer-line.txt — 96-column `Reviewed-by:` footer ACCEPTED by the candidate, rejected by committed: the candidate has no footer cap at all
+C08-ctl  expected=1                      observed=1                      PASS control committed on the same file
+         contract: VIOLATES 96-column `Reviewed-by:` footer ACCEPTED by the candidate, rejected by committed: the candidate has no footer cap at all
+C06      expected=0                      observed=0                      PASS candidate on 06-subject-period.txt — subject ending in a period ACCEPTED by the candidate, rejected by committed (no punctuation rule)
+C06-ctl  expected=1                      observed=1                      PASS control committed on the same file
+         contract: VIOLATES subject ending in a period ACCEPTED by the candidate, rejected by committed (no punctuation rule)
+C05      expected=0                      observed=0                      PASS candidate on 05-url-body-line.txt — bare 116-column permalink accepted by both — but vacuously for the candidate, which caps no body line at any width
+C05-ctl  expected=0                      observed=0                      PASS control committed on the same file
+         contract: MEETS    bare 116-column permalink accepted by both — but vacuously for the candidate, which caps no body line at any width
+C07      expected=0                      observed=0                      PASS candidate on 07-claude-session-trailer.txt — 107-column `Claude-Session:` trailer accepted by both — vacuously for the candidate, as C05
+C07-ctl  expected=0                      observed=0                      PASS control committed on the same file
+         contract: MEETS    107-column `Claude-Session:` trailer accepted by both — vacuously for the candidate, as C05
+C09      expected=0                      observed=0                      PASS candidate on 09-capitalised-subject.txt — capitalised subject accepted by both (neither enforces subject case)
+C09-ctl  expected=0                      observed=0                      PASS control committed on the same file
+         contract: MEETS    capitalised subject accepted by both (neither enforces subject case)
+C10      expected=0                      observed=0                      PASS candidate on 10-noun-phrase-subject.txt — this repository's real subject `docs: P01 port research tree (phases 1-5)` accepted by both
+C10-ctl  expected=0                      observed=0                      PASS control committed on the same file
+         contract: MEETS    this repository's real subject `docs: P01 port research tree (phases 1-5)` accepted by both
+C22      expected=0                      observed=0                      PASS candidate on `FEAT(cli): …` — an upper-case MEMBER of the vocabulary is accepted
+C22-ctl  expected=0                      observed=0                      PASS control committed on the same message — accepted as well: the same tolerance
+         contract: MEETS    the vocabulary is matched case-insensitively by BOTH tools; a shared tolerance, recorded as a finding about the selected tool too
+C23      expected=1                      observed=1                      PASS candidate on `WIBBLE(cli): …` — an upper-case NON-member is still rejected
+C23-ctl  expected=1                      observed=1                      PASS control committed on the same message — rejected as well (invoked from inside the work directory with a relative file name, so the diagnostic quotes no absolute path)
+       | upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+         contract: MEETS    neither tool lets a type outside the vocabulary land, in any casing
+C16      expected=127                    observed=127                    PASS missing binary fails loudly (127), as committed does
+       | env: conventional_commits_linter: No such file or directory
+         contract: MEETS    fails loudly when absent
+D0       expected=0                      observed=0                      PASS GET crates.io /versions
+       | newest_unyanked=0.17.1 created_at=2026-01-04T00:27:40.636084Z license=AGPL-3.0 rust_version=None edition=2021
+D1       expected=newest_unyanked=0.17.1 observed=newest_unyanked=0.17.1 PASS 0.17.1 is the newest unyanked release
+D2       expected=rust_version=None      observed=rust_version=None      PASS GATE 2 FAILS: crates.io records no declared rust-version for 0.17.1
+D3       expected=license=AGPL-3.0       observed=license=AGPL-3.0       PASS licence recorded as a fact only; GATE 1 is inapplicable under the owner ruling of 2026-09-12
+D4       expected=0                      observed=0                      PASS download the published .crate
+D5       expected=0                      observed=0                      PASS unpack the published .crate
+D6       expected=0                      observed=0                      PASS GATE 2 FAILS at the source: neither Cargo.toml nor Cargo.toml.orig at 0.17.1 declares rust-version
+D7       expected=edition = "2021"       observed=edition = "2021"       PASS the crate is edition 2021 (its own build, not the template's)
+D8       expected=0                      observed=0                      PASS unsafe posture: none in main.rs
+D9       expected=0                      observed=0                      PASS unsafe posture: no source file uses an `unsafe` block
+D10      expected=0                      observed=0                      PASS GET the v0.17.1 release
+       | aarch64-unknown-linux-musl.tar.gz x86_64-unknown-linux-musl.tar.gz
+D11      expected=aarch64-unknown-linux-musl.tar.gz x86_64-unknown-linux-musl.tar.gz observed=aarch64-unknown-linux-musl.tar.gz x86_64-unknown-linux-musl.tar.gz PASS GATE 4 FAILS: the release ships Linux musl assets only
+D12      expected=0                      observed=0                      PASS GATE 4 FAILS: no macOS prebuilt binary exists for macos-latest
+D13      expected=0                      observed=0                      PASS GET the upstream CI workflow at tag v0.17.1
+D14      expected=architecture: [ubuntu-24.04, ubuntu-24.04-arm] observed=architecture: [ubuntu-24.04, ubuntu-24.04-arm] PASS GATE 4 FAILS: upstream CI runs on Ubuntu x86_64 and Ubuntu arm only
+D15      expected=0                      observed=0                      PASS GATE 4 FAILS: no macOS job anywhere in the upstream CI workflow
+D16      expected=404                    observed=404                    PASS GATE 3: no RustSec advisory page for the crate itself
+D17      expected=0                      observed=0                      PASS GATE 3: cargo audit on the published lockfile, isolated advisory database (default policy: vulnerabilities fail, warnings warn)
+       |     Scanning Cargo.lock for vulnerabilities (143 crate dependencies)
+       | Crate:     ansi_term
+       | Version:   0.12.1
+       | Warning:   unmaintained
+       | Title:     ansi_term is Unmaintained
+       | ID:        RUSTSEC-2021-0139
+       | Crate:     anyhow
+       | Version:   1.0.100
+       | Warning:   unsound
+       | Title:     Unsoundness in `Error::downcast_mut()`
+       | ID:        RUSTSEC-2026-0190
+       | Crate:     git2
+       | Version:   0.20.3
+       | Warning:   unsound
+       | Title:     Potential undefined behavior when calling Remote::list()
+       | ID:        RUSTSEC-2026-0183
+       | Crate:     git2
+       | Version:   0.20.3
+       | Warning:   unsound
+       | Title:     Potential undefined behavior when dereferencing Buf struct
+       | ID:        RUSTSEC-2026-0008
+       | Crate:     git2
+       | Version:   0.20.3
+       | Warning:   unsound
+       | Title:     Potential undefined behavior with Signature from a buffer-created BlameHunk
+       | ID:        RUSTSEC-2026-0184
+       | Crate:     rand
+       | Version:   0.8.5
+       | Warning:   unsound
+       | Title:     Rand is unsound with a custom logger using `rand::rng()`
+       | ID:        RUSTSEC-2026-0097
+       | warning: 6 allowed warnings found
+D18      expected=0                      observed=0                      PASS GATE 3: zero vulnerability-class advisories
+D19      expected=1                      observed=1                      PASS GATE 3 note: ansi_term, a DIRECT dependency of the crate, carries the unmaintained advisory RUSTSEC-2021-0139
+--- figures [volatile section: every line below can change without any change upstream]
+       | crates.io recent_downloads=1012 downloads=47145 max_stable_version=0.17.1
+       | github stargazers_count=6 forks=2 archived=false pushed_at=2026-09-14T22:11:03Z
+       | open issues total_count=12
+       | ten most recently opened issues, author and comment count: #318 DeveloperC286/0, #317 DeveloperC286/0, #312 DeveloperC286/0, #310 DeveloperC286/0, #309 DeveloperC286/0, #308 DeveloperC286/0, #297 DeveloperC286/3, #264 DeveloperC286/0, #249 aes/2, #48 renovate[bot]/0
+       | crates.io reverse dependencies total=1
+       | github code search, repositories naming the tool in a workflow: 18
+summary: PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3
+RESULT: PASS (every observation reproduced; the 3 contract violations above are the finding)

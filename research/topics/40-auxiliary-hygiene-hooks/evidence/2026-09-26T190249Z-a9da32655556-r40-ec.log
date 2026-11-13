@@ -1,0 +1,66 @@
+v4.0.2
+== E0 raw/opus.md's pin spelling "Version": "4.0.2" (no leading v) refuses to run on the clean tree
+    Version from config file is not the same as the version of the binary
+    Binary: v4.0.2, Config 4.0.2
+PASS E0 (exit=1, expected nonzero)
+== E1 clean tree (Markdown hard break passes via [*.md]; the .snap line and Cargo.lock pass via default excludes \.snap$ and Cargo\.lock$, see r40-insta.sh I5n; target/ is gitignored)
+    
+PASS E1 (exit=0, expected zero)
+== E2 trailing space in Justfile
+    Justfile:
+    	3: trailing whitespace
+    
+    1 errors found
+PASS E2 (exit=1, expected nonzero)
+== E3 missing final newline in .github/dependabot.yml
+    .github/dependabot.yml:
+    	wrong line endings or no final newline
+    
+    1 errors found
+PASS E3 (exit=1, expected nonzero)
+-- E3b the ranked runner-up on the same change: git diff --check
+    
+PASS E3b (exit=0, expected zero)
+== E4 CRLF line endings in README.md
+    README.md:
+    	not all lines have the correct end of line character
+    	wrong line endings or no final newline
+    
+    2 errors found
+PASS E4 (exit=1, expected nonzero)
+== E5 the same trailing space that .snap is exempt from, in src/lib.rs
+    src/lib.rs:
+    	4: trailing whitespace
+    
+    1 errors found
+PASS E5 (exit=1, expected nonzero)
+== E6 Version pin mismatch refuses to run
+    Version from config file is not the same as the version of the binary
+    Binary: v4.0.2, Config v4.0.1
+PASS E6 (exit=1, expected nonzero)
+== E7 explicit paths (the lefthook {staged_files} form): one clean, one defective
+    notes.txt:
+    	1: trailing whitespace
+    
+    1 errors found
+PASS E7 (exit=1, expected nonzero)
+    
+PASS E7b (exit=0, expected zero)
+== E8 an untracked, not-ignored file IS checked by the no-argument whole-tree run
+   (raw/opus.md read the README as checking only files added to git; observed otherwise)
+    notes.txt:
+    	1: trailing whitespace
+    
+    1 errors found
+PASS E8 (exit=1, expected nonzero)
+== E8b a gitignored file outside the default excludes is NOT checked
+    
+PASS E8b (exit=0, expected zero)
+== E9 py's invocation shape: executable ec is absent; the single-dash -config flag is accepted
+    ec: not on PATH
+    
+PASS E9 (exit=0, expected zero)
+== E10 a named config file that does not exist fails loudly (E0 already shows .editorconfig-checker.json is discovered with no flag)
+    open does-not-exist.json: no such file or directory
+PASS E10 (exit=2, expected nonzero)
+TOTAL PASS=14 FAIL=0

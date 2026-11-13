@@ -1,0 +1,54 @@
+===== 0. environment =====
+2026-09-27T06:22:21Z
+zizmor 1.30.1
+offline unless a token is present in the environment (§6 runs the online case)
+===== 1. build canvases =====
+config used (R20 policies):
+# R20's accepted unpinned-uses policy (R20 DECISION, part 3.1), reproduced
+# here so the zizmor runs below execute under the template's own config.
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        "actions/*": ref-pin
+        "github/*": ref-pin
+        "*": hash-pin
+===== 2. exit-code matrix (default persona, offline) =====
+PASS [P0 clean] exit=0
+PASS [NC1 unset checkout -> low] exit=12
+PASS [NC2 single-job grant silent at default] exit=0
+PASS [NC3 grown grant -> high] exit=14
+PASS [NC4a uncommented true silent at default] exit=0
+PASS [NC4b commented true silent at default] exit=0
+PASS [NC4c single-quoted uncommented true silent at default] exit=0
+PASS [NC4d title-case uncommented True silent at default] exit=0
+PASS [NC4f uncommented non-constant expression silent at default] exit=0
+PASS [NC4g quoted false clean at default] exit=0
+===== 3. finding identity =====
+PASS [NC1 finding is artipacked] found 'artipacked' (exit=12)
+PASS [NC1 annotation names the missing input] found 'does not set persist-credentials: false' (exit=12)
+PASS [NC3 finding is excessive-permissions] found 'excessive-permissions' (exit=14)
+PASS [NC3 annotation names the level] found 'overly broad at the workflow level' (exit=14)
+===== 4. persona escalation =====
+PASS [NC2 pedantic -> high] exit=14
+PASS [NC2 pedantic shows the grant] found 'excessive-permissions' (exit=14)
+PASS [NC4a auditor -> low] exit=12
+PASS [NC4a auditor shows artipacked] found 'artipacked' (exit=12)
+PASS [NC4c auditor shows artipacked] found 'artipacked' (exit=12)
+PASS [NC4d auditor shows artipacked] found 'artipacked' (exit=12)
+PASS [NC4f pedantic -> low] exit=12
+PASS [NC4f pedantic shows artipacked] found 'artipacked' (exit=12)
+PASS [NC4g auditor exits 12 on a clean checkout (other auditor audits)] exit=12
+PASS [NC4g auditor exit comes from concurrency-limits] found 'concurrency-limits' (exit=12)
+PASS [NC4g auditor has no artipacked] no 'artipacked' (exit=12)
+===== 4b. cross-item observation: source-shaped F072 mint step (not P0, not R08's) =====
+PASS [X mint step without permission-* inputs -> high] exit=14
+PASS [X finding is github-app] found 'github-app' (exit=14)
+PASS [X annotation names blanket permissions] found 'blanket installation permissions' (exit=14)
+===== 5. gate-shape constraints =====
+PASS [NC1 SARIF exits 0 (report, not gate)] exit=0
+PASS [NC1 min-severity medium silences low] exit=0
+PASS [NC1 min-severity low keeps finding] exit=12
+===== 6. online mode (CI fidelity, token via env, never printed) =====
+PASS [P0 online clean] exit=0
+===== done: failures=0 =====

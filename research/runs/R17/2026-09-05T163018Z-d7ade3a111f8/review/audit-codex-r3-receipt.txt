@@ -1,0 +1,6 @@
+Rejected on F1 only: revision 3’s byte-preservation claim is false for the Part 2 recommendation, runner-up, and validity-filter finding.
+
+- [Audit report](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/audit-codex.md) — sha256 `2ac082cd…`
+- Rerun exit `0`; the gate probes and shell evidence passed.
+- [Evidence log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/evidence/audit-secret-scanning-ci-workflow-r3.log) — sha256 `9b49450d…`
+

@@ -1,0 +1,135 @@
+== environment ==
+date-utc: 2026-09-18T23:12:02Z
+repository root resolved by walking up from the script path: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+context: a git worktree (.git is a FILE, which is why the test is -e and not -d)
+grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/review/DECISION.md
+PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/raw/opus.md
+PASS  required input present: docs/port/PARAMETERS.md
+PASS  required input present: research/CLAUDE.md
+DECISION.md sha256 2e804161b9fbe65c7d33be04de5e024612ce628e1ea914c4e636443e0f0885c3
+
+== the engine report this decision synthesizes ==
+raw/opus.md sha256 c1d02b81cd0929881f66c7810af782496a84f73a8f45472e86e773a0300145ac
+PASS  raw/opus.md matches the sha256 the controller's task message names
+PASS  raw/opus.md is byte-identical to its content-addressed twin
+PASS  exactly one non-content-addressed engine report is registered (the Codex leg is absent)
+
+== raw-answer shape, via the module's own validator ==
+PASS  validate_answer_text(raw/opus.md, "crate") returns no diagnostics
+
+== decision shape, via the module's own decision validator ==
+PASS  _validate_decision_text(DECISION.md, "R79") returns no diagnostics
+
+== decision shape, against docs/superpowers/plans/p02-roles/synthesizer.md ==
+PASS  H1 is the date-first form the revision rules require
+    3:## Decision
+    398:## Parameters
+    452:## Empirical check
+    660:## Engines
+PASS  H2 sections are exactly Decision, Parameters, Empirical check, Engines, in order
+PASS  no '## Supersedes' section, as required of a first revision
+PASS  exactly one '### Principles and implementation' H3
+PASS  '### Principles and implementation' sits inside '## Decision' (line 73 < 398)
+PASS  exactly one line begins 're-verify:'
+PASS  the re-verify line is inside '## Decision' (line 396 < 398)
+PASS  the re-verify line is the final content line of '## Decision'
+PASS  '## Decision' records that this is a proposal validated in the implementation phase
+
+== fitness gate 1, under owner ruling 2026-09-12 (Q7.B) ==
+PASS  the exact gate-1 'inapplicable' string is recorded
+-- mechanical enumeration: every line carrying a licence subject --
+    37: rule.** py emits a separate `http_requests_total` counter alongside its duration histogram. A
+    40: filtered on `http_response_status_code=~"5.."` is the E. Emitting a redundant counter doubles
+    307: cost of omitting it is measured.** The exporter's defaults are
+    322: and deliberately unlike R74's opt-in rate limiting. **R77's `RSLBP_WEB_METRICS_ENABLED` is
+    383:   exporter is used without its `tracing` feature, so it emits no log lines and imposes nothing
+    387:   therefore fixes the interface rather than the counterpart: R79 does not emit through the OTel
+    396: re-verify: on any of these, whichever comes first — (1) **R69 republishes** at revision 10 or later, confirming that the `metrics = ["web", …]` cl
+    403: - assumes license = MIT OR Apache-2.0
+    446: `ubuntu-latest` in this run**. `license` is recorded and not evaluated, because fitness gate 1
+    450: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`
+    525: against the committed log. All four pass from the extraction — 34, 66, 5 and 70 PASS, with
+    526: **no FAIL and no SKIP in any of them**. What varies between a rerun and the committed log is
+    552:   any `http_route="/metrics"` series. It is committed as the exact bytes promtool accepted in
+    557:   `license` must equal the snapshot under `review/evidence/snapshots/` byte-for-byte, and the
+    573: **Gate answers for the recommended pair.** Gate 1 is recorded once here and referred to from
+    578: | 1. Licence | `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`. The declared fiel
+    585: **Qualified shortlist.** Five candidates cleared gate 2 and carry no RustSec advisory. Gate 1
+    666:   (the Codex account is at its usage limit; the ruling is to proceed without it). This Focused
+    686: | crates.io figures for all nine surveyed crates (downloads, newest non-yanked version, `created_at`, `rust_version`, `license`) | `GET https://crates
+    722: 3. **`cargo deny --all-features check bans licenses advisories`** in the real four-package
+    735:    named projects, and that limit is stated rather than filled.
+lines carrying a licence subject: 21
+PASS  no line asserts a gate-1 pass verdict anywhere in the decision
+PASS  the fixed 'license' parameter line survives the ruling, as it must
+
+== parameter lines, byte-compared with docs/port/PARAMETERS.md ==
+registry rows parsed: 13
+declared parameter lines in the decision: 4
+    line 400: - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, dec...
+    line 401: - assumes rust-edition = 2024...
+    line 402: - assumes target-os-matrix = ubuntu-latest, macos-latest...
+    line 403: - assumes license = MIT OR Apache-2.0...
+PASS  no '- owns' line, matching the prompt's empty '- owns:' coupling
+PASS  the assumed parameter set is exactly the four fixed parameters (the prompt's '- consumes:' line is empty)
+PASS  'msrv-policy' is byte-identical to its registry row (118 bytes)
+PASS  'msrv-policy' carries no backtick or inline citation
+PASS  'rust-edition' is byte-identical to its registry row (4 bytes)
+PASS  'rust-edition' carries no backtick or inline citation
+PASS  'target-os-matrix' is byte-identical to its registry row (27 bytes)
+PASS  'target-os-matrix' carries no backtick or inline citation
+PASS  'license' is byte-identical to its registry row (17 bytes)
+PASS  'license' carries no backtick or inline citation
+PASS  the decision quotes the registry's own web-extra-surface bytes: "otel = ["web", ...] for R78 and metrics = ["..."
+PASS  the decision quotes the registry's own web-extra-surface bytes: "tower 0.5.3 is a dev-dependency only..."
+PASS  web-extra-surface is consumed in prose, not declared as an '- assumes' line
+
+== every measured figure the decision quotes, cross-checked with its own log ==
+PASS  stripped binary, feature off, agrees with the probe log (decision '1,307,968' = log '1307968')
+PASS  stripped binary, feature on, agrees with the probe log (decision '1,686,016' = log '1686016')
+PASS  E2 lower crate count (37) is present in cargo-probes.log
+PASS  E2 upper crate count (81) is present in cargo-probes.log
+PASS  E3 lower crate count (51) is present in cargo-probes.log
+PASS  E3 upper crate count (79) is present in cargo-probes.log
+PASS  E4 packages locked at Rust 1.96 (118) is present in cargo-probes.log
+PASS  E5 advisory-database size (1251) is present in cargo-probes.log
+PASS  E5 crate dependencies scanned (119) is present in cargo-probes.log
+PASS  runner-up crate count (82) is present in cargo-probes.log
+PASS  highest declared tree rust-version agrees with the probe log (decision '1.85.0' = log '1.85.0')
+PASS  metrics reverse-dependency total (decision) matches the log's 1199 (decision '1,199' = log '1199')
+   note: the decision writes registry counts with thousands separators and the logs print them bare;
+   the two forms are compared field by field in the rows above rather than by naive substring match.
+PASS  metrics reverse dependencies (1199) is present in crate-sources.log
+PASS  exporter reverse dependencies (460) is present in crate-sources.log
+PASS  metrics 90-day downloads (20185758) is present in crate-sources.log
+PASS  metrics all-time downloads (108173967) is present in crate-sources.log
+PASS  exporter 90-day downloads (13007165) is present in crate-sources.log
+PASS  exporter all-time downloads (47578577) is present in crate-sources.log
+PASS  the corrected unsafe figure is recorded in the decision: 27 in `src/cow.rs`
+PASS  the corrected unsafe figure is recorded in the decision: 5 in `src/recorder/cell.rs`
+PASS  the corrected unsafe figure is recorded in the decision: 3 in `src/recorder/mod.rs`
+PASS  the corrected unsafe figures are backed by crate-sources.log
+PASS  the promtool conformance parse is recorded as EXECUTED in cargo-probes.log
+PASS  the exposition text promtool parsed is committed at review/evidence/scrape-sample.txt
+
+== hygiene ==
+PASS  no email address in the decision or any evidence script
+PASS  no token-shaped bytes in the decision, the scripts or the logs
+PASS  the network scripts identify themselves with the repository URL, not a person
+PASS  the probe lockfile snapshots are committed, which is what makes the counts reproducible
+PASS  no target/ tree and no nested repository under review/evidence/
+-- every evidence script ends in a counted summary and a non-zero exit on FAIL --
+PASS  cargo-probes.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  crate-sources.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  decision-self-check.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  github-api.sh sets 'set -euo pipefail' and prints a counted summary
+    shellcheck version: 0.11.0
+PASS  every evidence script is shellcheck-clean
+-- the research index still carries R79 with the slug and kind this decision assumes --
+PASS  research/CLAUDE.md row R79 is 'prometheus-metrics', kind 'crate'
+PASS  F326 is still at docs/port/COMMONALITY.md:330, the line this decision cites
+
+== summary ==
+PASS=70 FAIL=0 SKIP=0 TOTAL=70

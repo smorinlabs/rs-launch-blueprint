@@ -1,0 +1,10 @@
+# codex exec network and tool probe, 2026-09-04 (third attempt; the first two blocked on an open stdin and were killed)
+# argv: codex exec --ephemeral --skip-git-repo-check --color never -m gpt-5.6-luna --sandbox workspace-write -c 'sandbox_workspace_write.network_access=true' -c 'approval_policy="never"' -o net3-last.txt "<prompt>" < /dev/null
+# last message:
+NET=200
+web_search: yes web__run# exec transcript excerpt:
+exec
+/bin/zsh -lc "curl -sS -m 15 -o /dev/null -w '%{http_code}' https://api.github.com/repos/actions/checkout" in /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/codex-probes
+ succeeded in 19ms:
+200
+tokens used

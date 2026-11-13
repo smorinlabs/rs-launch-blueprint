@@ -1,0 +1,18 @@
+# revision 2 — workflow and config validation after pinning the action to v4.37.9 — 2026-09-10T01:16:38Z — cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture — macOS 26.4 arm64
+$ grep -n 'uses: github/codeql-action' .github/workflows/codeql.yml
+61:        uses: github/codeql-action/init@v4.37.9
+68:        uses: github/codeql-action/analyze@v4.37.9
+$ actionlint -version | head -1
+1.7.12
+$ actionlint .github/workflows/codeql.yml
+exit=0
+
+$ python3 - (YAML parse of both files; A3 guard; pin guard: every codeql-action step is @v4.37.9)
+config keys: ['name', 'paths-ignore', 'queries']
+config queries: [{'uses': 'security-extended'}]
+config paths-ignore: ['**/tests/**', '**/benches/**', '**/fuzz/**']
+init.with: {'languages': 'rust', 'build-mode': 'none', 'config-file': './.github/codeql/codeql-config.yml'}
+codeql-action pins: ['v4.37.9']
+A3 guard (config-file set, queries unset, languages rust, build-mode none): PASS
+pin guard (all codeql-action steps @v4.37.9 -> codeql-bundle-v2.26.4): PASS
+exit=0

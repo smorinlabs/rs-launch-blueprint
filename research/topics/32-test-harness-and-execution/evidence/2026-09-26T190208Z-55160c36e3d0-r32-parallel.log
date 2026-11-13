@@ -1,0 +1,40 @@
+INFO scratch copy of fixture/ at /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r32-parallel.GFwm16; CARGO_TARGET_DIR=/tmp/cargo-s13-R32-target/r32-parallel
+INFO rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew); cargo-nextest 0.9.146 (8af696ddc 2026-09-21)
+INFO CPU count: 14
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+INFO        Running tests/sleep_a.rs (/tmp/cargo-s13-R32-target/r32-parallel/debug/deps/sleep_a-6c0444d8ef99be67)
+INFO   
+INFO   running 1 test
+INFO   test one_second ... ok
+INFO   
+INFO   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.01s
+INFO   
+INFO        Running tests/sleep_b.rs (/tmp/cargo-s13-R32-target/r32-parallel/debug/deps/sleep_b-20b2a096612293af)
+INFO   
+INFO   running 1 test
+INFO   test one_second ... ok
+INFO   
+INFO   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.00s
+INFO   
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+INFO   ────────────
+INFO    Nextest run ID a2a55e99-a4f9-4854-8091-f30b6bd4aefd with nextest profile: default
+INFO       Starting 2 tests across 2 binaries (4 binaries skipped)
+INFO           PASS [   1.017s] (1/2) rs-launch-blueprint::sleep_b one_second
+INFO           PASS [   1.019s] (2/2) rs-launch-blueprint::sleep_a one_second
+INFO   ────────────
+INFO        Summary [   1.020s] 2 tests run: 2 passed, 0 skipped
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+INFO   ────────────
+INFO    Nextest run ID 2b75570f-6ed2-41fb-95f2-abf261c3c52a with nextest profile: default
+INFO       Starting 2 tests across 2 binaries (4 binaries skipped)
+INFO           PASS [   1.022s] (1/2) rs-launch-blueprint::sleep_a one_second
+INFO           PASS [   1.031s] (2/2) rs-launch-blueprint::sleep_b one_second
+INFO   ────────────
+INFO        Summary [   2.056s] 2 tests run: 2 passed, 0 skipped
+INFO minimum wall clock of 3 warm runs: cargo test 2.21s; cargo nextest run 1.3s; cargo nextest run -j 1 2.57s
+PASS E5a — cargo test runs the two binaries serially (>= 1.9 s)
+PASS E5b — ... each binary reports its own ~1 s
+PASS E5c — cargo nextest run runs them concurrently by default (< 1.6 s)
+PASS E5d — cargo nextest run -j 1 is the serial opt-out (>= 1.9 s)
+RESULT PASS=4 FAIL=0

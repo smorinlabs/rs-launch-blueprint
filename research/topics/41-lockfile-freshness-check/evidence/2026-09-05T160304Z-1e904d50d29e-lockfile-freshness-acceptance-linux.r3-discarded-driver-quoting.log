@@ -1,0 +1,11 @@
+linux leg: fixture and runner transferred with limactl copy into /tmp/r41-synth-d5hBCm in the Lima VM ubuntu (the 9p mount is read-only and may serve stale cached content, so it is not read); stdout captured on the host
+chmod: cannot access '_/fixture/scripts/check-cargo-lock.sh': No such file or directory
+chmod: cannot access '_/run-checks.sh': No such file or directory
+transferred files (sha256 computed in the VM):
+ -f2)=$(dirname "$(rustup which --toolchain stable cargo)")"
+echo "runner exit: $?"
+: line 7: cd: _: No such file or directory
+host provenance: rustup stable alias = rustc 1.98.1 (48a229cea 2026-09-01); PATH cargo = /home/stevemorin.guest/.cargo/bin/cargo
+ -f2)=$(dirname "$(rustup which --toolchain stable cargo)")"
+echo "runner exit: $?"
+: -c: line 11: unexpected EOF while looking for matching `)'

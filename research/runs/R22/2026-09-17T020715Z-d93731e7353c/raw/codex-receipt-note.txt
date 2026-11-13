@@ -1,0 +1,1 @@
+No receipt: the Codex CLI hit the account usage limit at the reply stage (transcript tail: "You have hit your usage limit ... try again at Sep 19th, 2026 7:28 AM") AFTER raw/codex.md was fully written (27,581 bytes; scripts/check-answer-shape.sh pattern: OK). Registered by the controller on 2026-09-17 with codex-exit.txt = 1 recorded as-is.

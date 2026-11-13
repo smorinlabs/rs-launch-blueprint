@@ -1,0 +1,9 @@
+version: 0.11.0
+clean: r29-decision-checks.sh
+clean: r29-dprint-stack.sh
+clean: r29-lefthook.sh
+clean: r29-provision.sh
+clean: r29-snapshots.sh
+clean: r29-sources.sh
+clean: r29-taplo-compare.sh
+shellcheck-total-exit=0

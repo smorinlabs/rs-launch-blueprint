@@ -1,0 +1,84 @@
+{
+ "openai": {
+  "status": "completed",
+  "model": "gpt-5.6-sol",
+  "usage": {
+   "input_tokens": 135644,
+   "input_tokens_details": {
+    "cache_write_tokens": 0,
+    "cached_tokens": 4261
+   },
+   "output_tokens": 47597,
+   "output_tokens_details": {
+    "reasoning_tokens": 32747
+   },
+   "total_tokens": 183241
+  },
+  "reasoning": {
+   "context": "all_turns",
+   "effort": "max",
+   "mode": "standard",
+   "summary": "detailed"
+  },
+  "output_item_types": {
+   "reasoning": 79,
+   "web_search_call": 26,
+   "message": 1
+  },
+  "list_price_usd_estimate": 1.755
+ },
+ "perplexity": {
+  "status": "COMPLETED",
+  "model": "sonar-deep-research",
+  "usage": {
+   "prompt_tokens": 3729,
+   "completion_tokens": 14201,
+   "total_tokens": 17930,
+   "search_context_size": null,
+   "citation_tokens": 3397,
+   "num_search_queries": 90,
+   "reasoning_tokens": 138998,
+   "cost": {
+    "input_tokens_cost": 0.00746,
+    "output_tokens_cost": 0.11361,
+    "reasoning_tokens_cost": 0.41699,
+    "request_cost": null,
+    "citation_tokens_cost": 0.00679,
+    "search_queries_cost": 0.45,
+    "total_cost": 0.99485
+   }
+  },
+  "n_citations": 19,
+  "finish_reason": "stop"
+ },
+ "gemini": {
+  "status": "completed",
+  "agent": "deep-research-preview-04-2026",
+  "usage": {
+   "grounding_tool_count": [
+    {
+     "count": 39,
+     "type": "google_search"
+    }
+   ],
+   "input_tokens_by_modality": [
+    {
+     "modality": "text",
+     "tokens": 871085
+    }
+   ],
+   "output_tokens_by_modality": [
+    {
+     "modality": "text",
+     "tokens": 28722
+    }
+   ],
+   "total_cached_tokens": 0,
+   "total_input_tokens": 871085,
+   "total_output_tokens": 28722,
+   "total_thought_tokens": 29645,
+   "total_tokens": 1040050,
+   "total_tool_use_tokens": 110598
+  }
+ }
+}

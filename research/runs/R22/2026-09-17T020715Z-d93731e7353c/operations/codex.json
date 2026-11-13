@@ -1,0 +1,16 @@
+{
+  "actor": "research-codex-2026-09-17T020715Z-d93731e7353c",
+  "actual_model": "gpt-5.6-luna",
+  "actual_provider": "codex-cli-0.154.0",
+  "at": "2026-09-17T04:32:45Z",
+  "collected_at": "2026-09-17T04:40:57Z",
+  "model": "gpt-5.6-luna",
+  "operation_id": "01a0ada3-767e-7e11-9ccf-a6ee45237915",
+  "provider": "codex",
+  "raw": "research/runs/R22/2026-09-17T020715Z-d93731e7353c/raw/codex-6ebf723a4e5b801e2c787bc388779e68a2c714c9377c4f9407a7e211bae32915.md",
+  "raw_sha256": "6ebf723a4e5b801e2c787bc388779e68a2c714c9377c4f9407a7e211bae32915",
+  "reason": "report complete; CLI usage limit hit at the reply stage, see raw/codex-receipt-note.txt",
+  "request_id": "30ef5368784447c98762381c0eedd005",
+  "returned_at": "2026-09-17T04:40:57Z",
+  "state": "succeeded"
+}

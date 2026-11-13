@@ -1,0 +1,12 @@
+# R77 revision 3 — rerun from a clean extraction (no .git anywhere in the tree)
+# produced 2026-09-19T01:39:09Z
+# extracted tree object: 7042409ead9424744291a1d2fca1a81ea9c876ae
+# That tree is the revision-3 tree as staged, which becomes this commit's tree
+# except for this log file itself.
+# .git present in extraction: no
+# NOTE: ov-allocation-r3.sh reads the execution ledger and R80's decision, which
+# live in the repository and are therefore inside the archive; it needs nothing
+# outside it, so it has no SKIP branch to exercise.
+
+=== ov-allocation-r3.sh, run from the extraction ===
+PASS=43 FAIL=0 SKIP=0 TOTAL=43

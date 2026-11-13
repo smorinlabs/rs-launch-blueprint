@@ -1,0 +1,629 @@
+R60 revision-3 empirical audit, round 3
+decision-sha256: 14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100
+archive commit: d642814cddfd3f1756fc56cd38738904440d9141
+archive .git: absent
+argv: bash <archive>/review/evidence/r60-standard-pin-r3.sh; bash <archive>/review/evidence/r60-preservation-diff-r3.sh; bash <archive>/review/evidence/r60-snapshot-provenance-r3.sh
+cwd: /private/tmp
+
+===== archive rerun: r60-standard-pin-r3.sh =====
+=== C0. negative control: prove this harness can actually fail ===
+--- the next FAIL line is deliberate; it proves a mismatch is detected ---
+FAIL  C0 control (expected to FAIL)
+      wanted substring: THIS-SUBSTRING-IS-ABSENT
+      got: the pinned standard
+PASS  C0 harness detected the mismatch and incremented its counter
+--- control accounted for; counters reset, real checks follow ---
+=== C1. every snapshot this script reads is the one MANIFEST.txt records ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  cli-design-standard-1.4.14.md
+PASS  C1 cli-design-standard-1.4.14.md matches its recorded sha256
+ec8854cb291bb4f666de87470c99459db312ba9addd0864cedf83e52225cd8fc  clap_builder-4.6.6-src-builder-command.rs.txt
+PASS  C1 clap_builder-4.6.6-src-builder-command.rs.txt matches its recorded sha256
+382ef691d65bdc867eaa5465a408374ffda528e96824cebeff88de7f9d40e2eb  clap_derive-4.6.4-src-item.rs.txt
+PASS  C1 clap_derive-4.6.4-src-item.rs.txt matches its recorded sha256
+29783c4d7b9499315679711bea94476da6fef2c73f6a1b1f6c808e71330fbb02  clap_derive-4.6.4-src-attr.rs.txt
+PASS  C1 clap_derive-4.6.4-src-attr.rs.txt matches its recorded sha256
+ef0cbb123ce38f67b3e776f427c2d8bb0cebe0c8efa00d4a5a0530e341312a91  py-b08bccfb-cli-commands-projects.py.txt
+PASS  C1 py-b08bccfb-cli-commands-projects.py.txt matches its recorded sha256
+e6fc59ac8c8ebb66d4d9c87fffe3e1931bb81693e26f498b510940c9add76a01  py-b08bccfb-cli-commands-__init__.py.txt
+PASS  C1 py-b08bccfb-cli-commands-__init__.py.txt matches its recorded sha256
+56f542c53e24897cca46f55d2f1ee731aacf0baad8c26f5cc93007d69bb6388a  ts-cb1cbcb2-src-router.ts.txt
+PASS  C1 ts-cb1cbcb2-src-router.ts.txt matches its recorded sha256
+55a3cc9684a2b54f874cfca635b1a49e1bb284bb4b1c611798e21b94c1657dce  ts-cb1cbcb2-src-commands-projects.ts.txt
+PASS  C1 ts-cb1cbcb2-src-commands-projects.ts.txt matches its recorded sha256
+d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  r60-decision-r1.md
+PASS  C1 r60-decision-r1.md matches its recorded sha256
+18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c  r60-decision-r2.md
+PASS  C1 r60-decision-r2.md matches its recorded sha256
+snapshot files listed in MANIFEST.txt: 10
+PASS  C1x MANIFEST.txt lists 10 snapshots
+snapshot files present on disk (excluding MANIFEST.txt): 10
+PASS  C1y no snapshot file is present that MANIFEST.txt does not record
+=== C2. the standard snapshot IS the pinned revision, by content hash ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f
+PASS  C2a the snapshot's sha256 is the pinned blob's, 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f
+MANIFEST origin row for the standard: 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f|cli-design-standard-1.4.14.md|raw|https://raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591c267a7ec1130ba4cda679eaee494b9d7/cli-design-standard.md|-|-
+PASS  C2b the snapshot's recorded origin is commit fb30a591c267a7ec1130ba4cda679eaee494b9d7
+PASS  C2c that origin is the published cli-standards repository
+lines in the pinned standard: 773
+PASS  C2d the pinned standard is 773 lines, so every line citation below is in range
+=== C3. the pinned text declares Version 1.4.14, Last updated 2026-06-28 ===
+# The CLI Design Standard
+
+**A reusable, normative standard for designing command-line interfaces.**
+
+| | |
+|---|---|
+| **Version** | 1.4.14 |
+| **Status** | Active — canonical |
+| **Last updated** | 2026-06-28 |
+| **Applies to** | All new CLIs, any language |
+
+> **Conformance language.** The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** are used as defined in RFC 2119. **MUST**-level rules are required for conformance; **SHOULD**-level rules are strong defaults that may be waived only with a documented reason; **MAY**-level rules are permitted options.
+PASS  C3a header declares Version 1.4.14
+PASS  C3b header declares Last updated 2026-06-28
+PASS  C3c status is Active — canonical
+=== C4. R1.3 at lines 133-137 of the pinned text, and it is a MUST ===
+**R1.3 — Noun number. (MUST)**
+Resource nouns **MUST** be **singular** in their canonical form. The plural form **MAY** be accepted as an undocumented alias but **MUST NOT** appear in help or docs. The verb already carries cardinality, so `list` returning many is not a reason to pluralize.
+✅ `acme widget list` (canonical) · `acme widgets list` (silent alias)
+❌ documenting `acme widgets list` as the primary form
+PASS  C4a R1.3 heading at :133 is a MUST
+PASS  C4b canonical form MUST be singular
+PASS  C4c plural MAY be an undocumented alias and MUST NOT appear in help or docs
+PASS  C4d the standard rejects 'list returns many' as a reason to pluralize
+PASS  C4e the standard's own non-conformant example is a documented plural
+=== C5. R1.3 is org-locked: Decision Log row 5 is at line 67, not 70 ===
+| 5 | Noun number | Singular canonical; plural accepted as undocumented alias | Reads with verbs; models gh | org-locked |
+PASS  C5a line 67 is row 5, Noun number, org-locked
+PASS  C5b row 5 is marked org-locked
+=== C6. the Decision Log rows this decision cites — row N is at line 62+N ===
+| 1 | Command ordering | Noun-verb default (`acme project create`); verb-first only under Appendix A criteria | Scales to many resources; models gh/kubectl | org-locked |
+PASS  C6a row 1 Command ordering is at :63 (revision 1 said :70)
+| 3 | `-v` meaning | `-v`/`--verbose` = verbose; `--version` with `-V` short alias | Verbose is hot path; matches cargo/clig.dev | org-locked |
+PASS  C6b row 3 -v meaning is at :65 (revision 1 said :70)
+| 7 | Env var prefix | `TOOL_*` uppercase, deterministic mapping, curated subset | Predictable; majority convention | org-locked |
+PASS  C6c row 7 Env var prefix is at :69 (revision 1 said :70)
+| 8 | Exit codes | `0/1/2/130/143` + semantic `3`/`4`/`5`; reject sysexits.h | Useful signal without BSD baggage; `4` from gh | org-locked |
+PASS  C6d line 70 is row 8 Exit codes — R67's row, which is why :70 was copied in error
+| # | Axis | Decision | Basis | Source |
+PASS  C6e the Decision Log table header is at :61
+=== C7. the conformance checklist names R1.3 (Appendix C) ===
+133:**R1.3 — Noun number. (MUST)**
+177:New nouns **SHOULD** name the domain object as the user thinks of it, singular (R1.3), kebab-cased (R1.4). Avoid abbreviations unless they are industry-standard.
+635:- [ ] R1.1 Noun-verb (or Appendix A criteria met) · R1.3 singular nouns · R1.4 kebab-case · R1.6 unambiguous aliases · R2.1 canonical verbs (`view`/`describe`, not `get` for resources)
+PASS  C7a R1.3 appears at :133 and in the checklist at :635
+PASS  C7b the checklist item is 'R1.3 singular nouns'
+PASS  C7c R2.2 cross-references R1.3 for singular naming
+=== C8. every other standard line this decision cites, at the pinned text ===
+50: A CLI **conforms** when it satisfies every **MUST** rule and documents any waived **SHOULD** in a stable repository conformance note. A SHOULD waiver **MUST** name the rule ID, describe the deviation, explain the rationale, and record the owner/date or equivalent review record. Two conformance profiles exist:
+PASS  C8 line 50
+124: **R1.1 — Noun-verb ordering. (MUST, Standard profile)**
+PASS  C8 line 124
+129: **R1.2 — Nesting depth. (SHOULD)**
+PASS  C8 line 129
+146: **R1.6 — Aliases. (MAY / MUST NOT)**
+PASS  C8 line 146
+229: **R3.10 — No prefix abbreviation. (MUST)**
+PASS  C8 line 229
+270: **R4.5 — Global vs command-local flags. (SHOULD)**
+PASS  C8 line 270
+275: **R4.6 — Version output format. (SHOULD)**
+PASS  C8 line 275
+321: **R5.4 — Environment variables. (MUST)**
+PASS  C8 line 321
+579: 1. The tool has a **small, fixed** set of commands (roughly ≤ 7) that act on a **single implicit resource** or no resource at all.
+PASS  C8 line 579
+586: ❌ verb-first misuse: a platform tool managing `projects`, `deploys`, `tokens`, and `users` — that **MUST** use noun-verb.
+PASS  C8 line 586
+=== C9. R1.6 permits the hidden plural alias R1.3 allows ===
+**R1.6 — Aliases. (MAY / MUST NOT)**
+Built-in short aliases for common verbs and nouns **MAY** be provided (e.g., `ls` for `list`, `rm` for `delete`). Aliases **MUST NOT** be ambiguous, **MUST NOT** shadow a different real command, and **SHOULD** be listed in help. User-defined aliases, if supported, **MUST NOT** override built-in commands.
+✅ `acme widget ls` ≡ `acme widget list`
+❌ an alias `acme rm` that sometimes means `remove` and sometimes `rmdir`
+PASS  C9a R1.6 says aliases MAY be provided
+PASS  C9b an alias MUST NOT shadow a different real command
+=== C10. both source ports DOCUMENT the plural noun — what R1.3 changes ===
+py projects.py:37: @click.group(name="projects", cls=SuggestingGroup)
+PASS  C10a py declares a help-visible click group named projects
+py commands/__init__.py: 26:COMMAND_GROUPS = [projects_group, config_group]
+PASS  C10b py registers projects_group and config_group
+ts router.ts: 234:  const projects = program.commands.find((command) => command.name() === 'projects');
+PASS  C10c ts looks the command up by the literal name projects
+ts commands/projects.ts:70:     .command('projects', { isDefault: true })
+PASS  C10d ts declares .command('projects', { isDefault: true }) at :70
+=== C11. the clap 4.6.6 APIs the new acceptance criteria name actually exist ===
+MANIFEST origin row for command.rs: ec8854cb291bb4f666de87470c99459db312ba9addd0864cedf83e52225cd8fc|clap_builder-4.6.6-src-builder-command.rs.txt|crate|https://static.crates.io/crates/clap_builder/clap_builder-4.6.6.crate|clap_builder-4.6.6/src/builder/command.rs|7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889
+PASS  C11z the snapshot's origin is the published 4.6.6 tarball and its crates.io checksum
+command.rs:3932:     pub fn get_subcommands(&self) -> impl Iterator<Item = &Command> {
+PASS  C11 Command::get_subcommands at command.rs:3932
+command.rs:3756:     pub fn get_name(&self) -> &str {
+PASS  C11 Command::get_name at command.rs:3756
+command.rs:4242:     pub fn is_hide_set(&self) -> bool {
+PASS  C11 Command::is_hide_set at command.rs:4242
+command.rs:1037:     pub fn render_long_help(&mut self) -> StyledStr {
+PASS  C11 Command::render_long_help at command.rs:1037
+command.rs:3847:     pub fn get_visible_aliases(&self) -> impl Iterator<Item = &str> + '_ {
+PASS  C11 Command::get_visible_aliases at command.rs:3847
+command.rs:3874:     pub fn get_all_aliases(&self) -> impl Iterator<Item = &str> + '_ {
+PASS  C11 Command::get_all_aliases at command.rs:3874
+command.rs:2691:     pub fn alias(mut self, name: impl IntoResettable<Str>) -> Self {
+PASS  C11 Command::alias at command.rs:2691
+command.rs:2893:     pub fn visible_alias(mut self, name: impl IntoResettable<Str>) -> Self {
+PASS  C11 Command::visible_alias at command.rs:2893
+    /// **NOTE:** Aliases defined with this method are *hidden* from the help
+    /// message. If you're looking for aliases that will be displayed in the help
+    /// message, see [`Command::visible_alias`].
+PASS  C11b Command::alias is documented as HIDDEN from help
+    /// **NOTE:** The alias defined with this method is *visible* from the help
+    /// message and displayed as if it were just another regular subcommand. If
+    /// looking for an alias that will not be displayed in the help message, see
+    /// [`Command::alias`].
+PASS  C11c Command::visible_alias is documented as VISIBLE in help
+=== C12. clap_derive 4.6.4 forwards #[command(alias = ...)] to Command::alias ===
+MANIFEST origin row for item.rs: 382ef691d65bdc867eaa5465a408374ffda528e96824cebeff88de7f9d40e2eb|clap_derive-4.6.4-src-item.rs.txt|crate|https://static.crates.io/crates/clap_derive/clap_derive-4.6.4.crate|clap_derive-4.6.4/src/item.rs|d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061
+PASS  C12z the snapshot's origin is the published 4.6.4 tarball and its crates.io checksum
+        } else {
+            if name == "short" || name == "long" {
+                self.is_positional = false;
+            }
+            match kind {
+                AttrKind::Group => self.group_methods.push(Method::new(name, arg)),
+                _ => self.methods.push(Method::new(name, arg)),
+            };
+        }
+PASS  C12b a non-special attribute name is pushed as a Method verbatim
+impl ToTokens for Method {
+    fn to_tokens(&self, ts: &mut TokenStream) {
+        let Method { name, args } = self;
+
+        let tokens = quote!( .#name(#args) );
+
+        tokens.to_tokens(ts);
+    }
+}
+PASS  C12c a Method renders as a builder call .<name>(<args>)
+occurrences of 'alias' in clap_derive's attribute table (attr.rs): 0
+PASS  C12d 'alias' is not a magic attribute name, so it forwards verbatim
+MagicAttrName::Alias variants: 0
+PASS  C12e there is no MagicAttrName::Alias variant
+=== C13. R67 records NO version pin for the same standard ===
+R67 published decision: present
+PASS  C13z R67's published decision is in this checkout, so the counts below are real
+R67 DECISION.md occurrences of '1.4.14': 0
+PASS  C13a R67 body names no standard version 1.4.14
+R67 standard citations carrying a version/commit/hash: 0
+PASS  C13b R67's standard citations carry no version, commit or hash
+R67 lines citing cli-design-standard.md: 2
+PASS  C13c R67 does cite the standard (2 lines: :78 and :464) — the absence above is a real gap, not a missing file
+R67 evidence files mentioning '1.4.14': 2
+PASS  C13d exactly 2 R67 evidence files mention 1.4.14
+R67 r4 audit log:6: Standard read: `/Users/stevemorin/c/cli-standards/cli-design-standard.md`, version 1.4.14.
+PASS  C13e R67's revision-4 auditor recorded the standard as version 1.4.14
+the other file's mentions (the standard's own changelog row 54, quoted): 1
+PASS  C13f the second mention is a single quoted changelog line, not a pin
+
+CHECKS RUN: 73   FAILURES: 0
+RESULT: all checks passed
+
+===== diff against recorded log: r60-standard-pin-r3.sh =====
+diff exit: 0
+
+===== archive rerun: r60-preservation-diff-r3.sh =====
+=== C0. negative control: prove this harness can fail ===
+--- the next two failures are deliberate ---
+FAIL  C0a control (expected FAIL)
+      wanted: ABSENT-SUBSTRING
+      got: present text
+BUG        C0b control (expected BUG: a substring absent from revision 1 proves nothing) — the substring matched nothing in revision 1; the check proves nothing
+PASS  C0 both harness paths detect a mismatch
+--- controls accounted for; counters reset ---
+=== C1. the committed baselines are the texts the two audits read ===
+revision-1 snapshot sha256: d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c
+PASS  C1a the revision-1 baseline is the draft audit-codex.r1.md rejected
+revision-2 snapshot sha256: 18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c
+PASS  C1b the revision-2 baseline is the draft audit-codex.r2.md rejected
+MANIFEST row naming the revision-1 sha256: r60-decision-r1.md
+PASS  C1c MANIFEST.txt records the revision-1 baseline
+MANIFEST row naming the revision-2 sha256: r60-decision-r2.md
+PASS  C1d MANIFEST.txt records the revision-2 baseline
+occurrences of the revision-1 sha256 in audit-codex.r1.md: 1
+PASS  C1e the revision-1 auditor's own report names that hash
+occurrences of the revision-2 sha256 in audit-codex.r2.md: 1
+PASS  C1f the revision-2 auditor's own report names that hash
+=== C2. what the audits did NOT challenge is byte-identical ===
+-- the recommended crate and feature set --
+PRESERVED  clap 4.6.6 pin and its four features (1 revision-1 line(s) still verbatim)
+PRESERVED  clap_complete 4.6.9 pin (2 revision-1 line(s) still verbatim)
+PRESERVED  strsim 0.11.1, transitive only (1 revision-1 line(s) still verbatim)
+PRESERVED  the dependency-free build.rs mechanism (1 revision-1 line(s) still verbatim)
+PRESERVED  clap_complete default features and clap floor (1 revision-1 line(s) still verbatim)
+-- the lockfile generation and advisory audit that both exited zero --
+PRESERVED  lockfile generation, 28 packages (1 revision-1 line(s) still verbatim)
+PRESERVED  the lockfile command itself (1 revision-1 line(s) still verbatim)
+PRESERVED  advisory audit, exit 0 (1 revision-1 line(s) still verbatim)
+-- the four fixed parameter lines --
+PRESERVED  assumes msrv-policy (1 revision-1 line(s) still verbatim)
+PRESERVED  assumes rust-edition (1 revision-1 line(s) still verbatim)
+PRESERVED  assumes target-os-matrix (1 revision-1 line(s) still verbatim)
+PRESERVED  assumes license (1 revision-1 line(s) still verbatim)
+-- OV-01's argument and its three options --
+PRESERVED  OV-01 Argument's R4.6 quotation (1 revision-1 line(s) still verbatim)
+PRESERVED  OV-01 option b, conforming (1 revision-1 line(s) still verbatim)
+PRESERVED  OV-01 option c, conforming (1 revision-1 line(s) still verbatim)
+PRESERVED  OV-01 owner-ruling sentence (1 revision-1 line(s) still verbatim)
+-- the compared alternatives and the fitness-gate rows --
+PRESERVED  architecture A (1 revision-1 line(s) still verbatim)
+PRESERVED  architecture E (1 revision-1 line(s) still verbatim)
+PRESERVED  clap fitness-gate data row (1 revision-1 line(s) still verbatim)
+PRESERVED  the just composition evidence (1 revision-1 line(s) still verbatim)
+-- what revision 2 added and this revision keeps --
+PRESERVED  OV-01's dated not-granted status line (1 revision-2 line(s) still verbatim)
+PRESERVED  R1.3's rule text as revision 2 quoted it in ## Decision (1 revision-2 line(s) still verbatim)
+PRESERVED  the standard pin row carrying the content hash (1 revision-2 line(s) still verbatim)
+=== C3. the four assumes lines match the registry byte-for-byte ===
+PASS  C3 msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI matches docs/port/PARAMETERS.md
+PASS  C3 rust-edition = 2024 matches docs/port/PARAMETERS.md
+PASS  C3 target-os-matrix = ubuntu-latest, macos-latest matches docs/port/PARAMETERS.md
+PASS  C3 license = MIT OR Apache-2.0 matches docs/port/PARAMETERS.md
+assumes lines in the decision: 4
+PASS  C3x exactly four assumes lines
+owns lines in the decision: 0
+PASS  C3y no owns line, because the prompt's - owns: line is empty
+=== C4. structural invariants ===
+H2 count: 4
+PASS  C4a exactly four H2 sections
+H2s: ## Decision ## Parameters ## Empirical check ## Engines 
+PASS  C4b they are Decision, Parameters, Empirical check, Engines in order
+PASS  C4c no ## Supersedes section
+OV-01 mentions: 8
+PASS  C4d OV-01 is named (this decision's only override)
+OVERRIDE (OV-02..OV-09) declarations: 0
+PASS  C4e no second override was declared
+OVERRIDE (OV-01) declarations: 3
+PASS  C4e2 OV-01 is declared as an override
+'requested, not granted' occurrences (the status line, plus the revision narrative citing it): 2
+PASS  C4f the waiver-not-granted wording is present
+OV-01 status line: **Waiver status, as of 2026-09-12: requested, not granted.** The owner has not
+PASS  C4f2 OV-01 carries a dated, explicit not-granted status line
+PASS  C4f3 OV-01 says the owner has not answered the waiver request
+PASS  C4f4 OV-01 names option (b) as a conforming alternative
+PASS  C4f5 OV-01 names option (c) as a conforming alternative
+PASS  C4f6 OV-01 states that only the owner can record the waiver and no record exists
+PASS  C4f7 OV-01 states its Argument
+PASS  C4f8 OV-01 states its Options
+-- affirmative owner-approval claims (each must be absent) --
+  the owner has granted              0
+  the owner granted                  0
+  owner has approved                 0
+  owner approved                     0
+  waiver (is|was|has been) granted   0
+  waiver granted                     0
+  owner waiver record exists         0
+  approved by the owner              0
+total affirmative owner-approval claims: 0
+PASS  C4g no claim that the owner granted the waiver
+title lines recording revision 3: 1
+PASS  C4h the title records revision 3
+-- gate 1 is recorded as inapplicable, not deleted (owner ruling 2026-09-12) --
+PASS  C4i the decision records gate 1 as inapplicable with the ruling as its reason
+fitness-gate table headers still carrying a gate-1 column: 1
+PASS  C4j the gate-1 row is kept in the table rather than removed
+=== C5. no crate was scaffolded and no command surface was written ===
+Rust/Cargo files anywhere in this run directory: 0
+PASS  C5a no .rs, Cargo.toml or Cargo.lock exists in this run
+src/ or target/ directories in this run directory: 0
+PASS  C5b no crate skeleton exists in this run
+-- every evidence file this revision cites exists --
+  review/evidence/r60-standard-pin-r3.sh                     present
+PASS  C5c review/evidence/r60-standard-pin-r3.sh exists
+  review/evidence/r60-standard-pin-r3.log                    present
+PASS  C5c review/evidence/r60-standard-pin-r3.log exists
+  review/evidence/r60-preservation-diff-r3.sh                present
+PASS  C5c review/evidence/r60-preservation-diff-r3.sh exists
+  review/evidence/r60-preservation-diff-r3.log               present
+PASS  C5c review/evidence/r60-preservation-diff-r3.log exists
+  review/evidence/r60-snapshot-provenance-r3.sh              present
+PASS  C5c review/evidence/r60-snapshot-provenance-r3.sh exists
+  review/evidence/r60-snapshot-provenance-r3.log             present
+PASS  C5c review/evidence/r60-snapshot-provenance-r3.log exists
+  review/evidence/r60-cli-parsing-verification.log           present
+PASS  C5c review/evidence/r60-cli-parsing-verification.log exists
+  review/evidence/audit-cli-parsing-framework-r1.log         present
+PASS  C5c review/evidence/audit-cli-parsing-framework-r1.log exists
+  review/evidence/snapshots/MANIFEST.txt                     present
+PASS  C5c review/evidence/snapshots/MANIFEST.txt exists
+=== C6. every line that differs from revision 1, enumerated ===
+revision-1 lines replaced or removed: 42
+PASS  C6 the r1 diff is non-empty in both directions, so the revision landed
+--- full list of revision-1 lines replaced or removed ---
+< # R60 — CLI parsing framework (bundle, Deep) — revision 1, 2026-09-10
+< their exact versions, reads of the org CLI Design Standard, reads of the two
+< source repositories through their pins, and one MSRV-aware dependency
+< resolution — not on a working command-line interface, which does not exist yet.
+< | F265 | command surface shape | noun-verb subcommand groups as nested `Subcommand` enums; **no default business command** |
+< read 2026-09-10.
+< | P2 | A command path reads noun then verb | **standard, one value for all three repos** — R1.1 `(MUST, Standard profile)` (`:124`), org-locked (`:70` row 1) 
+< | P3 | `-V`/`--version` exists and reports the tool's version | **capability + standard** — ledger F266 `COMMON → REUSE`; R4.1 `(MUST)` required global core (
+< | P4 | A setting exposed in more than one place uses one deterministic name, and env exposure is curated | **standard** — R3.8 `(MUST)` (`:220`), R5.4 `(MUST)
+< cited by file and line with its retrieval date, and a `MUST` marked org-locked
+< in the design-principles table at `:70` is binding, not advisory. The ts port
+< Two consequences follow, and they are different in kind:
+<   no resource at all". This template ships two resource groups (`projects`,
+<   (`:586`). F265 is therefore settled by the standard, not by a preference
+<   between the two ports. The ecosystem evidence agrees rather than conflicts, so
+<   no override is filed.
+<   (OV-01) below.
+< | Candidate | 1. license | 2. MSRV (floor 1.96) | 3. advisory / `unsafe` | 4. OS matrix | 5. default features | 6. size & build cost | Gate result |
+<    shorter form" (`:229-230`). A suggestion that *names* `projects` after a typo
+<    is the conformant behavior; silently *accepting* `project` is not.
+< | AC1 | `<tool> projects list --json` and `<tool> --json projects list` both parse, and the flag is declared exactly once (R4.5) |
+< | AC5 | `<TOOL>_OUTPUT=json <tool> projects list` honors the env var; a global option deliberately left out of the curated set is **not** readable from `<TOOL
+< | AC6 | `<tool> project list` (singular, unknown) exits `2`, prints a suggestion naming `projects` on stderr, keeps stdout byte-empty, and does **not** execut
+< `(SHOULD)`.**
+< re-verify: 2027-03-10, or earlier on any of — clap releasing a 5.x line; the `clap_complete` `unstable-dynamic` completion path stabilizing; a RustSec advisor
+< **license** is satisfied by the whole resolved tree — all 28 dependency crates
+< are MIT-or-Apache-compatible (full list in the evidence log, section W), the
+< only single-licensed one being `strsim` at MIT. **target-os-matrix** is the gate
+< **Full output: `review/evidence/r60-cli-parsing-verification.log`** (1,142
+< | 10 | the two source repositories, through their pins | `git -C ~/c/py-launch-blueprint show b08bccfb…:<path>`; `git -C ~/c/ts-launch-blueprint show cb1cbcb2
+< `cargo audit` on the resulting lockfile → **exit 0**.
+< **What this run does not establish**, stated so it is not read as more: it did
+< not build or run any CLI; it did not execute any acceptance criterion; it ran no
+< benchmark; it ran nothing on `ubuntu-latest`; and it did not audit any crate's
+< `unsafe` usage. Each of those is carried to `## Engines`.
+< default-command shape for F265; all three choose `global = true` on a flattened
+< 2026-09-10), org-locked at `:70` row 7, and already treated as binding by the
+< cites the standard by file, line and retrieval date as R67 did. The practical
+< effect is confined: it makes F265 a `MUST` rather than a preference, it decides
+< F269, and it turns F267 into a recorded override — every other row lands where
+< all three engines already put it.
+< | U5 | Every acceptance criterion AC1–AC8. None was executed: no Rust CLI exists. | P03's integration tests |
+=== C7. every line that differs from revision 2, enumerated ===
+revision-2 lines replaced or removed: 99
+PASS  C7 the r2 diff is non-empty in both directions
+--- full list of revision-2 lines replaced or removed ---
+< # R60 — CLI parsing framework (bundle, Deep) — revision 2, 2026-09-12
+< unpinned standard. What changed, and what is unchanged, is enumerated at the end
+< of `## Engines`. No crate was scaffolded and no command surface was written in
+< either revision.
+< | Commit | `fb30a591c267a7ec1130ba4cda679eaee494b9d7` (`docs: resolve PR #1 review findings (v1.4.14)`, 2026-06-28) — the most recent commit to touch the file
+< **How a future reader resolves it.** Run
+< `git -C <clone-of-cli-standards> cat-file blob f9de0437baece3383e73ca2c5f48b7ab399b51c7`,
+< or `git show fb30a591c267a7ec1130ba4cda679eaee494b9d7:cli-design-standard.md`,
+< and confirm the output's sha256 is `9fb05d3d…`. Every `:<line>` citation below
+< is a **line number in that blob**, not in whatever the working tree holds later.
+< The local working-tree file read on 2026-09-10 was verified byte-identical to
+< the pinned blob (same sha256), so the reads this decision rests on and the
+< pinned text are the same bytes. `origin` was fetched before checking, and
+< `origin/main` holds the same commit and the same blob for this path, so
+< "newest" is a claim about the published history and not merely about this
+< clone. Version, commit, blob id, sha256 and each cited line were checked
+< mechanically; see `## Empirical check` rows E1–E5.
+< | Candidate | 1. license | 2. MSRV (floor 1.96) | 3. advisory / `unsafe` | 4. OS matrix | 5. default features | 6. size & build cost | Gate result |
+< re-verify: 2027-03-10, or earlier on any of — **the org CLI Design Standard moving off the pinned revision (version 1.4.14, blob `f9de0437baece3383e73ca2c5f48
+< **license** is satisfied by the whole resolved tree — all 28 dependency crates
+< are MIT-or-Apache-compatible (full list in the evidence log, section W), the
+< only single-licensed one being `strsim` at MIT. **target-os-matrix** is the gate
+< 2026-09-10; rows E1–E9 are the **revision-2** run of 2026-09-12, which verifies
+< the standard pin, the R1.3 rule text, every standard line this decision cites,
+< the clap APIs the new acceptance criteria name, and what revision 2 preserved.
+< independent — `E6` and `P6` are unrelated.
+< **Revision 2 did not re-run sections 01–12**, and does not restate their output
+< **Revision-2 run — the standard pin, R1.3, and the new criteria's APIs.**
+< Script `review/evidence/r60-standard-pin-r2.sh`; full output
+< `review/evidence/r60-standard-pin-r2.log`. Working directory: the script takes
+< none — every path in it is absolute or `$HOME`-relative. Host: macOS 26.4
+< `aarch64`, 2026-09-12. **Nothing was implemented**: no crate was scaffolded, no
+< command surface, `build.rs`, `completion` command or test was written. The only
+< file created outside the run directory is an unpacked copy of a published crate
+< tarball under `/private/tmp/r60-r2-verify/`, used read-only.
+< `bash review/evidence/r60-standard-pin-r2.sh` → **exit 0**, `CHECKS RUN: 66
+< FAILURES: 0`. The script's own check ids (`C1`…`C18`) are given per row below.
+< Three properties of this script, stated because each one is a claim an auditor
+< will test. **It can fail**: check `C0` is a negative control that asserts a
+< substring known to be absent, so the log opens with a deliberate `FAIL` line
+< followed by `PASS C0 harness detected the mismatch`; if the harness ever stops
+< detecting mismatches, `C0` exits `99` and says the results are meaningless. That
+< control exists because the script's *first* draft put `check` on the right-hand
+< side of a pipe, which runs it in a subshell, discards its increment of the
+< failure counter, and printed `ALL CHECKS PASSED` while two checks had in fact
+< failed — so the rewritten harness passes output as an argument and keeps the
+< counter in the current shell. **It asserts on content, never on exit status
+< alone**: every check names an expected substring, and an empty expectation is
+< itself reported as a bug rather than passed. **It is reproducible byte-for-byte**:
+< the script was re-run against the saved log immediately before this sentence was
+< written and `diff` reported no difference. That holds because every source it
+< reads is a git blob, a local file, or an unpacked tarball whose digest it
+< verifies. It reads no rendered documentation page and no live counter, which
+< is exactly why sections 01–12 above are *not* claimed as reproducible. It does
+< make two network calls, and both are safe for reproducibility: `git fetch
+< origin` on the standards repository, whose output is discarded and whose only
+< use is to let the pin be compared against `origin/main` (check `C1b`), and a
+< `curl` of two published crate tarballs whose digests are compared against the
+< checksums crates.io records for those exact versions (`C17`, `C18`). An
+< immutable artifact fetched by version and verified by hash is as stable as a
+< local file; a rendered page reordering its own list is not.
+< **Both revision-2 logs are reproducible byte-for-byte, and one volatile output
+< was moved out of them to keep that true.** The preservation script also reports
+< the *other* research items holding uncommitted work on this shared branch —
+< required, because pre-existing changes that are not R60's are reported and never
+< staged. That listing reads live repository state, and other sessions write to
+< `research/p02-execution` while the script runs: an early rerun did in fact differ
+< from its predecessor by one line, a lock directory another session had just
+< created. Rather than describe the log as reproducible "apart from a tail", the
+< listing now goes to a sidecar,
+< `review/evidence/r60-concurrent-branch-state-r2.txt`, which labels itself
+< volatile. Both cited logs were then re-run and were byte-identical on every
+< rerun performed. Nothing in this decision rests on the sidecar;
+< every check that backs a claim reads only git blobs, the pinned files, and a
+< tarball whose digest it verifies. As of this writing the sidecar lists
+< uncommitted work under R18, R26, R49, R63, R64, R65 and R81 — none of it R60's,
+< none of it touched here.
+< | E1 | the standard's pinned revision, locally **and against the published remote** (`C1`, `C1b`, `C2`–`C4`) | `git log -1 -- cli-design-standard.md`; `git fe
+< | E2 | the document declares version 1.4.14 (`C5`) | `git cat-file blob f9de0437… \| sed -n '1,12p'` | `| **Version** | 1.4.14 |`, `| **Status** | Active — ca
+< | E3 | R1.3's full text, the rule this revision satisfies (`C6`) | the same blob, `sed -n '133,137p'` | `**R1.3 — Noun number. (MUST)**`; "Resource nouns **MU
+< | E4 | R1.3 is org-locked, and the Decision Log line numbers (`C7`, `C8`) | the same blob, `sed -n '61p;63p;65p;67p;69p;70p'` | row 5 `| 5 | Noun number | Sin
+< | E5 | every other standard line this decision cites (`C9`–`C12`) | the same blob, one `sed -n '<n>p'` per citation | all resolve: `:50` the SHOULD-waiver cla
+< | E6 | whether R67 pinned the standard (`C15`) | `grep` over R67's `DECISION.md` and its 18 evidence logs | **R67's body: no pin** — zero citations carrying a
+< | E7 | that both source ports document the plural noun (`C13`, `C16`) | `git show` through each port's pin | py `cli/commands/projects.py:37` is `@click.group
+< | E8 | the clap 4.6.6 APIs AC9/AC10 name (`C17`) | `curl` the published `clap_builder-4.6.6.crate`, check its sha256 against crates.io's recorded checksum, un
+< | E9 | that revision 2 preserved what the audit did not challenge (`review/evidence/r60-preservation-diff-r2.sh`, log `review/evidence/r60-preservation-diff-r
+< above). For revision 2: `bash review/evidence/r60-standard-pin-r2.sh` → **exit
+< 0**, 66 checks, 0 failures.
+< neither built or ran any CLI; neither executed any acceptance criterion; neither
+< ran a benchmark; neither ran anything on `ubuntu-latest`; and neither audited any
+< crate's `unsafe` usage. Each of those is carried to `## Engines`. Revision 2
+< narrows none of that list: it verifies that the standard says what this decision
+< says it says, that its cited lines resolve, and that the clap methods AC9 and
+< AC10 name exist with the documented alias visibility — **not** that any
+< criterion passes. In particular, AC9 and AC10 are new and unexecuted, exactly as
+< AC1–AC8 are.
+< `f9de0437…` and content sha256 `9fb05d3d…`, states the two commands that
+< resolve it, and records that R67's body pins nothing while R67's revision-4
+< architecture alternatives and the fitness-gate table; the seven essential
+
+CHECKS RUN: 66   FAILURES: 0
+RESULT: all checks passed
+
+===== diff against recorded log: r60-preservation-diff-r3.sh =====
+diff exit: 0
+
+===== archive rerun: r60-snapshot-provenance-r3.sh =====
+=== C0. negative control: prove this harness can fail ===
+--- the next FAIL line is deliberate ---
+FAIL  C0 control (expected to FAIL)
+      wanted: ABSENT-SUBSTRING
+      got: present text
+PASS  C0 harness detected the mismatch
+--- control accounted for; counters reset ---
+=== C1. every snapshot re-derived from the source MANIFEST.txt names ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  cli-design-standard-1.4.14.md (refetched)
+PASS  C1 cli-design-standard-1.4.14.md equals the bytes at its pinned URL
+7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889  clap_builder-4.6.6.crate (tarball)
+PASS  C1 clap_builder-4.6.6.crate matches the checksum crates.io records
+ec8854cb291bb4f666de87470c99459db312ba9addd0864cedf83e52225cd8fc  clap_builder-4.6.6-src-builder-command.rs.txt (extracted)
+PASS  C1 clap_builder-4.6.6-src-builder-command.rs.txt equals clap_builder-4.6.6/src/builder/command.rs inside that tarball
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  clap_derive-4.6.4.crate (tarball)
+PASS  C1 clap_derive-4.6.4.crate matches the checksum crates.io records
+382ef691d65bdc867eaa5465a408374ffda528e96824cebeff88de7f9d40e2eb  clap_derive-4.6.4-src-item.rs.txt (extracted)
+PASS  C1 clap_derive-4.6.4-src-item.rs.txt equals clap_derive-4.6.4/src/item.rs inside that tarball
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  clap_derive-4.6.4.crate (tarball)
+PASS  C1 clap_derive-4.6.4.crate matches the checksum crates.io records
+29783c4d7b9499315679711bea94476da6fef2c73f6a1b1f6c808e71330fbb02  clap_derive-4.6.4-src-attr.rs.txt (extracted)
+PASS  C1 clap_derive-4.6.4-src-attr.rs.txt equals clap_derive-4.6.4/src/attr.rs inside that tarball
+ef0cbb123ce38f67b3e776f427c2d8bb0cebe0c8efa00d4a5a0530e341312a91  py-b08bccfb-cli-commands-projects.py.txt (refetched)
+PASS  C1 py-b08bccfb-cli-commands-projects.py.txt equals the bytes at its pinned URL
+e6fc59ac8c8ebb66d4d9c87fffe3e1931bb81693e26f498b510940c9add76a01  py-b08bccfb-cli-commands-__init__.py.txt (refetched)
+PASS  C1 py-b08bccfb-cli-commands-__init__.py.txt equals the bytes at its pinned URL
+anonymous fetch of src/router.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+UNVERIFIABLE-HERE  ts-cb1cbcb2-src-router.ts.txt — private origin; the committed snapshot is the evidence of record
+anonymous fetch of src/commands/projects.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+UNVERIFIABLE-HERE  ts-cb1cbcb2-src-commands-projects.ts.txt — private origin; the committed snapshot is the evidence of record
+UNVERIFIABLE-HERE  r60-decision-r1.md — this checkout carries no git history; the committed snapshot is the evidence of record
+UNVERIFIABLE-HERE  r60-decision-r2.md — this checkout carries no git history; the committed snapshot is the evidence of record
+=== C2. the pin is still the newest published commit for the standard ===
+newest published commit touching cli-design-standard.md: fb30a591c267a7ec1130ba4cda679eaee494b9d7
+PASS  C2a the newest commit for that path is still the pinned one
+
+CHECKS RUN: 12   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 4
+NOTE: UNVERIFIABLE-HERE entries have no public remote by design; each one's privacy was itself checked above.
+RESULT: no snapshot contradicts its recorded source
+
+===== diff against recorded log: r60-snapshot-provenance-r3.sh =====
+--- /private/tmp/r60-audit-r3-full.jtuB73/research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/r60-snapshot-provenance-r3.log	2026-09-13 01:34:57
++++ /private/tmp/r60-audit-r3-full.jtuB73/r60-snapshot-provenance-r3.sh.out	2026-09-13 01:35:16
+@@ -30,14 +30,12 @@
+ anonymous fetch of src/commands/projects.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+ PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+ UNVERIFIABLE-HERE  ts-cb1cbcb2-src-commands-projects.ts.txt — private origin; the committed snapshot is the evidence of record
+-d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  r60-decision-r1.md (from git history)
+-PASS  C1 r60-decision-r1.md equals the git object MANIFEST.txt names
+-18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c  r60-decision-r2.md (from git history)
+-PASS  C1 r60-decision-r2.md equals the git object MANIFEST.txt names
++UNVERIFIABLE-HERE  r60-decision-r1.md — this checkout carries no git history; the committed snapshot is the evidence of record
++UNVERIFIABLE-HERE  r60-decision-r2.md — this checkout carries no git history; the committed snapshot is the evidence of record
+ === C2. the pin is still the newest published commit for the standard ===
+ newest published commit touching cli-design-standard.md: fb30a591c267a7ec1130ba4cda679eaee494b9d7
+ PASS  C2a the newest commit for that path is still the pinned one
+ 
+-CHECKS RUN: 14   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2
++CHECKS RUN: 12   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 4
+ NOTE: UNVERIFIABLE-HERE entries have no public remote by design; each one's privacy was itself checked above.
+ RESULT: no snapshot contradicts its recorded source
+diff exit: 1
+
+===== live provenance rerun (checkout with history) =====
+=== C0. negative control: prove this harness can fail ===
+--- the next FAIL line is deliberate ---
+FAIL  C0 control (expected to FAIL)
+      wanted: ABSENT-SUBSTRING
+      got: present text
+PASS  C0 harness detected the mismatch
+--- control accounted for; counters reset ---
+=== C1. every snapshot re-derived from the source MANIFEST.txt names ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  cli-design-standard-1.4.14.md (refetched)
+PASS  C1 cli-design-standard-1.4.14.md equals the bytes at its pinned URL
+7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889  clap_builder-4.6.6.crate (tarball)
+PASS  C1 clap_builder-4.6.6.crate matches the checksum crates.io records
+ec8854cb291bb4f666de87470c99459db312ba9addd0864cedf83e52225cd8fc  clap_builder-4.6.6-src-builder-command.rs.txt (extracted)
+PASS  C1 clap_builder-4.6.6-src-builder-command.rs.txt equals clap_builder-4.6.6/src/builder/command.rs inside that tarball
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  clap_derive-4.6.4.crate (tarball)
+PASS  C1 clap_derive-4.6.4.crate matches the checksum crates.io records
+382ef691d65bdc867eaa5465a408374ffda528e96824cebeff88de7f9d40e2eb  clap_derive-4.6.4-src-item.rs.txt (extracted)
+PASS  C1 clap_derive-4.6.4-src-item.rs.txt equals clap_derive-4.6.4/src/item.rs inside that tarball
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  clap_derive-4.6.4.crate (tarball)
+PASS  C1 clap_derive-4.6.4.crate matches the checksum crates.io records
+29783c4d7b9499315679711bea94476da6fef2c73f6a1b1f6c808e71330fbb02  clap_derive-4.6.4-src-attr.rs.txt (extracted)
+PASS  C1 clap_derive-4.6.4-src-attr.rs.txt equals clap_derive-4.6.4/src/attr.rs inside that tarball
+ef0cbb123ce38f67b3e776f427c2d8bb0cebe0c8efa00d4a5a0530e341312a91  py-b08bccfb-cli-commands-projects.py.txt (refetched)
+PASS  C1 py-b08bccfb-cli-commands-projects.py.txt equals the bytes at its pinned URL
+e6fc59ac8c8ebb66d4d9c87fffe3e1931bb81693e26f498b510940c9add76a01  py-b08bccfb-cli-commands-__init__.py.txt (refetched)
+PASS  C1 py-b08bccfb-cli-commands-__init__.py.txt equals the bytes at its pinned URL
+anonymous fetch of src/router.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+UNVERIFIABLE-HERE  ts-cb1cbcb2-src-router.ts.txt — private origin; the committed snapshot is the evidence of record
+anonymous fetch of src/commands/projects.ts in smorinlabs/ts-launch-blueprint: HTTP 404
+PASS  C1 smorinlabs/ts-launch-blueprint is not publicly readable, so this snapshot cannot be refetched
+UNVERIFIABLE-HERE  ts-cb1cbcb2-src-commands-projects.ts.txt — private origin; the committed snapshot is the evidence of record
+d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  r60-decision-r1.md (from git history)
+PASS  C1 r60-decision-r1.md equals the git object MANIFEST.txt names
+18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c  r60-decision-r2.md (from git history)
+PASS  C1 r60-decision-r2.md equals the git object MANIFEST.txt names
+=== C2. the pin is still the newest published commit for the standard ===
+newest published commit touching cli-design-standard.md: fb30a591c267a7ec1130ba4cda679eaee494b9d7
+PASS  C2a the newest commit for that path is still the pinned one
+
+CHECKS RUN: 14   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2
+NOTE: UNVERIFIABLE-HERE entries have no public remote by design; each one's privacy was itself checked above.
+RESULT: no snapshot contradicts its recorded source
+===== live provenance diff against recorded log =====
+diff exit: 0
+===== numeric-label inverse control =====
+PASS count=10 does not satisfy count=0
+===== gate-1 and exclusion verification =====
+| Candidate | 1. license — **gate inapplicable**; the value is recorded as a fact, see below | 2. MSRV (floor 1.96) | 3. advisory / `unsafe` | 4. OS matrix | 5. default features | 6. size & build cost | Gate result |
+|---|---|---|---|---|---|---|---|
+| `clap 4.6.6` | `MIT OR Apache-2.0` | declares `1.85` — 11 minors of headroom | no RustSec page; `cargo audit` clean on the resolved tree | see qualification 2 | `std,color,help,usage,error-context,suggestions` | largest of the surveyed field in the upstream benchmark (qualification 3) | **pass** |
+| `clap_complete 4.6.9` | `MIT OR Apache-2.0` | declares `1.85` | no RustSec page | see qualification 2 | `default = []`; requires `clap >= 4.5.20` | not separately measured in the upstream benchmark; adds five shell writers | **pass** |
+| `strsim` — `0.11.1` at the 2026-09-10 resolution, and transitive, so the version floats | `MIT` | declares `1.56` | no RustSec page | see qualification 2 | n/a — pulled by clap's `suggestions` | not separately measured | **pass** |
+| `vergen 10.0.3` | `MIT OR Apache-2.0` | declares **`1.96.0` — exactly the floor, zero headroom** | no RustSec page | not assessed | `cargo`, `rustc` features needed | build-time only | **pass today, at risk** — see below |
+| `built 0.8.1` | `MIT` | declares `1.87` | no RustSec page | not assessed | build-time only | build-time only | **pass** (runner-up) |
+| `shadow-rs 2.0.0` | `MIT AND Apache-2.0` | **declares none** | no RustSec page | not assessed | build-time only | build-time only | **excluded by gate 2** (no MSRV evidence) |
+| `bpaf 0.9.27` | `MIT OR Apache-2.0` | declares `1.68` | no RustSec page | not assessed | not assessed | smaller than clap in the upstream benchmark (qualification 3) | passes gates; loses on fit (D above) |
+| `argh 0.1.19` | **`BSD-3-Clause`** | **declares none** | no RustSec page | not assessed | not assessed | 38 KiB in the upstream benchmark (qualification 3) | **excluded by gate 2**; also rejects invalid-UTF-8 argv per that same benchmark's own column |
+| `lexopt 0.3.2` | `MIT` | **declares none** | no RustSec page | not assessed | not assessed | 37 KiB in the upstream benchmark (qualification 3) | **excluded by gate 2**; also architecture C |
+| `pico-args 0.5.0` | `MIT` | **declares none** | no RustSec page | not assessed | not assessed | 24 KiB in the upstream benchmark (qualification 3) | **excluded by gate 2**; newest release 2022-06-04, repo `pushed_at` 2023-10-19 |
+
+**Gate 1 is `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility
+is not evaluated for any dependency or tool`.** The owner ruled that this project
+performs no licence check on any tool or library it uses, and extended that
+knowingly to crates compiled into the shipped artifact; the repository's own
+declared expression `MIT OR Apache-2.0` and its per-file headers are unaffected,
+because those are this repository's own source. The gate row is stated rather
+than deleted because this item's binding prompt still lists it and directs that
+an inapplicable metric carry its reason. **The recommendation does not move, and
+no exclusion in the table above ever rested on this gate**: all four exclusions
+(`shadow-rs`, `argh`, `lexopt`, `pico-args`) are gate-2 exclusions for declaring
+no `rust-version`, and `argh`'s `BSD-3-Clause` — the only value in the column

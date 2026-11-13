@@ -1,0 +1,62 @@
+16d15
+<    Compiling futures-core v0.3.34
+17a17
+>    Compiling futures-core v0.3.34
+20d19
+<    Compiling once_cell v1.21.4
+21a21
+>    Compiling once_cell v1.21.4
+25a26,28
+>    Compiling futures-task v0.3.34
+>    Compiling tracing-core v0.1.36
+>    Compiling percent-encoding v2.3.2
+26a30,31
+>    Compiling smallvec v1.16.1
+>    Compiling serde_json v1.0.151
+27a33
+>    Compiling atomic-waker v1.1.2
+30,35d35
+<    Compiling atomic-waker v1.1.2
+<    Compiling serde_json v1.0.151
+<    Compiling futures-task v0.3.34
+<    Compiling smallvec v1.16.1
+<    Compiling tracing-core v0.1.36
+<    Compiling percent-encoding v2.3.2
+37,38c37,38
+<    Compiling memchr v2.8.3
+<    Compiling mime v0.3.17
+---
+>    Compiling http v1.5.0
+>    Compiling tracing v0.1.44
+39a40
+>    Compiling memchr v2.8.3
+40a42
+>    Compiling mime v0.3.17
+43,47d44
+<    Compiling tracing v0.1.44
+<    Compiling http v1.5.0
+<    Compiling errno v0.3.14
+<    Compiling socket2 v0.6.5
+<    Compiling mio v1.2.3
+49d45
+<    Compiling signal-hook-registry v1.4.8
+51d46
+<    Compiling syn v3.0.6
+52a48,52
+>    Compiling syn v3.0.6
+>    Compiling errno v0.3.14
+>    Compiling mio v1.2.3
+>    Compiling socket2 v0.6.5
+>    Compiling signal-hook-registry v1.4.8
+64c64
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 18.95s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 12.09s
+83c83
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.19s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.52s
+100c100
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.77s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.82s

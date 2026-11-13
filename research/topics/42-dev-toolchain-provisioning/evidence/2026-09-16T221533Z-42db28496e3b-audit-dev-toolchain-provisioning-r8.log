@@ -1,0 +1,288 @@
+# R42 empirical audit round 8 independent replay
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R42/2026-09-05T155503Z-4141a35b69e0
+# scratch: /private/tmp/r42-r8-audit-jkZ1XW
+# check16.sh extracted verbatim from the recorded payload; only CARGO_HOME is isolated because the audit sandbox cannot write the owner cache.
+
+--- 1. The signature policy, read in the source at the immutable tag v1.23.0
+args.rs HTTP 200
+curl exit=0
+args.rs sha256 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+shasum exit=0
+407-
+408-    /// Only install packages that are signed
+409-    ///
+410-    /// The default is to verify signatures if they are available, but to allow
+411-    /// unsigned packages as well.
+412-    #[clap(help_heading = "Options", long)]
+413:    pub(crate) only_signed: bool,
+grep only_signed exit=0
+416-    ///
+417-    /// The default is to verify signatures if they are available. This option
+418-    /// disables that behaviour entirely, which will also stop downloading
+419-    /// signature files in the first place.
+420-    ///
+421-    /// Note that this is insecure and not recommended outside of testing.
+422-    #[clap(help_heading = "Options", long, conflicts_with = "only_signed")]
+423:    pub(crate) skip_signatures: bool,
+grep skip_signatures exit=0
+
+--- 2. What the GitHub-release fetcher does when the crate declares no signing key
+gh_crate_meta.rs HTTP 200
+curl exit=0
+gh_crate_meta.rs sha256 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+shasum exit=0
+301:        let verifier = match (self.signature_policy, &self.target_data.meta.signing) {
+302-            (SignaturePolicy::Ignore, _) | (SignaturePolicy::IfPresent, None) => {
+303-                SignatureVerifier::Noop
+304-            }
+305-            (SignaturePolicy::Require, None) => {
+306-                return Err(FetchError::MissingSignature);
+307-            }
+308-            (_, Some(config)) => {
+309-                let template = match config.file.as_deref() {
+310-                    Some(file) => Template::parse(file)?,
+311-                    None => leon_macros::template!("{ url }.sig"),
+312-                };
+313-                trace!(?template, "parsed signature file template");
+314-
+315-                let sign_url = Context::from_data_with_repo(
+grep verifier-match exit=0
+357:        trace!("validating signature (if any)");
+358-        if data_verifier.validate() {
+359-            if let Some(info) = verifier.info() {
+360-                info!(
+361-                    "Verified signature for package '{}': {info}",
+grep verified-line exit=0
+404:    fn is_third_party(&self) -> bool {
+405-        false
+406-    }
+grep gh is_third_party exit=0
+
+--- 3. Signing metadata is opt-in per crate — the maintainers' own words
+SIGNING.md HTTP 200
+curl exit=0
+SIGNING.md sha256 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+shasum exit=0
+6:This feature requires adding to the Cargo.toml metadata: no autodiscovery here!
+grep no-autodiscovery exit=0
+22:[package.metadata.binstall.signing]
+23-algorithm = "minisign"
+24-pubkey = "RWRnmBcLmQbXVcEPWo2OOKMI36kki4GiI7gcBgIaPLwvxe14Wtxm9acX"
+25-```
+grep signing-stanza exit=0
+
+--- 4. The other prebuilt fetcher, QuickInstall, pins its own key instead
+quickinstall.rs HTTP 200
+curl exit=0
+quickinstall.rs sha256 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+shasum exit=0
+22:const QUICKINSTALL_SIGN_KEY: Cow<'static, str> =
+23-    Cow::Borrowed("RWTdnnab2pAka9OdwgCMYyOE66M/BlQoFWaJ/JjwcPV+f3n24IRTj97t");
+24-const QUICKINSTALL_SUPPORTED_TARGETS_URL: &str =
+--
+126:                            pubkey: QUICKINSTALL_SIGN_KEY,
+127-                            file: None,
+128-                        };
+grep quickinstall-key exit=0
+110:    fn download_signature(
+111-        self: Arc<Self>,
+112-    ) -> AutoAbortJoinHandle<Result<SignatureVerifier, FetchError>> {
+113-        AutoAbortJoinHandle::spawn(async move {
+114-            if self.signature_policy == SignaturePolicy::Ignore {
+115-                Ok(SignatureVerifier::Noop)
+116-            } else {
+117-                debug!(url=%self.signature_url, "Downloading signature");
+118-                match Download::new(self.client.clone(), self.signature_url.clone())
+119-                    .into_bytes()
+120-                    .await
+121-                {
+122-                    Ok(signature) => {
+123-                        trace!(?signature, "got signature contents");
+124-                        let config = PkgSigning {
+125-                            algorithm: SigningAlgorithm::Minisign,
+126-                            pubkey: QUICKINSTALL_SIGN_KEY,
+127-                            file: None,
+128-                        };
+129-                        SignatureVerifier::new(&config, &signature)
+130-                    }
+131-                    Err(err) => {
+132-                        if self.signature_policy == SignaturePolicy::Require {
+133-                            error!("Failed to download signature: {err}");
+134-                            Err(FetchError::MissingSignature)
+135-                        } else {
+136-                            debug!("Failed to download signature, skipping verification: {err}");
+grep qi-download-signature exit=0
+297:    fn is_third_party(&self) -> bool {
+298-        true
+299-    }
+grep qi is_third_party exit=0
+
+--- 5. Which fetcher the WARN line names, so the log can be read
+resolution.rs HTTP 200
+curl exit=0
+resolution.rs sha256 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+shasum exit=0
+125:            "The package {name} v{new_version} ({target}) has been downloaded from {}{}",
+126-            if fetcher.is_third_party() {
+127-                "third-party source "
+128-            } else {
+129-                ""
+130-            },
+131-            fetcher.source_name()
+132-        );
+133-
+grep warn-line exit=0
+
+--- 6. Do the specs check 15 exercised declare signing in their PUBLISHED Cargo.toml?
+cargo-shear-1.13.1.crate HTTP 200
+curl exit=0
+tar exit=0
+cargo-shear@1.13.1 signing: ABSENT
+taplo-cli-0.10.0.crate HTTP 200
+curl exit=0
+tar exit=0
+taplo-cli@0.10.0 signing: ABSENT
+cargo-binstall-1.23.0.crate HTTP 200
+curl exit=0
+tar exit=0
+cargo-binstall@1.23.0 signing: PRESENT
+[package.metadata.binstall.signing]
+algorithm = "minisign"
+pubkey = "RWTfDqVjpjXv39UdqyI00O/XCg8WJfXdWo6V1YR7sYREAiWINtu7VVUY"
+
+
+--- 7. Execute both policies against those specs, --dry-run so nothing is installed
+~/.cargo/bin listing sha256 before: 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+asset HTTP 200
+curl exit=0
+unzip exit=0
+cargo-binstall binary sha256 5e17743fdc1aeedd3e6982b04f53ee23bc7d5e727454559ab0e2129d15e86188
+command -v cargo-binstall -> /private/tmp/r42-r8-audit-jkZ1XW/r42r8run/bin/cargo-binstall
+1.23.0
+cargo binstall -V exit=0
+# 7a. the recipe body exactly as recommended, on an UNSIGNED spec:
+cargo binstall (7a default, cargo-shear) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+  cargo-binstall:  WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com
+  cargo-binstall:  INFO This will install the following binaries:
+  cargo-binstall:  INFO   - cargo-shear => /private/tmp/r42-r8-audit-jkZ1XW/cargo/bin/cargo-shear
+  cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+  cargo-binstall:  INFO Done in 2.61116875s
+7a 'Verified signature' occurrences: 0
+7a 'downloaded from' line: has been downloaded from github.com
+# 7b. the same spec with --only-signed, to see what the fail-closed policy does:
+cargo binstall (7b --only-signed, cargo-shear) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall: ERROR Failed to download signature: Failed to download from remote: could not GET https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig: HTTP status client error (404 Not Found) for url (https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig)
+  cargo-binstall:  WARN The package cargo-shear v1.13.1 will be installed from source (with cargo)
+  cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install cargo-shear --version 1.13.1 --locked --root /private/tmp/r42-r8-audit-jkZ1XW/cargo`
+  cargo-binstall:  INFO Done in 2.2283885s
+# 7c. POSITIVE CONTROL: a spec that does declare a signing key, under --only-signed:
+cargo binstall (7c --only-signed, cargo-binstall) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-binstall@=1.23.0'
+  cargo-binstall:  INFO resolve: Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25ea559687bec77e281e9b271aa1367b624 ts=2026-09-05T16:59:07.371Z run=33978884356
+  cargo-binstall:  WARN The package cargo-binstall v1.23.0 (x86_64-apple-darwin) has been downloaded from github.com
+  cargo-binstall:  INFO This will install the following binaries:
+  cargo-binstall:  INFO   - cargo-binstall => /private/tmp/r42-r8-audit-jkZ1XW/cargo/bin/cargo-binstall
+  cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+  cargo-binstall:  INFO Done in 3.05305025s
+7c 'Verified signature' occurrences: 1
+# 7d. NEGATIVE CONTROL: a spec that cannot resolve must fail, so this check can fail
+cargo binstall (7d negative control) exit=76
+    │ crate is not found
+    ╰─▶ rs-launch-blueprint-no-such-crate is not found
+  
+~/.cargo/bin listing sha256 after:  01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+~/.cargo/bin unchanged: yes
+check16-shell-exit=0
+# check16b.sh extracted verbatim from the recorded payload.
+
+--- 1. Fetch and unpack the whole source tree at v1.23.0
+tarball HTTP 200
+curl exit=0
+tar exit=0
+
+--- 2. CONTROL: the unpacked tree must be the same tree check 16's first leg read
+args.rs sha256 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+tree control: MATCHES the sha256 recorded at checks 15 and 16
+
+--- 3. Every implementation of the DataVerifier trait in the tree
+crates/binstalk-fetchers/src/signing.rs:78:impl DataVerifier for MinisignDataVerifier<'_> {
+crates/binstalk-downloader/src/download.rs:74:impl DataVerifier for () {
+crates/binstalk-registry/src/common.rs:44:impl DataVerifier for Sha256Digest {
+grep exit=0
+impl DataVerifier count: 3 file(s), 3 site(s)
+
+--- 4. The trait itself, and what the downloader says about checksums
+58-    }
+59-}
+60-
+61:pub trait DataVerifier: Send + Sync {
+62-    /// Digest input data.
+63-    ///
+64-    /// This method can be called repeatedly for use with streaming messages,
+65-    /// it will be called in the order of the message received.
+66-    fn update(&mut self, data: &Bytes);
+67-
+68-    /// Finalise the data verification.
+69-    ///
+70-    /// Return false if the data is invalid.
+71-    fn validate(&mut self) -> bool;
+72-}
+73-
+grep trait exit=0
+198:    /// This does not support verifying a checksum due to the partial extraction
+grep checksum(download.rs) exit=0
+
+--- 5. Where that third implementation is used, and a paired control
+25-    pub(super) auth_required: bool,
+26-}
+27-
+28:struct Sha256Digest {
+29-    expected: Vec<u8>,
+30-    actual: Option<Vec<u8>>,
+31-    state: Option<Sha256>,
+32-}
+33-
+34-impl Sha256Digest {
+35-    fn new(checksum: Vec<u8>) -> Self {
+36-        Self {
+37-            expected: checksum,
+38-            actual: None,
+39-            state: Some(Sha256::new()),
+40-        }
+41-    }
+42-}
+43-
+44-impl DataVerifier for Sha256Digest {
+45-    fn update(&mut self, data: &Bytes) {
+46-        if let Some(ref mut state) = &mut self.state {
+47-            state.update(data);
+48-        }
+49-    }
+50-
+grep Sha256Digest exit=0
+66:pub(super) async fn parse_manifest(
+67-    client: Client,
+68-    crate_name: &str,
+69-    crate_url: Url,
+70-    MatchedVersion { version, cksum }: MatchedVersion,
+71-    auth: Option<&RegistryAuth>,
+72-) -> Result<Manifest<Meta>, RegistryError> {
+73-    debug!("Fetching crate from: {crate_url} and extracting Cargo.toml from it");
+74-
+grep parse_manifest exit=0
+Sha256Digest construction sites: 1
+crates/binstalk-registry/src/common.rs:78:    let mut digest = Sha256Digest::new(checksum);
+grep construction exit=0
+# paired control on the same grep key: one form must be found, the other must not
+/private/tmp/r42-r8-audit-jkZ1XW/r42r8b/src/cargo-binstall-1.23.0/crates/binstalk-registry/src/common.rs:1
+positive control exit=0 (0 with count 1 = found, as required)
+negative control exit=1 (1 = found nothing, as required)
+
+--- 6. Tree-wide: does any fetcher compare a digest against registry metadata?
+grep exit=1 (1 = no hit anywhere under binstalk-fetchers/src)
+check16b-shell-exit=0

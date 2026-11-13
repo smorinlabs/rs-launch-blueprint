@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-018(1) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — ts deliberately chose "no logging library; hand-rolled leveled stderr logger... with injected stdout/stderr writers via the CLI deps interface," reusing the org's existing precedent rather than adopting a structured-logging crate; D-018(3) — ts's verbosity mapping adapts cli-standards' repeatable `-v` ladder (`-q` errors+warns only; default info; repeatable `-v`; `--debug` overrides `--quiet`; `--quiet` beats `--verbose`) but has no flag/env/config-file override tier ahead of it, unlike py's F274.
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): Look at the best practices and principles from the Python logging and see what applies to best architectural practices for both TypeScript and Rust. There should be a specific research item here.
 
+### Baseline review (2026-09-04)
+- F304 (tracing dependencies as a separate optional extra) was reclassified `DIVERGENT` under this item, because `logging-pipeline-contract` includes the optional OTel feature boundary: set that boundary inside the `web` surface R69 defines, with R78 defining the integration, and keep the working OTel web example an owner requirement, never an optional outcome (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Whether a rotating file log sink exists, its rotation policy, and its own independent level; R59 (`file-log-sink`) owns F255-F261 — this item designs the console/structured pipeline itself, not the file sink attached to it.
 - The separate XDG data/state/cache directory set a file sink's default path might need; R57 (`xdg-directory-set`) owns F249.
@@ -19,8 +22,12 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Couplings
 - id: R58
-- owns:
+- owns: logging-pipeline-contract
 - consumes: R69: web-extra-surface
+- effort: deep
+- engines: muse, opus, doxa
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R59 (`file-log-sink`) builds its file sink on top of whatever pipeline this item recommends; treat R59 as downstream of this item. R57 (`xdg-directory-set`) may supply a state-directory default this item's pipeline does not itself need but R59 will.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -63,6 +70,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -73,7 +86,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

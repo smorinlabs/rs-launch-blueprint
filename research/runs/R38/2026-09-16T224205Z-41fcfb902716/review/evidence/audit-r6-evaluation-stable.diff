@@ -1,0 +1,28 @@
+--- review/evidence/audit-r6-recorded-normalized.log	2026-09-13 01:08:31
++++ review/evidence/audit-r6-rerun-normalized.log	2026-09-13 01:08:31
+@@ -1,5 +1,9 @@
+ timestamp [volatile]
+ host [volatile]
++provisioning conventional_commits_linter 0.17.1 ...
++cargo install exit=0  (log: install.log)
++provisioning the control binary committed 1.1.11 ...
++cargo install exit=0  (log: install.log)
+ A1       expected=conventional_commits_linter 0.17.1 observed=conventional_commits_linter 0.17.1 PASS candidate binary reports its pinned version
+ A2       expected=committed 1.1.11       observed=committed 1.1.11       PASS control binary reports the selected pin
+ candidate-size [volatile]
+@@ -79,7 +83,7 @@
+          contract: MEETS    the vocabulary is matched case-insensitively by BOTH tools; a shared tolerance, recorded as a finding about the selected tool too
+ C23      expected=1                      observed=1                      PASS candidate on `WIBBLE(cli): …` — an upper-case NON-member is still rejected
+ C23-ctl  expected=1                      observed=1                      PASS control committed on the same message — rejected as well
+-       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical/conventional-commits-linter-eval/.work/upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
++       | /private/tmp/r38-audit-r6.46q2YZ/empirical/conventional-commits-linter-eval/.work/upper-bad.txt: error Disallowed type `WIBBLE` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+          contract: MEETS    neither tool lets a type outside the vocabulary land, in any casing
+ C16      expected=127                    observed=127                    PASS missing binary fails loudly (127), as committed does
+        | env: conventional_commits_linter: No such file or directory
+@@ -140,3 +144,5 @@
+ D19      expected=1                      observed=1                      PASS GATE 3 note: ansi_term, a DIRECT dependency of the crate, carries the unmaintained advisory RUSTSEC-2021-0139
+ summary: PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3
+ RESULT: PASS (every observation reproduced; the 3 contract violations above are the finding)
++rerun_exit=0
++fixture=/private/tmp/r38-audit-r6.46q2YZ
+stable-evaluation-diff: mismatch

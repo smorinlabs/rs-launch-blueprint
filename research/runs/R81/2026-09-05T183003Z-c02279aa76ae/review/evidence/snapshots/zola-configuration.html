@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Everything you need to make a static site engine in one binary.">
+        <meta name="author" content="Vincent Prouillet">
+        <title>Configuration | Zola </title>
+        <link rel="stylesheet" href="https://www.getzola.org/site.css">
+        <link rel="icon" href="https://www.getzola.org/favicon.ico">
+    </head>
+    <body>
+
+        <header>
+		<a class="header__logo white" href="https://www.getzola.org/"><img
+			src="https://www.getzola.org/logos/Zola-logo-white.svg"
+			title="Zola main logo in white"
+			alt="Zola"
+			/></a>
+            <nav>
+                <ul>
+                    <li><a class="white" href="https://www.getzola.org/documentation/" class="nav-link">Docs</a></li>
+                    <li><a class="white" href="https://www.getzola.org/themes/" class="nav-link">Themes</a></li>
+                    <li><a class="white external" href="https://zola.discourse.group/" class="nav-link">Forum</a></li>
+                    <li><a class="white external" href="https://github.com/getzola/zola" class="nav-link">GitHub</a></li>
+                </ul>
+                <div class="search-container">
+                    <input id="search" type="search" placeholder="🔎 Search the docs">
+
+                    <div class="search-results">
+                        <div class="search-results__items"></div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div class="content content--reversed">
+            
+
+<div class="documentation">
+    <aside class="documentation__sidebar">
+        <ul>
+        
+            
+            <li>
+                <span class="documentation__sidebar__title">Getting Started</span>
+                <ul>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/getting-started/overview/">Overview</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/getting-started/installation/">Installation</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/getting-started/cli-usage/">CLI usage</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/getting-started/directory-structure/">Directory structure</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="https://www.getzola.org/documentation/getting-started/configuration/">Configuration</a>
+                        </li>
+                    
+                </ul>
+            </li>
+        
+            
+            <li>
+                <span class="documentation__sidebar__title">Content</span>
+                <ul>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/overview/">Overview</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/section/">Section</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/page/">Page</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/linking/">Internal links &amp; deep linking</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/table-of-contents/">Table of Contents</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/syntax-highlighting/">Syntax Highlighting</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/taxonomies/">Taxonomies</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/search/">Search</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/sass/">Sass</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/image-processing/">Image processing</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/content/multilingual/">Multilingual sites</a>
+                        </li>
+                    
+                </ul>
+            </li>
+        
+            
+            <li>
+                <span class="documentation__sidebar__title">Templates</span>
+                <ul>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/overview/">Overview</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/pages-sections/">Sections and Pages</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/pagination/">Pagination</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/taxonomies/">Taxonomies</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/feeds/">Feeds</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/sitemap/">Sitemap</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/robots/">Robots.txt</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/404/">404 error page</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/templates/archive/">Archive</a>
+                        </li>
+                    
+                </ul>
+            </li>
+        
+            
+            <li>
+                <span class="documentation__sidebar__title">Themes</span>
+                <ul>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/themes/overview/">Overview</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/themes/installing-and-using-themes/">Installing &amp; using themes</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/themes/creating-a-theme/">Creating a theme</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/themes/extending-a-theme/">Customizing a theme</a>
+                        </li>
+                    
+                </ul>
+            </li>
+        
+            
+            <li>
+                <span class="documentation__sidebar__title">Deployment</span>
+                <ul>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/overview/">Overview</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/sourcehut/">Sourcehut Pages</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/netlify/">Netlify</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/github-pages/">GitHub Pages</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/gitlab-pages/">GitLab Pages</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/codeberg-pages/">Codeberg Pages</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/edgio/">Edgio</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/vercel/">Vercel</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/zeabur/">Zeabur</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/azure-static-webapps/">Azure Static Web Apps</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/cloudflare-pages/">Cloudflare Pages</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/cloudflare-workers/">Cloudflare Workers</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/flyio/">Fly.io</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/aws-s3/">AWS S3 Bucket</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="https://www.getzola.org/documentation/deployment/docker-image/">Docker image</a>
+                        </li>
+                    
+                </ul>
+            </li>
+        
+        </ul>
+    </aside>
+    <div class="documentation__content">
+        
+    <h1>Configuration</h1>
+    <p>The default configuration is sufficient to get Zola running locally but not more than that.
+It follows the philosophy of paying for only what you need, almost everything is turned off by default.</p>
+<p>To change the configuration, edit the <code>zola.toml</code> file.
+If you are not familiar with TOML, have a look at <a class="external" rel="external" href="https://github.com/toml-lang/toml">the TOML spec</a>.</p>
+<blockquote>
+<p>The configuration file was previously named config.toml. Zola loads config.toml as a fallback if zola.toml does not exist.</p>
+</blockquote>
+<p>⚠️ If you add keys to your <code>zola.toml</code>, you must pay attention to which TOML section it belongs to. A TOML section starts with a header, e.g. <code>[search]</code>, and ends at the next section or EOF.</p>
+<p>Here are the current <code>zola.toml</code> sections:</p>
+<ol>
+<li>main (unnamed)</li>
+<li>markdown</li>
+<li>link_checker</li>
+<li>slugify</li>
+<li>search</li>
+<li>translations</li>
+<li>languages</li>
+<li>extra</li>
+</ol>
+<p><strong>Only the <code>base_url</code> variable is mandatory</strong>. Everything else is optional. All configuration variables
+used by Zola as well as their default values are listed below:</p>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;" ><code data-lang="toml"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The base URL of the site; the only required configuration variable.</span></span>
+<span class="giallo-l"><span>base_url</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;https://mywebsite.com&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The site title and description; used in feeds by default.</span></span>
+<span class="giallo-l"><span>title</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;&quot;</span></span>
+<span class="giallo-l"><span>description</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The default language; used in feeds.</span></span>
+<span class="giallo-l"><span>default_language</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;en&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The site theme to use.</span></span>
+<span class="giallo-l"><span>theme</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For overriding the default output directory `public`, set it to another value (e.g.: &quot;docs&quot;)</span></span>
+<span class="giallo-l"><span>output_dir</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;public&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether dotfiles at the root level of the output directory are preserved when (re)building the site.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Enabling this also prevents the deletion of the output folder itself on rebuilds.</span></span>
+<span class="giallo-l"><span>preserve_dotfiles_in_output</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, the Sass files in the `sass` directory in the site root are compiled.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Sass files in theme directories are always compiled.</span></span>
+<span class="giallo-l"><span>compile_sass</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, the generated HTML files are minified.</span></span>
+<span class="giallo-l"><span>minify_html</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># A list of glob patterns specifying asset files to ignore when the content</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># directory is processed. Defaults to none, which means that all asset files are</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># copied over to the `public` directory.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Example:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     ignored_content = [&quot;*.{graphml,xlsx}&quot;, &quot;temp.*&quot;, &quot;**/build_folder&quot;]</span></span>
+<span class="giallo-l"><span>ignored_content</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> []</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># A list of file glob patterns to skip templating in content. Defaults to none, which</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># means all content files are templated.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For example, Zola documentation uses it for the themes section as they sometimes contain</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Tera content but not things we want to render.</span></span>
+<span class="giallo-l"><span>skip_content_templating</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> []</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Similar to ignored_content, a list of glob patterns specifying asset files to</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># ignore when the static directory is processed. Defaults to none, which means</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># that all asset files are copied over to the `public` directory</span></span>
+<span class="giallo-l"><span>ignored_static</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> []</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, a feed is automatically generated.</span></span>
+<span class="giallo-l"><span>generate_feeds</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;all&quot;, paginated pages are not a part of the sitemap, default is &quot;none&quot;</span></span>
+<span class="giallo-l"><span>exclude_paginated_pages_in_sitemap</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;none&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The filenames to use for the feeds. Used as the template filenames, too.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Defaults to [&quot;atom.xml&quot;], which has a built-in template that renders an Atom 1.0 feed.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># There is also a built-in template &quot;rss.xml&quot; that renders an RSS 2.0 feed.</span></span>
+<span class="giallo-l"><span>feed_filenames</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> [</span><span style="color: #A6E3A1;">&quot;atom.xml&quot;</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The number of articles to include in the feed. All items are included if</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># this limit is not set (the default).</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># feed_limit = 20</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, files in the `static` directory and colocated page/section assets are</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># hard-linked instead of copied. Useful for large static files. Note that for this to work, the</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># source and output directory need to be on the same filesystem. Note that the theme&#39;s `static`</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># files are always copied, regardless of this setting.</span></span>
+<span class="giallo-l"><span>hard_link_static</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The default author for pages</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># author =</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The taxonomies to be rendered for the site and their configuration of the default languages</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Example:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     taxonomies = [</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#       {name = &quot;tags&quot;, feed = true}, # each tag will have its own feed</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#       {name = &quot;tags&quot;}, # you can have taxonomies with the same name in multiple languages</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#       {name = &quot;categories&quot;, paginate_by = 5},  # 5 items per page for a term</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#       {name = &quot;authors&quot;}, # Basic definition: no feed or pagination</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     ]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span>taxonomies</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> []</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Optional base path for all taxonomies. If set, all taxonomy paths will be relative to this path.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For example, if taxonomy_root is &quot;blog&quot; and taxonomy is &quot;tags&quot;, the path will be /blog/tags/</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># taxonomy_root = &quot;blog&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, a search index is built from the pages and section</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># content for `default_language`.</span></span>
+<span class="giallo-l"><span>build_search_index</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;false&quot;, Sitemap.xml is not generated</span></span>
+<span class="giallo-l"><span>generate_sitemap</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;false&quot;, robots.txt is not generated</span></span>
+<span class="giallo-l"><span>generate_robots_txt</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Configuration of the Markdown rendering</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>markdown</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, emoji aliases translated to their corresponding</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Unicode emoji equivalent in the rendered Markdown files. (e.g.: :smile: =&gt; 😄)</span></span>
+<span class="giallo-l"><span>render_emoji</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># CSS class to add to external links (e.g. &quot;external-link&quot;)</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># external_links_class =</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether external links are to be opened in a new tab</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># If this is true, a `rel=&quot;noopener&quot;` will always automatically be added for security reasons</span></span>
+<span class="giallo-l"><span>external_links_target_blank</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to set rel=&quot;nofollow&quot; for all external links</span></span>
+<span class="giallo-l"><span>external_links_no_follow</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to set rel=&quot;noreferrer&quot; for all external links</span></span>
+<span class="giallo-l"><span>external_links_no_referrer</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to set rel=&quot;external&quot; for all external links</span></span>
+<span class="giallo-l"><span>external_links_external</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether smart punctuation is enabled (changing quotes, dashes, dots in their typographic form)</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For example, `...` into `…`, `&quot;quote&quot;` into `“curly”` etc</span></span>
+<span class="giallo-l"><span>smart_punctuation</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether parsing of definition lists is enabled</span></span>
+<span class="giallo-l"><span>definition_list</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to set decoding=&quot;async&quot; and loading=&quot;lazy&quot; for all images</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When turned on, the alt text must be plain text.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For example, `![xx](...)` is ok but `![*x*x](...)` isn’t ok</span></span>
+<span class="giallo-l"><span>lazy_async_image</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether footnotes are rendered in the GitHub-style (at the bottom, with back references) or plain (in the place, where they are defined)</span></span>
+<span class="giallo-l"><span>bottom_footnotes</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, support for GitHub-style alerts, a.k.a. callouts or admonitions, is enabled in the Markdown parser.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For example, this Markdown syntax:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     &gt; [!NOTE]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     &gt; alert note</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># will result in the following generated HTML:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     &lt;blockquote class=&quot;markdown-alert-note&quot;&gt;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     &lt;p&gt;alert note&lt;/p&gt;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     &lt;/blockquote&gt;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># where the CSS class name suffix may be `note`, `tip`, `important`, `warning`, or `caution`, depending on the alert type.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Visual appearance depends on theme-level support; refer to your theme&#39;s documentation for more information.</span></span>
+<span class="giallo-l"><span>github_alerts</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># This determines whether to insert a link for each header like the ones you can see on this site if you hover over</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># a header.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># The default template can be overridden by creating an `anchor-link.html` file in the `templates` directory.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># This value can be &quot;left&quot;, &quot;right&quot;, &quot;heading&quot; or &quot;none&quot;.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># &quot;heading&quot; means the full heading becomes the text of the anchor.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># See &quot;Internal links &amp; deep linking&quot; in the documentation for more information.</span></span>
+<span class="giallo-l"><span>insert_anchor_links</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;none&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Syntax highlighting configuration (optional)</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>markdown.highlighting</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When set to &quot;true&quot;, missing highlight languages are treated as errors. Defaults to false but recommended to set to true.</span></span>
+<span class="giallo-l"><span>error_on_missing_language</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to use inline hex colours (`inline`) or CSS classes (`class`) </span></span>
+<span class="giallo-l"><span>style</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;inline&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Selecting a theme is always required: you have a choice between single (1) or dual themes (2).</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Only outputting CSS classes like before 0.22 is not possible anymore.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># 1. If you use a single theme, put its name here. See the syntax highlighting page for the possible choices.</span></span>
+<span class="giallo-l"><span>theme</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># 2. If you want light/dark themes, use the 2 fields below instead. See the syntax highlighting page for the possible choices.</span></span>
+<span class="giallo-l"><span>light_theme</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;&quot;</span></span>
+<span class="giallo-l"><span>dark_theme</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># A list of files for additional JSON TextMate grammars</span></span>
+<span class="giallo-l"><span>extra_grammars</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> []</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># A list of files for additional JSON TextMate themes</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Get themes from https://textmate-grammars-themes.netlify.app/</span></span>
+<span class="giallo-l"><span>extra_themes</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> []</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Where to insert the data attributes for codeblocks. Default to on the &lt;code&gt; element.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Other options are: &quot;pre&quot;, &quot;both&quot; and &quot;none&quot;</span></span>
+<span class="giallo-l"><span>data_attr_position</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;code&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether the generated CSS should set color-scheme when using a dual theme</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Defaults to `true`</span></span>
+<span class="giallo-l"><span>add_color_scheme</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> true</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Configuration of the link checker.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>link_checker</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Skip link checking for external URLs that start with these prefixes</span></span>
+<span class="giallo-l"><span>skip_prefixes</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> [</span></span>
+<span class="giallo-l"><span style="color: #A6E3A1;">    &quot;http://[2001:db8::]/&quot;</span><span style="color: #9399B2;">,</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Skip anchor checking for external URLs that start with these prefixes</span></span>
+<span class="giallo-l"><span>skip_anchor_prefixes</span><span style="color: #94E2D5;"> =</span><span style="color: #9399B2;"> [</span></span>
+<span class="giallo-l"><span style="color: #A6E3A1;">    &quot;https://caniuse.com/&quot;</span><span style="color: #9399B2;">,</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Treat internal link problems as either &quot;error&quot; or &quot;warn&quot;, default is &quot;error&quot;</span></span>
+<span class="giallo-l"><span>internal_level</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;error&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Treat external link problems as either &quot;error&quot; or &quot;warn&quot;, default is &quot;error&quot;</span></span>
+<span class="giallo-l"><span>external_level</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;error&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Various slugification strategies, see below for details</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Defaults to everything being a slug</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>slugify</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"><span>paths</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;on&quot;</span></span>
+<span class="giallo-l"><span>taxonomies</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;on&quot;</span></span>
+<span class="giallo-l"><span>anchors</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;on&quot;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to remove date prefixes for page path slugs.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For example, content/posts/2016-10-08_a-post-with-dates.md =&gt; posts/a-post-with-dates</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># When true, content/posts/2016-10-08_a-post-with-dates.md =&gt; posts/2016-10-08-a-post-with-dates</span></span>
+<span class="giallo-l"><span>paths_keep_dates</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>search</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to include the title of the page/section in the index</span></span>
+<span class="giallo-l"><span>include_title</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> true</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to include the description of the page/section in the index</span></span>
+<span class="giallo-l"><span>include_description</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to include the RFC3339 datetime of the page in the search index</span></span>
+<span class="giallo-l"><span>include_date</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to include the path of the page/section in the index (the permalink is always included)</span></span>
+<span class="giallo-l"><span>include_path</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> false</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to include the rendered content of the page/section in the index</span></span>
+<span class="giallo-l"><span>include_content</span><span style="color: #94E2D5;"> =</span><span style="color: #FAB387;"> true</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># At which code point to truncate the content to. Useful if you have a lot of pages and the index would</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># become too big to load on the site. Defaults to not being set.</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># truncate_content_length = 100</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Whether to produce the search index as a javascript file or as a JSON file</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Accepted values:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># - &quot;elasticlunr_javascript&quot;, &quot;elasticlunr_json&quot;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># - &quot;fuse_javascript&quot;, &quot;fuse_json&quot;</span></span>
+<span class="giallo-l"><span>index_format</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;elasticlunr_javascript&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Optional translation object for the default language</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Example:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     default_language = &quot;fr&quot;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     [translations]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     title = &quot;Un titre&quot;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>translations</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Additional languages definition</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># You can define language specific config values and translations:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># title, description, generate_feeds, feed_filenames, taxonomies, build_search_index</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># as well as its own search configuration and translations (see above for details on those)</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>languages</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># For example</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># [languages.fr]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># title = &quot;Mon blog&quot;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># generate_feeds = true</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># taxonomies = [</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#    {name = &quot;auteurs&quot;},</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#    {name = &quot;tags&quot;},</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># ]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># build_search_index = false</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># You can put any kind of data here. The data</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># will be accessible in all templates</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Example:</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     [extra]</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#     author = &quot;Famous author&quot;</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># author value will be available using {{ config.extra.author }} in templates</span></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;">#</span></span>
+<span class="giallo-l"><span style="color: #9399B2;">[</span><span>extra</span><span style="color: #9399B2;">]</span></span></code></pre><h2 id="slugification-strategies"><a class="zola-anchor" href="#slugification-strategies" aria-label="Anchor link for: slugification-strategies">🔗</a>Slugification strategies</h2>
+<p>By default, Zola will turn every path, taxonomies and anchors to a slug, an ASCII representation with no special characters.
+You can however change that strategy for each kind of item, if you want UTF-8 characters in your URLs for example. There are 3 strategies:</p>
+<ul>
+<li><code>on</code>: the default one, everything is turned into a slug</li>
+<li><code>safe</code>: characters that cannot exist in files on Windows (<code>&lt;&gt;:"/\|?*</code>) or Unix (<code>/</code>) are removed, everything else stays</li>
+<li><code>off</code>: nothing is changed, your site might not build on some OS and/or break various URL parsers</li>
+</ul>
+<p>Since there are no filename issues with anchors, the <code>safe</code> and <code>off</code> strategies are identical in their case: the only change
+is space being replaced by <code>_</code> since a space is not valid in an anchor.</p>
+<p>Note that if you are using a strategy other than the default, you will have to manually escape whitespace and Markdown
+tokens to be able to link to your pages. For example an internal link to a file named <code>some space.md</code> will need to be
+written like <code>some%20space.md</code> in your Markdown files.</p>
+
+
+    </div>
+</div>
+
+        </div>
+        <footer>
+            ©2017-2026 — <a class="white" href="https://www.vincentprouillet.com">Vincent Prouillet</a> and <a class="white" href="https://github.com/getzola/zola/graphs/contributors">contributors</a>
+        </footer>
+
+        <script type="text/javascript" src="https://www.getzola.org/elasticlunr.min.js"></script>
+        <script type="text/javascript" src="https://www.getzola.org/search.js"></script>
+    </body>
+</html>

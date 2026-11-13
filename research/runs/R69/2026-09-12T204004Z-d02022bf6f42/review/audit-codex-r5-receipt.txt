@@ -1,0 +1,5 @@
+Audit: `review/audit-codex.md`  
+SHA-256: `38a6ee40b60501e263640343d69f70008fd4cb7c2e0b0318d2df56756e42bb60`  
+Verdict: approve  
+Rerun: exit 0; logs under `review/evidence/audit-*-r5.log`  
+Findings: none. Independent `/usr/bin/grep -cF` confirmed 54 yanked errors; archive and in-place reruns matched byte-for-byte.

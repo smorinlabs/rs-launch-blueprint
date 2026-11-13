@@ -1,0 +1,11 @@
+--- /private/tmp/r69-r9-root-archive.VUj5Ly/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/owner-reference-check-r9.sh	2026-09-16 18:10:51
++++ /private/tmp/r69-r9-root-archive.VUj5Ly/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-owner-reference-check-r9-mutation-verified.sh	2026-09-16 18:15:47
+@@ -119,7 +119,7 @@
+ must "rt-multi-thread implies rt"              "rt"     "$("$JQ" -r '.rt_multi_thread_expands_to[0]' "$A")"
+ must "of \`full\`, covered by the six plus rt"   "7"      \
+   "$("$JQ" -r '(.full_feature_count) - (.full_adds_beyond_selected | length)' "$A")"
+-must "what \`full\` adds beyond them, count"     "5"      "$("$JQ" -r '.full_adds_beyond_selected | length' "$A")"
++must "what \`full\` adds beyond them, count"     "9"      "$("$JQ" -r '.full_adds_beyond_selected | length' "$A")"
+ must "what \`full\` adds beyond them, names"     "fs,io-util,io-std,parking_lot,process" \
+   "$("$JQ" -r '.full_adds_beyond_selected | join(",")' "$A")"
+ must "parking_lot is an optional DEPENDENCY"   "true"   \

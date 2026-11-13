@@ -1,0 +1,39 @@
+# GitHub repository + open-issue figures
+# GET https://api.github.com/repos/<o>/<r>            -> stargazers_count, archived, pushed_at, license.spdx_id
+# GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open -> total_count
+# Retrieved: 2026-09-10T05:16:48Z
+
+=== cargo-bins/cargo-binstall
+{"archived":false,"license":"GPL-3.0","pushed_at":"2026-09-10T01:22:53Z","stars":2864}
+{"open_issues_total_count":93}
+=== houseabsolute/ubi
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-07T21:12:11Z","stars":595}
+{"open_issues_total_count":11}
+=== jdx/mise
+{"archived":false,"license":"MIT","pushed_at":"2026-09-10T00:53:53Z","stars":33724}
+{"open_issues_total_count":26}
+=== flox/flox
+{"archived":false,"license":"GPL-2.0","pushed_at":"2026-09-09T21:20:03Z","stars":4123}
+{"open_issues_total_count":380}
+=== casey/just
+{"archived":false,"license":"CC0-1.0","pushed_at":"2026-09-01T20:47:57Z","stars":35716}
+{"open_issues_total_count":171}
+=== dustinblackman/cargo-run-bin
+{"archived":false,"license":"MIT","pushed_at":"2025-12-19T02:30:12Z","stars":237}
+{"open_issues_total_count":7}
+=== rust-lang/rustup
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-09T14:33:39Z","stars":7034}
+{"open_issues_total_count":392}
+=== taiki-e/install-action
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-09T11:24:03Z","stars":537}
+{"open_issues_total_count":15}
+
+# RustSec advisory pages: GET https://rustsec.org/packages/<name>.html (HTTP status only)
+cargo-binstall       404
+ubi                  404
+mise                 404
+just                 404
+cargo-run-bin        404
+time                 200
+atty                 200
+# (time and atty are HTTP-200 controls: a 404 above therefore means 'no advisory page', not a transport failure.)

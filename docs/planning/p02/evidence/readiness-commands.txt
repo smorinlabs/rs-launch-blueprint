@@ -1,0 +1,103 @@
+Execution-readiness inspection command record
+Date: 2026-09-04
+Worktree: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+Pinned tree: 2f3569051af2c2089f60f6cad129bc6e55482c30
+
+$ command -v doxa || true; command -v doxa-research || true; command -v uv || true
+/Users/stevemorin/.local/bin/uv
+
+$ ls -l /Users/stevemorin/c/doxa-research/.venv/bin/doxa /Users/stevemorin/c/doxa-research/.venv/bin/doxa-research
+-rwxr-xr-x@ 1 stevemorin  staff  339 Jun 20 08:30 /Users/stevemorin/c/doxa-research/.venv/bin/doxa
+-rwxr-xr-x@ 1 stevemorin  staff  339 Jun 20 08:30 /Users/stevemorin/c/doxa-research/.venv/bin/doxa-research
+
+$ uv tool list
+error: Failed to initialize cache at `/Users/stevemorin/.cache/uv`
+  Caused by: failed to open file `/Users/stevemorin/.cache/uv/sdists-v9/.git`: Operation not permitted (os error 1)
+
+$ /Users/stevemorin/c/doxa-research/.venv/bin/doxa --version
+Doxa Research v3.1.2
+
+$ /Users/stevemorin/c/doxa-research/.venv/bin/python -c 'import doxa_research,sys; print(doxa_research.__version__); print(doxa_research.__file__); print(sys.executable)'
+3.1.2
+/Users/stevemorin/c/doxa-research/src/doxa_research/__init__.py
+/Users/stevemorin/c/doxa-research/.venv/bin/python
+
+$ /Users/stevemorin/c/doxa-research/.venv/bin/doxa providers check --json
+{"status": "ok", "data": {"missing": ["openai", "perplexity", "gemini"], "complete": false}}
+Process exit: 0
+
+$ /Users/stevemorin/c/doxa-research/.venv/bin/doxa modes list --name all_deep_research --json
+{"status": "ok", "data": {"mode": {"name": "all_deep_research", "source": "builtin", "providers": ["openai", "perplexity", "gemini"], "model": null, "kind": "background", "description": "Parallel Deep Research across OpenAI, Perplexity, and Gemini. Fans one prompt out to all three providers concurrently, each using its own Deep Research model.", "overrides": {}, "warnings": [], "raw": {"providers": ["openai", "perplexity", "gemini"], "parallel": true, "kind": "background", "system_prompt": "Conduct comprehensive research with citations and multiple perspectives. Organize findings clearly and highlight key insights.", "description": "Parallel Deep Research across OpenAI, Perplexity, and Gemini. Fans one prompt out to all three providers concurrently, each using its own Deep Research model.", "openai": {"model": "o3-deep-research"}, "perplexity": {"model": "sonar-deep-research"}, "gemini": {"model": "deep-research-preview-04-2026"}}}}}
+Process exit: 0
+
+$ PYTHONPATH=/Users/stevemorin/c/doxa-research/src XDG_CONFIG_HOME=/private/tmp/rs-launch-readiness-config XDG_STATE_HOME=/private/tmp/rs-launch-readiness-state /Users/stevemorin/c/doxa-research/.venv/bin/python -c 'from doxa_research.config import ConfigSchema; d=ConfigSchema.get_defaults(); print({"execution":d.get("execution"),"output":d.get("output"),"paths":d.get("paths")})'
+{'execution': {'poll_interval': 30, 'max_wait': 30, 'parallel_providers': True, 'retry_attempts': 3, 'max_transient_errors': 5, 'auto_input': True, 'prompt_max_bytes': 1048576, 'cancel_upstream_on_interrupt': True}, 'output': {'combine_reports': False, 'format': 'markdown', 'include_metadata': True, 'timestamp_format': '%Y-%m-%d_%H%M%S'}, 'paths': {'base_output_dir': './research-outputs', 'checkpoint_dir': '/private/tmp/rs-launch-readiness-state/doxa/checkpoints'}}
+
+$ /Users/stevemorin/.local/bin/codex --version
+codex-cli 0.142.5
+
+$ /Users/stevemorin/.local/bin/codex login status
+Logged in using ChatGPT
+
+$ /Users/stevemorin/.local/bin/claude --version
+2.1.261 (Claude Code)
+
+$ claude auth status
+{
+  "loggedIn": false,
+  "authMethod": "none",
+  "apiProvider": "firstParty",
+  "analyticsDisabled": false,
+  "projectsDirectory": "/Users/stevemorin/.claude/projects"
+}
+
+No API-key values were printed. No Doxa provider call, research submission, uvx invocation, installation, or paid inference call was made by this inspection.
+
+$ find (Doxa source, inspected worktree, and known Doxa config dirs) for .env/.env.*/*config*.toml
+/Users/stevemorin/.config/doxa/doxa.config.toml
+/Users/stevemorin/.config/doxa/config.toml
+/Users/stevemorin/Library/Application Support/doxa/config.toml
+
+$ parse the three TOML files and print key paths and value types only
+/Users/stevemorin/.config/doxa/doxa.config.toml exists= True
+  key version type str
+  key modes.my_research.provider type str
+  key modes.my_research.model type str
+  key modes.my_research.kind type str
+  key modes.my_research.providers type list
+  key modes.my_research.parallel type bool
+  key modes.my_research.system_prompt type str
+  key modes.my_research.description type str
+  key modes.my_research.previous type str
+  key modes.my_research.auto_input type bool
+/Users/stevemorin/.config/doxa/config.toml exists= True
+  key version type str
+/Users/stevemorin/Library/Application Support/doxa/config.toml exists= True
+  key version type str
+  key general.default_project type str
+  key general.default_mode type str
+  key paths.base_output_dir type str
+  key paths.checkpoint_dir type str
+  key execution.poll_interval type int
+  key execution.max_wait type int
+  key execution.parallel_providers type bool
+  key execution.retry_attempts type int
+  key execution.auto_input type bool
+  key output.combine_reports type bool
+  key output.format type str
+  key output.include_metadata type bool
+  key output.timestamp_format type str
+  key providers.openai.api_key type str
+  key providers.perplexity.api_key type str
+
+The source checkout and inspected worktree contained no .env/.env.* files at
+the bounded depth. Config files were inspected for key paths/types only; no
+credential value was read, printed, or reused.
+
+Root follow-up using normal configuration, 2026-09-04:
+$ /Users/stevemorin/c/doxa-research/.venv/bin/doxa providers check --json
+{"status":"ok","data":{"missing":["openai","perplexity","gemini"],"complete":false}}
+Normal ConfigManager user path: /Users/stevemorin/.config/doxa/doxa.config.toml; exists true; project config None.
+OPENAI_API_KEY, PERPLEXITY_API_KEY, GEMINI_API_KEY, GOOGLE_API_KEY presence: all false.
+Legacy config source: /Users/stevemorin/Library/Application Support/doxa/config.toml; resolve_api_key for openai/perplexity/gemini: all missing or unresolved placeholder. Values never printed or copied.
+Doxa source HEAD ba423be7e96461962ae0fde21373e5e10aeecae2; clean tracked files; main ahead 2 vs tracking ref. pyproject version 3.2.0; editable dist-info metadata 3.1.2.

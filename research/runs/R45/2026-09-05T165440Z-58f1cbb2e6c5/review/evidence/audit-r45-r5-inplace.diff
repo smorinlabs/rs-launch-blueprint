@@ -1,0 +1,20 @@
+--- review/evidence/r45-greptile-snapshot-r5.log	2026-09-16 18:24:00
++++ review/evidence/audit-r45-r5-inplace.log	2026-09-16 18:44:37
+@@ -1,14 +1,14 @@
+ # r45-greptile-snapshot-r5.log
+-captured: 2026-09-17T01:24:00Z
++captured: 2026-09-17T01:44:36Z
+ 
+ === E0 - provenance of this check ===
+   repository root (derived from this script's path): /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+-  working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
++  working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5
+   bash:   GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)
+   curl:   curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+   grep:   grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+   uname:  Darwin 25.4.0 arm64
+-  writes: none durable; ephemeral only inside /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.OYQn4V45Lj, removed on exit
++  writes: none durable; ephemeral only inside /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.QiEXiWYwbZ, removed on exit
+   exit status depends on E1 to E4 and E6 only. E5 is VOLATILE and cannot fail the run.
+ 
+ === E1 - the committed observation record, which is what the decision is asserted against ===

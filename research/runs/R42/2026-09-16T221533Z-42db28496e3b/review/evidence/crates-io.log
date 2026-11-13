@@ -1,0 +1,29 @@
+# crates.io figure checks (endpoints per prompt evidence table)
+# GET https://crates.io/api/v1/crates/<name>          -> crate.recent_downloads, crate.downloads
+# GET https://crates.io/api/v1/crates/<name>/versions -> newest yanked:false -> num, created_at, license, rust_version
+# Retrieved: 2026-09-10T05:16:25Z
+
+=== cargo-binstall
+{"recent_downloads":125152,"downloads":3482994}
+{"num":"1.23.0","created_at":"2026-09-05T16:59:01.959145Z","license":"GPL-3.0-only","rust_version":"1.79.0"}
+=== cargo-quickinstall
+{"recent_downloads":7802,"downloads":501029}
+{"num":"0.3.53","created_at":"2026-07-12T05:43:44.651230Z","license":"MIT OR Apache-2.0","rust_version":null}
+=== cargo-run-bin
+{"recent_downloads":82261,"downloads":293046}
+{"num":"1.7.5","created_at":"2025-07-14T14:31:29.007910Z","license":"MIT","rust_version":"1.70.0"}
+=== ubi
+{"recent_downloads":83205,"downloads":304322}
+{"num":"0.12.0","created_at":"2026-08-31T03:45:16.743966Z","license":"MIT OR Apache-2.0","rust_version":"1.88"}
+=== mise
+{"recent_downloads":9199,"downloads":443403}
+{"num":"2026.9.4","created_at":"2026-09-09T19:23:59.559952Z","license":"MIT","rust_version":"1.95"}
+=== just
+{"recent_downloads":511896,"downloads":2540667}
+{"num":"1.58.0","created_at":"2026-08-03T20:29:15.411846Z","license":"CC0-1.0","rust_version":"1.89.0"}
+=== cargo-make
+{"recent_downloads":246864,"downloads":3670537}
+{"num":"0.37.24","created_at":"2025-01-18T15:20:30.588642Z","license":"Apache-2.0","rust_version":null}
+
+=== flox (expected: not a crate)
+{"errors":[{"detail":"crate `flox` does not exist"}]}

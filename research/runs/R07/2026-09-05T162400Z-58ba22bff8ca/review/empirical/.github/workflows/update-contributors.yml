@@ -1,0 +1,51 @@
+# R07 fixture — the recommended `on:` block for the contributors-list bot PR
+# workflow. Only the `on:` block is R07's decision (F026). The job body is
+# the inherited F060 pattern (smorinlabs/contributors-please-action,
+# mode: pull-request) carried from py-launch-blueprint @ b08bccf
+# .github/workflows/update-contributors.yml. Lines owned by other items are
+# marked so integration does not attribute them to R07:
+#   credential inputs  -> R21 (F061)   permissions style -> R08 (F030)
+#   action pin style   -> R20 (F055)   runs-on indirection -> R09
+name: Update Contributors
+
+on:
+  push:
+    branches: [main]
+    # Loop guard: the bot PR touches only these two generated files, so its
+    # merge matches every pattern and produces no run (GitHub: "When all the
+    # path names match patterns in paths-ignore, the workflow will not run").
+    # Keep in sync with the action's output-file and state-file inputs below.
+    paths-ignore:
+      - CONTRIBUTORS.md
+      - .contributors.jsonl
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  contributors-please:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Update contributors
+        uses: smorinlabs/contributors-please-action@v1.3.9
+        with:
+          # Credential source is R21's decision (F061); these are placeholders.
+          app-id: ${{ secrets.CONTRIBUTORS_PLEASE_CLIENT_ID }}
+          private-key: ${{ secrets.CONTRIBUTORS_PLEASE_PRIVATE_KEY }}
+          pat: ${{ secrets.CONTRIBUTORS_PLEASE_PAT }}
+          output-file: CONTRIBUTORS.md
+          state-file: .contributors.jsonl
+          config-file: .contributors.yml
+          mode: pull-request
+          # No [skip ci]: in mode: pull-request it would strand the bot PR
+          # behind main's required checks. Loop protection is paths-ignore.
+          commit-message: "docs: update contributors"

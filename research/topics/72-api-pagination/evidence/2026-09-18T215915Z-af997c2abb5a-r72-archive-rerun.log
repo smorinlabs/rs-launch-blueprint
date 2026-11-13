@@ -1,0 +1,25 @@
+## environment
+git: git version 2.50.1 (Apple Git-155)
+HEAD: e0b0d1c1762ee8aa4b28c62282a2225103e594eb
+files extracted from HEAD: 7365
+scripts copied into the extraction: 11
+  r72-standard: 218 committed lines, 218 rerun lines
+PASS r72-standard.log reproduces byte for byte from a clean git archive extraction
+  r72-inputs: 231 committed lines, 231 rerun lines
+PASS r72-inputs.log reproduces byte for byte from a clean git archive extraction
+  r72-figures: 396 committed lines, 396 rerun lines
+PASS r72-figures.log reproduces byte for byte from a clean git archive extraction
+  r72-practice: 183 committed lines, 183 rerun lines
+PASS r72-practice.log reproduces byte for byte from a clean git archive extraction
+  r72-probe: 54 committed lines, 54 rerun lines
+PASS r72-probe.log reproduces byte for byte from a clean git archive extraction
+
+## the normalised lines, shown in full so the normalisation hides nothing
+  committed:  root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+  extraction: root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r72archive.oDJ3FT
+  committed:  snapshots: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R72/2026-09-18T215915Z-af997c2abb5a/review/evidence/snapshots
+  extraction: snapshots: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r72archive.oDJ3FT/research/runs/R72/2026-09-18T215915Z-af997c2abb5a/review/evidence/snapshots
+
+## totals
+PASS 5
+FAIL 0

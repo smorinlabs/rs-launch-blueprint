@@ -1,0 +1,12 @@
+revision-5 changed paths from commit 704231c:
+M	docs/planning/p02/execution-ledger.md
+M	research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/audit-fable.md
+A	research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/audit-fable.r1.md
+M	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/yanked-control-r5.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/yanked-control-r5.sh
+r4 retained artifact hashes (parent/current):
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
+5a5d8b89006001ee584e9d124c2b1e1e9c800e122d837df919e46d3005828965  review/evidence/feature-shape-check-r4.sh
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
+f9bec8b0ea550e0a176eecdf201c18bd6bd3cdf94e366f952785d106ccfb555d  review/evidence/feature-shape-check-r4.log

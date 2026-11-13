@@ -1,0 +1,19 @@
+# This repo is a template-press target. Comments here stay free of literal
+# identity tokens: press control files are not rewritten.
+
+[rules]
+# The app short name appears glued as a SUFFIX in Cargo's first-party
+# integration-test idiom (the compile-time CARGO_BIN_EXE_<name> variable).
+# The identifier-aware matcher rewrites prefix-glued forms but leaves a
+# suffix-glued one behind (R15 run 1), so the token is rewritten in
+# substring mode. The token is word-disjoint in this repo.
+substring_rewrite_fields = ["app_name"]
+
+# Release history of the template, not the fork.
+[[reset]]
+file = "CHANGELOG.md"
+stub = "# Changelog\n"
+
+[[remove]]
+file = ".github/workflows/template-receipt-guard.yml"
+reason = "template-only receipt guard; a fork legitimately commits its receipt"

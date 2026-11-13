@@ -1,0 +1,118 @@
+=== R51 source and shape checks
+date-utc: 2026-09-19T01:43:50Z
+grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+root:     /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+mode:     in-place worktree (.git is a file)
+PASS  S1-AGENTS.md — repository file resolves from the script's own path
+PASS  S1-docs/port/PARAMETERS.md — repository file resolves from the script's own path
+PASS  S1-docs/port/COMMONALITY.md — repository file resolves from the script's own path
+PASS  S1d — review/DECISION.md present
+PASS  S1e — raw/opus.md present
+PASS  S2a — parameter lines extracted from the live registry: 5
+PASS  S2b — - assumes lines in the decision: 5
+PASS  S2c — every - assumes value is byte-identical to its live registry row (diff empty)
+PASS  S2d — - owns lines (R51 owns no registry parameter): 0
+PASS  S2e — registry rows owned by R51: 0
+PASS  S2f — registry rows owned by R69 (positive control for S2e): 1
+PASS  S3a — decision title line: # 2026-09-18 — R51 — container-image (bundle, Focused) — decision (revision 1)
+FAIL  S3b — H2 headings differ:
+1a2
+> ## Conformance note — rs-launch-blueprint optional web surface (R51 rows only)
+PASS  S3c — ## Supersedes headings (forbidden in a first revision): 0
+PASS  S3d — lines beginning re-verify:: 1
+PASS  S3e — H5 headings (the ### Members window rule is satisfied vacuously): 0
+PASS  S3f — ### Members sections (this decision carries none): 0
+FAIL  S4a — gate 1's prescribed string is absent from the decision
+PASS  S4b — the ruling the string cites is in OWNER-REVIEW.md
+PASS  S5a — validate_answer_text diagnostics on the decision: 1
+PASS  S5b — the one diagnostic is the H3-template line, the same one R54's accepted decision produces
+PASS  S5c — validate_answer_text diagnostics on the registered raw report: 0
+PASS  S6a — files under review/ containing an address-shaped string: 0
+PASS  S6b — files under review/ containing a token-shaped string: 0
+PASS  S6c — the recursive search reaches 7 files (S6a/S6b's zeros are not vacuous)
+PASS  S6-Cargo.toml — files named Cargo.toml anywhere in the run directory: 0
+PASS  S6-Cargo.lock — files named Cargo.lock anywhere in the run directory: 0
+PASS  S6-*.rs — files named *.rs anywhere in the run directory: 0
+PASS  S6d — target/ trees in the run directory: 0
+PASS  S6e — nested git repositories in the run directory: 0
+PASS  S7a — F223 at its line (COMMONALITY.md:227)
+PASS  S7b — F336 at its line (COMMONALITY.md:340)
+PASS  S7c — F337 at its line (COMMONALITY.md:341)
+PASS  S7d — F017 at its line (COMMONALITY.md:23)
+PASS  S7-F223 — F223 rows in BASELINE-REVIEW.md (nothing to challenge): 0
+PASS  S7-F336 — F336 rows in BASELINE-REVIEW.md (nothing to challenge): 0
+PASS  S7-F337 — F337 rows in BASELINE-REVIEW.md (nothing to challenge): 0
+PASS  S7e — F017 does appear in BASELINE-REVIEW.md (2 rows) — the control for the three zeros above
+PASS  S8a — the standard's blob id, as named in owner ruling W2-REST: 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+PASS  S8b — R8.1 at its line (rest-api-standard.md:1317)
+PASS  S8c — R8.1's provenance line (rest-api-standard.md:1320)
+PASS  S8d — R8.10 at its line (rest-api-standard.md:1387)
+PASS  S8e — R1.7, the rule the override answers to (rest-api-standard.md:271)
+PASS  S8i — R8.6, the row handed to R80 (rest-api-standard.md:1356)
+PASS  S8j — R5.12's infrastructure carve-out, the one place a proxy in front of the API is contemplated (rest-api-standard.md:1023)
+PASS  S8f — numbered rules naming health, liveness, readiness or containers: 0
+PASS  S8g — the same pattern finds 139 numbered rules (S8f's zero is not vacuous)
+PASS  S8h — lines in section 8 carrying any form of 'terminat': 0
+PASS  S8k — the same pattern matches 5 lines elsewhere (R5.12 and section 13), so S8h is not vacuous
+override-scan-files: 143
+override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-09) OVERRIDE (OV-14) 
+PASS  S9-01 — OV-01 is in use, so S9a's zero for OV-14 is not a failed search
+PASS  S9-02 — OV-02 is in use, so S9a's zero for OV-14 is not a failed search
+PASS  S9-03 — OV-03 is in use, so S9a's zero for OV-14 is not a failed search
+PASS  S9-04 — OV-04 is in use, so S9a's zero for OV-14 is not a failed search
+PASS  S9a — OTHER decisions or port records declaring OV-14 (this file is excluded): 0
+PASS  S9c — the scan covered 143 decision and port files
+FAIL  S9b — R80 revision 2 does not declare OV-04
+PASS  S10-R69 — cited input decision present
+PASS  S10-R68 — cited input decision present
+PASS  S10-R77 — cited input decision present
+PASS  S10-R11 — cited input decision present
+PASS  S10-R80 — cited input decision present
+PASS  S10-R02 — cited input decision present
+PASS  S10-R54 — cited input decision present
+PASS  S10-R56 — cited input decision present
+PASS  S10-R57 — cited input decision present
+PASS  S10-R05 — cited input decision present
+PASS  S10a — R69 revision 10's owned value at the line the task message names (DECISION.md:1791)
+PASS  S10b — revision 10 carries the crates/web tree this design's paths use
+PASS  S10c — revision 10 keeps the serve binary's 'nothing beyond it' clause (option C stays rejected)
+PASS  S10d — the registry row is still revision 9's src/web/ form — republication is a re-verify trigger
+FAIL  S10e — R77 assigns the container host variable to R51: DECISION.md:723 does not contain [sets `RSLBP_WEB_HOST=0.0.0.0` explicitly]
+FAIL  S10f — R77's host and port defaults: DECISION.md:606 does not contain [`127.0.0.1`, `8000`]
+PASS  S10g — R11 keeps the image build out of ci.yml (DECISION.md:144)
+PASS  S10h — R68's premise that this item's answer must honour or hand back (DECISION.md:32)
+PASS  S11a — R19's docker-ecosystem condition (DECISION.md:66)
+PASS  S11b — R49's include allow-list is the five entries this decision reads (Dockerfile not among them)
+PASS  S11c — R20's pinning principle is stated in the terms this decision extends to base images
+PASS  S11-25-semver-bump-strategy — published decision read for consistency
+PASS  S11-26-packed-artifact-content-guard — published decision read for consistency
+PASS  S11-17-secret-scanning-ci-workflow — published decision read for consistency
+PASS  S11-18-ai-assisted-review-workflows — published decision read for consistency
+PASS  S11d — R17's own-workflow-file precedent is published (the shape this item's CI job takes)
+PASS  S12a — the ruling that defers this item's Codex leg (owner-decisions.md:488)
+PASS  S12b — W2-REST is recorded in OWNER-REVIEW.md
+PASS  S12c — the strict gate-2 reading this decision applies (execution-ledger.md:414)
+PASS  S13a — the prompt's owns line carries no parameter: - owns:
+PASS  S13b — the prompt's consumed parameter: - consumes: R69: web-extra-surface
+PASS  S13c — ## Couplings sections (the control for S13a's empty value): 1
+PASS  S13d — the prompt's declared engines: - engines: codex, opus
+PASS  S14a — raw/opus.md sha256 matches the manifest's registered value: c74cb6d1e211b77a1fa427dd92246e442880d681568a849665c24c51ab99f377
+PASS  S14b — registered research operations (the Codex leg is absent, not failed): 1
+PASS  S15a — py's Dockerfile line count at pin b08bccfb: 32
+PASS  S15b — py's non-root switch (F336) (py.Dockerfile:21)
+PASS  S15c — py's exposed port (py.Dockerfile:26)
+PASS  S15d — py's HEALTHCHECK timings, which this design carries (py.Dockerfile:29)
+PASS  S15e — py probes loopback, not localhost (py.Dockerfile:30)
+PASS  S15f — py's container host override (py.Dockerfile:25)
+PASS  S15g — py's dependency layer before the source copy (WEB-32) (py.Dockerfile:13)
+PASS  S15h — py's own Dockerfile uses 2 BuildKit cache mounts
+PASS  S15i — py builds and publishes no image in CI (the search returns no match)
+PASS  S15j — py's only image build is a Justfile recipe (the control for S15i)
+PASS  S15k — container-related paths in ts at pin cb1cbcb2: 0
+PASS  S15l — the same listing enumerates 122 ts paths (S15k's zero is not vacuous)
+PASS  S16-r51-container.log — records FAIL=0 in its own summary line
+PASS  S16-r51-registries.log — records FAIL=0 in its own summary line
+PASS  S16a — the recommended Dockerfile is committed as a fixture beside these scripts
+
+grep-version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+SUMMARY: PASS=101 FAIL=5 SKIP=0 TOTAL=106

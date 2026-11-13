@@ -1,0 +1,32 @@
+# R32 harness fixture: a stand-in for rs-launch-blueprint's manifest shape
+# (R49: one [lib], [[bin]] rslbp, autobins = false; R69: a `web` feature and a
+# required-features serve binary). The real `web` feature is
+# ["dep:axum", "dep:tokio"]; this stand-in carries no dependency so the harness
+# mechanics are proven without the web stack.
+[package]
+name = "rs-launch-blueprint"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+publish = false
+autobins = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "rslbp"
+path = "src/main.rs"
+
+[[bin]]
+name = "rslbp-serve"
+path = "src/bin/rslbp-serve.rs"
+required-features = ["web"]
+
+[features]
+web = []
+
+[dev-dependencies]
+assert_cmd = "2.2.2"
+predicates = "3.1.4"

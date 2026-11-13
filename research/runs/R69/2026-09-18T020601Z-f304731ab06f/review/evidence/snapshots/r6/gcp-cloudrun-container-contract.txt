@@ -1,0 +1,8 @@
+requested_url: https://cloud.google.com/run/docs/container-contract
+effective_url: https://docs.cloud.google.com/run/docs/container-contract
+http_status: 200
+section: Container instance lifecycle > Shutdown (For services)
+services_sentence:
+Before shutting down an instance, Cloud Run sends a SIGTERM signal to all the containers in an instance, indicating the start of a 10 second period before the actual shutdown occurs, at which point Cloud Run sends a SIGKILL signal.
+jobs_sentence:
+If the instance doesn't shut down on its own within a few seconds after receiving SIGTERM , Cloud Run sends a SIGKILL signal for a forced termination .

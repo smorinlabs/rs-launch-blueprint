@@ -1,0 +1,71 @@
+host Darwin 25.4.0 arm64
+lefthook path /opt/homebrew/bin/lefthook
+lefthook version 2.1.14
+PASS C00 lefthook version equals the pin 2.1.14
+----- lefthook run --help -----
+NAME:
+   lefthook run - execute a group of hooks
+
+USAGE:
+   lefthook run <hook-name> [args...] [options]
+
+OPTIONS:
+   --verbose, -v                          enable debug logs
+   --colors string                        on, off, or auto (default: auto) (default: "auto")
+   --job string [ --job string ]          run only jobs with names
+   --tag string [ --tag string ]          run only jobs with tag names
+   --command string [ --command string ]  run only commands
+   --exclude string [ --exclude string ]  exclude files from all templates
+   --file string [ --file string ]        overwrite file templates with files
+   --force, -f                            do not skip if no files changed
+   --all-files                            replace files templates with {all_files}
+   --no-auto-install                      do not implicitly install hooks
+   --no-stage-fixed                       ignore 'stage_fixed: true' setting
+   --no-tty                               act as if no TTY is connected
+   --skip-lfs                             do not run LFS hooks
+   --[no-]fail-on-changes                 exit with 1 if some of the files were changed (default: false)
+   --files-from-stdin                     parse filelist from STDIN
+   --help, -h                             show help
+PASS C01 'lefthook run' documents --all-files
+PASS C01 'lefthook run' documents --no-auto-install
+PASS C01 'lefthook run' documents --no-tty
+PASS C01 'lefthook run' documents fail-on-changes
+PASS C01 'lefthook run' documents --tag
+PASS C01 'lefthook run' documents --job
+PASS C01 'lefthook run' documents --exclude
+----- lefthook check-install --help -----
+NAME:
+   lefthook check-install - check if hooks are installed
+
+USAGE:
+   lefthook check-install – Check if lefthook is installed. Exit codes:
+   0 – hooks are installed
+   1 – hooks are not installed or stale
+
+OPTIONS:
+   --verbose, -v  
+   --help, -h     show help
+PASS C02 'check-install' documents exit 0 installed / 1 absent-or-stale
+----- lefthook install --help -----
+NAME:
+   lefthook install - install Git hook from the config or create a blank lefthook.yml
+
+USAGE:
+   lefthook install [hook-names...] [options]
+
+OPTIONS:
+   --force, -f             overwrite .old files and proceed even if core.hooksPath is set
+   --reset-hooks-path, -r  automatically unset core.hooksPath configuration
+   --verbose, -v           
+   --help, -h              show help
+----- lefthook validate --help -----
+NAME:
+   lefthook validate - validate lefthook config
+
+USAGE:
+   lefthook validate [options]
+
+OPTIONS:
+   --verbose, -v  
+   --help, -h     show help
+TOTAL pass=9 fail=0

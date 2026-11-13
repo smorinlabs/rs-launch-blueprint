@@ -1,0 +1,41 @@
+retrieved: 2026-09-14T23:11:22Z
+
+revision-2 line 582 SHA-256: f0f31837a4b58690aff8917d0b657dda28e724af6765ad4fbea862661ee86aa9
+content: 2026-05-22, `MIT OR Apache-2.0`, `rust_version` 1.74 — `book/src/workspaces/
+revision-3 exact-line-presence: yes
+revision-5 exact-line-presence: yes
+
+revision-2 line 605 SHA-256: 98f7bd0144bb9c446fe192b9cafe97b69fadeaca86ac4a0ae5745af55a0850ec
+content: | `cargo-dist` | 19,922 | 175,385 | 0.32.0 | 2026-05-22 | MIT OR Apache-2.0 | 1.74 | HTTP 404 |
+revision-3 exact-line-presence: yes
+revision-5 exact-line-presence: yes
+
+revision-2 line 606 SHA-256: 6c15ee21f66ba0e66ab327850e02196e326158f7f03e5a5a29bd17e2ad1fa7f7
+content: | `cargo-make` | 248,798 | 3,672,469 | 0.37.24 | 2025-01-18 | Apache-2.0 | **absent** | HTTP 404 |
+revision-3 exact-line-presence: yes
+revision-5 exact-line-presence: yes
+
+revision-2 line 608 SHA-256: 4251b05ac36918a33bff17ad4d81b8ffc05da4f4217642098d21e65c4931d10f
+content: | `cross` | 307,766 | 6,269,217 | 0.2.5 | 2023-02-04 | MIT OR Apache-2.0 | absent | HTTP 404 |
+revision-3 exact-line-presence: yes
+revision-5 exact-line-presence: yes
+
+revision-2 line 609 SHA-256: 99b21cad3db98c74b1cf5592ebfe190232516ebd32f3cbdda75781c388c16aa1
+content: | `cargo-zigbuild` | 1,547,057 | 7,034,852 | 0.23.4 | 2026-09-02 | MIT | 1.88 | HTTP 404 |
+revision-3 exact-line-presence: yes
+revision-5 exact-line-presence: yes
+
+revision-2 line 611 SHA-256: 6c4602a5d94ad5606aab8b7dcbf22773a6454ae20f42023a39586cdee2d665ee
+content: | `cargo-packager` | 47,349 | 178,600 | 0.11.8 | 2025-11-27 | Apache-2.0 OR MIT | absent | HTTP 404 |
+revision-3 exact-line-presence: yes
+revision-5 exact-line-presence: yes
+
+revision-3 recorded enumeration lists:
+  grep -ni 'licen'          -> 53 157 158 248 311 338 342 362 364 433
+                               597 600 603 615
+  grep -ni 'gate 1'         -> 181
+  grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
+                            -> 182 363 607 610 616
+  grep -n  'binstall'       -> 137 181 183 272 607 615
+
+Three locations carried a licence-as-gate claim; all three are edited:

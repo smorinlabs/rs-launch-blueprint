@@ -1,0 +1,22 @@
+# R77 revision 2 — rerun from a clean extraction (no .git anywhere in the tree)
+# produced 2026-09-19T01:20:25Z
+# extracted tree object: fbb5b0e49d894fd1584ff5881789fb87db72d3b8
+# That tree is the revision-2 tree as staged, which becomes this commit's tree
+# except for this log file itself — a log cannot contain the hash of the tree that
+# contains it. Nothing else differs between the two.
+# The extracted tree has no .git — tested with -e, not -d, because a worktree's
+# .git is a FILE rather than a directory.
+# .git present in extraction: no
+
+=== rest-conformance-r2.sh, run from the extraction ===
+PASS=91 FAIL=0 SKIP=0 TOTAL=91
+
+=== The SKIP branch, exercised ===
+# Group B reads the org REST API Design Standard from a clone OUTSIDE this
+# repository, so an archive can never contain it. The extraction above found the
+# clone still present on this machine and SKIPped nothing. Run once more with HOME
+# pointed at an empty directory, the group must SKIP by name rather than pass or fail.
+--- rest-conformance-r2.sh with HOME=<empty dir> ---
+SKIP org REST API Design Standard blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 — /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r77-r2home.cspQer/c/rest-standards absent or blob unknown (24 checks)
+PASS=67 FAIL=0 SKIP=1 TOTAL=68
+# 67 PASS + the 24 checks the single SKIP stands for = 91, the in-place total.

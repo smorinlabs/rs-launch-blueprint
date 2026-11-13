@@ -1,0 +1,13 @@
+# Plain-text excerpts of two Cargo Book pages, HTML tags stripped and
+# whitespace collapsed. Retrieved 2026-09-18 UTC.
+
+## environment-variables.html -- 'Environment variables Cargo sets for crates'
+Environment variables Cargo sets for crates Cargo exposes these environment variables to your crate when it is compiled. Note that this applies for running binaries with cargo run and cargo test as well. To get the value of any of these variables in a Rust program, do this: let version = env!("CARGO_PKG_VERSION"); version will now contain the value of CARGO_PKG_VERSION . Note that if one of these values is not provided in the manifest, the corresponding environment variable is set to the empty string, "" . CARGO — Path to the cargo binary performing the
+
+## build-scripts.html -- the cargo::rustc-env instruction
+The rustc-env instruction tells Cargo to set the given environment variable when compiling the package. The value can be then retrieved by the env! macro in the compiled crate. This is useful for embedding additional metadata in crate’s code, such as the hash of git HEAD or the unique identifier of a continuous integration server. See also the environment variables automatically included by Cargo . Note : These environment var
+
+## build-scripts.html -- the page's ONLY occurrence of the word 'discouraged',
+## which is about dynamic-library search paths, not about reading Cargo
+## variables at runtime
+tells Cargo to pass the -L flag to the compiler to add a directory to the library search path. The optional KIND may be one of dependency , crate , native , framework , or all . See the rustc book for more detail. These paths are also added to the dynamic library search path environment variable if they are within the OUT_DIR . Depending on this behavior is discouraged since this makes it difficult to use the resulting binary. In general, it is best to avoid creating dynamic libraries in a build script (using existing system libraries is fine). cargo::ru

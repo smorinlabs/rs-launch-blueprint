@@ -1,0 +1,87 @@
+# R42 revision-4 wording audit
+
+actor: audit-codex-2026-09-05T155503Z-4141a35b69e0-r4
+model: gpt-5.6-terra
+family: openai
+scope: Current `review/DECISION.md` revision 4 wording and sweep-table audit. The task explicitly prohibited rerunning the empirical matrix, starting the Linux VM, or installing anything.
+
+## Commands and results
+
+`shasum -a 256 review/DECISION.md`
+
+```
+7ad0e5dabe14d5004054cf7ee729f9dd82fdda9321d9086856eaaa8f99510aa4  review/DECISION.md
+```
+
+`git diff --quiet 1c9b403^ 1c9b403 -- research/runs/R42/2026-09-05T155503Z-4141a35b69e0/review/evidence`
+
+```
+exit 0
+```
+
+`git diff --quiet 1c9b403 -- review/DECISION.md`
+
+```
+exit 0
+```
+
+`git diff --quiet 1c9b403 -- review/evidence`
+
+```
+exit 0
+```
+
+This comparison covers tracked evidence files. The present log is the requested
+new audit artifact and was written after that comparison; no pre-existing
+evidence log was edited.
+
+`git diff --cached --quiet -- research/runs/R42/2026-09-05T155503Z-4141a35b69e0/review/evidence`
+
+```
+exit 0
+```
+
+`git diff --name-only 1c9b403^ 1c9b403 -- review/evidence`
+
+```
+<no output>
+```
+
+`git diff --name-only 1c9b403^ 1c9b403 -- review/DECISION.md`
+
+```
+research/runs/R42/2026-09-05T155503Z-4141a35b69e0/review/DECISION.md
+```
+
+## Wording and quotation cross-check
+
+The live F181 observation at lines 70-81 is bounded to the tested cells and configurations, identifies the macOS host and rustup version, identifies the archived one-Linux-VM addition, and expressly excludes every other machine and rustup version. The owned parameter at line 287 separately bounds its observation to the host and six check-9 cells, then makes a template prescription rather than a universal rustup claim.
+
+The former universal characterisations named by sweep rows 3-5 remain only as retrospective quotations in the sweep table and revision history; they do not occur as live F181 or owned-parameter claims. In particular, the current file has no live `on any machine where rustup itself is installed`, `wherever rustup is installed`, unconditional-proxy, or fixed-name-list assertion.
+
+Every sweep row was opened at its cited current location and its quoted/current replacement text was verified:
+
+| Sweep row | Current location checked |
+|---:|---|
+| 1 | `## Parameters`, line 287 |
+| 2 | `## Parameters`, line 287 |
+| 3 | `BASELINE-REVIEW: F181`, lines 70-81 |
+| 4 | `BASELINE-REVIEW: F181`, lines 73-76, and `## Parameters`, line 287 |
+| 5 | `## Parameters`, line 287 |
+| 6 | empirical-check row 9, line 350 |
+| 7 | empirical-check row 11, line 352 |
+| 8 | empirical-check row 11, line 352 |
+| 9 | disagreement 6, lines 671-681 |
+| 10 | `BASELINE-REVIEW: F181`, lines 65-69 |
+| 11 | empirical-check row 9, line 350 |
+| 12 | empirical-check rows 8 and 13, lines 349 and 354; disagreement 2, lines 625-632 |
+| 13 | decision lines 207-211 and disagreement 1, lines 606-610 |
+| 14 | observed-hazard note, lines 405-424 |
+| 15 | empirical-check row 11, line 352 |
+| 16 | unproven item 6, lines 748-755 |
+| 17 | licence finding, lines 32-36 |
+| 18 | fitness gate 3, lines 383-403 |
+
+## Rerun status
+
+No empirical command was rerun. No Linux VM command was issued. No package or component was installed. Consequently there is no empirical rerun exit code or matrix-output comparison for this wording-only revision; the audit exit status is 0.

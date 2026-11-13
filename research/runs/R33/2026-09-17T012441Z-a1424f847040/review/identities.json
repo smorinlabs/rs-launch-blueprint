@@ -1,0 +1,43 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T164358Z-eae89906c763",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T164358Z-eae89906c763",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T164358Z-eae89906c763-r6",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T164358Z-eae89906c763-r6",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T164358Z-eae89906c763-r6",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": ["bash", "review/empirical/r33-checks.sh"],
+    "cwd": "research/runs/R33/2026-09-05T164358Z-eae89906c763, the run directory the round-6 empirical audit's `## Rerun` records. That audit also ran the same script from a clean `git archive HEAD` extraction given a new, uncommitted temporary Git root, because the script uses `git rev-parse` to find the repository root; that leg also exited 0 with the same invariant. Only the in-place leg named in argv is asserted here.",
+    "toolchain": "rustc 1.98.0 (88d9e12ae 2026-08-18); cargo 1.98.0 (797e8a9bc 2026-08-05); macOS 26.4 arm64, as the round-6 empirical audit's `## Rerun` records. The rerun produced 213 `STATUS OK` or `ASSERT OK` lines, zero failure lines and `failed assertions: 0`. Its log comparator exits 1, which that audit documents as tier-2 upstream drift: the complete diff holds only the twelve `assert-rs/snapbox` CI workflow line-number pairs and no changed assertion, status or failure-summary line.",
+    "output_log": "review/evidence/audit-property-and-snapshot-testing-r6.log",
+    "exit_code": 0
+  }
+}

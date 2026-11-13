@@ -1,0 +1,8 @@
+67c67
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.99s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 2.72s
+84c84
+< test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+---
+> test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

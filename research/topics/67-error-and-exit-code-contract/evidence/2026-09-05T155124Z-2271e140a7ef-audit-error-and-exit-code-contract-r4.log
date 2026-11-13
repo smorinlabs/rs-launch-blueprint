@@ -1,0 +1,223 @@
+# R67 revision-4 empirical audit
+
+Actor: `audit-codex-2026-09-05T155124Z-2271e140a7ef-r4`  
+Model: `gpt-5.6-terra`  
+Decision read: SHA-256 `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497`  
+Standard read: `/Users/stevemorin/c/cli-standards/cli-design-standard.md`, version 1.4.14.
+
+## Attribution audit
+
+The current standard states the following relevant limits:
+
+- R6.1: code 2 is `Usage / parse error`; unlisted failures collapse to 1.
+- R8.2: unavailable prompting for missing required non-auth input or consent is
+  code 2; missing authentication/authorization input is code 4; runtime input
+  failures such as unreadable files are code 1.
+- R5.5 and R5.6 constrain secret intake and redaction but assign no exit code.
+
+I checked every current standard-attribution location in `review/DECISION.md`:
+
+| Location | Current claim | Result |
+|---|---|---|
+| 76-94 | R6.1 taxonomy, R7.7/R7.8, R9.6 | supported; no config-value derivation |
+| 122-124 | AC3/AC4 | supported general taxonomy; explicitly P03 proposals |
+| 255-276 | configuration-failure narrative | supported: 104=R8.2/1; 202=R6.1/2; 203=template choice |
+| 383 | owned parameter rows | 203 and 204 explicitly template choices; 205 is R8.2 missing input |
+| 464 | E10 evidence-row summary | reports the standard's 2/4/1 split only |
+| 575-603 | Disagreement 4 basis table and reasoning | all five rows classify to the correct source or choice |
+| 605-619 | closed-stdin correction | supported by R8.2 and R6.1 SIGINT definition |
+| 724-804 | revision history | accurately describes the superseded error and revision-4 repair |
+
+The raw reports were checked against Disagreement 4. `raw/codex.md` assigns
+configuration to 1; `raw/opus.md`, `raw/doxa-openai.normalized.md`, and
+`raw/doxa-perplexity.normalized.md` assign configuration to 2; and
+`raw/doxa-gemini.normalized.md` gives an internally inconsistent I/O mapping.
+The decision records that split as engine input rather than standard authority.
+
+## E1-E12 log inspection
+
+Each cited evidence log contains the command and the result summarized in the
+E1-E12 table. I inspected the following material without treating source reads
+as runtime proof:
+
+- E1 `crates-io.log`: crate API command and `thiserror` figure/version record.
+- E2/E3 `github-api.log` and `github-issue-search.log`: repository and issue
+  queries.
+- E4/E5 `rustsec.log`: paired 404/200 controls and the
+  `RUSTSEC-2026-0190` advisory text.
+- E6/E7 `ctrlc-source-3.5.2.log` and `signal-hook-inquire-source.log`: archive
+  API/interface readings, each explicitly limited to source-interface evidence.
+- E8 `std-at-msrv-floor-1.96.0.log`: tagged Rust source readings for `ExitCode`,
+  `process::exit`, `SIGPIPE`, and backtrace behavior.
+- E9 `ecosystem-authorities.log`: issue states, SemVer source extract, and
+  Rust CLI Working Group book endpoints.
+- E10 `cli-design-standard-R6-R7.log`: R6.1, R7.6-R7.8, R8.2, and R9.6 text.
+- E11 `sysexits-h.log`: FreeBSD header values.
+- E12 `adopter-manifests.log` and `reference-implementations.log`: dependency
+  declarations and ripgrep's `BrokenPipe` return path.
+
+## Five live citation spot checks
+
+Command:
+
+```text
+curl -A 'Mozilla/5.0' -fsSL -o /dev/null -w '%{http_code} %{size_download} %{url_effective}\n' <URL>
+```
+
+Output:
+
+```text
+200 140468 https://crates.io/api/v1/crates/thiserror
+200 46945 https://static.crates.io/crates/signal-hook/signal-hook-0.4.4.crate
+200 89814 https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/process.rs
+200 2458 https://raw.githubusercontent.com/rustsec/advisory-db/main/crates/anyhow/RUSTSEC-2026-0190.md
+200 5302 https://cgit.freebsd.org/src/plain/include/sysexits.h
+200 1787 https://raw.githubusercontent.com/rust-cli/book/master/src/in-depth/exit-code.md
+```
+
+The E9 Cargo SemVer URL recorded on 2026-09-09 now returned HTTP 404 when
+spot-checked. That does not contradict the preserved dated log; it is a source
+relocation/drift observation, not an exit-code attribution dependency.
+
+## E13 Linux VM rerun
+
+CWD supplied to the VM:
+
+```text
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R67/2026-09-05T155124Z-2271e140a7ef/review/empirical/rslb-contract
+```
+
+The VM command used `limactl shell ubuntu -- bash -lc`, sourced
+`$HOME/.cargo/env`, copied the three source `Cargo.toml` files to `mktemp -d`,
+and added only empty `crates/rslb-core/src/lib.rs` and
+`crates/rslb-cli/src/main.rs` stubs in that temporary copy. The source fixture
+has no Rust source and was not changed.
+
+Command body:
+
+```text
+cargo generate-lockfile
+cargo tree -e normal
+cargo tree -d
+cargo metadata --format-version 1 | jq -r '.packages[] | select(.source != null) | "\(.name) rust-version=\(.rust_version // "none") license=\(.license // "none")"' | sort
+grep -n etcetera Cargo.toml crates/rslb-core/Cargo.toml crates/rslb-cli/Cargo.toml Cargo.lock
+```
+
+Exit: 0.
+
+Complete material output:
+
+```text
+rustc 1.98.1 (48a229cea 2026-09-01)
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+fixture and temporary-copy Cargo.toml SHA-256 pairs:
+88a297764f7e3fc892f6017819d24fa3a63782930e2e3f41e5848a7a9f36f5f8
+6c781855be41af8cfb60c61adc127013c9bdc7b972cb94a061e1a1d066a51792
+eebf385d456a4b6b72b3feb852e5d2da1016ee9dd01dec9ff0e36a554d3e9434
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+rslb-cli v0.1.0 (/tmp/tmp.eDrkEXfkqx/crates/rslb-cli)
+├── anyhow v1.0.104
+├── rslb-core v0.1.0 (/tmp/tmp.eDrkEXfkqx/crates/rslb-core)
+│   └── thiserror v2.0.20
+│       └── thiserror-impl v2.0.20 (proc-macro)
+│           ├── proc-macro2 v1.0.107
+│           │   └── unicode-ident v1.0.24
+│           ├── quote v1.0.47
+│           │   └── proc-macro2 v1.0.107 (*)
+│           └── syn v3.0.5
+│               ├── proc-macro2 v1.0.107 (*)
+│               ├── quote v1.0.47 (*)
+│               └── unicode-ident v1.0.24
+├── serde_json v1.0.151
+│   ├── itoa v1.0.18
+│   ├── memchr v2.8.3
+│   ├── serde_core v1.0.229
+│   └── zmij v1.0.23
+└── signal-hook v0.4.4
+    ├── libc v0.2.189
+    └── signal-hook-registry v1.4.8
+        ├── errno v0.3.14
+        │   └── libc v0.2.189
+        └── libc v0.2.189
+
+rslb-core v0.1.0 (/tmp/tmp.eDrkEXfkqx/crates/rslb-core) (*)
+warning: nothing to print.
+anyhow rust-version=1.68 license=MIT OR Apache-2.0
+errno rust-version=1.56 license=MIT OR Apache-2.0
+itoa rust-version=1.68 license=MIT OR Apache-2.0
+libc rust-version=1.65 license=MIT OR Apache-2.0
+memchr rust-version=1.61 license=Unlicense OR MIT
+proc-macro2 rust-version=1.71 license=MIT OR Apache-2.0
+quote rust-version=1.71 license=MIT OR Apache-2.0
+serde rust-version=1.56 license=MIT OR Apache-2.0
+serde_core rust-version=1.56 license=MIT OR Apache-2.0
+serde_derive rust-version=1.71 license=MIT OR Apache-2.0
+serde_json rust-version=1.71 license=MIT OR Apache-2.0
+signal-hook rust-version=1.66 license=MIT OR Apache-2.0
+signal-hook-registry rust-version=1.26 license=MIT OR Apache-2.0
+syn rust-version=1.71 license=MIT OR Apache-2.0
+thiserror rust-version=1.71 license=MIT OR Apache-2.0
+thiserror-impl rust-version=1.71 license=MIT OR Apache-2.0
+unicode-ident rust-version=1.71 license=(MIT OR Apache-2.0) AND Unicode-3.0
+windows-link rust-version=1.71 license=MIT OR Apache-2.0
+windows-sys rust-version=1.71 license=MIT OR Apache-2.0
+zmij rust-version=1.71 license=MIT
+no etcetera in manifests or lockfile
+error: no such command: `audit`
+cargo audit unavailable
+```
+
+The VM lacks `cargo audit`, so no advisory scan was attempted there.
+
+## E14 macOS rerun
+
+The command copied the same three manifests to two macOS temporary directories,
+added only the same empty temporary target stubs, cloned the official RustSec
+advisory database into a third temporary directory, then ran the recommended
+and one-line `anyhow = "=1.0.102"` control workspaces.
+
+Command body:
+
+```text
+git clone --depth 1 https://github.com/RustSec/advisory-db.git <temporary-db>
+cargo generate-lockfile
+cargo audit --db <temporary-db> --no-fetch
+perl -0pi -e 's/anyhow = "1\.0\.104"/anyhow = "=1.0.102"/' crates/rslb-cli/Cargo.toml
+cargo generate-lockfile
+cargo audit --db <temporary-db> --no-fetch
+```
+
+Exit: 0 for the recommended scan; 0 for the warning-only control scan.
+
+Complete output:
+
+```text
+== recommended ==
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+      Loaded 1243 security advisories
+warning: couldn't open crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+== control anyhow =1.0.102 ==
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+      Adding anyhow v1.0.102 (available: v1.0.104)
+      Loaded 1243 security advisories
+warning: couldn't open crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+Crate:     anyhow
+Version:   1.0.102
+Warning:   unsound
+Title:     Unsoundness in `Error::downcast_mut()`
+Date:      2026-06-25
+ID:        RUSTSEC-2026-0190
+URL:       https://rustsec.org/advisories/RUSTSEC-2026-0190
+Dependency tree:
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+warning: 1 allowed warning found
+anyhow 1.0.102
+└── rslb-cli 0.1.0
+```
+
+Result: E13 and E14 reproduce the decision's corrected figures. No runtime
+criterion or template behavior was executed by this audit.

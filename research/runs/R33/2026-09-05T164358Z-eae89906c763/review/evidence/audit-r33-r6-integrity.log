@@ -1,0 +1,16 @@
+decision_hash=PASS
+published_payload_after_last_exact_supersedes=PASS
+published_payload_sha256=1bf96b43e0198e07bccca2ca4ecf0d5a6a2afb939260d896b8eca4814757a068
+runner.check_history=PASS
+active_assumes_match_PARAMETERS_byte_for_byte=PASS
+corrected_sed_296_525_expected_hash=1bf96b43e0198e07bccca2ca4ecf0d5a6a2afb939260d896b8eca4814757a068
+1bf96b43e0198e07bccca2ca4ecf0d5a6a2afb939260d896b8eca4814757a068  -
+19:## Decision
+148:## Parameters
+161:## Empirical check
+213:## Engines
+291:## Supersedes
+306:## Decision
+447:## Parameters
+460:## Empirical check
+495:## Engines

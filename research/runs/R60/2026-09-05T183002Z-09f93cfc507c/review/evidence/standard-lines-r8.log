@@ -1,0 +1,128 @@
+=== L-grep. the search binary every count below was produced by ===
+grep binary:  /usr/bin/grep
+grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+=== L0. negative controls: prove this harness can actually fail ===
+--- the next two FAIL lines are deliberate ---
+FAIL  L0a control (expected to FAIL)
+      wanted substring: THIS-SUBSTRING-IS-ABSENT
+      got: the pinned standard
+FAIL  L0b control (expected to FAIL)
+      must NOT contain: pinned
+      got: the pinned standard
+PASS  L0 harness detected both mismatches and incremented its counter
+--- controls accounted for; counters reset, real checks follow ---
+PASS  L-grep the search binary is an absolute /usr/bin/grep that reports a version
+=== L1. the text read below IS the pinned blob, by content hash ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f
+PASS  L1a the snapshot's sha256 is the pinned blob's, 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f
+MANIFEST row for the standard: 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f|cli-design-standard-1.4.14.md|raw|https://raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591c267a7ec1130ba4cda679eaee494b9d7/cli-design-standard.md|-|-
+PASS  L1b MANIFEST.txt records that same sha256 for it
+lines in the pinned standard: 773
+PASS  L1c the pinned standard is 773 lines, so every line read below is in range
+=== L2. R1.1 — the Standard-profile noun-verb MUST (cited as :124) ===
+124: **R1.1 — Noun-verb ordering. (MUST, Standard profile)**
+PASS  L2a :124 is R1.1's heading
+125: A command path **MUST** read *resource then action*: `acme <noun> <verb>`. This is the de facto pattern of the most-praised multi-resource CLIs (gh, kubectl) and scales as resources grow.
+PASS  L2b :125 is R1.1's rule body and carries the noun-verb MUST
+PASS  L2c the :124 heading carries no obligation text, so citing it proves nothing (absent: resource then action)
+=== L3. R1.2 — nesting depth (cited as :129) ===
+129: **R1.2 — Nesting depth. (SHOULD)**
+PASS  L3a :129 is R1.2's heading
+130: Subcommand depth after the binary **SHOULD NOT** exceed three path elements (`acme <group> <noun> <verb>`). Group nouns only when a flat noun set becomes unwieldy. Deeper nesting harms discoverability and tab-completion.
+PASS  L3b :130 is R1.2's rule body and bounds the depth
+PASS  L3c the :129 heading bounds nothing (absent: three path elements)
+=== L4. R3.8 — flag/env/config name parity (cited as :220) ===
+220: **R3.8 — Flag / env / config name parity. (MUST)**
+PASS  L4a :220 is R3.8's heading, which is what revisions 1-7 cited
+221: A setting exposed in more than one place **MUST** use the same name across flag, environment variable, and config key, via deterministic transforms only: `--some-flag` ↔ `TOOL_SOME_FLAG` ↔ `some-flag` (config key). No bespoke renaming.
+PASS  L4b :221 is R3.8's rule body and carries the MUST
+PASS  L4c :221 carries the deterministic transform this decision quotes
+PASS  L4d the :220 heading carries no transform, so the old citation was vacuous (absent: TOOL_SOME_FLAG)
+=== L5. R3.10 — no prefix abbreviation (cited as :229-230) ===
+229: **R3.10 — No prefix abbreviation. (MUST)**
+PASS  L5a :229 is R3.10's heading
+230: Long flags and command names **MUST** require an exact match; automatic unique-prefix abbreviation (GNU-style `--ver` → `--verbose`) **MUST NOT** be enabled, because adding a flag later silently breaks scripts that relied on the shorter form. Provide explicit aliases instead.
+PASS  L5b :230 is R3.10's rule body and forbids prefix abbreviation
+PASS  L5c :230 carries the reason this decision quotes
+PASS  L5d the :229 heading carries no rule text (absent: exact match)
+=== L6. R4.1 — the required global core (cited as :237) ===
+237: **R4.1 — Standard option tiers. (MUST)**
+PASS  L6a :237 is R4.1's heading, which is what revisions 1-7 cited
+238: Standard options are split into three tiers, each with exactly these names and meanings. Every CLI **MUST** implement the **required global core**. Commands that emit formatted result data **MUST** implement the **result-output options**. **Safety/action options** are reserved standard names: when a command supports that concept, it **MUST** use the listed name and meaning, and **SHOULD** keep the option command-local unless it is meaningful globally. Letters not listed here **SHOULD NOT** be reassigned to conflicting meanings.
+PASS  L6b :238 is R4.1's rule body and carries the required-global-core MUST
+PASS  L6c the :237 heading never names the required global core (absent: required global core)
+=== L7. R4.5 — global vs command-local flags (cited as :270 — WRONG) ===
+270: **R4.5 — Global vs command-local flags. (SHOULD)**
+PASS  L7a :270 is R4.5's heading — the line revisions 1-7 cited
+271: A flag **SHOULD** be global/persistent only if it is meaningful on (nearly) every command. The required global core is defined in R4.1. Result-output options (`--output`/`-o`, `--json`) **SHOULD** be accepted globally when the CLI can apply them consistently, but **MUST** at least be available on commands that emit formatted result data. Connection/identity flags (`--profile`, `--context`, `--project`, `--namespace`, as applicable) **SHOULD** be persistent for networked multi-scope tools. Everything else **SHOULD** be local to the command that uses it. Global flags **MUST** be accepted before the subcommand and **SHOULD** also be accepted after it.
+PASS  L7b :271 is R4.5's rule body and spells the result-output option -o/--output
+PASS  L7c :271 carries the before-the-verb MUST this decision's P5 quotes
+PASS  L7d the :270 heading does not spell --output, so the old citation was vacuous (absent: --output)
+=== L8. R5.4 — environment variables (cited as :321) ===
+321: **R5.4 — Environment variables. (MUST)**
+PASS  L8a :321 is R5.4's heading
+322: Environment variables **MUST** use the uppercase `TOOL_*` prefix with a deterministic mapping (`--some-flag` → `TOOL_SOME_FLAG`; for the fictional `acme` examples, `ACME_SOME_FLAG`). Only a **curated subset** of settings **SHOULD** read from the environment — typically auth/token, host/endpoint, output format, config path, and telemetry opt-out — and the tool **MUST NOT** auto-expose every flag as an env var.
+PASS  L8b :322 is R5.4's rule body and carries the MUST NOT F269 rests on
+PASS  L8c the :321 heading carries no prohibition (absent: auto-expose)
+=== L13. R6.1 — the exit-code scheme R67 and this decision both rest on ===
+351: **R6.1 — Exit-code scheme. (MUST)**
+PASS  L13a :351 is R6.1's heading
+352: A CLI **MUST** use the following scheme. Unlisted failures collapse to `1`. This is "structured-but-small": enough signal for automation without the BSD `sysexits.h` (64–78) baggage, which we **reject** as over-specified and unavailable on Windows.
+PASS  L13b :352 is R6.1's rule body and carries the exit-code MUST
+PASS  L13c the :351 heading carries no scheme (absent: following scheme)
+=== L9. R7.3 — TTY-aware presentation, the ground for wrap_help (F6) ===
+389: **R7.3 — TTY-aware behavior. (SHOULD / MUST)**
+PASS  L9a :389 is R7.3's heading
+390: A tool **SHOULD** detect whether stdout is a TTY and adjust *presentation* accordingly: interactive niceties when attached (spinners, pager, prompts), and none of those when piped. TTY state **MUST NOT** change the selected output *format*: `-o` (default `table`) determines the format regardless of whether output is a terminal or a pipe — a pipe only suppresses the niceties (and, per the separate color standard, color). Scripts wanting machine output **MUST** pass an explicit machine format such as `-o json`/`--json` (or `-o jsonl` for documented streams) on commands that emit formatted result data rather than relying on the pipe to switch formats. (Color/styling is governed separately and out of scope here.)
+PASS  L9b :390 is R7.3's rule body and carries the presentation SHOULD
+PASS  L9c the :389 heading carries no obligation (absent: **SHOULD** detect)
+=== L10. R7.5 — help text format, the second ground for wrap_help (F6) ===
+397: **R7.5 — Help text format. (MUST)**
+PASS  L10a :397 is R7.5's heading
+398: Every command **MUST** print structured help containing, in order: a one-line summary, `Usage:`, then `Commands`/`Arguments`/`Flags`/`Examples` sections as applicable. Explicitly requested help (`--help` or `acme help ...`) **MUST** go to stdout and exit `0`; usage/help text printed as part of a usage error **MUST** go to stderr and exit nonzero (R7.9). At least one realistic **example MUST** be shown for non-trivial commands.
+PASS  L10b :398 is R7.5's rule body and requires structured, sectioned help
+PASS  L10c the :397 heading requires nothing (absent: structured help)
+=== L11. R9.1 — completion shells (cited as :483 — WRONG) ===
+483: **R9.1 — Completion, man pages & help topics. (SHOULD / MAY)**
+PASS  L11a :483 is R9.1's heading — the line revisions 1-7 cited
+484: A CLI **SHOULD** ship shell completion (`acme completion <shell>`) for at least bash, zsh, and fish, and **SHOULD** be able to generate man pages or equivalent reference docs. It **MAY** also provide non-command help *topics* via `acme help <topic>` (e.g., `formatting`, `environment`, `exit-codes`), gh-style.
+PASS  L11b :484 is R9.1's rule body and names the three shells
+PASS  L11c :484 also carries the completion-command spelling this decision's F268 follows
+PASS  L11d the :483 heading names no shell, so the old citation was vacuous (absent: bash, zsh, and fish)
+=== L12. R9.3 — interface stability (cited as :491-493 — OVERRUNS) ===
+491: **R9.3 — Interface stability & versioning. (MUST)**
+PASS  L12a :491 is R9.3's heading
+492: The tool **MUST** version itself with SemVer and treat its **interface as the public contract**: command names, flag names, exit codes, env-var names, and machine-readable output shape. Breaking any of these **MUST** be a major-version change. For machine output, breaking and non-breaking shape changes are defined in R7.2. `-o json`/`-o jsonl`/`-o name` and other machine formats **MUST** remain stable across non-major versions (R7.2).
+PASS  L12b :492 is R9.3's rule body and carries the public-contract list verbatim
+493: []
+PASS  L12c :493 is blank, so R9.3's body ends at :492
+PASS  L12d the :491 heading carries no list (absent: env-var names)
+=== L20. CLASS CONTROL: every rule the decision names by id has its BODY read ===
+rule ids named in review/DECISION.md: R1.1 R1.2 R1.3 R1.6 R2.2 R3.8 R3.10 R4.1 R4.5 R4.6 R4.7 R5.4 R6.1 R7.3 R7.5 R9.1 R9.3 
+  R1.1   heading :124  body :125  READ
+  R1.2   heading :129  body :130  READ
+  R1.3   heading :133  body :134  READ
+  R1.6   heading :146  body :147  READ
+  R2.2   heading :176  body :177  READ
+  R3.8   heading :220  body :221  READ
+  R3.10  heading :229  body :230  READ
+  R4.1   heading :237  body :238  READ
+  R4.5   heading :270  body :271  READ
+  R4.6   heading :275  body :276  READ
+  R4.7   exempt (heading-only citation; C8b8 asserts it)
+  R5.4   heading :321  body :322  READ
+  R6.1   heading :351  body :352  READ
+  R7.3   heading :389  body :390  READ
+  R7.5   heading :397  body :398  READ
+  R9.1   heading :483  body :484  READ
+  R9.3   heading :491  body :492  READ
+rules named by the decision whose body no committed check reads:[]
+PASS  L20a every rule the decision names by id has its body read by a committed check
+rule ids found: 17
+PASS  L20b the id census is live: it found at least 15 distinct rule ids
+PASS  L20c the membership test discriminates: :772 is correctly reported not-read
+exempt rule ids: 1
+PASS  L20d exactly one rule id is exempt, so the exemption list cannot grow unnoticed
+
+CHECKS RUN: 49   FAILURES: 0
+RESULT: all checks passed

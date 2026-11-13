@@ -1,0 +1,306 @@
+
+======== 0  toolchain, host, retrieval date ========
+retrieval date (UTC): 2026-09-17
+uname: Darwin 25.4.0 arm64
+sw_vers: macOS 26.4 25E246
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+grep (the binary every count below is taken with): grep (BSD grep, GNU compatible) 2.6.0-FreeBSD at /usr/bin/grep
+tar: bsdtar 3.5.3 - libarchive 3.7.4 zlib/1.2.12 liblzma/5.4.3 bz2lib/1.0.8 
+jq: jq-1.8.2
+network reachable (crates.io): 1
+vendor directory (outside the repository, deleted on exit): /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor
+NOTE: nothing is compiled by this script and no file is written into the repository.
+
+======== 1  fetch and extract the published crate sources at their exact versions ========
+fetched serde 1.0.229 from https://crates.io/api/v1/crates/serde/1.0.229/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/serde-1.0.229/
+fetched serde_core 1.0.229 from https://crates.io/api/v1/crates/serde_core/1.0.229/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/serde_core-1.0.229/
+fetched serde_derive 1.0.229 from https://crates.io/api/v1/crates/serde_derive/1.0.229/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/serde_derive-1.0.229/
+fetched garde 0.23.0 from https://crates.io/api/v1/crates/garde/0.23.0/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/garde-0.23.0/
+fetched garde_derive 0.23.0 from https://crates.io/api/v1/crates/garde_derive/0.23.0/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/garde_derive-0.23.0/
+fetched validator 0.21.0 from https://crates.io/api/v1/crates/validator/0.21.0/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/validator-0.21.0/
+fetched serde_valid 3.1.2 from https://crates.io/api/v1/crates/serde_valid/3.1.2/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/serde_valid-3.1.2/
+fetched nutype 0.7.0 from https://crates.io/api/v1/crates/nutype/0.7.0/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/nutype-0.7.0/
+fetched validify 2.0.0 from https://crates.io/api/v1/crates/validify/2.0.0/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/validify-2.0.0/
+fetched toml 1.1.6+spec-1.1.0 from https://crates.io/api/v1/crates/toml/1.1.6+spec-1.1.0/download -> /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r53-r2-gate.87501/vendor/toml-1.1.6+spec-1.1.0/
+
+======== 2  fitness gate 3, the unsafe-posture limb, per candidate ========
+Method: for each extracted crate, /usr/bin/grep -n -w 'unsafe' over every .rs
+file found by find(1) under the crate's own src/ (and, for nutype, its whole
+tree, whose only .rs file is src/lib.rs). The count is of MATCHING LINES over
+the WHOLE tree, never a head-truncated prefix. Every matching line is printed
+below the count, so the count can be audited against the listing.
+
+Scope note that goes with every row: R06 (research/topics/06-unsafe-code-policy)
+forbids unsafe in the TEMPLATE'S OWN code via [workspace.lints.rust]
+unsafe_code = "forbid" and makes no claim about the dependency tree, because
+Cargo compiles dependencies with --cap-lints allow. So no row below excludes a
+candidate; gate 3's unsafe limb is a STATED POSTURE, not a filter.
+
+--- serde-1.0.229 : .rs files searched = 24 ; lines matching /usr/bin/grep -n -w 'unsafe' = 2
+serde-1.0.229/src/core/format.rs:16:        unsafe { str::from_utf8_unchecked(slice) }
+serde-1.0.229/src/core/ser/impls.rs:821:            let buf = unsafe { str::from_utf8_unchecked(&buf[..written]) };
+
+--- serde_core-1.0.229 : .rs files searched = 19 ; lines matching /usr/bin/grep -n -w 'unsafe' = 2
+serde_core-1.0.229/src/format.rs:16:        unsafe { str::from_utf8_unchecked(slice) }
+serde_core-1.0.229/src/ser/impls.rs:821:            let buf = unsafe { str::from_utf8_unchecked(&buf[..written]) };
+
+--- serde_derive-1.0.229 : .rs files searched = 28 ; lines matching /usr/bin/grep -n -w 'unsafe' = 0
+    (no matching line anywhere in the searched tree)
+
+--- garde-0.23.0 : .rs files searched = 27 ; lines matching /usr/bin/grep -n -w 'unsafe' = 7
+garde-0.23.0/src/rules/pattern.rs:122:        pub const unsafe fn new(inner: T) -> Self {
+garde-0.23.0/src/rules/pattern.rs:139:    unsafe impl<T> Send for SyncWrapper<T> {}
+garde-0.23.0/src/rules/pattern.rs:140:    unsafe impl<T> Sync for SyncWrapper<T> {}
+garde-0.23.0/src/rules/pattern.rs:149:                unsafe { $crate::rules::pattern::regex_js_sys::SyncWrapper::new(::js_sys::RegExp::new($pat, "u")) }
+garde-0.23.0/src/i18n.rs:402:            Some(p) => unsafe { p.as_ref() }.$handler($($($args),*)?),
+garde-0.23.0/src/i18n.rs:414:    let ptr: NonNull<dyn I18n + 'static> = unsafe {
+garde-0.23.0/src/error/rc_list/mod.rs:93:            unsafe { transmute(&next.value) }
+
+--- garde_derive-0.23.0 : .rs files searched = 6 ; lines matching /usr/bin/grep -n -w 'unsafe' = 2
+garde_derive-0.23.0/src/model.rs:27:        unsafe { <*const _>::from(self).cast::<u8>().read() }
+garde_derive-0.23.0/src/model.rs:351:        unsafe { <*const _>::from(self).cast::<u8>().read() }
+
+--- validator-0.21.0 : .rs files searched = 17 ; lines matching /usr/bin/grep -n -w 'unsafe' = 0
+    (no matching line anywhere in the searched tree)
+
+--- serde_valid-3.1.2 : .rs files searched = 74 ; lines matching /usr/bin/grep -n -w 'unsafe' = 0
+    (no matching line anywhere in the searched tree)
+
+--- nutype-0.7.0 : .rs files searched = 1 ; lines matching /usr/bin/grep -n -w 'unsafe' = 3
+651://! // Yes, you're forced to use `unsafe` here, so everyone will point fingers at YOU.
+652://! let name = unsafe { Name::new_unchecked(" boo ".to_string()) };
+662://! * `new_unchecked` - enables generation of unsafe `::new_unchecked()` function.
+
+--- validify-2.0.0 : .rs files searched = 15 ; lines matching /usr/bin/grep -n -w 'unsafe' = 0
+    (no matching line anywhere in the searched tree)
+
+Per-candidate gate 3 unsafe assertions:
+PASS G01 :: equal: 2
+PASS G02 :: /usr/bin/grep -F found: serde-1.0.229/src/core/format.rs:16:        unsafe { str::from_utf8_unchecked(slice) }
+PASS G03 :: equal: 2
+PASS G04 :: equal: 0
+PASS G05 :: equal: 7
+PASS G06 :: equal: 2
+PASS G07 :: equal: 4
+PASS G08 :: equal: 1
+PASS G09 :: /usr/bin/grep -F found: garde-0.23.0/src/error/rc_list/mod.rs:93:            unsafe { transmute(&next.value) }
+PASS G10 :: equal: 2
+PASS G11 :: equal: 0
+PASS G12 :: equal: 0
+PASS G13 :: equal: 0
+PASS G14 :: equal: 3
+PASS G15 :: equal: 3
+
+======== 2b  which of garde's unsafe sites are on a default ubuntu/macos build path ========
+This decides whether the runner-up's unsafe is reachable for this template.
+A site is on the default path when the module declaring it carries no cfg gate.
+--- garde src/rules/pattern.rs, the regex_js_sys module header ---
+97-    target_arch = "wasm32",
+98-    target_os = "unknown"
+99-))]
+100-#[doc(hidden)]
+101:pub mod regex_js_sys {
+PASS G16 :: /usr/bin/grep -F found: target_arch = "wasm32"
+PASS G17 :: /usr/bin/grep -F found: target_os = "unknown"
+--- garde src/error.rs, the rc_list module declaration (no cfg attribute above it) ---
+3-//! The entrypoint of this module is the [`Error`] type.
+4-#![allow(dead_code)]
+5-
+6:mod rc_list;
+PASS G18 :: /usr/bin/grep -F found: mod rc_list;
+PASS G19 :: equal: 0
+--- garde src/lib.rs, the i18n module declaration (no cfg attribute above it) ---
+1-#![doc = include_str!("../README.md")]
+2-
+3-#[macro_use]
+4:pub mod i18n;
+PASS G20 :: /usr/bin/grep -F found: pub mod i18n;
+PASS G21 :: equal: 0
+
+======== 2c  no candidate declares a crate-level unsafe_code lint attribute ========
+Recorded so the absence is stated rather than assumed: a crate that forbids
+unsafe in its own source would say so in its lib.rs, and none of these does.
+  serde-1.0.229 : serde-1.0.229/src/core/lib.rs carries 0 line(s) matching 'unsafe_code' (/usr/bin/grep -c)
+  garde-0.23.0 : garde-0.23.0/src/lib.rs carries 0 line(s) matching 'unsafe_code' (/usr/bin/grep -c)
+  validator-0.21.0 : validator-0.21.0/src/lib.rs carries 0 line(s) matching 'unsafe_code' (/usr/bin/grep -c)
+  serde_valid-3.1.2 : serde_valid-3.1.2/src/lib.rs carries 0 line(s) matching 'unsafe_code' (/usr/bin/grep -c)
+  nutype-0.7.0 : nutype-0.7.0/src/lib.rs carries 0 line(s) matching 'unsafe_code' (/usr/bin/grep -c)
+  validify-2.0.0 : validify-2.0.0/src/lib.rs carries 0 line(s) matching 'unsafe_code' (/usr/bin/grep -c)
+PASS G22 :: equal: 0
+PASS G23 :: equal: 0
+
+======== 3  fitness gate 5, default features and async-runtime coupling, per candidate ========
+Async-runtime coupling is judged by whether ANY normal dependency — optional
+or not — is an async executor or reactor. The pattern searched for is
+^(tokio|async-std|smol|futures|futures-.*|async-global-executor|async-io|async-executor|actix-rt)$
+over the crate_id list from GET https://crates.io/api/v1/crates/<n>/<v>/dependencies.
+
+--- GET https://crates.io/api/v1/crates/serde/1.0.229  and  .../dependencies
+  default feature key present: true ; default = [std]
+  normal dependencies (optional and non-optional), 2 in total from /usr/bin/grep -c over the whole list:
+    serde_core
+    serde_derive
+  async-runtime/reactor dependencies matching the pattern: 0
+
+--- GET https://crates.io/api/v1/crates/garde/0.23.0  and  .../dependencies
+  default feature key present: false ; default = [<no default key>]
+  normal dependencies (optional and non-optional), 13 in total from /usr/bin/grep -c over the whole list:
+    card-validate
+    compact_str
+    garde_derive
+    idna
+    js-sys
+    once_cell
+    phonenumber
+    regex
+    rust_decimal
+    serde
+    smallvec
+    unicode-segmentation
+    url
+  async-runtime/reactor dependencies matching the pattern: 0
+
+--- GET https://crates.io/api/v1/crates/validator/0.21.0  and  .../dependencies
+  default feature key present: false ; default = [<no default key>]
+  normal dependencies (optional and non-optional), 9 in total from /usr/bin/grep -c over the whole list:
+    card-validate
+    idna
+    indexmap
+    regex
+    serde
+    serde_derive
+    serde_json
+    url
+    validator_derive
+  async-runtime/reactor dependencies matching the pattern: 0
+
+--- GET https://crates.io/api/v1/crates/serde_valid/3.1.2  and  .../dependencies
+  default feature key present: true ; default = [i128]
+  normal dependencies (optional and non-optional), 13 in total from /usr/bin/grep -c over the whole list:
+    fluent
+    indexmap
+    itertools
+    num-traits
+    regex
+    serde
+    serde_json
+    serde_valid_derive
+    serde_valid_literal
+    serde_yaml
+    thiserror
+    toml
+    unicode-segmentation
+  async-runtime/reactor dependencies matching the pattern: 0
+
+--- GET https://crates.io/api/v1/crates/nutype/0.7.0  and  .../dependencies
+  default feature key present: true ; default = [std]
+  normal dependencies (optional and non-optional), 1 in total from /usr/bin/grep -c over the whole list:
+    nutype_macros
+  async-runtime/reactor dependencies matching the pattern: 0
+
+--- GET https://crates.io/api/v1/crates/validify/2.0.0  and  .../dependencies
+  default feature key present: false ; default = [<no default key>]
+  normal dependencies (optional and non-optional), 12 in total from /usr/bin/grep -c over the whole list:
+    card-validate
+    chrono
+    idna
+    indexmap
+    lazy_static
+    phonenumber
+    regex
+    serde
+    serde_json
+    unic-ucd-common
+    url
+    validify_derive
+  async-runtime/reactor dependencies matching the pattern: 0
+PASS G24 :: equal: true
+PASS G25 :: equal: std
+PASS G26 :: equal: false
+PASS G27 :: equal: false
+PASS G28 :: equal: i128
+PASS G29 :: equal: std
+PASS G30 :: equal: false
+
+Total async-runtime/reactor dependencies across all six candidates: 0
+PASS G31 :: equal: 0
+
+======== 4  JF-3: the three container types, read from the published sources ========
+Revision 1 asserted these three shapes with no check id. They are now read
+from the same extracted crate sources as section 2.
+--- toml 1.1.6+spec-1.1.0 : src/table.rs and the cfg-selected map backing ---
+14:pub type Table = Map<String, Value>;
+17:#[cfg(not(feature = "preserve_order"))]
+18-use alloc::collections::{BTreeMap, btree_map};
+--
+36:#[cfg(not(feature = "preserve_order"))]
+37-type MapImpl<K, V> = BTreeMap<K, V>;
+--
+55:            #[cfg(not(feature = "preserve_order"))]
+56-            map: MapImpl::new(),
+--
+63:    #[cfg(not(feature = "preserve_order"))]
+64-    /// Makes a new empty Map with the given initial capacity.
+--
+165:        #[cfg(not(feature = "preserve_order"))]
+166-        {
+--
+182:        #[cfg(not(feature = "preserve_order"))]
+183-        {
+--
+213:        #[cfg(not(feature = "preserve_order"))]
+214-        use alloc::collections::btree_map::Entry as EntryImpl;
+--
+287:        #[cfg(not(feature = "preserve_order"))]
+288-        {
+--
+472:#[cfg(not(feature = "preserve_order"))]
+473-type VacantEntryImpl<'a, K, V> = btree_map::VacantEntry<'a, K, V>;
+--
+477:#[cfg(not(feature = "preserve_order"))]
+478-type OccupiedEntryImpl<'a, K, V> = btree_map::OccupiedEntry<'a, K, V>;
+--
+565:        #[cfg(not(feature = "preserve_order"))]
+566-        {
+--
+594:#[cfg(not(feature = "preserve_order"))]
+595-type IterImpl<'a, K, V> = btree_map::Iter<'a, K, V>;
+--
+619:#[cfg(not(feature = "preserve_order"))]
+620-type IterMutImpl<'a, K, V> = btree_map::IterMut<'a, K, V>;
+--
+644:#[cfg(not(feature = "preserve_order"))]
+645-type IntoIterImpl<K, V> = btree_map::IntoIter<K, V>;
+--
+658:#[cfg(not(feature = "preserve_order"))]
+659-type KeysImpl<'a, K, V> = btree_map::Keys<'a, K, V>;
+--
+672:#[cfg(not(feature = "preserve_order"))]
+673-type ValuesImpl<'a, K, V> = btree_map::Values<'a, K, V>;
+PASS G32 :: /usr/bin/grep -F found: pub type Table = Map<String, Value>;
+PASS G33 :: /usr/bin/grep -F found: type MapImpl<K, V> = BTreeMap<K, V>;
+--- garde 0.23.0 : src/error.rs, the Report container ---
+23:pub struct Report {
+24-    errors: Vec<(Path, Error)>,
+25-}
+26-
+50:    pub fn into_inner(self) -> Vec<(Path, Error)> {
+PASS G34 :: /usr/bin/grep -F found: errors: Vec<(Path, Error)>,
+PASS G35 :: /usr/bin/grep -F found: pub fn into_inner(self) -> Vec<(Path, Error)>
+--- validator 0.21.0 : src/types.rs, the ValidationErrors container ---
+50:pub struct ValidationErrors(pub HashMap<Cow<'static, str>, ValidationErrorsKind>);
+PASS G36 :: /usr/bin/grep -F found: pub struct ValidationErrors(pub HashMap<Cow<
+PASS G37 :: equal: 0
+
+======== 5  summary ========
+checks run:  37
+failures:    0
+skips:       0
+
+Reproducibility rule for a rerun diff: every PASS / FAIL / SKIP line and every
+count above is reproducible byte-for-byte, because every crate is read at a
+pinned published version whose bytes cannot change (crates.io releases are
+immutable) and no figure here is a rolling counter. The lines that differ on
+every run are the eleven carrying the $TMPDIR vendor path, which embeds the
+shell's PID — the header line and the ten 'fetched ...' lines — plus the
+retrieval-date line, which changes daily by construction.

@@ -1,0 +1,144 @@
+[
+  {
+    "script": "scripts/research_runner.py",
+    "argv": [],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_runner.py",
+    "argv": [
+      "-h"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_runner.py",
+    "argv": [
+      "-V"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_runner.py",
+    "argv": [
+      "help"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_runner.py",
+    "argv": [
+      "--json",
+      "nonsense"
+    ],
+    "exit_code": 2,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_runner.py",
+    "argv": [
+      "-ojson",
+      "--nonsense"
+    ],
+    "exit_code": 2,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_runner.py",
+    "argv": [
+      "--json",
+      "--conf",
+      "x"
+    ],
+    "exit_code": 2,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "-h"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "-V"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "help"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "--json",
+      "nonsense"
+    ],
+    "exit_code": 2,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "-ojson",
+      "--nonsense"
+    ],
+    "exit_code": 2,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "--json",
+      "--conf",
+      "x"
+    ],
+    "exit_code": 2,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "--json",
+      "--config",
+      "<temporary config>",
+      "-v",
+      "-q",
+      "tree"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  },
+  {
+    "script": "scripts/research_validation.py",
+    "argv": [
+      "--json",
+      "--config",
+      "<temporary config>",
+      "-q",
+      "--debug",
+      "tree"
+    ],
+    "exit_code": 0,
+    "streams": "pass"
+  }
+]

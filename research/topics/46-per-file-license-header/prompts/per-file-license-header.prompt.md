@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): the root `LICENSE` file itself is `COMMON → REUSE` (F206, `docs/port/COMMONALITY.md`) with its value set by the fixed `license` parameter (`MIT OR Apache-2.0`, an owner override already recorded in `docs/port/PARAMETERS.md`) — this item decides only the per-file header, not the root license text or file. `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
 - Prior decisions of the TypeScript port that explain the current shape: D-024(7) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — the intent was to add a root `LICENSE` file plus a `package.json` license field, then replace the 18-line embedded MIT headers with one-line SPDX-License-Identifier comments repo-wide, with no header-insertion automation; in the pinned ts commit that conversion landed only in `FUNDING.yml`, leaving the other 12 originally-copied files with the old unconverted header and every `.ts` source file with none — the decision's *intent* (SPDX one-liner, no automation) is the prior art to weigh, not its incomplete execution.
 
+### Baseline review (2026-09-04)
+- F206 (root LICENSE) now records the root pair `LICENSE-APACHE` + `LICENSE-MIT` with `license = "MIT OR Apache-2.0"`; the per-file identifier this item decides on follows the fixed `license` parameter, `MIT OR Apache-2.0`, not the sources' `MIT` (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The root `LICENSE` file's own text and mechanism; that is `COMMON → REUSE` (F206) with its value already fixed by the `license` parameter — this item covers only the per-source-file header.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
@@ -17,6 +20,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R46
 - owns:
 - consumes:
+- effort: light
+- engines: codex
+- evidence-checks: terra
+- acceptance-after:
 - related (not a registry dependency): none — this item's decision depends only on the already-fixed `license` parameter, not on any other research item's registered output.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -58,6 +65,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

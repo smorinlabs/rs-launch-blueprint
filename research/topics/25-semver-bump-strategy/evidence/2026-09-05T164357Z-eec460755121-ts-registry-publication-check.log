@@ -1,0 +1,89 @@
+# R25 revision 2 — registry-publication check for the TypeScript source repository (executed 2026-09-10)
+#
+# Purpose: revision 1 wrote that ts 'first published v0.1.1'. That conflated three separate things.
+# This log checks each one separately:
+#   (a) a release-please RELEASE COMMIT on the default branch,
+#   (b) a GIT TAG,
+#   (c) a REGISTRY PUBLICATION on npmjs.com.
+# Working directory: session scratchpad. The npm cache is isolated at
+#   /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/npmcache  so no shared cache is touched. No repository file is written.
+
+## (a) release-please release commits on .release-please-manifest.json (newest first)
+$ git -C ~/c/ts-launch-blueprint log --oneline --all -- .release-please-manifest.json
+    bdffd16 chore(release): publish v0.1.4
+    0e6a3d7 chore(release): publish v0.1.3
+    1ec682f chore(release): publish v0.1.2
+    bdc7567 chore(release): publish v0.1.1
+    19ff9b5 feat: add release-please + npm publish pipeline
+$ git -C ~/c/ts-launch-blueprint show 19ff9b5:.release-please-manifest.json    # the seeding commit
+    {
+      ".": "0.1.0"
+    }
+
+## (b) git tags present in the pinned local clone
+$ git -C ~/c/ts-launch-blueprint tag --list | sort -V
+    ts-launch-blueprint-v0.1.1
+    v0.1.2
+    v0.1.3
+
+## (c) npm registry — the audit's exact command, re-run here
+$ npm view ts-launch-blueprint@0.1.1 version dist.tarball --json --cache <isolated>
+    npm error code E404
+    npm error 404 No match found for version 0.1.1
+    npm error 404  The requested resource 'ts-launch-blueprint@0.1.1' could not be found or you do not have permission to access it.
+    {
+      "error": {
+        "code": "E404",
+        "summary": "No match found for version 0.1.1",
+        "detail": "The requested resource 'ts-launch-blueprint@0.1.1' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+      }
+    }
+    exit=1  (E404)
+
+$ npm view ts-launch-blueprint versions --json --cache <isolated>   # is the NAME published at all?
+    [
+      "0.0.1",
+      "0.1.3"
+    ]
+    exit=0
+
+$ curl -sS https://registry.npmjs.org/ts-launch-blueprint   # full packument, fields extracted below
+    HTTP 200
+    name        = ts-launch-blueprint
+    dist-tags   = {"latest": "0.1.3"}
+    versions    = ['0.0.1', '0.1.3']
+    time        = {"created": "2026-07-21T13:49:57.920Z", "modified": "2026-07-22T03:40:54.070Z", "0.0.1": "2026-07-21T13:49:58.319Z", "0.1.3": "2026-07-22T03:40:53.945Z"}
+    version 0.0.1  repository=null  publisher="smorin"
+    version 0.1.3  repository={"type": "git", "url": "git+https://github.com/smorinlabs/ts-launch-blueprint.git"}  publisher="GitHub Actions"
+    maintainers = ["smorin"]
+    exit=0
+
+## Why (c) diverges from (a) and (b) — ts's own decision record, D-021(5), pinned clone cb1cbcb
+$ git -C ~/c/ts-launch-blueprint show cb1cbcb:docs/port/TS_PORT_DECISIONS.md | sed -n '257p'
+      5. [Adapt existing repo decision] release.yml tag/version gate and npm publishing (source had gate but 
+    commented-out publish) → release-please.yml (push to main -> Release PR) + publish.yml (v* tag -> verify 
+    job: tag==package.json version, tag-on-main ancestor check, pack dry-run -> protected `npm` environment 
+    publish via npm Trusted Publishing OIDC on Node 24, npm CLI, GitHub-hosted runner); inert-but-ready until 
+    the consumer configures the npmjs.com trusted publisher, documented in docs/RELEASE.md
+
+############ Reading — exactly what this log establishes and what it does not ############
+# PROVEN (a): ts seeded .release-please-manifest.json with {".": "0.1.0"} at commit 19ff9b5, and the first
+#   release-please release commit that followed was bdc7567, 'chore(release): publish v0.1.1'. The seeded
+#   number 0.1.0 never appears as a release commit.
+# PROVEN (b): the clone carries tags ts-launch-blueprint-v0.1.1, v0.1.2 and v0.1.3. There is no v0.1.0 tag.
+# PROVEN (c): npmjs.com serves the package name ts-launch-blueprint (HTTP 200) with exactly two versions,
+#   0.0.1 (2026-07-21, published by the user account 'smorin', no repository field — a name reservation)
+#   and 0.1.3 (2026-07-22, published by 'GitHub Actions' through a trusted publisher, repository
+#   git+https://github.com/smorinlabs/ts-launch-blueprint.git). dist-tags.latest = 0.1.3.
+#   0.1.0, 0.1.1 and 0.1.2 are ABSENT from the registry: 'npm view ts-launch-blueprint@0.1.1' exits 1 with
+#   E404. So ts's first pipeline publication was 0.1.3, three release commits after its first release
+#   commit. D-021(5) explains the gap: the publish workflow shipped 'inert-but-ready until the consumer
+#   configures the npmjs.com trusted publisher'.
+# THEREFORE SUPPORTS: the source-level inference that release-please reads a seeded manifest entry as an
+#   ALREADY-RELEASED version, so the seeded number is skipped by the next Release PR. Every one of (a),
+#   (b) and (c) shows 0.1.0 absent, which is consistent with that inference.
+# CANNOT SUPPORT: any claim that ts published 0.1.1, or that a release commit or tag implies a registry
+#   publication. The authority for the empty-manifest recommendation is the release-please source read at
+#   v17.11.2 (Manifest's 'backfill latest release tags from manifest' block plus
+#   BaseStrategy.buildNewVersion); ts's history is corroboration of that source reading, never a substitute
+#   for it, and it says nothing about crates.io.

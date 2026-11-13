@@ -1,0 +1,59 @@
+=== R80 check-live.sh (mode: snapshots) ===
+date(UTC): 2026-09-18T23:03:17Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+jq: jq-1.8.2
+user-agent: rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)
+  serde        pinned=1.0.229  newest=1.0.229  max_stable=1.0.229  recent_downloads=314208639    downloads=1410307353
+  serde_json   pinned=1.0.151  newest=1.0.151  max_stable=1.0.151  recent_downloads=317743616    downloads=1313719716
+  axum         pinned=0.8.9    newest=0.8.9    max_stable=0.8.9    recent_downloads=118234751    downloads=475506585
+  tokio        pinned=1.53.1   newest=1.53.1   max_stable=1.53.1   recent_downloads=228862107    downloads=978381970
+  built        pinned=0.8.1    newest=0.8.1    max_stable=0.8.1    recent_downloads=18238136     downloads=63168750
+  vergen       pinned=10.0.3   newest=10.0.3   max_stable=10.0.3   recent_downloads=8605373      downloads=52213287
+  shadow-rs    pinned=2.0.0    newest=2.0.0    max_stable=2.0.0    recent_downloads=2184341      downloads=10812524
+  git-version  pinned=0.3.9    newest=0.3.9    max_stable=0.3.9    recent_downloads=5528772      downloads=24871629
+PASS L1 — GET https://crates.io/api/v1/crates/<name>: max_stable_version still equals the pin this decision names for all eight crates (download counters move and are printed, not asserted)
+  shadow-rs    newest non-yanked=2.0.0    created_at=2026-04-23T03:26:12.010770Z rust_version=null (expected null)
+  git-version  newest non-yanked=0.3.9    created_at=2023-12-13T18:22:15.286666Z rust_version=null (expected null)
+  built        newest non-yanked=0.8.1    created_at=2026-05-21T20:10:07.082823Z rust_version=1.87 (expected 1.87)
+  vergen       newest non-yanked=10.0.3   created_at=2026-08-24T16:17:36.406962Z rust_version=1.96.0 (expected 1.96.0)
+PASS L2 — GET https://crates.io/api/v1/crates/<name>/versions: shadow-rs and git-version still return rust_version null on their newest non-yanked version (gate 2 exclusion holds), while built declares 1.87 and vergen 1.96.0
+  rustsec/serde: HTTP 404 (expected 404 = no advisory)
+  rustsec/serde_json: HTTP 404 (expected 404 = no advisory)
+  rustsec/axum: HTTP 404 (expected 404 = no advisory)
+  rustsec/built: HTTP 404 (expected 404 = no advisory)
+  rustsec/vergen: HTTP 404 (expected 404 = no advisory)
+  rustsec/shadow-rs: HTTP 404 (expected 404 = no advisory)
+  rustsec/git-version: HTTP 404 (expected 404 = no advisory)
+  rustsec/tokio: HTTP 200 (expected 200 = historical entries exist)
+  rustsec/atty (control): HTTP 200 (expected 200)
+PASS L3 — the atty control answers 200 while seven of the eight crates have no advisory page (404) and tokio's page exists — so the 404s are evidence, not an outage
+  RUSTSEC-2025-0023 Patched entries:
+    <code>&#62;=1.38.2, &#60;1.39.0</code>
+    <code>&#62;=1.42.1, &#60;1.43.0</code>
+    <code>&#62;=1.43.1, &#60;1.44.0</code>
+    <code>&#62;=1.44.2</code>
+PASS L4 — RUSTSEC-2025-0023 lists an open-ended patched range '>=1.44.2' with no upper bound, so tokio 1.53.1 carries no open advisory
+PASS L5 — kubernetes.io still says liveness failure restarts the container, readiness failure removes the Pod from its EndpointSlices, that any code in [200,400) is success, and that a readiness probe MAY additionally check each required back-end service — the four quoted facts this decision rests on
+  built README: HTTP 200, 'build.rs' on 1 line(s)
+  vergen README: HTTP 200, 'build.rs' on 2 line(s)
+  shadow-rs README: HTTP 200, 'build.rs' on 5 line(s)
+  git-version README: HTTP 200, requires the git binary at compile time
+PASS L6 — built, vergen and shadow-rs each instruct a Cargo build script in their own README — which R49's published no-build.rs clause excludes — and git-version requires a git binary and a .git tree a crates.io tarball does not have
+PASS L7 — both surveyed production systems still latch readiness in an AtomicBool — kubert hard-reserves /live and /ready ('cannot be overridden') and answers liveness with the plain-text body "alive\n", Apollo Router answers SERVICE_UNAVAILABLE and records in-source that k8s reads the status code, not the body
+  q=health: meta.total=6488; top 3 by downloads: tonic, deadpool, tonic-health
+  q=probe: meta.total=5273; top 3 by downloads: autocfg, pkg-config, openssl-probe
+  q=liveness: meta.total=28347; top 3 by downloads: serde_json, yoke, serde_urlencoded
+  rocket_healthz recent_downloads=1281 vs serde recent_downloads=314208639
+PASS L8 — the crates.io census still shows no adopted first-class HTTP liveness/readiness crate: the only name-matched candidate, rocket_healthz, sits below 100,000 recent downloads while serde is above 100,000,000 — the absence is the finding
+  lukaslueg/built                        stars=198    archived=false  pushed_at=2026-06-07T22:06:58Z
+    open issues (search total_count): 8
+  rustyhorde/vergen                      stars=473    archived=false  pushed_at=2026-09-06T16:53:07Z
+    open issues (search total_count): 4
+  baoyachi/shadow-rs                     stars=702    archived=false  pushed_at=2026-05-19T05:48:53Z
+    open issues (search total_count): 8
+  fusion-engineering/rust-git-version    stars=131    archived=false  pushed_at=2023-12-13T18:21:47Z
+    open issues: HTTP 422 'The listed users and repositories cannot be searched' — figure ABSENT, open_issues_count not substituted
+PASS L9 — all four build-metadata repositories answer 200 and report archived=false; 1 of them refuse the issue-search endpoint with HTTP 422, and that figure is recorded absent rather than substituted
+
+=== 9 PASS, 0 FAIL, 0 SKIP ===

@@ -1,0 +1,752 @@
+
+===== 0. Toolchain and environment =====
+run-utc 2026-09-10T22:50:07Z
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+gh version 2.98.0 (2026-08-20)
+cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+===== 1. Pins for the sources read below =====
+dependabot/dependabot-core main = a141eb05a281ffe077024c93d7050a7840d32365
+github/docs           main = f3619f5907dd1da5f44d3bbc4e5566373db1fd15
+PASS  both source repositories pinned by sha
+
+===== 2. CLAIM (opus): Cargo's Dependabot production check is unconditionally true =====
+16:  .register_label_details("cargo", name: "rust", colour: "000000")
+19:Dependabot::Dependency.register_production_check("cargo", ->(_) { true })
+PASS  cargo.rb registers production check as ->(_) { true } — every Cargo dependency is 'production'
+PASS  cargo default label is 'rust'
+
+===== 2b. Same check for a package manager that DOES split dev deps (control) =====
+20:Dependabot::Dependency.register_production_check(
+PASS  npm registers a non-trivial production check (control case)
+
+===== 2c. GitHub Actions default label + the universal dependencies label =====
+18:  .register_label_details(
+PASS  github-actions default label is the UNDERSCORED github_actions
+17:      DEFAULT_DEPENDENCIES_LABEL = "dependencies"
+242:        labels.find { |l| l == DEFAULT_DEPENDENCIES_LABEL } ||
+386:          DEFAULT_DEPENDENCIES_LABEL,
+PASS  default 'dependencies' label confirmed
+
+===== 3. CLAIM (both): the documented per-ecosystem support lists =====
+options-reference bytes: 69648
+--- dependency-type support line ---
+99-| Dependency types | Supported by package managers | Allow updates |
+342-Supported by: `bundler`, `composer`, `mix`, `maven`, `npm`, and `pip`.
+PASS  groups.dependency-type support list does not include cargo
+--- prefix-development support line ---
+158:| `prefix-development` | On supported systems, defines a different prefix to use for commits that update dependencies in the Development dependency group. |
+166:* Used for all commit messages unless `prefix-development` is also defined.
+171:### `prefix-development`
+Supported by: `bundler`, `composer`, `mix`, `maven`, `npm`, `pip`, and `uv`.
+--- versioning-strategy support line ---
+985-Supported by: `bundler`, `cargo`, `composer`, `helm`, `mix`, `npm`, `pip`, `pub`, and `uv`
+PASS  versioning-strategy is supported for cargo (its list omits github-actions)
+--- groups.update-types: the documented value set ---
+338:| `update-types` | Limit the group to one or more semantic versioning levels. Supported values: `minor`, `patch`, and `major`. |
+--- cooldown support table: Cargo row, then the GitHub Actions row (a Liquid variable, not literal text) ---
+239:| Cargo                 | {% octicon "check" aria-label="Supported" %}              | {% octicon "check" aria-label="Supported" %} |
+568:| Cargo       | `cargo`          | v1               |
+252:| {% data variables.product.prodname_actions %} | {% octicon "check" aria-label="Supported" %} | {% octicon "x" aria-label="Not supported" %} |
+--- cooldown default paragraph ---
+196:* Apply a **default cooldown period of 3 days** to version updates, even when `cooldown` is not configured. A new version is not considered for a version update until 3 days after its release. **This default cooldown does not apply to security updates.**
+198:You can configure the `cooldown` option to customize these default cooldown periods and control which dependencies they apply to. When **`cooldown`** is defined:
+223:| `default-days` | **Default cooldown period for dependencies** without specific rules (optional).{% ifversion dependabot-cooldown-default-days %} If not specified, {% data variables.product.prodname_dependabot %} applies a default cooldown of 3 days.{% endif %} |
+--- ungrouped-dependency behavior sentence ---
+326:* Any outdated dependencies that do not match a rule are updated in individual pull requests.
+
+===== 4. CLAIM (opus): Cargo's compatibility rule differs from plain SemVer =====
+left-most non-zero major/minor/patch component is the same.
+0.2.3  :=  &gt;=0.2.3, &lt;0.3.0
+1.2.3  :=  &gt;=1.2.3, &lt;2.0.0
+PASS  Cargo book states the left-most-non-zero compatibility rule (0.1 -> 0.2 is incompatible)
+
+===== 5. CLAIM (opus): Dependabot has no Cargo-aware update-type classification (issue #9681) =====
+{"comments":2,"created_at":"2024-05-06T17:19:47Z","number":9681,"state":"open","title":"Add update types for Cargo-style (in)compatible version upgrades","updated_at":"2026-08-04T12:37:12Z"}
+### Is there an existing issue for this?
+
+- [X] I have searched the existing issues
+
+### Feature description
+
+Currently, the only options for `update-types` in `dependabot.yml` are "major", "minor", and "patch", all defined as per SemVer.  However, Cargo (the Rust package manager) uses [a modified form of SemVer](https://doc.rust-lang.org/cargo/reference/resolver.html#semver-compatibility) in which "Versions are considered compatible if their left-most non-zero major/minor/patch component is the same."  Thus, a version upgrade from v0.1.0 to v0.2.0 is considered "incompatible" even though, by typical SemVer standards, it is minor.
+
+I therefore request that `ignore.update-types` and `groups.*.update-types` gain support for the options `cargo-compatible` and `cargo-incompatible` (just spitballing on the names) for ignoring/grouping (in)compatible version updates.
+PASS  #9681 (cargo-compatible update-types) is still OPEN
+--- how a group's update-types are matched in dependabot-core (is there a 0.x rule?) ---
+42:    attr_reader :update_types
+60:      @update_types = T.let(string_array_rule(rules, "update-types"), T.nilable(T::Array[String]))
+156:    # "patterns", "exclude-patterns", "update-types"). Returns nil when the key
+NOTE  dependency_group.rb contains no Cargo-specific compatibility rule (searched: 'left-most', 'cargo')
+
+===== 5b. CLAIM (opus): Dependabot does not read rust-version (issue #5423) =====
+{"comments":7,"created_at":"2022-07-26T14:08:50Z","number":5423,"state":"open","title":"Take `rust-version` into account when updating lock file / manifest","updated_at":"2026-01-05T16:18:52Z"}
+
+===== 6. CLAIM (opus): cargo's accepted versioning strategies and default =====
+27:        ALLOWED_UPDATE_STRATEGIES = T.let(
+28-          [
+29-            Dependabot::RequirementsUpdateStrategy::LockfileOnly,
+30-            Dependabot::RequirementsUpdateStrategy::BumpVersions,
+31-            Dependabot::RequirementsUpdateStrategy::BumpVersionsIfNecessary
+32-          ].freeze,
+33-          T::Array[Dependabot::RequirementsUpdateStrategy]
+--
+101:          return if ALLOWED_UPDATE_STRATEGIES.include?(update_strategy)
+102-
+103-          raise "Unknown update strategy: #{update_strategy}"
+104-        end
+PASS  cargo restricts the accepted versioning strategies in code
+152-
+153-        # Cargo resolves to the newest compatible version and a bare version is a
+154-        # caret-equivalent (compatible) requirement, so only raise the requirement
+155-        # when it doesn't already allow the new version. Avoids needless churn and
+156-        # MSRV bumps.
+157-        # https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
+158:        RequirementsUpdateStrategy::BumpVersionsIfNecessary
+PASS  cargo's default requirements strategy is BumpVersionsIfNecessary (= increase-if-necessary)
+
+===== 6b. CLAIM (opus): one cargo entry at / covers a workspace; a member directory errors =====
+30:        check_rust_workspace_root
+31-
+32-        dependency_set = DependencySet.new
+33-        dependency_set += manifest_dependencies
+34-        dependency_set += lockfile_dependencies if lockfile
+35-
+36-        dependencies = dependency_set.dependencies
+37-        add_lockfile_package_metadata(dependencies) if lockfile
+38-
+--
+106:      def check_rust_workspace_root
+107-        cargo_toml = dependency_files.find { |f| f.name == "Cargo.toml" }
+108-        workspace_root = parsed_file(T.must(cargo_toml))
+109-
+110-        workspace_config = T.cast(toml_table_or_empty(workspace_root["package"])["workspace"], T.nilable(String))
+111-        return unless workspace_config
+112-
+113-        msg = "This project is part of a Rust workspace but is not the " \
+114-              "workspace root."
+PASS  file_parser requires the workspace root
+
+===== 7. PRACTICE: does a configured group actually batch? (branch names carry the group id) =====
+--- cargo-bins/cargo-binstall ---
+config (grouping keys):
+5:  - package-ecosystem: "github-actions"
+11:  - package-ecosystem: "cargo"
+18:    groups:
+20:        patterns:
+8 most recent dependabot branches:
+2026-09-10T01:22:49Z	dependabot/github_actions/taiki-e/install-action-2.87.8	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.8
+2026-09-09T01:22:50Z	dependabot/github_actions/taiki-e/install-action-2.87.7	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.7
+2026-09-08T01:23:19Z	dependabot/github_actions/taiki-e/install-action-2.87.6	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.6
+2026-09-07T01:22:38Z	dependabot/github_actions/taiki-e/install-action-2.87.5	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.5
+2026-09-05T01:25:19Z	dependabot/cargo/deps-2076c6ea14	build(deps): bump astral-tokio-tar from 0.6.4 to 0.7.0 in the deps group
+2026-09-04T01:22:43Z	dependabot/github_actions/taiki-e/install-action-2.87.3	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.3
+2026-09-02T01:22:33Z	dependabot/github_actions/taiki-e/install-action-2.87.2	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.2
+2026-09-01T01:23:29Z	dependabot/github_actions/taiki-e/install-action-2.87.1	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.1
+--- apache/datafusion ---
+config (grouping keys):
+20:  - package-ecosystem: cargo
+26:    open-pull-requests-limit: 15
+30:        update-types: ["version-update:semver-major"]
+32:        update-types: ["version-update:semver-major"]
+33:    groups:
+37:        patterns:
+40:        update-types:
+45:        patterns:
+53:        patterns:
+55:        exclude-patterns:
+62:        update-types:
+67:  - package-ecosystem: cargo
+74:  - package-ecosystem: npm
+79:    groups:
+83:        patterns:
+85:        update-types:
+88:  - package-ecosystem: "github-actions"
+94:    open-pull-requests-limit: 10
+96:    groups:
+98:        patterns:
+102:  - package-ecosystem: "uv"
+107:    groups:
+111:        patterns:
+113:        update-types:
+8 most recent dependabot branches:
+2026-09-08T09:10:54Z	dependabot/cargo/main/zstd-0.14.0	chore(deps): bump zstd from 0.13.3 to 0.14.0
+2026-09-08T09:10:32Z	dependabot/cargo/main/all-other-cargo-deps-03ff8603f0	chore(deps): bump the all-other-cargo-deps group across 1 directory with 6 updates
+2026-09-08T09:07:17Z	dependabot/github_actions/taiki-e/install-action-2.87.6	chore(deps): bump taiki-e/install-action from 2.87.1 to 2.87.6
+2026-09-08T09:06:54Z	dependabot/github_actions/runs-on/action-2.3.1	chore(deps): bump runs-on/action from 2.3.0 to 2.3.1
+2026-09-08T09:02:36Z	dependabot/cargo/main/arrow-parquet-a49d07efbf	chore(deps): bump the arrow-parquet group with 9 updates
+2026-09-08T09:01:46Z	dependabot/npm_and_yarn/datafusion/wasmtest/datafusion-wasm-app/all-npm-deps-5c56429165	chore(deps-dev): bump webpack from 5.110.1 to 5.110.3 in /datafusion/wasmtest/datafusion-wasm-app in the all-npm-deps group
+--- helix-editor/helix ---
+config (grouping keys):
+6:  - package-ecosystem: "cargo"
+10:    groups:
+12:        update-types:
+16:  - package-ecosystem: "github-actions"
+8 most recent dependabot branches:
+2026-09-08T23:26:06Z	dependabot/cargo/rust-dependencies-e17f349573	build(deps): bump the rust-dependencies group across 1 directory with 23 updates
+2026-09-08T23:22:27Z	dependabot/github_actions/taiki-e/install-action-2.87.6	build(deps): bump taiki-e/install-action from 2.82.7 to 2.87.6
+2026-09-08T23:22:19Z	dependabot/github_actions/dtolnay/rust-toolchain-d1031067263f94b142dd6c0ce24c5eb9d02d52a0	build(deps): bump dtolnay/rust-toolchain from fa04a1451ff1842e2626ccb99004d0195b455a88 to d1031067263f94b142dd6c0ce24c5eb9d02d52a0
+2026-09-01T23:26:06Z	dependabot/cargo/rust-dependencies-7c39d54fce	build(deps): bump the rust-dependencies group across 1 directory with 22 updates
+2026-09-01T23:22:48Z	dependabot/github_actions/taiki-e/install-action-2.87.1	build(deps): bump taiki-e/install-action from 2.82.7 to 2.87.1
+2026-08-25T23:26:08Z	dependabot/cargo/rust-dependencies-2398bd80aa	build(deps): bump the rust-dependencies group across 1 directory with 21 updates
+2026-08-25T23:23:09Z	dependabot/github_actions/taiki-e/install-action-2.86.5	build(deps): bump taiki-e/install-action from 2.82.7 to 2.86.5
+2026-08-18T23:23:09Z	dependabot/github_actions/cachix/install-nix-action-31.11.1	build(deps): bump cachix/install-nix-action from 31.10.6 to 31.11.1
+--- servo/servo ---
+config (grouping keys):
+3:- package-ecosystem: cargo
+14:  cooldown:
+15:    default-days: 7
+17:  open-pull-requests-limit: 10
+21:  groups:
+23:      patterns:
+26:      patterns:
+36:      patterns:
+47:      patterns:
+53:      patterns:
+57:      patterns:
+60:      patterns:
+65:      patterns:
+69:      patterns:
+73:      patterns:
+78:      patterns:
+83:      patterns:
+87:      patterns:
+91:      patterns:
+102:      patterns:
+106:      patterns:
+125:    update-types: ["version-update:semver-minor", "version-update:semver-major"]
+8 most recent dependabot branches:
+2026-09-10T00:57:19Z	dependabot/cargo/zstd-safe-7.3.0	build: bump zstd-safe from 7.2.4 to 7.3.0
+2026-09-10T00:47:11Z	dependabot/cargo/aws-lc-rs-1.18.1	build: bump aws-lc-rs from 1.18.0 to 1.18.1
+2026-09-10T00:43:19Z	dependabot/cargo/crossbeam-utils-0.8.23	build: bump crossbeam-utils from 0.8.22 to 0.8.23
+2026-09-10T00:34:25Z	dependabot/cargo/cc-1.4.5	build: bump cc from 1.4.4 to 1.4.5
+2026-09-10T00:25:40Z	dependabot/cargo/crossbeam-epoch-0.9.21	build: bump crossbeam-epoch from 0.9.20 to 0.9.21
+2026-09-10T00:24:44Z	dependabot/cargo/ipnet-2.12.2	build: bump ipnet from 2.12.1 to 2.12.2
+2026-09-10T00:24:25Z	dependabot/cargo/redox_syscall-0.9.4	build: bump redox_syscall from 0.9.3 to 0.9.4
+2026-09-10T00:15:23Z	dependabot/cargo/gstreamer-related-8dde772678	build: bump the gstreamer-related group with 5 updates
+--- paritytech/polkadot-sdk ---
+config (grouping keys):
+4:  - package-ecosystem: github-actions
+9:    groups:
+11:        patterns:
+14:  - package-ecosystem: "cargo"
+19:    groups:
+22:        patterns:
+29:        update-types:
+8 most recent dependabot branches:
+2026-09-07T02:48:32Z	dependabot/github_actions/ci_dependencies-38aeb6d59a	Bump the ci_dependencies group across 1 directory with 21 updates
+2026-09-03T09:52:58Z	dependabot/github_actions/ci_dependencies-2dd9836970	Bump the ci_dependencies group across 1 directory with 20 updates
+--- ratatui/ratatui ---
+config (grouping keys):
+9:  - package-ecosystem: "cargo"
+15:    # updates are not delayed by cooldown.
+16:    cooldown:
+17:      default-days: 7
+19:    groups:
+21:        patterns: ["*"]
+23:    open-pull-requests-limit: 3
+28:    versioning-strategy: increase-if-necessary
+30:  - package-ecosystem: github-actions
+36:    cooldown:
+37:      default-days: 7
+39:    groups:
+41:        patterns: ["*"]
+42:    open-pull-requests-limit: 3
+8 most recent dependabot branches:
+2026-09-07T15:43:36Z	dependabot/cargo/duct-1.1.2	build(deps): bump duct from 1.1.1 to 1.1.2
+2026-09-07T15:43:26Z	dependabot/cargo/serde-1.0.229	build(deps): bump serde from 1.0.228 to 1.0.229
+2026-09-07T15:43:18Z	dependabot/github_actions/crate-ci/typos-1.50.1	build(deps): bump crate-ci/typos from 1.50.0 to 1.50.1
+2026-09-07T15:43:14Z	dependabot/cargo/trybuild-1.0.120	build(deps): bump trybuild from 1.0.115 to 1.0.120
+2026-09-07T15:43:05Z	dependabot/github_actions/taiki-e/install-action-2.87.5	build(deps): bump taiki-e/install-action from 2.84.0 to 2.87.5
+2026-09-07T15:42:57Z	dependabot/cargo/lru-0.18.4	build(deps): bump lru from 0.18.3 to 0.18.4
+2026-09-07T15:42:56Z	dependabot/github_actions/tombi-toml/setup-tombi-1.5.1	build(deps): bump tombi-toml/setup-tombi from 1.4.1 to 1.5.1
+2026-09-07T15:42:51Z	dependabot/github_actions/release-plz/action-0.5.132	build(deps): bump release-plz/action from 0.5.131 to 0.5.132
+
+===== 8. THE ANOMALY: ratatui — is the group inert, or is the whole entry inert? =====
+--- ratatui config history for the path ---
+c44497fa	2026-04-14T17:43:07Z	build(deps): tune Dependabot update policy (#2497)
+12f92911	2023-10-21T10:17:47Z	chore(github): create dependabot.yml (#575)
+--- config in force BEFORE the 2026-04-14 change ---
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+--- .github directory: is there a second dependabot file? ---
+dependabot.yml
+PASS  exactly one dependabot config file at ratatui (no yml/yaml collision)
+--- is the committed file valid YAML? ---
+parsed OK; version = 2 ; entries = [('cargo', ['cargo-dependencies'], 3, 7), ('github-actions', ['github-actions-dependencies'], 3, 7)]
+--- key 1: open-pull-requests-limit: 3 — how many cargo PRs are open now? ---
+open cargo dependabot PRs at ratatui: 1 (configured limit: 3)
+NOTE  open cargo PRs within the configured limit; this key gives no signal today
+--- key 2: cooldown.default-days: 7 — age of each bumped release when its PR opened ---
+2732	2026-08-24T15:44:03Z	dependabot/cargo/unicode-truncate-3.0.0
+  PR#2732 unicode-truncate 3.0.0: published 2026-08-20T11:57:50.534548Z, PR opened 2026-08-24T15:44:03Z, age 4.16 d  <-- younger than the configured 7-day cooldown
+RESULT releases proposed younger than the configured 7 days: 1/1
+PASS  ratatui proposed releases younger than its configured 7-day cooldown — that value is not in force either
+--- rule out security updates (they bypass groups, cooldown and the PR limit) ---
+  PR#2732 advisory-marker hits=0 (compatibility-score boilerplate lines=1) labels=dependencies,rust
+
+===== 9. PRACTICE: what an ungrouped entry costs (cargo-binstall github-actions entry) =====
+2026-09-10T01:22:49Z	dependabot/github_actions/taiki-e/install-action-2.87.8
+2026-09-09T01:22:50Z	dependabot/github_actions/taiki-e/install-action-2.87.7
+2026-09-08T01:23:19Z	dependabot/github_actions/taiki-e/install-action-2.87.6
+2026-09-07T01:22:38Z	dependabot/github_actions/taiki-e/install-action-2.87.5
+2026-09-04T01:22:43Z	dependabot/github_actions/taiki-e/install-action-2.87.3
+2026-09-02T01:22:33Z	dependabot/github_actions/taiki-e/install-action-2.87.2
+
+===== 10. PRACTICE: default labels on a repo that declares none (ratatui) =====
+dependabot/cargo/duct-1.1.2	dependencies+rust
+dependabot/cargo/serde-1.0.229	dependencies+rust
+dependabot/github_actions/crate-ci/typos-1.50.1	dependencies+github_actions
+dependabot/cargo/trybuild-1.0.120	dependencies+rust
+dependabot/github_actions/taiki-e/install-action-2.87.5	dependencies+github_actions
+dependabot/cargo/lru-0.18.4	dependencies+rust
+
+===== 11. PRACTICE: PR titles with NO commit-message key configured =====
+build(deps): bump duct from 1.1.1 to 1.1.2
+build(deps): bump serde from 1.0.228 to 1.0.229
+build(deps): bump crate-ci/typos from 1.50.0 to 1.50.1
+build(deps): bump trybuild from 1.0.115 to 1.0.120
+
+===== 12. Pinned source repositories (read through their pins) =====
+--- py b08bccfb ---
+2:# Per ADR-08: grouped updates, 5-day cooldown, template-shaped group names.
+3:# Schedule day: Monday (decided round 13).
+5:# commit-message: shared by all ecosystems. Grouped updates already auto-prefix
+8:# `prefix: chore` + `include: scope` makes EVERY dependabot commit conform —
+15:  - package-ecosystem: "uv"
+18:      interval: "weekly"
+19:      day: "monday"
+20:    cooldown:
+21:      default-days: 5
+22:    open-pull-requests-limit: 5
+23:    labels: ["dependencies", "python"]
+25:      prefix: "chore"
+26:      prefix-development: "chore"
+27:      include: "scope"
+28:    groups:
+30:        patterns: ["click", "pydantic", "structlog", "tomli-w", "requests", "rich"]
+32:        patterns: ["cogapp", "twine", "pip-audit"]
+36:        patterns:
+45:        patterns: ["pytest*", "syrupy"]
+48:  - package-ecosystem: "github-actions"
+51:      interval: "weekly"
+52:      day: "monday"
+53:    cooldown:
+54:      default-days: 5
+55:    open-pull-requests-limit: 5
+56:    labels: ["dependencies", "github-actions"]
+58:      prefix: "chore"
+59:      include: "scope"
+60:    groups:
+62:        patterns: ["*"]
+65:  - package-ecosystem: "npm"
+68:      interval: "weekly"
+69:      day: "monday"
+70:    cooldown:
+71:      default-days: 5
+72:    open-pull-requests-limit: 5
+73:    labels: ["dependencies", "npm"]
+75:      prefix: "chore"
+76:      prefix-development: "chore"
+77:      include: "scope"
+78:    groups:
+80:        patterns: ["@commitlint/*"]
+--- ts cb1cbcb2 ---
+30:  - package-ecosystem: 'github-actions'
+33:      interval: 'weekly'
+34:    groups:
+36:        update-types:
+42:  - package-ecosystem: 'npm'
+45:      interval: 'weekly'
+46:    groups:
+48:        update-types:
+
+===== 13. Programme documents =====
+59:| F053 | Dependabot ecosystems configured | ci-workflows | different | DIVERGENT | R19 | bundle; ecosystems and grouping are one Dependabot-config-shape decision |
+60:| F054 | Dependabot update grouping strategy | ci-workflows | different | DIVERGENT | R19 | bundle |
+PASS  neither F053 nor F054 is a recorded baseline in BASELINE-REVIEW.md (nothing for a BASELINE-REVIEW line to challenge)
+
+===== 14. CLAIM (opus): edition 2024 puts Cargo's own resolver in the MSRV-aware mode =====
+incompatible-rust-versions">
+incompatible-rust-versions
+incompatible-rust-versions">
+edition = "2024"
+PASS  Cargo's resolver page documents MSRV-aware resolution (resolver 3 / incompatible-rust-versions)
+
+===== 15. CLAIM (opus): rust-toolchain is an ecosystem, and it updates only pinned channels =====
+51:[Rust toolchain](#rust-toolchain) | `rust-toolchain` | Not applicable | {% octicon "check" aria-label="Supported" %} | {% octicon "x" aria-label="Not supported" %} | {% octicon "check" aria-label="Supported" %} | Not applicable   | Not applicable   |
+52-| {% endif %} |
+53-| {% ifversion dependabot-sbt-support %} |
+54-[sbt](#sbt) | `sbt` | Not applicable | {% octicon "check" aria-label="Supported" %} | {% octicon "x" aria-label="Not supported" %} | {% octicon "check" aria-label="Supported" %} | {% octicon "check" aria-label="Supported" %} | {% octicon "x" aria-label="Not supported" %} |
+55-| {% endif %} |
+56-[Swift](#swift)      | `swift`      | v5, v6  | {% octicon "check" aria-label="Supported" %} | {% octicon "check" aria-label="Supported" %} | {% octicon "check" aria-label="Supported" %} | {% octicon "check" aria-label="Supported" %} (git only) | {% octicon "x" aria-label="Not supported" %} |
+57-[Terraform](#terraform)      | `terraform`      | >= 0.13, <= 1.15.x  | {% octicon "check" aria-label="Supported" %} | {% octicon "x" aria-label="Not supported" %} | {% octicon "check" aria-label="Supported" %} | {% octicon "check" aria-label="Supported" %} | Not applicable |
+--
+222:### Rust toolchain
+223-
+224:{% data variables.product.prodname_dependabot %} supports automatic updates for Rust toolchain versions defined in `rust-toolchain.toml` and `rust-toolchain` files.
+225-
+226-Supported update patterns {% data variables.product.prodname_dependabot %} can update:
+227-
+228-* Versioned toolchains such as `channel = "1.xx.yy"` and `channel = "1.xx"`.
+229-* Dated toolchains such as `channel = "nightly-YYYY-MM-DD"` and `channel = "beta-YYYY-MM-DD"`.
+230-
+275:| {% ifversion dependabot-rust-toolchain-support %} |
+610:| {% ifversion dependabot-rust-toolchain-support %} |
+611:| Rust toolchain | `rust-toolchain` | Not applicable   |
+--- what R42 settled about the committed channel value ---
+18:| 1 | Rust toolchain and its components | Commit `rust-toolchain.toml` with `profile = "minimal"` and `components = ["rustfmt", "clippy"]`. The `channel` **value** is R27's through F103/F190 and is not set here. No `install-rustfmt`/`install-clippy` recipe is ever written. | — (evidence for F190/F103) |
+83:directory pinning `channel = "1.97.1-aarch64-apple-darwin"`, whose toolchain
+90:in the `channel = "stable"` control → exit 0
+112:`components` for `rust-toolchain.toml` and supplies R27 with measured `channel`
+
+===== 16. The three documented sentences the labels and commit-message decisions rest on =====
+466:* {% data variables.product.prodname_dependabot %} creates these default labels automatically, as necessary in your repository.
+472:* If any of these labels is not defined in the repository, it is ignored.
+148:* Commit messages follow similar patterns to those detected in the repository.
+463:* All pull requests have a `dependencies` label.
+464:* If you define more than one package manager, an additional label for the ecosystem or language is added to each pull request. For example: `java` for Gradle updates and `submodules` for git submodule updates.
+PASS  all three sentences read verbatim from the pinned options-reference source
+
+===== SUMMARY =====
+failed assertions: 0
+
+===== SCRIPT SOURCE (the exact script that produced every line above) =====
+#!/usr/bin/env bash
+# R19 dependabot-config-shape — synthesizer empirical check.
+# Verifies claims made by the raw reports. Creates nothing, installs nothing,
+# opens no pull request. Read-only HTTP/git reads.
+set -uo pipefail
+
+FAILS=0
+pass() { printf 'PASS  %s\n' "$1"; }
+fail() { printf 'FAIL  %s\n' "$1"; FAILS=$((FAILS+1)); }
+note() { printf 'NOTE  %s\n' "$1"; }
+hdr()  { printf '\n===== %s =====\n' "$1"; }
+
+UA='rs-launch-blueprint-research (steve@conceptm.com)'
+GHRAW=(-H 'Accept: application/vnd.github.raw')
+# Working files stay beside this script, never in /tmp.
+SCRATCH="$(cd "$(dirname "$0")" && pwd)"
+export SCRATCH
+
+hdr "0. Toolchain and environment"
+date -u '+run-utc %Y-%m-%dT%H:%M:%SZ'
+uname -a
+rustc --version || note "rustc absent"
+cargo --version || note "cargo absent"
+gh --version | head -1
+printf 'cwd %s\n' "$(pwd)"
+
+hdr "1. Pins for the sources read below"
+DBC_SHA=$(gh api repos/dependabot/dependabot-core/commits/main --jq .sha)
+DOCS_SHA=$(gh api repos/github/docs/commits/main --jq .sha)
+printf 'dependabot/dependabot-core main = %s\n' "$DBC_SHA"
+printf 'github/docs           main = %s\n' "$DOCS_SHA"
+[ -n "$DBC_SHA" ] && [ -n "$DOCS_SHA" ] && pass "both source repositories pinned by sha" || fail "could not pin sources"
+
+DBC() { gh api "repos/dependabot/dependabot-core/contents/$1?ref=$DBC_SHA" "${GHRAW[@]}"; }
+DOCS() { gh api "repos/github/docs/contents/$1?ref=$DOCS_SHA" "${GHRAW[@]}"; }
+
+hdr "2. CLAIM (opus): Cargo's Dependabot production check is unconditionally true"
+CARGO_RB=$(DBC cargo/lib/dependabot/cargo.rb)
+printf '%s\n' "$CARGO_RB" | grep -n "register_production_check\|register_label_details\|register_dependency_type" || true
+if printf '%s\n' "$CARGO_RB" | grep -Eq 'register_production_check\("cargo", *->\(_\) *\{ *true *\}\)'; then
+  pass "cargo.rb registers production check as ->(_) { true } — every Cargo dependency is 'production'"
+else
+  fail "cargo.rb production check does not match the quoted constant-true form"
+fi
+printf '%s\n' "$CARGO_RB" | grep -n 'name: "rust"' >/dev/null && pass "cargo default label is 'rust'" || fail "cargo default label not 'rust'"
+
+hdr "2b. Same check for a package manager that DOES split dev deps (control)"
+NPM_RB=$(DBC npm_and_yarn/lib/dependabot/npm_and_yarn.rb)
+printf '%s\n' "$NPM_RB" | grep -n "register_production_check" || true
+printf '%s\n' "$NPM_RB" | grep -q "register_production_check" && pass "npm registers a non-trivial production check (control case)" || note "npm production check not found at this path"
+
+hdr "2c. GitHub Actions default label + the universal dependencies label"
+GHA_RB=$(DBC github_actions/lib/dependabot/github_actions.rb)
+printf '%s\n' "$GHA_RB" | grep -n "register_label_details" || true
+printf '%s\n' "$GHA_RB" | grep -q 'name: "github_actions"' && pass "github-actions default label is the UNDERSCORED github_actions" || fail "github_actions default label not found"
+LABELER=$(DBC common/lib/dependabot/pull_request_creator/labeler.rb)
+printf '%s\n' "$LABELER" | grep -n "DEFAULT_DEPENDENCIES_LABEL" | head -3
+printf '%s\n' "$LABELER" | grep -q 'DEFAULT_DEPENDENCIES_LABEL *= *"dependencies"' && pass "default 'dependencies' label confirmed" || fail "DEFAULT_DEPENDENCIES_LABEL not confirmed"
+
+hdr "3. CLAIM (both): the documented per-ecosystem support lists"
+OPTREF=$(DOCS content/code-security/reference/supply-chain-security/dependabot-options-reference.md)
+printf 'options-reference bytes: %s\n' "$(printf '%s' "$OPTREF" | wc -c | tr -d ' ')"
+printf '%s\n' "$OPTREF" | grep -n -A3 '^### .groups' | head -20
+echo "--- dependency-type support line ---"
+printf '%s\n' "$OPTREF" | grep -n -B2 -A2 'dependency-type' | grep -i "supported by" | head -3
+if printf '%s\n' "$OPTREF" | grep -A40 '`dependency-type`' | grep -i "supported by" | head -1 | grep -qv 'cargo'; then
+  pass "groups.dependency-type support list does not include cargo"
+else
+  fail "groups.dependency-type appears to list cargo"
+fi
+echo "--- prefix-development support line ---"
+printf '%s\n' "$OPTREF" | grep -n -i "prefix-development" | head -5
+printf '%s\n' "$OPTREF" | grep -A6 'prefix-development' | grep -i "supported by" | head -2
+echo "--- versioning-strategy support line ---"
+printf '%s\n' "$OPTREF" > "$SCRATCH"/r19-optref.md
+grep -n -A2 '^## .versioning-strategy' "$SCRATCH"/r19-optref.md | grep -i "supported by" | head -2
+if grep -A2 '^## .versioning-strategy' "$SCRATCH"/r19-optref.md | grep -i "supported by" | grep -q 'cargo'; then
+  pass "versioning-strategy is supported for cargo (its list omits github-actions)"
+else
+  fail "versioning-strategy support list does not read as expected"
+fi
+echo "--- groups.update-types: the documented value set ---"
+grep -n 'update-types. | Limit the group' "$SCRATCH"/r19-optref.md
+echo "--- cooldown support table: Cargo row, then the GitHub Actions row (a Liquid variable, not literal text) ---"
+grep -n "^| Cargo  " "$SCRATCH"/r19-optref.md | head -2
+grep -n "prodname_actions %} | {% octicon" "$SCRATCH"/r19-optref.md | head -2
+echo "--- cooldown default paragraph ---"
+printf '%s\n' "$OPTREF" | grep -n -i "cooldown period of 3 days\|default cooldown" | head -5
+echo "--- ungrouped-dependency behavior sentence ---"
+printf '%s\n' "$OPTREF" | grep -n -i "individual pull requests" | head -5
+
+hdr "4. CLAIM (opus): Cargo's compatibility rule differs from plain SemVer"
+curl -sSL -A "$UA" https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html > "$SCRATCH"/r19-cargobook.html
+grep -o "left-most non-zero[^<]*" "$SCRATCH"/r19-cargobook.html | head -2
+grep -o "0\.2\.3 *:= *&gt;=0\.2\.3, *&lt;0\.3\.0" "$SCRATCH"/r19-cargobook.html | head -2
+grep -o "1\.2\.3 *:= *&gt;=1\.2\.3, *&lt;2\.0\.0" "$SCRATCH"/r19-cargobook.html | head -2
+if grep -q "left-most non-zero" "$SCRATCH"/r19-cargobook.html; then
+  pass "Cargo book states the left-most-non-zero compatibility rule (0.1 -> 0.2 is incompatible)"
+else
+  fail "could not read the caret rule from the Cargo book"
+fi
+
+hdr "5. CLAIM (opus): Dependabot has no Cargo-aware update-type classification (issue #9681)"
+gh api repos/dependabot/dependabot-core/issues/9681 --jq '{number,state,created_at,updated_at,comments,title}'
+gh api repos/dependabot/dependabot-core/issues/9681 --jq .body | head -25
+gh api repos/dependabot/dependabot-core/issues/9681 --jq .state | grep -q open && pass "#9681 (cargo-compatible update-types) is still OPEN" || fail "#9681 is not open"
+echo "--- how a group's update-types are matched in dependabot-core (is there a 0.x rule?) ---"
+DBC common/lib/dependabot/dependency_group.rb > "$SCRATCH"/r19-depgroup.rb
+grep -n -i "semver\|update_types\|update-types\|major\|minor\|patch" "$SCRATCH"/r19-depgroup.rb | head -30
+if grep -qi "left-most\|cargo" "$SCRATCH"/r19-depgroup.rb; then
+  note "dependency_group.rb mentions a Cargo-specific rule — re-read before relying on the semantics claim"
+else
+  note "dependency_group.rb contains no Cargo-specific compatibility rule (searched: 'left-most', 'cargo')"
+fi
+
+hdr "5b. CLAIM (opus): Dependabot does not read rust-version (issue #5423)"
+gh api repos/dependabot/dependabot-core/issues/5423 --jq '{number,state,created_at,updated_at,comments,title}'
+
+hdr "6. CLAIM (opus): cargo's accepted versioning strategies and default"
+RU=$(DBC cargo/lib/dependabot/cargo/update_checker/requirements_updater.rb)
+printf '%s\n' "$RU" | grep -n "ALLOWED_UPDATE_STRATEGIES" -A6 | head -12
+printf '%s\n' "$RU" | grep -q "ALLOWED_UPDATE_STRATEGIES" && pass "cargo restricts the accepted versioning strategies in code" || fail "ALLOWED_UPDATE_STRATEGIES not found"
+UC=$(DBC cargo/lib/dependabot/cargo/update_checker.rb)
+printf '%s\n' "$UC" | grep -n -B6 "BumpVersionsIfNecessary" | head -20
+printf '%s\n' "$UC" | grep -q "BumpVersionsIfNecessary" && pass "cargo's default requirements strategy is BumpVersionsIfNecessary (= increase-if-necessary)" || fail "cargo default strategy not found"
+
+hdr "6b. CLAIM (opus): one cargo entry at / covers a workspace; a member directory errors"
+FP=$(DBC cargo/lib/dependabot/cargo/file_parser.rb)
+printf '%s\n' "$FP" | grep -n "check_rust_workspace_root" -A8 | head -20
+printf '%s\n' "$FP" | grep -q "workspace root" && pass "file_parser requires the workspace root" || fail "workspace-root check not found"
+
+hdr "7. PRACTICE: does a configured group actually batch? (branch names carry the group id)"
+for r in cargo-bins/cargo-binstall apache/datafusion helix-editor/helix servo/servo paritytech/polkadot-sdk ratatui/ratatui; do
+  echo "--- $r ---"
+  echo "config (grouping keys):"
+  curl -sS -A "$UA" "https://raw.githubusercontent.com/$r/HEAD/.github/dependabot.yml" \
+    | grep -nE "package-ecosystem|groups:|patterns|update-types|cooldown|default-days|open-pull-requests-limit|versioning-strategy" | head -25
+  echo "8 most recent dependabot branches:"
+  gh api "repos/$r/pulls?state=all&per_page=100" \
+    --jq '[.[] | select(.user.login=="dependabot[bot]")][0:8][] | [.created_at, .head.ref, .title] | @tsv'
+done
+
+hdr "8. THE ANOMALY: ratatui — is the group inert, or is the whole entry inert?"
+echo "--- ratatui config history for the path ---"
+gh api "repos/ratatui/ratatui/commits?path=.github/dependabot.yml&per_page=10" \
+  --jq '.[] | [.sha[0:8], .commit.author.date, (.commit.message | split("\n")[0])] | @tsv'
+echo "--- config in force BEFORE the 2026-04-14 change ---"
+gh api "repos/ratatui/ratatui/contents/.github/dependabot.yml?ref=12f92911" "${GHRAW[@]}" | grep -vE "^\s*#|^\s*$"
+echo "--- .github directory: is there a second dependabot file? ---"
+gh api repos/ratatui/ratatui/contents/.github --jq '.[].name' | grep -i dependabot
+DBFILES=$(gh api repos/ratatui/ratatui/contents/.github --jq '.[].name' | grep -ci dependabot)
+[ "$DBFILES" = "1" ] && pass "exactly one dependabot config file at ratatui (no yml/yaml collision)" || fail "ratatui has $DBFILES dependabot files"
+echo "--- is the committed file valid YAML? ---"
+curl -sS -A "$UA" https://raw.githubusercontent.com/ratatui/ratatui/HEAD/.github/dependabot.yml > "$SCRATCH"/r19-ratatui.yml
+python3 - <<'PY'
+import os, sys, json
+try:
+    import yaml
+except ImportError:
+    print("NOTE  pyyaml unavailable; skipping YAML parse")
+    sys.exit(0)
+d = yaml.safe_load(open(os.environ["SCRATCH"] + "/r19-ratatui.yml"))
+print("parsed OK; version =", d.get("version"), "; entries =",
+      [(u.get("package-ecosystem"), sorted((u.get("groups") or {}).keys()),
+        u.get("open-pull-requests-limit"), (u.get("cooldown") or {}).get("default-days"))
+       for u in d["updates"]])
+PY
+echo "--- key 1: open-pull-requests-limit: 3 — how many cargo PRs are open now? ---"
+OPEN_CARGO=$(gh api "repos/ratatui/ratatui/pulls?state=open&per_page=100" \
+  --jq '[.[] | select(.user.login=="dependabot[bot]") | select(.head.ref | startswith("dependabot/cargo/"))] | length')
+printf 'open cargo dependabot PRs at ratatui: %s (configured limit: 3)\n' "$OPEN_CARGO"
+[ "$OPEN_CARGO" -gt 3 ] && pass "open cargo PRs exceed the configured limit of 3 — that key is not in force" \
+                        || note "open cargo PRs within the configured limit; this key gives no signal today"
+echo "--- key 2: cooldown.default-days: 7 — age of each bumped release when its PR opened ---"
+gh api "repos/ratatui/ratatui/pulls?state=open&per_page=100" \
+  --jq '.[] | select(.user.login=="dependabot[bot]") | select(.head.ref | startswith("dependabot/cargo/")) | [.number, .created_at, .head.ref] | @tsv' > "$SCRATCH"/r19-ratatui-prs.tsv
+cat "$SCRATCH"/r19-ratatui-prs.tsv
+python3 - <<'PY'
+import datetime, json, os, subprocess, sys
+viol = 0
+rows = [l.split("\t") for l in open(os.environ["SCRATCH"] + "/r19-ratatui-prs.tsv").read().strip().splitlines() if l.strip()]
+for num, created, ref in rows:
+    tail = ref.split("dependabot/cargo/")[1]
+    crate, _, ver = tail.rpartition("-")
+    out = subprocess.run(["curl", "-sS", "-A",
+                          "rs-launch-blueprint-research (steve@conceptm.com)",
+                          f"https://crates.io/api/v1/crates/{crate}/versions"],
+                         capture_output=True, text=True).stdout
+    try:
+        vs = {v["num"]: v["created_at"] for v in json.loads(out)["versions"]}
+    except Exception as e:
+        print(f"  {crate} {ver}: crates.io read failed ({e})")
+        continue
+    pub = vs.get(ver)
+    if not pub:
+        print(f"  {crate} {ver}: version not found on crates.io")
+        continue
+    p = datetime.datetime.fromisoformat(pub.replace("Z", "+00:00"))
+    c = datetime.datetime.fromisoformat(created.replace("Z", "+00:00"))
+    age = (c - p).total_seconds() / 86400
+    flag = "  <-- younger than the configured 7-day cooldown" if age < 7 else ""
+    viol += age < 7
+    print(f"  PR#{num} {crate} {ver}: published {pub}, PR opened {created}, age {age:.2f} d{flag}")
+print(f"RESULT releases proposed younger than the configured 7 days: {viol}/{len(rows)}")
+sys.exit(0 if viol else 3)
+PY
+COOLDOWN_RC=$?
+if [ "$COOLDOWN_RC" -eq 0 ]; then
+  pass "ratatui proposed releases younger than its configured 7-day cooldown — that value is not in force either"
+else
+  fail "no cooldown-value violation observed at ratatui — reconsider the inert-entry reading"
+fi
+echo "--- rule out security updates (they bypass groups, cooldown and the PR limit) ---"
+for n in $(cut -f1 "$SCRATCH"/r19-ratatui-prs.tsv); do
+  BODY=$(gh api "repos/ratatui/ratatui/pulls/$n" --jq .body)
+  HITS=$(printf '%s' "$BODY" | grep -co 'GHSA-\|RUSTSEC-\|Vulnerabilities' || true)
+  BOILER=$(printf '%s' "$BODY" | grep -co 'compatibility_score' || true)
+  LBL=$(gh api "repos/ratatui/ratatui/pulls/$n" --jq '[.labels[].name] | join(",")')
+  printf '  PR#%s advisory-marker hits=%s (compatibility-score boilerplate lines=%s) labels=%s\n' "$n" "$HITS" "$BOILER" "$LBL"
+done
+
+hdr "9. PRACTICE: what an ungrouped entry costs (cargo-binstall github-actions entry)"
+gh api "repos/cargo-bins/cargo-binstall/pulls?state=all&per_page=100" \
+  --jq '[.[] | select(.user.login=="dependabot[bot]") | select(.head.ref | startswith("dependabot/github_actions/"))][0:6][] | [.created_at, .head.ref] | @tsv'
+
+hdr "10. PRACTICE: default labels on a repo that declares none (ratatui)"
+gh api "repos/ratatui/ratatui/pulls?state=all&per_page=100" \
+  --jq '[.[] | select(.user.login=="dependabot[bot]")][0:6][] | [.head.ref, ([.labels[].name] | join("+"))] | @tsv'
+
+hdr "11. PRACTICE: PR titles with NO commit-message key configured"
+gh api "repos/ratatui/ratatui/pulls?state=all&per_page=100" \
+  --jq '[.[] | select(.user.login=="dependabot[bot]")][0:4][] | .title'
+
+hdr "12. Pinned source repositories (read through their pins)"
+echo "--- py b08bccfb ---"
+git -C ~/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:.github/dependabot.yml \
+  | grep -nE "package-ecosystem|groups:|patterns|cooldown|default-days|labels|prefix|include|open-pull-requests-limit|interval|day:"
+echo "--- ts cb1cbcb2 ---"
+git -C ~/c/ts-launch-blueprint show cb1cbcb2e88b898e8c081b0abbfabc1630079c00:.github/dependabot.yml \
+  | grep -nE "package-ecosystem|groups:|patterns|update-types|cooldown|labels|prefix|interval"
+
+hdr "13. Programme documents"
+grep -n "F053\|F054" /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/COMMONALITY.md
+if grep -q "F053\|F054" /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/BASELINE-REVIEW.md; then
+  fail "F053/F054 appear in BASELINE-REVIEW.md after all"
+else
+  pass "neither F053 nor F054 is a recorded baseline in BASELINE-REVIEW.md (nothing for a BASELINE-REVIEW line to challenge)"
+fi
+
+hdr "14. CLAIM (opus): edition 2024 puts Cargo's own resolver in the MSRV-aware mode"
+curl -sSL -A "$UA" https://doc.rust-lang.org/cargo/reference/resolver.html > "$SCRATCH"/r19-resolver.html
+grep -o "incompatible-rust-versions[^<]*" "$SCRATCH"/r19-resolver.html | head -3
+grep -o "edition [^<]*2024[^<]*" "$SCRATCH"/r19-resolver.html | head -3
+grep -o "resolver = \"3\"[^<]*" "$SCRATCH"/r19-resolver.html | head -2
+if grep -q "incompatible-rust-versions" "$SCRATCH"/r19-resolver.html; then
+  pass "Cargo's resolver page documents MSRV-aware resolution (resolver 3 / incompatible-rust-versions)"
+else
+  fail "could not read the MSRV-aware resolver text"
+fi
+
+hdr "15. CLAIM (opus): rust-toolchain is an ecosystem, and it updates only pinned channels"
+SPM=$(DOCS data/reusables/dependabot/supported-package-managers.md)
+printf '%s\n' "$SPM" > "$SCRATCH"/r19-spm.md
+grep -n -i -A6 "rust toolchain" "$SCRATCH"/r19-spm.md | head -20
+grep -n "rust-toolchain" "$SCRATCH"/r19-optref.md | head -5
+echo "--- what R42 settled about the committed channel value ---"
+grep -n "channel" /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/topics/42-dev-toolchain-provisioning/DECISION.md | head -4
+
+hdr "16. The three documented sentences the labels and commit-message decisions rest on"
+grep -n "creates these default labels automatically" "$SCRATCH"/r19-optref.md
+grep -n "is not defined in the repository, it is ignored" "$SCRATCH"/r19-optref.md
+grep -n "similar patterns to those detected in the repository" "$SCRATCH"/r19-optref.md
+grep -n "All pull requests have a .dependencies. label\|additional label for the ecosystem" "$SCRATCH"/r19-optref.md
+Q=0
+grep -q "creates these default labels automatically" "$SCRATCH"/r19-optref.md || Q=1
+grep -q "is not defined in the repository, it is ignored" "$SCRATCH"/r19-optref.md || Q=1
+grep -q "similar patterns to those detected in the repository" "$SCRATCH"/r19-optref.md || Q=1
+if [ "$Q" -eq 0 ]; then
+  pass "all three sentences read verbatim from the pinned options-reference source"
+else
+  fail "at least one sentence is absent from the pinned source — attribute it to the raw instead"
+fi
+
+hdr "SUMMARY"
+printf 'failed assertions: %s\n' "$FAILS"
+
+printf '\n===== SCRIPT SOURCE (the exact script that produced every line above) =====\n'
+cat "$0"
+
+[ "$FAILS" -eq 0 ] || exit 1
+exit 0
+
+===== AUDITOR SUPPLEMENT: named-pinned source verification (not saved-script output) =====
+command: git -C /tmp/r19-dependabot-core fetch --depth=1 origin 1abafc5ca0900334fd970832e9ef43f2afc78233 && git -C /tmp/r19-dependabot-core checkout --detach FETCH_HEAD
+checked-out: 1abafc5ca0900334fd970832e9ef43f2afc78233
+
+cargo/lib/dependabot/cargo.rb:19
+Dependabot::Dependency.register_production_check("cargo", ->(_) { true })
+
+cargo/lib/dependabot/cargo/version.rb:115-123, 180-191
+Cargo::Version.update_type delegates pre-1.0 versions to cargo_pre_1_0_type.
+The method returns "major" when a 0.y.z update changes y, and "patch" only for
+a compatible patch update within the same 0.y series.
+
+cargo/spec/dependabot/cargo/version_spec.rb:310-322
+expect(described_class.update_type("0.1.0", "0.2.0")).to eq("major")
+expect(described_class.update_type("0.1.0", "0.1.1")).to eq("patch")
+
+updater/lib/dependabot/updater/group_update_creation.rb:547-555
+actual_update_type = Dependabot::Cargo::Version.update_type(version.to_s, latest_version.to_s)
+group_update_types.include?(actual_update_type)
+
+result: the named source pin retains Cargo's unconditional production predicate,
+but it does apply Cargo-aware pre-1.0 classification when enforcing a group's
+update-types filter. Therefore a [minor, patch] Cargo group excludes 0.1 -> 0.2.
+
+===== AUDITOR SUPPLEMENT: ratatui historical open-PR count =====
+query: GET repos/ratatui/ratatui/pulls?state=all&per_page=100
+decision log observed at: 2026-09-10T15:41:25Z
+PR 2765: created 2026-09-07T15:43:36Z; closed 2026-09-10T20:35:37Z
+PR 2764: created 2026-09-07T15:43:26Z; closed 2026-09-10T20:38:54Z
+PR 2762: created 2026-09-07T15:43:14Z; closed 2026-09-10T20:35:13Z
+PR 2760: created 2026-09-07T15:42:57Z; closed 2026-09-10T20:34:06Z
+PR 2732: created 2026-08-24T15:44:03Z; still open at auditor retrieval.
+result: all five PRs were open at the decision log's retrieval time. The later
+closures explain why the rerun counts one open PR and do not refute the archived
+five-versus-three observation.

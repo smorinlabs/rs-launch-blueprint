@@ -1,0 +1,123 @@
+# r18-trigger-phrase-pin.log
+captured: 2026-09-10T18:03:43Z
+host toolchain:
+  rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+  cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+  OS: macOS 26.4 arm64
+  gh: gh version 2.98.0 (2026-08-20)
+working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+=== C1 — R18 claim 2: review lane trigger types (no 'synchronize') ===
+11:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | `vars.ENABLE_CLAUDE_REVIEW == 'true'` **and** `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == 
+--- R18's own statement of the consequence (DECISION.md:316) ---
+6. **Bundle or two independent decisions?** `doxa-openai` argues independence; `opus` supplies the only actual *argument* either way, and it is a design coupling: dropping `synchronize` removes automatic re-review after a fix-up push, and the replacement is a write-access user typing `@claude please re-review`, which is F052. **That argument holds only if `synchronize` is dropped** — if P03 restores it, the bundling 
+--- assistant lane events (DECISION.md:12) ---
+| `.github/workflows/claude.yml` | `issue_comment: [created]`, `pull_request_review_comment: [created]`, `issues: [opened, assigned]`, `pull_request_review: [submitted]` | `vars.ENABLE_CLAUDE_ASSISTAN
+
+=== C2 — R18 claim 1: which vendor bots R18 configures ===
+grep -n -ci over R18/DECISION.md:
+  coderabbit   hits=1
+  greptile     hits=0
+  cubic        hits=0
+--- the only hit, DECISION.md:96 ---
+| C. Hosted third-party review app (PR-Agent as a service, CodeRabbit as an app) | a GitHub App installed on the repository | No | Rejected on the same fit ground, plus a second vendor relationship. |
+
+=== C3 — action.yml trigger_phrase input at the pin R18 names (v1.0.220 = 19dda84776b3518d98b8798e591daee763049ed3) ===
+GET repos/anthropics/claude-code-action/contents/action.yml?ref=19dda84776b3518d98b8798e591daee763049ed3 -> 23689 bytes
+8:  trigger_phrase:
+9-    description: "The trigger phrase to look for in comments or issue body"
+10-    required: false
+11-    default: "@claude"
+
+=== C4 — R18 claim 3: does the action scan pull-request BODIES for the trigger phrase, at the pin? ===
+GET repos/anthropics/claude-code-action/contents/src/github/validation/trigger.ts?ref=19dda84776b3518d98b8798e591daee763049ed3 -> 4495 bytes
+--- automation-mode early return (prompt set => trigger phrase never consulted) ---
+export function checkContainsTrigger(context: ParsedGitHubContext): boolean {
+  const {
+    inputs: { assigneeTrigger, labelTrigger, triggerPhrase, prompt },
+  } = context;
+
+  // If prompt is provided, always trigger
+  if (prompt) {
+    console.log(`Prompt provided, triggering action`);
+    return true;
+  }
+--- pull-request body/title scan ---
+  // Check for pull request body and title trigger
+  if (isPullRequestEvent(context)) {
+    const prBody = context.payload.pull_request.body || "";
+    const prTitle = context.payload.pull_request.title || "";
+    // Check for exact match with word boundaries or punctuation
+    const regex = new RegExp(
+      `(^|\\s)${escapeRegExp(triggerPhrase)}([\\s.,!?;:]|$)`,
+      "i",
+    );
+
+    // Check in body
+    if (regex.test(prBody)) {
+      console.log(
+        `Pull request body contains exact trigger phrase '${triggerPhrase}'`,
+      );
+      return true;
+    }
+
+    // Check in title
+    if (regex.test(prTitle)) {
+      console.log(
+        `Pull request title contains exact trigger phrase '${triggerPhrase}'`,
+      );
+      return true;
+    }
+  }
+
+=== C5 — is the PR-body scan reachable under R18's assistant lane shape? py claude.yml at b08bccfb55d05f15e46a83b52c5660b1881d19f5 ===
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+--- event names named in the on: block and in the job-level if: ---
+  clauses matching github.event_name == 'pull_request' (exact): 0
+
+=== C6 — source-repo templates at their pins (F204 divergence) ===
+--- py .github/pull_request_template.md, the Review Trigger block ---
+90:## Review Trigger (copy/paste as a PR comment after your latest commit)
+91-<!-- Bots also auto-review on push; use this block to (re)request a review on demand. -->
+92-
+93-```text
+94-@coderabbitai review
+95-@greptile-apps review
+96-@cubic-dev-ai review
+97-```
+--- ts .github/pull_request_template.md: any bot @-mention or Review Trigger heading? ---
+  (no match — ts ships no trigger block)
+
+=== C7 — Opus's 'documented but not wired' finding: py's vendor bot configs at b08bccfb55d05f15e46a83b52c5660b1881d19f5 ===
+.coderabbit.yaml
+.greptile/config.json
+.greptile/rules.md
+
+=== C8 — Greptile's currently documented handle (both raws assert @greptileai; not load-bearing) ===
+GET https://www.greptile.com/docs/llms-full.txt -> 371153 bytes
+  @greptileai occurrences:   40
+  @greptile-apps occurrences: 0
+238:  * **Re-trigger button** — Click "Re-trigger Greptile" in the footer to re-run a review without tagging @greptileai
+1165:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
+1192:    * `skipReview: "AUTOMATIC"` - Skips automatic reviews, only triggers via `@greptileai`
+
+=== end of checks ===

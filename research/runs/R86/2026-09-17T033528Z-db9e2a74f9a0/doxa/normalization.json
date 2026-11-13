@@ -1,0 +1,43 @@
+{
+ "operation_id": "research-20260917-081418-d364fa415a4a4224",
+ "kind": "bundle",
+ "providers": {
+  "openai": {
+   "saved_file": "doxa/research-outputs/2026-09-17_081418_all_deep_research_openai_deep-research-prompt-codex-assisted-review-workflo.md",
+   "model": "gpt-5.6-sol",
+   "changes": [],
+   "normalized": "doxa-openai.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "perplexity": {
+   "saved_file": "doxa/research-outputs/2026-09-17_081418_all_deep_research_perplexity_deep-research-prompt-codex-assisted-review-workflo.md",
+   "model": "sonar-deep-research",
+   "changes": [
+    "'## Sources' -> H3"
+   ],
+   "normalized": "doxa-perplexity.normalized.md",
+   "shape": "FAIL: answer: bundle member 'Codex comment‑triggered assistant workflow (F362)' must contain the crate H5 fields in order",
+   "field_gaps": "missing fields: ['Compatibility', 'Parameters', 'Migration implications', 'Validation strategy', 'Confidence & re-verify trigger']",
+   "member_notes": [
+    "member 'Codex PR code‑review workflow (F361)' incomplete (H5 fields present: ['Landscape', 'Principles and implementation', 'Dominant choice', 'Qualified shortlist', 'Excluded by gate', 'Up‑and‑comers', 'Fit for this template', 'Recommendation', 'Ranked runner‑up', 'Tradeoffs', 'Parameters', 'Migration implications', 'Validation strategy', 'Confidence & re‑verify trigger', 'Sources']); demoted to bold text",
+    "member 'Codex comment‑triggered assistant workflow (F362)' incomplete (H5 fields present: ['Landscape', 'Principles and implementation', 'Dominant choice', 'Qualified shortlist', 'Excluded by gate']); demoted to bold text"
+   ],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "gemini": {
+   "saved_file": "doxa/research-outputs/2026-09-17_081418_all_deep_research_gemini_deep-research-prompt-codex-assisted-review-workflo.md",
+   "model": "deep-research-preview-04-2026",
+   "changes": [],
+   "normalized": "doxa-gemini.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  }
+ },
+ "regrouped": {
+  "file": "doxa.normalized.md",
+  "shape": "OK: validation passed"
+ }
+}

@@ -1,0 +1,41 @@
+# HELP http_server_unmatched_requests_total HTTP requests that matched no route template.
+# TYPE http_server_unmatched_requests_total counter
+http_server_unmatched_requests_total 1
+
+# HELP http_server_request_duration_seconds Duration of HTTP server requests.
+# TYPE http_server_request_duration_seconds histogram
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.005"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.01"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.025"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.05"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.075"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.1"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.25"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.5"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.75"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="1"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="2.5"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="5"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="7.5"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="10"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="+Inf"} 1
+http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} 0.0000095
+http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} 1
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.005"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.01"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.025"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.05"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.075"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.1"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.25"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.5"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.75"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="1"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="2.5"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="5"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="7.5"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="10"} 51
+http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="+Inf"} 51
+http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} 0.00030583700000000016
+http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} 51
+

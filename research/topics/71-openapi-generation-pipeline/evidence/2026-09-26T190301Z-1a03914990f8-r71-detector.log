@@ -1,0 +1,18 @@
+S0 candidate=research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/evidence/ci.candidate.r2.yml sha256=4eb498c2a9bde032cd9202aaed69bc898d7a63a51e423e740a1b3bd1db371bef expected=4eb498c2a9bde032cd9202aaed69bc898d7a63a51e423e740a1b3bd1db371bef
+S1 git-diff line occurrences (must be 1): 1
+S2 edit: 11c11
+S2 edit: < changed="$(git diff --no-ext-diff --no-textconv --no-renames --name-only "${BASE_SHA}...HEAD")"
+S2 edit: ---
+S2 edit: > changed="${FIXTURE}"
+S3 body lines=48
+
+## Snapshot-path cases (a hand edit of the snapshot alone is the case that matters)
+D1 changed=[docs/api/openapi.json] -> code=false web=false workflows=false docs=true
+D2 changed=[openapi/rs-launch-blueprint.json] -> code=true web=true workflows=false docs=false
+D3 changed=[openapi/breaking-accepted.txt] -> code=true web=true workflows=false docs=false
+D4 changed=[src/web/openapi.rs] -> code=true web=true workflows=false docs=false
+D5 changed=[docs/api/openapi.json docs/api/README.md] -> code=false web=false workflows=false docs=true
+D6 changed=[README.md] -> code=true web=true workflows=false docs=true
+D7 changed=[openapi/openapi.json] -> code=true web=true workflows=false docs=false
+D8 changed=[openapi/oasdiff-levels.txt] -> code=true web=true workflows=false docs=false
+# done

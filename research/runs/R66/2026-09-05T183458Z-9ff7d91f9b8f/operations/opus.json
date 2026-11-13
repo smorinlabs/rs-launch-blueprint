@@ -1,0 +1,16 @@
+{
+  "actor": "research-opus-2026-09-05T183458Z-9ff7d91f9b8f",
+  "actual_model": "claude-opus-5",
+  "actual_provider": "claude-agent-tool",
+  "at": "2026-09-10T15:09:27Z",
+  "collected_at": "2026-09-10T15:40:40Z",
+  "model": "claude-opus-5",
+  "operation_id": "agent:research-opus-2026-09-05T183458Z-9ff7d91f9b8f:cdc6388169cf9fcc",
+  "provider": "opus",
+  "raw": "research/runs/R66/2026-09-05T183458Z-9ff7d91f9b8f/raw/opus-cdc6388169cf9fcc5010aac3744b5f092c9faa3dafbe7b8a0b0cff66526817bf.md",
+  "raw_sha256": "cdc6388169cf9fcc5010aac3744b5f092c9faa3dafbe7b8a0b0cff66526817bf",
+  "reason": "",
+  "request_id": "734f7b9880c945f5977602d25a16af38",
+  "returned_at": "2026-09-10T15:40:40Z",
+  "state": "succeeded"
+}
