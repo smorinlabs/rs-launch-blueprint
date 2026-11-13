@@ -45,7 +45,7 @@ $ scripts/test-check-research-tree.sh | tail -1
 ### Manual Verification
 - Every `OVERRIDE` row in `COMMONALITY.md` reads as a genuine Rust-specific argument, not a preference
 
-## [ ] Project P02: Execute research program (v0.2.0)
+## [~] Project P02: Execute research program (v0.2.0)
 **Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`. Each decision demonstrates the intended principle at its declared agreement level with an appropriate native design and a realistic acceptance example.
 - Gate: P01 merged and tagged `v0.1.0` (satisfied 2026-09-05); paid batches authorized in `docs/planning/p02/APPROVAL.md` (pilot USD 40; bulk Deep ceiling USD 300). Only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
 - Engines and invocation: `research/EXECUTION.json` and `research/RUNBOOK.md` §2 define the approved 6 Light / 53 Focused / 25 Deep allocation and three-engine R38 pilot. Durable wrappers save results to files; fresh contexts synthesize and audit. Doxa batches require separate spend approval.
@@ -56,18 +56,25 @@ $ scripts/test-check-research-tree.sh | tail -1
 - Unrecorded changes to ledger verdicts; evidence-backed baseline corrections follow `RUNBOOK.md` §4 (A5), and OVERRIDE reversals follow P02-TS02
 - Items dropped in Phase 3.5
 
+**TDD: not applicable** — TS01 and TS02 verify finished research, so they cannot precede the work tasks.
+
 ### Tests & Tasks
 - [x] [P02-T08] Review and approve the tiered execution method; owner approval 2026-09-04 (`docs/planning/p02/APPROVAL.md`)
 - [x] [P02-T09] Reconcile spec, runbook, all prompts and policy; validate strict acceptance, durable recovery and shared publication locally; prepare the complete diff (`docs/planning/p02/implementation-review.md`, 100 tests passed); committed 2026-09-04 under the owner's commit direction, which replaced per-commit approval (`docs/planning/p02/APPROVAL.md` addendum)
-- [~] [P02-T10] Verify execution routes, credentials and create-retry behavior; record and obtain a concrete paid readiness/pilot budget before Doxa submission
+- [x] [P02-T10] Verify execution routes, credentials and create-retry behavior; record and obtain a concrete paid readiness/pilot budget before Doxa submission
       2026-09-04: Claude Opus/Fable routes verified by CLI probe; Codex `gpt-6-astra`/`gpt-5.6-terra`/`gpt-5.6-luna` resolve by CLI header; Doxa provider keys present (env) and `o3-deep-research`/`deep-research-preview-04-2026` visible to the keys; create retries isolated by `scripts/doxa_no_retry.py` (tests in `scripts/test-doxa-no-retry.py`); envelope prepared in `docs/planning/p02/paid-envelope.md` — owner spend approval still open
-- [~] [P02-T01] First review REUSE/ADOPT baselines for agreement-level mistakes and record/reconcile `BASELINE-REVIEW:` findings under A5; then run R38 as the pilot end-to-end
+      2026-11-13: spend approved in `docs/planning/p02/APPROVAL.md` (pilot USD 40, bulk Deep ceiling USD 300); Doxa batches ran under it
+- [x] [P02-T01] First review REUSE/ADOPT baselines for agreement-level mistakes and record/reconcile `BASELINE-REVIEW:` findings under A5; then run R38 as the pilot end-to-end
       2026-09-04: all 97 REUSE/ADOPT rows adjudicated (`docs/port/BASELINE-REVIEW.md`: 18 worker findings plus 11 challenges from the Codex gpt-6-astra adversarial sample, adjudicated by the controller); 28 ledger rows annotated (2 reclassified), 20 prompts and the dependency record reconciled; owner questions listed there. R38 pilot: tag and envelope cleared 2026-09-05; decision revision 3 is fully audited on Codex and Opus (both verdicts approve) but cannot publish because the policy requires the third engine and Doxa is blocked on exhausted OpenAI credits and Perplexity quota (prompt → three raw answers in parallel → `scripts/check-answer-shape.sh` on each → synthesized `DECISION.md` with `## Engines` → both audits) — this run is binding, unlike P01-TS07
-- [ ] [P02-T02] Run remaining items as their own prerequisites become current and accepted, under the approved tier policy and capacity limits; save original outputs in unique run directories and accepted reports under each topic's `raw/`
+      2026-11-13: R38 published; its index row is `resolved` and `research_scan.py --todo` counts it done
+- [~] [P02-T02] Run remaining items as their own prerequisites become current and accepted, under the approved tier policy and capacity limits; save original outputs in unique run directories and accepted reports under each topic's `raw/`
       2026-09-07: three items published (R23, R47, R04) through `research_runner.py publication apply`; all 32 prerequisite-free items have their Codex report collected; R06 awaits synthesis; R41 and R46 have revision 2 awaiting fresh audit pairs. Execution record: `docs/planning/p02/execution-ledger.md`; handoff: `docs/handoffs/2026-09-07-p02-research-execution.md`
+      2026-11-13: 84 of 85 items published; R69's revision-11 flag-day update is deferred out of `v0.2.0` (owner Q2.A; `docs/planning/p02/execution-ledger.md`)
 - [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
-- [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; distinct fresh auditors approve the exact decision revision with no unresolved findings, and neither auditor produced raw evidence or synthesis
-- [ ] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
+- [x] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; distinct fresh auditors approve the exact decision revision with no unresolved findings, and neither auditor produced raw evidence or synthesis
+      2026-11-13: all 85 items have `audit-fable.md` and an empirical audit; 18 use `audit-claude.md` under `empirical_auditor_overrides` in `research/EXECUTION.json`; `check-research-tree.sh --require-owner-review` passes
+- [x] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
+      2026-11-13: every registry row matches its owner's published decision (`check-research-tree.sh --require-owner-review` passes); R69's unpublished revision-11 value is tracked under T02
 - [x] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
 - [x] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0` — PR #6 merged 2026-11-12 as `4deb25c8`; `v0.2.0` tagged on it
 - [ ] [P02-TS01] Every `DECISION.md` has an `## Empirical check` whose command was actually executed and whose output is pasted
