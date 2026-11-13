@@ -133,7 +133,7 @@ p2="$t/research/topics/02-web-framework/prompts/web-framework.prompt.md"
 fresh; expect_ok "valid tree"
 fresh; expect_ok "valid tree with owner review" --require-owner-review
 fresh
-# The backticks are a literal Markdown fence.
+# Backticks are literal Markdown fence fixtures.
 # shellcheck disable=SC2016
 printf '\n```\n## Not a section\n```\n' >> "$p2"; expect_ok "H2 inside a fence is ignored"
 

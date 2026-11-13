@@ -1,0 +1,25 @@
+name: Shell checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  merge_group:
+permissions:
+  contents: read
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install ShellCheck
+        run: |
+          bash scripts/install-shellcheck.sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Check shell scripts
+        run: bash scripts/check-shell.sh
+      - name: Check research structure
+        run: bash scripts/check-research-tree.sh
+      - name: Test research checks
+        run: bash scripts/test-check-research-tree.sh

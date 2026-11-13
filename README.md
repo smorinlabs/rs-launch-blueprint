@@ -28,3 +28,18 @@ spec §2 and owner amendment A5.
 ## License
 
 MIT OR Apache-2.0, at your option — see `LICENSE` (Apache-2.0) and `LICENSE-MIT`.
+
+## Shell validation
+
+Install the pinned analyzer with `bash scripts/install-shellcheck.sh` and add
+`~/.local/bin` to PATH. Run `bash scripts/install-hooks.sh` once per clone
+to install the native Git pre-commit hook. It checks staged shell content,
+including partial staging, and blocks commits when ShellCheck fails. The
+installer preserves existing hooks and custom hook configurations.
+
+Run `bash scripts/check-shell.sh` to check all tracked
+`.sh` and `.bash` files, or pass explicit paths to check selected scripts.
+CI runs the same check alongside the research validator and its regression
+suite. The hook uses Git directly and requires no hook-manager dependency.
+Re-run the installer after hook updates; if it reports an existing different
+hook, review and integrate the change before replacing your installed hook.
