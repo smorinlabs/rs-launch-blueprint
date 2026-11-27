@@ -21,6 +21,8 @@ jobs:
         run: bash scripts/check-shell.sh
       - name: Test shell check baseline
         run: bash scripts/test-check-shell.sh
+      - name: Test chain launcher
+        run: bash scripts/test-chain-next.sh
       - name: Check research structure
         run: bash scripts/check-research-tree.sh
       - name: Test research checks
