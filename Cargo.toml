@@ -1,9 +1,16 @@
 [workspace]
-members = ["crates/*"]
+# Literal member paths (not `crates/*`) so release-please `release-type: rust` discovers
+# and updates every workspace member and `Cargo.lock` atomically (R23 S6a/S6c).
+members = [
+    "crates/cli",
+    "crates/core",
+    "crates/web",
+]
 resolver = "3"
 
 [workspace.package]
-version = "0.1.0"
+# `version` is declared literally on each member `[package]` rather than inherited here,
+# because release-please rejects `version.workspace = true` (R23 S7c).
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/smorinlabs/rs-launch-blueprint"
@@ -39,13 +46,14 @@ unwrap_used = "warn"
 
 [package]
 name = "rs-launch-blueprint"
-version.workspace = true
+version = "0.1.0"
 autobins = false
 default-run = "rslbp"
 edition.workspace = true
 include = [
     "/src",
     "/README.md",
+    "/CHANGELOG.md",
     "/LICENSE",
     "/LICENSE-MIT",
 ]
@@ -142,3 +150,16 @@ toml = "1.1.6"
 
 [lints]
 workspace = true
+
+# Release build profile (R68 Subject B): write exactly `lto` and `codegen-units`;
+# deliberately leave `opt-level` (3), `strip` ("none", preserving panic backtraces),
+# `panic` ("unwind", preserving R67 exit/flush semantics), and `debug` (false) at
+# Cargo defaults. Downstream library consumers ignore dependency `[profile.*]` tables.
+[profile.release]
+lto = "fat"
+codegen-units = 1
+
+# Profile used by `cargo-dist` (`dist`); inherits `[profile.release]` verbatim with
+# no `lto = "thin"` override so released binaries keep fat LTO (R68 AC6).
+[profile.dist]
+inherits = "release"

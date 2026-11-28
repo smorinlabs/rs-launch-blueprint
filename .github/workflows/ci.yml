@@ -98,7 +98,7 @@ jobs:
                   patch="$(git diff -U0 "${BASE_SHA}...HEAD" -- "$f")" || return 1
                   hunks="$(grep -E '^[+-]' <<<"$patch" | grep -vE '^(\+\+\+|---) ' || true)"
                   [ -n "$hunks" ] || continue
-                  if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-rs-launch-blueprint-(core|cli|web) = \\{ version = \"${old}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\}|\\+rs-launch-blueprint-(core|cli|web) = \\{ version = \"${new}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
+                  if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-rs-launch-blueprint-(core|cli|web) = \\{ version = \"${old}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\}|\\+rs-launch-blueprint-(core|cli|web) = \\{ version = \"${new}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
                     return 1
                   fi
                   ;;

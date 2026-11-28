@@ -1,0 +1,186 @@
+# Crates.io verification and publication workflow (R04, R26, F074, F075, R08, R09, R20).
+#
+# Triggered on `v*` release tags pushed by `release-please` (or manual `workflow_dispatch`
+# against a `v*` tag). Runs a read-only `verify` job before the protected `crates-io`
+# environment publish job:
+#   1. Tag ancestry on `origin/main` and exact version match across all 4 workspace
+#      `Cargo.toml` manifests and `.release-please-manifest.json` (F074).
+#   2. All 4 first-party R26 packed `.crate` content guards (`scripts/check-packed-artifacts.sh`).
+#   3. `cargo-semver-checks` on the curated library surface including `--features web` (R04).
+#   4. `cargo publish --workspace --dry-run --locked` (R26 element 3).
+#   5. Credential-preflight gated crates.io publication supporting OIDC Trusted Publishing
+#      (`vars.CRATES_IO_TRUSTED_PUBLISHING == 'true'` + `rust-lang/crates-io-auth-action`)
+#      or `secrets.CRATES_IO_TOKEN` inside the protected `crates-io` environment.
+name: publish
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false # Never cancel an in-flight publish
+
+jobs:
+  verify:
+    name: verify-crates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read # Read-only checkout and tag history verification
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain
+        run: rustc --version
+      - name: Verify v* tag is reachable from main (F074)
+        shell: bash
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [ "${REF_TYPE}" != "tag" ] || [ "${REF_NAME#v}" = "${REF_NAME}" ]; then
+            echo "::error::publish.yml must run from a v* tag (got ${REF_TYPE} ${REF_NAME})."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "${GITHUB_SHA}" origin/main; then
+            echo "::error::Tag ${REF_NAME} (${GITHUB_SHA}) is not reachable from origin/main."
+            exit 1
+          fi
+          echo "PASS: tag ${REF_NAME} is an ancestor of origin/main"
+      - name: Verify tag matches all workspace Cargo.toml manifests and release-please manifest (F074)
+        shell: bash
+        env:
+          GIT_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          python3 - "${GIT_TAG}" <<'PY'
+          import json, pathlib, sys, tomllib
+          tag = sys.argv[1]
+          tag_version = tag.removeprefix("v")
+          for rel in [
+              "Cargo.toml",
+              "crates/core/Cargo.toml",
+              "crates/cli/Cargo.toml",
+              "crates/web/Cargo.toml",
+          ]:
+              with open(rel, "rb") as fh:
+                  ver = tomllib.load(fh)["package"]["version"]
+              if ver != tag_version:
+                  sys.stderr.write(f"FAIL: {rel} version {ver} != tag {tag_version}\n")
+                  sys.exit(1)
+          manifest = json.loads(pathlib.Path(".release-please-manifest.json").read_text())
+          rp_ver = manifest.get(".")
+          if rp_ver != tag_version:
+              sys.stderr.write(
+                  f"FAIL: .release-please-manifest.json version {rp_ver!r} != tag {tag_version}\n"
+              )
+              sys.exit(1)
+          print(f"PASS: tag v{tag_version} matches all 4 workspace manifests and release-please manifest")
+          PY
+      - name: Enforce R26 packed .crate content and metadata guards
+        run: bash scripts/check-packed-artifacts.sh --no-verify
+      - name: Resolve prior Rust release tag for cargo-semver-checks baseline (R04)
+        id: semver-baseline
+        shell: bash
+        env:
+          CURRENT_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          baseline=""
+          while IFS= read -r tag; do
+            [ -n "${tag}" ] || continue
+            [ "${tag}" = "${CURRENT_TAG}" ] && continue
+            if git cat-file -e "${tag}:Cargo.toml" 2>/dev/null \
+              && git cat-file -e "${tag}:src/lib.rs" 2>/dev/null; then
+              baseline="${tag}"
+              break
+            fi
+          done < <(git tag --list 'v*' --sort=-version:refname --merged HEAD)
+          if [ -n "${baseline}" ]; then
+            echo "rev=${baseline}" >> "${GITHUB_OUTPUT}"
+            echo "SemVer baseline tag: ${baseline}"
+          else
+            echo "rev=" >> "${GITHUB_OUTPUT}"
+            echo "::notice title=cargo-semver-checks baseline::No prior Rust crate release tag found before ${CURRENT_TAG}; skipping baseline comparison for initial crate publication."
+          fi
+      - name: Check curated library public API with cargo-semver-checks (R04)
+        if: ${{ steps.semver-baseline.outputs.rev != '' }}
+        uses: obi1kenobi/cargo-semver-checks-action@6b69fcf40e9b5fb17adeb57e4b6ecd020649a239 # v2.9
+        with:
+          package: rs-launch-blueprint
+          baseline-rev: ${{ steps.semver-baseline.outputs.rev }}
+          feature-group: only-explicit-features
+          features: web
+          rust-toolchain: stable
+      - name: Dry-run workspace crates.io publication (R26 element 3)
+        run: cargo publish --workspace --dry-run --locked
+
+  credential-preflight:
+    name: credential-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      auth: ${{ steps.check.outputs.auth }}
+    steps:
+      - name: Check crates.io publication credentials
+        id: check
+        shell: bash
+        env:
+          TRUSTED_PUBLISHING: ${{ vars.CRATES_IO_TRUSTED_PUBLISHING }}
+          CRATES_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ "${TRUSTED_PUBLISHING}" = "true" ]; then
+            echo "auth=oidc" >> "${GITHUB_OUTPUT}"
+            echo "crates.io auth: OIDC Trusted Publishing enabled"
+          elif [ -n "${CRATES_TOKEN}" ]; then
+            echo "auth=token" >> "${GITHUB_OUTPUT}"
+            echo "crates.io auth: CRATES_IO_TOKEN secret configured"
+          else
+            echo "auth=none" >> "${GITHUB_OUTPUT}"
+            echo "::notice title=crates.io publish skipped::Configure OIDC Trusted Publishing (set repo variable CRATES_IO_TRUSTED_PUBLISHING=true) or set CRATES_IO_TOKEN per docs/RELEASE.md, or delete .github/workflows/publish.yml to opt out."
+            {
+              echo "### crates.io publish skipped"
+              echo ""
+              echo "Neither OIDC Trusted Publishing (\`CRATES_IO_TRUSTED_PUBLISHING=true\`) nor \`CRATES_IO_TOKEN\` is configured."
+              echo "See \`docs/RELEASE.md\` for setup instructions, or delete \`.github/workflows/publish.yml\` to opt out."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          fi
+
+  publish-crates-io:
+    name: publish-crates-io
+    needs:
+      - verify
+      - credential-preflight
+    if: >-
+      needs.credential-preflight.outputs.auth == 'oidc' ||
+      needs.credential-preflight.outputs.auth == 'token'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: crates-io
+    permissions:
+      contents: read # Check out tagged commit for workspace upload
+      id-token: write # Mint OIDC token for crates.io Trusted Publishing (F075)
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain
+        run: rustc --version
+      - name: Mint temporary crates.io token via Trusted Publishing (OIDC)
+        id: crates-auth
+        if: ${{ needs.credential-preflight.outputs.auth == 'oidc' }}
+        uses: rust-lang/crates-io-auth-action@3268eb413133e2960fa4ae0e963ca76380c54cd9 # v1.0.6
+      - name: Publish workspace crates to crates.io in dependency order
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates-auth.outputs.token || secrets.CRATES_IO_TOKEN }}
+        run: cargo publish --workspace --locked

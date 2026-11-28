@@ -1,0 +1,74 @@
+# Public GHCR container publishing for the optional `rslbp-serve` web image.
+#
+# Owner review-gate ruling 1a-A (2026-11-27, docs/superpowers/specs/2026-11-27-rs-implementation-roadmap-design.md):
+# OVERRIDE of R51 (member 5, no registry publication) to publish the `linux/amd64` container
+# image to `ghcr.io/<owner>/<repo>` on stable GitHub Releases (`X.Y.Z` + `latest` + recorded
+# `sha256` digest), achieving full parity with `py-launch-blueprint` v4.2.0 (PR #529, #606)
+# while retaining `docker-web.yml` for PR and merge-queue build/smoke verification.
+#
+# Version publication is independent of crates.io and of other release versions.
+name: publish-container
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  publish-version:
+    name: publish-version
+    if: >-
+      github.event_name == 'release' &&
+      !github.event.release.draft &&
+      !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read # Check out tagged release commit and verify main ancestry
+      packages: write # Push immutable X.Y.Z image manifest to GHCR
+    concurrency:
+      group: container-version-${{ github.event.release.tag_name }}
+      cancel-in-progress: false
+    outputs:
+      digest: ${{ steps.publish.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build, smoke-test, publish version tag, and verify anonymous pull
+        id: publish
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/publish_container.py publish
+
+  promote-latest:
+    name: promote-latest
+    needs: publish-version
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # Read release metadata and verify tag ancestry
+      packages: write # Promote highest stable version manifest to :latest without rebuilding
+    # GitHub can replace a pending promotion. Every surviving job reconciles
+    # the highest published stable version, including versions from replaced jobs.
+    concurrency:
+      group: container-latest
+      cancel-in-progress: false
+    outputs:
+      digest: ${{ steps.promote.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Promote highest published stable version to latest without rebuilding
+        id: promote
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/publish_container.py promote

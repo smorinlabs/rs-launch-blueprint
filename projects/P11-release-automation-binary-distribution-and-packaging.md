@@ -10,7 +10,7 @@
 - **Prior art:** [R26 packed-artifact-content-guard](../research/topics/26-packed-artifact-content-guard/DECISION.md)
 - **Prior art:** [R68 release-binary-artifacts](../research/topics/68-release-binary-artifacts/DECISION.md)
 
-**Status:** `[ ]` scoped, not started.
+**Status:** `[x]` completed.
 
 ### Scope
 Implement automated semantic releases, crates.io packaging guards, `cargo-dist` binary distribution, and GHCR container publishing:
@@ -25,11 +25,11 @@ Implement automated semantic releases, crates.io packaging guards, `cargo-dist` 
 - `template-press` rebranding rules (`P12`)
 
 ### Tests & Tasks
-- [ ] [P11-TS01] Add release & packaging meta-tests covering `release-please-config.json` 11-type section order (`R24`), packed `.crate` allow-list content checks (`R26`), `[profile.release]` settings (`R68`), `publish-container.yml` digest/tag wiring, and version consistency across workspace manifests
-- [ ] [P11-T01] Add `release-please-config.json`, `.release-please-manifest.json`, and `.github/workflows/release-please.yml` (`R23`, `R24`, `R25`)
-- [ ] [P11-T02] Add `[profile.release]` (`lto = "fat"`, `codegen-units = 1`), `cargo-dist 0.33.0` follower-mode configuration (`dist-workspace.toml`), and `.github/workflows/publish.yml` with the 4 packed-artifact guards and `cargo-semver-checks` (`R04`, `R26`, `R68`)
-- [ ] [P11-T03] Add `.github/workflows/publish-container.yml` (recording owner review-gate OVERRIDE of `R51` for GHCR parity with `py-launch-blueprint`)
-- [ ] [P11-T04] Write `docs/RELEASE.md` and verify `cargo package --locked --list`, `dist plan`, `actionlint`, `zizmor`, and release meta-tests all pass
+- [x] [P11-TS01] Add release & packaging meta-tests covering `release-please-config.json` 11-type section order (`R24`), packed `.crate` allow-list content checks (`R26`), `[profile.release]` settings (`R68`), `publish-container.yml` digest/tag wiring, and version consistency across workspace manifests
+- [x] [P11-T01] Add `release-please-config.json`, `.release-please-manifest.json`, and `.github/workflows/release-please.yml` (`R23`, `R24`, `R25`)
+- [x] [P11-T02] Add `[profile.release]` (`lto = "fat"`, `codegen-units = 1`), `cargo-dist 0.33.0` follower-mode configuration (`dist-workspace.toml`), and `.github/workflows/publish.yml` with the 4 packed-artifact guards and `cargo-semver-checks` (`R04`, `R26`, `R68`)
+- [x] [P11-T03] Add `.github/workflows/publish-container.yml` (recording owner review-gate OVERRIDE of `R51` for GHCR parity with `py-launch-blueprint`)
+- [x] [P11-T04] Write `docs/RELEASE.md` and verify `cargo package --locked --list`, `dist plan`, `actionlint`, `zizmor`, and release meta-tests all pass
 
 ### Deliverable
 ```bash

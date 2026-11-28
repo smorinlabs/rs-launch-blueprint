@@ -1,0 +1,91 @@
+# Automated Release PR and tag management (R23, R24, R25, R68, F063, F066, F072, F073).
+#
+# Uses `release-type: "rust"` so every Release PR updates all four workspace
+# `Cargo.toml` manifests, intra-workspace dependency version pins, `Cargo.lock`,
+# `.release-please-manifest.json`, and `CHANGELOG.md` in one atomic commit (R23).
+#
+# Creates a draft GitHub Release with immediate tag creation (`draft: true`,
+# `force-tag-creation: true`) so `release.yml` (cargo-dist follower mode) uploads
+# pre-built binaries and undrafts the release, while `publish.yml` validates and
+# publishes crates.io artifacts on the `v*` tag (R68).
+#
+# Auth requires a GitHub App (`RELEASE_PLEASE_CLIENT_ID` + `RELEASE_PLEASE_PRIVATE_KEY`)
+# or fine-grained PAT (`RELEASE_PLEASE_APP_TOKEN`) so tags trigger downstream workflows;
+# `GITHUB_TOKEN` is intentionally NEVER used as a fallback (F072/R68). When neither
+# credential is configured, `credential-preflight` skips cleanly so pushes stay green.
+name: release-please
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release-please-${{ github.ref }}
+  cancel-in-progress: false # Never cancel an in-flight release PR update
+
+jobs:
+  credential-preflight:
+    name: credential-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      auth: ${{ steps.check.outputs.auth }}
+    steps:
+      - name: Check release-please credentials
+        id: check
+        shell: bash
+        env:
+          RP_CLIENT_ID: ${{ secrets.RELEASE_PLEASE_CLIENT_ID }}
+          RP_PRIVATE_KEY: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+          RP_APP_TOKEN: ${{ secrets.RELEASE_PLEASE_APP_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "${RP_CLIENT_ID}" ] && [ -n "${RP_PRIVATE_KEY}" ]; then
+            echo "auth=app" >> "${GITHUB_OUTPUT}"
+            echo "release-please auth: GitHub App configured"
+          elif [ -n "${RP_APP_TOKEN}" ]; then
+            echo "auth=pat" >> "${GITHUB_OUTPUT}"
+            echo "release-please auth: PAT fallback configured"
+          else
+            echo "auth=none" >> "${GITHUB_OUTPUT}"
+            echo "::notice title=release-please skipped::Neither GitHub App (RELEASE_PLEASE_CLIENT_ID + RELEASE_PLEASE_PRIVATE_KEY) nor fallback PAT (RELEASE_PLEASE_APP_TOKEN) is configured. Configure credentials per docs/RELEASE.md or delete .github/workflows/release-please.yml to opt out."
+            {
+              echo "### release-please skipped"
+              echo ""
+              echo "No release credential is configured (\`RELEASE_PLEASE_CLIENT_ID\` + \`RELEASE_PLEASE_PRIVATE_KEY\` or \`RELEASE_PLEASE_APP_TOKEN\`)."
+              echo "Configure credentials per \`docs/RELEASE.md\`, or delete \`.github/workflows/release-please.yml\` to opt out."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          fi
+
+  release-please:
+    name: release-please
+    needs: credential-preflight
+    if: >-
+      needs.credential-preflight.outputs.auth == 'app' ||
+      needs.credential-preflight.outputs.auth == 'pat'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # Create/update release PR branch, commit, tag, and draft release
+      pull-requests: write # Open and update the Release PR
+    steps:
+      - name: Mint release-please GitHub App token
+        id: app-token
+        if: ${{ needs.credential-preflight.outputs.auth == 'app' }}
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.RELEASE_PLEASE_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Run release-please
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ steps.app-token.outputs.token || secrets.RELEASE_PLEASE_APP_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

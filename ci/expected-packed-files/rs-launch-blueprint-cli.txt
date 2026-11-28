@@ -1,0 +1,14 @@
+.cargo_vcs_info.json
+Cargo.lock
+Cargo.toml
+Cargo.toml.orig
+build.rs
+src/app.rs
+src/args.rs
+src/color.rs
+src/lib.rs
+src/output.rs
+src/pager.rs
+src/prompter.rs
+src/rich.rs
+src/spinner.rs
