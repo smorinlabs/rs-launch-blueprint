@@ -235,6 +235,24 @@ mod otel_enabled {
     };
     use tracing_opentelemetry::OpenTelemetrySpanExt as _;
 
+    /// Serialize `otel_enabled` tests within one test binary process.
+    ///
+    /// `tracing-core` 0.1.36 holds `LOCKED_DISPATCHERS.write()` inside
+    /// `Dispatchers::register_dispatch` while pruning stale `WeakDispatch` entries with
+    /// `d.upgrade().is_some()`. Under multi-threaded `cargo test` (used by `cargo llvm-cov`), a
+    /// thread registering a new scoped subscriber can upgrade and drop another test's last
+    /// `OpenTelemetryLayer` -> `SdkTracerProvider` while still holding that write lock;
+    /// `opentelemetry_sdk`'s `TracerProviderInner::drop` then calls `otel_debug!` (`tracing`),
+    /// which attempts to acquire `LOCKED_DISPATCHERS.read()` on the same thread and deadlocks.
+    /// Serializing these tests also prevents concurrent mutations to the global W3C propagator.
+    static OTEL_TEST_LOCK: Mutex<()> = Mutex::new(());
+
+    fn lock_otel_tests() -> std::sync::MutexGuard<'static, ()> {
+        OTEL_TEST_LOCK
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+    }
+
     #[derive(Debug, Clone, Default)]
     struct InMemoryExporter {
         spans: Arc<Mutex<Vec<SpanData>>>,
@@ -255,6 +273,7 @@ mod otel_enabled {
 
     #[test]
     fn otel_enabled_exports_redacted_spans_correlates_json_logs_and_injects_outbound_http() {
+        let _otel_lock = lock_otel_tests();
         let incoming_trace_id = "4bf92f3577b34da6a3ce929d0e0e4736";
         let incoming_parent_id = "00f067aa0ca902b7";
         let traceparent = format!("00-{incoming_trace_id}-{incoming_parent_id}-01");
@@ -432,6 +451,7 @@ mod otel_enabled {
 
     #[test]
     fn otel_runtime_disabled_kill_switch_and_invalid_endpoint_degrade_cleanly() {
+        let _otel_lock = lock_otel_tests();
         // Gate 2a: otel_enabled = false -> Disabled, no panic, no OTel layer.
         let disabled = init_otel_from_config(&OtelConfig {
             enabled: false,
@@ -522,6 +542,7 @@ mod otel_enabled {
 
     #[test]
     fn otel_redacts_sensitive_typed_errors_and_correlates_explicit_event_parents() {
+        let _otel_lock = lock_otel_tests();
         let exporter = InMemoryExporter::default();
         let (otel_layer, otel_guard) =
             build_otel_layer_with_exporter("rslbp-web", exporter.clone(), Duration::from_secs(2));
@@ -612,6 +633,7 @@ mod otel_enabled {
 
     #[test]
     fn otel_exporter_lifecycle_debug_and_active_otlp_init() {
+        let _otel_lock = lock_otel_tests();
         let mut redacting = RedactingSpanExporter::new(InMemoryExporter::default());
         let resource = opentelemetry_sdk::Resource::builder()
             .with_service_name("rslbp-test")
@@ -641,7 +663,10 @@ mod otel_enabled {
             "expected Active OtelInit debug representation, got: {debug_repr}"
         );
         match init {
-            OtelInit::Active { guard, .. } => {
+            OtelInit::Active { layer, guard } => {
+                // Drop the layer clone before shutting down so `shutdown_blocking` drops the final
+                // `SdkTracerProvider` reference deterministically while `_otel_lock` is held.
+                drop(layer);
                 // Bounded shutdown on a blocking/main OS thread (R78 point 7).
                 let _ = guard.shutdown_blocking();
             }
