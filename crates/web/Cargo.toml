@@ -10,6 +10,7 @@ description = "Optional web service front end for rs-launch-blueprint."
 
 [dependencies]
 rs-launch-blueprint-core = { version = "0.1.0", path = "../core" }
+tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 
 [lints]
 workspace = true

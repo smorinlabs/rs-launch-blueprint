@@ -5,12 +5,26 @@
 all-features = true
 
 [advisories]
-ignore = []
+ignore = [
+    # Upstream zbus 6.0 crate-consolidation notices (not vulnerabilities) pulled only by
+    # the opt-in `keychain` feature on Linux (`zbus-secret-service-keyring-store 1.0.1` ->
+    # `secret-service 5.2.0` -> `zbus 5.19.0`); remove once `secret-service` adopts zbus 6.
+    { id = "RUSTSEC-2026-0370", reason = "zvariant merged into zbus 6; optional keychain Linux dep still on zbus 5" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names merged into zbus 6; optional keychain Linux dep still on zbus 5" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive merged into zbus 6; optional keychain Linux dep still on zbus 5" },
+]
 
 [licenses]
+# Permissive licenses covering our MIT/Apache-2.0 workspace and audited transitive deps
+# (ring/rustls-webpki: ISC, subtle: BSD-3-Clause, unicode-ident: Unicode-3.0,
+# webpki-roots Mozilla CA bundle: CDLA-Permissive-2.0).
 allow = [
     "MIT",
     "Apache-2.0",
+    "ISC",
+    "BSD-3-Clause",
+    "Unicode-3.0",
+    "CDLA-Permissive-2.0",
 ]
 
 [bans]

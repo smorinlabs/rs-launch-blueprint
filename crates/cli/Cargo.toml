@@ -10,6 +10,7 @@ description = "CLI front end for rs-launch-blueprint."
 
 [dependencies]
 rs-launch-blueprint-core = { version = "0.1.0", path = "../core" }
+tracing = "0.1.44"
 
 [lints]
 workspace = true

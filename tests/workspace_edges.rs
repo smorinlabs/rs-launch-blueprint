@@ -414,9 +414,18 @@ fn workspace_intra_edges_match_declared_topology() {
 
 #[test]
 fn core_external_dependencies_within_allowlist() {
-    // P04 core skeleton has zero external dependencies. P06+ extends this allow-list
-    // deliberately for audited crates only (R02 F010).
-    const CORE_EXTERNAL_ALLOWLIST: &[&str] = &[];
+    // Audited R## core dependencies only (R01, R02 F010, R48, R52, R53, R56, R57, R58, R67).
+    const CORE_EXTERNAL_ALLOWLIST: &[&str] = &[
+        "etcetera",
+        "mockall",
+        "secrecy",
+        "serde",
+        "thiserror",
+        "toml",
+        "toml_edit",
+        "tracing",
+        "zeroize",
+    ];
     const FORBIDDEN_FRAMEWORKS: &[&str] = &[
         "axum",
         "tokio",
