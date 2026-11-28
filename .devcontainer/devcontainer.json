@@ -1,0 +1,36 @@
+{
+  "name": "rs-launch-blueprint",
+
+  // Digest-pinned per R20's principle applied to an OCI reference: the
+  // immutable identity is pinned, the human-readable release identity travels
+  // beside it as a trailing comment. Pin the INDEX digest, not a child
+  // manifest digest, so the reference stays multi-architecture (linux/amd64
+  // and linux/arm64).
+  //
+  // Optional Blaze Linux accelerator (spec §3.1): this base image already bakes
+  // `securityOpt: ["seccomp=unconfined"]` in its devcontainer.metadata label,
+  // which satisfies Blaze's Linux sandbox requirement without duplicating
+  // runArgs here.
+  "image": "mcr.microsoft.com/devcontainers/rust:2.1.1-trixie@sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3", // 2.1.1-trixie
+
+  // No "features": the image already bakes common-utils, git, and the rust
+  // feature. A features block would be a second toolchain declaration beside
+  // rust-toolchain.toml (R42, R44).
+
+  // No "customizations": the image contributes rust-analyzer, even-better-toml,
+  // and lldb; .vscode/extensions.json (F193) is the single repository list.
+
+  // Keep the cargo registry, crate sources, and $CARGO_HOME/bin tools across
+  // rebuilds. The path is the image's own CARGO_HOME. RUSTUP_HOME
+  // (/usr/local/rustup) is NOT under this mount, so installed toolchains are
+  // not persisted by it.
+  "mounts": [
+    {
+      "source": "devcontainer-cargo-cache-${devcontainerId}",
+      "target": "/usr/local/cargo",
+      "type": "volume"
+    }
+  ],
+
+  "postCreateCommand": "sh .devcontainer/post-create.sh"
+}

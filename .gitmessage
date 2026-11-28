@@ -1,0 +1,19 @@
+# <type>(<scope>): <subject>
+# |<----  Using a maximum of 50 characters  ---->|
+#
+# Types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test
+#
+# Example:
+# feat: add user authentication
+# fix(auth): resolve login timeout issue
+#
+# - Separate subject from body with a blank line
+# - Limit the subject line to 50 characters
+# - Use a lower-case subject line (documented convention; the linter
+#   does not check subject case)
+# - Do not end the subject line with a period
+# - Prefer the imperative mood in the subject line (documented convention;
+#   the linter does not check mood)
+# - Wrap the body and footer at 72 characters; a bare URL or any other
+#   un-wrappable final token on a line is exempt from the cap
+# - Footers: BREAKING CHANGE: <description>, Refs: #<issue>

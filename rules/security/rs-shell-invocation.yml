@@ -1,0 +1,16 @@
+id: rs-shell-invocation
+language: rust
+severity: error
+message: A shell is spawned; build the argv directly instead of passing a command string to a shell (bandit B602/B605 analogue).
+ignores:
+  - "**/tests/**"
+  - "**/benches/**"
+  - "**/fuzz/**"
+  - "**/research/**"
+rule:
+  pattern: $CMD($SH)
+constraints:
+  CMD:
+    regex: "(^|::)Command::new$"
+  SH:
+    regex: '^"((/usr)?/bin/)?(sh|bash|zsh|dash|ksh|fish|cmd|cmd\.exe|powershell|powershell\.exe|pwsh)"$'

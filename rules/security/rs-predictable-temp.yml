@@ -1,0 +1,14 @@
+id: rs-predictable-temp
+language: rust
+severity: error
+message: A path under the shared temp directory is predictable; use the tempfile crate (bandit B108 analogue).
+ignores:
+  - "**/tests/**"
+  - "**/benches/**"
+  - "**/fuzz/**"
+  - "**/research/**"
+rule:
+  pattern: $F()
+constraints:
+  F:
+    regex: "^((std::)?env::)?temp_dir$"

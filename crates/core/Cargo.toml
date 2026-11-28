@@ -2,11 +2,11 @@
 name = "rs-launch-blueprint-core"
 version.workspace = true
 edition.workspace = true
-rust-version.workspace = true
+include = ["/src"]
 license.workspace = true
 repository.workspace = true
+rust-version.workspace = true
 description = "Core domain models, ports, services, and error catalog for rs-launch-blueprint."
-include = ["/src"]
 
 [dependencies]
 

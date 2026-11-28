@@ -1,0 +1,14 @@
+id: rs-weak-hash
+language: rust
+severity: error
+message: MD4, MD5 or SHA-1 is used; use SHA-256 or stronger for anything security-relevant (bandit B303/B324 analogue).
+ignores:
+  - "**/tests/**"
+  - "**/benches/**"
+  - "**/fuzz/**"
+  - "**/research/**"
+rule:
+  pattern: $F($$$ARGS)
+constraints:
+  F:
+    regex: "((^|::)(Md4|Md5|Sha1)::(new|default|digest|new_with_prefix)|(^|::)md5::compute)$"

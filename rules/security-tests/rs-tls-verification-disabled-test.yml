@@ -1,0 +1,6 @@
+id: rs-tls-verification-disabled
+valid:
+  - reqwest::Client::builder().danger_accept_invalid_certs(false).build()
+invalid:
+  - reqwest::Client::builder().danger_accept_invalid_certs(true).build()
+  - builder.danger_accept_invalid_hostnames(true)

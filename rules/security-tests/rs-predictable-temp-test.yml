@@ -1,0 +1,8 @@
+id: rs-predictable-temp
+valid:
+  - tempfile::NamedTempFile::new()
+  - tempfile::tempdir()
+invalid:
+  - std::env::temp_dir().join("app.lock")
+  - env::temp_dir()
+  - let d = temp_dir();

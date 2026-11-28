@@ -1,6 +1,6 @@
 # Rust source formatting (R27). Every key is stable: no nightly toolchain is needed.
-edition = "2024"        # bare rustfmt callers parse 2024 syntax; cargo fmt passes Cargo.toml's edition
-style_edition = "2024"  # the 2024 style edition
-max_width = 100         # F087: rustfmt's default width, stated
-newline_style = "Unix"  # F089: LF bytes on every OS; "Auto" keeps whatever a file already has
-reorder_imports = true  # F092: the formatter owns import order (rustfmt's default, stated)
+edition = "2024" # bare rustfmt callers parse 2024 syntax; cargo fmt passes Cargo.toml's edition
+style_edition = "2024" # the 2024 style edition
+max_width = 100 # F087: rustfmt's default width, stated
+newline_style = "Unix" # F089: LF bytes on every OS; "Auto" keeps whatever a file already has
+reorder_imports = true # F092: the formatter owns import order (rustfmt's default, stated)

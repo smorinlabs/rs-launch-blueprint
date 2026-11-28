@@ -1,0 +1,9 @@
+id: rs-shell-invocation
+valid:
+  - Command::new("git")
+  - std::process::Command::new("cargo").arg("build")
+invalid:
+  - Command::new("sh").arg("-c").arg(cmd)
+  - std::process::Command::new("bash")
+  - tokio::process::Command::new("/bin/sh")
+  - let c = Command::new("cmd.exe");

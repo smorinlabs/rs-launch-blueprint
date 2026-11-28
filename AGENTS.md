@@ -1,7 +1,14 @@
 # AGENTS.md — rs-launch-blueprint charter
 
+`AGENTS.md` is the single canonical AI-assistant instruction hub for this
+repository (read directly by Cursor, Devin, Codex, and Antigravity, and
+imported via `@AGENTS.md` in `CLAUDE.md`; no `.cursor/`, `.windsurf/`, or
+`.devin/` rule directories are committed per `R43`).
+
 Read, in order: `README.md`, `docs/port/README.md` (verdict vocabulary),
 `research/CLAUDE.md` (research index) before touching anything.
+
+## Governing Principles
 
 - Research engineering principles and ecosystem best practices first (spec §2,
   owner amendment A5). Existing py/ts implementations are evidence, not winners
@@ -9,20 +16,36 @@ Read, in order: `README.md`, `docs/port/README.md` (verdict vocabulary),
 - Track departures from recorded patterns as `OVERRIDE (OV-nn)` with
   `**Argument:**` and `**Options:**`; agreement alone is not evidence of fitness.
 - Never assign a verdict from memory; cite the files in both source repos.
-- Returning to this work after any interruption, start with
-  `uv run --offline --no-project --no-python-downloads --no-cache python3
-  scripts/research_scan.py --todo`. It reconstructs every item's state from the
-  repository, names the next action, and lists unfinished provider operations
-  with the identifiers that recover them. Never rely on an agent's memory of
-  what was running.
-- Run `scripts/check-research-tree.sh` before opening a PR.
 - Work in a worktree branched from `origin/main`; never commit to `main`.
+- Returning to P01/P02 research maintenance after an interruption, start with
+  `uv run --offline --no-project --no-python-downloads --no-cache python3 scripts/research_scan.py --todo`.
+  Run `bash scripts/check-research-tree.sh --require-owner-review` before opening a PR.
 
-- Run `bash scripts/check-shell.sh` before opening a PR. Install ShellCheck
-  with `bash scripts/install-shellcheck.sh` and add `~/.local/bin` to PATH.
+## Canonical Development Commands (`just`)
 
-- Install the native pre-commit hook with `bash scripts/install-hooks.sh`.
-  It checks staged shell content; preserve and integrate any existing hooks.
+Two-level setup (`R42`): `Makefile` is Level 1 bootstrap (`rustup` + `just`);
+`Justfile` is Level 2 for every day-to-day task.
+
+- `make bootstrap` — install Level 1 base toolchain (`rustup` + `just`)
+- `make check` / `make hook-check` — verify base toolchain / report-only git-hook readiness
+- `just setup` — activate pinned toolchain, install declared dev tools, wire `lefthook` hooks, and configure `.gitmessage`
+- `just check-deps` — verify all pinned dev tools and `rustup` components
+- `just check` — run all read-only quality gates in parallel (`format-check`, `check-files`, `security`, `check-hygiene`, `check-shell`, `lint`, `typecheck`, `test`, `deny`)
+- `just format` / `just format-files` — format Rust (`cargo fmt`) and non-code files (`dprint fmt`)
+- `just security` — run `ast-grep` security rule self-tests and full-tree scan (`R31`)
+- `just check-hygiene` — run `editorconfig-checker`, `ryl`, `typos`, and `actionlint` (`R40`)
+- `just check-large-files` / `just check-lockfile` — run the 1 MiB blob guard (`R14`) / `Cargo.lock` freshness guard (`R41`)
+- `just hooks-install` / `just hooks-run` — wire `lefthook` hooks / run pre-commit suite over all files
+- `just blaze-check` / `just blaze-test` / `just blaze-status` — opt-in Blaze local edit-loop accelerator (automatic Cargo fallback)
+- `just debug-info` — print environment, toolchain, and workspace diagnostics
+- `just --list` — list every recipe and alias
+
+## `Justfile` Conventions (`R42`, `R43`)
+
+- Invoke `cargo-<sub>` executables (including `rustfmt` and `clippy`) as `cargo <sub>` and all other dev tools as bare executables on `PATH`. Never add provisioner prefixes (`mise exec`, `cargo bin`, `uv run`) or Cargo `[alias]` entries.
+- Keep one authoritative tool table in `Justfile`; every recipe carries a `[group(...)]` attribute and concise comment.
+- Keep `[parallel] @check` strictly read-only (`format-check` first, `check-files` second, ahead of compile-heavy legs).
+- Opt-in fixers (`format`, `lint-fix`) stay separate from check-only gates.
 
 ## project-harness — project workflow skills
 

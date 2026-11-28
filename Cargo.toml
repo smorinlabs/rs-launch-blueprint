@@ -5,9 +5,9 @@ resolver = "3"
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.98"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/smorinlabs/rs-launch-blueprint"
+rust-version = "1.98"
 
 [workspace.lints.rust]
 # Safe-authoring hard boundary (R06): single source of truth; inherited via `[lints] workspace = true`.
@@ -40,20 +40,20 @@ unwrap_used = "warn"
 [package]
 name = "rs-launch-blueprint"
 version.workspace = true
-edition.workspace = true
-rust-version.workspace = true
-license.workspace = true
-repository.workspace = true
-readme = "README.md"
-description = "Production-ready Rust CLI, library, and optional web service blueprint."
 autobins = false
 default-run = "rslbp"
+edition.workspace = true
 include = [
     "/src",
     "/README.md",
     "/LICENSE",
     "/LICENSE-MIT",
 ]
+license.workspace = true
+readme = "README.md"
+repository.workspace = true
+rust-version.workspace = true
+description = "Production-ready Rust CLI, library, and optional web service blueprint."
 
 [lib]
 name = "rs_launch_blueprint"
@@ -73,8 +73,8 @@ default = []
 web = ["dep:rs-launch-blueprint-web"]
 
 [dependencies]
-rs-launch-blueprint-core = { version = "0.1.0", path = "crates/core" }
 rs-launch-blueprint-cli = { version = "0.1.0", path = "crates/cli" }
+rs-launch-blueprint-core = { version = "0.1.0", path = "crates/core" }
 rs-launch-blueprint-web = { version = "0.1.0", path = "crates/web", optional = true }
 
 [lints]
