@@ -1,0 +1,39 @@
+# cargo-dist (`dist`) 0.33.0 follower-mode configuration (R68 Subject A).
+#
+# Release ownership split:
+# - `release-please` creates the `vX.Y.Z` tag and a draft GitHub Release (`draft = true`,
+#   `force-tag-creation = true`).
+# - `release.yml` builds pre-built `rslbp` CLI archives and the POSIX shell installer for
+#   the three triples covered by `target-os-matrix` (`ubuntu-latest`, `macos-latest`),
+#   uploads them to the draft release (`create-release = false`), and undrafts it.
+# - `allow-dirty = ["ci"]` preserves our R08/R09/R20/zizmor-hardened `.github/workflows/release.yml`.
+# - `[dist.binaries]` restricts release archives to `rslbp`; the optional `web`-gated
+#   `rslbp-serve` binary ships via the container image (owner review-gate 1a-A override of R51).
+
+[workspace]
+members = ["cargo:."]
+
+[dist]
+cargo-dist-version = "0.33.0"
+ci = "github"
+installers = ["shell"]
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+]
+create-release = false
+install-updater = false
+pr-run-mode = "plan"
+allow-dirty = ["ci"]
+
+[dist.binaries]
+x86_64-unknown-linux-gnu = ["rslbp"]
+x86_64-apple-darwin = ["rslbp"]
+aarch64-apple-darwin = ["rslbp"]
+
+[dist.github-custom-runners]
+global = "ubuntu-latest"
+x86_64-unknown-linux-gnu = "ubuntu-latest"
+x86_64-apple-darwin = "macos-latest"
+aarch64-apple-darwin = "macos-latest"

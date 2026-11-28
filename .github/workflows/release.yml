@@ -1,0 +1,352 @@
+# Follower-mode binary distribution via `cargo-dist` (`dist` 0.33.0) (R68, R08, R09, R20).
+#
+# On pull requests: runs `dist plan` on `ubuntu-latest` to validate `dist-workspace.toml`
+# and the Cargo workspace without building or publishing artifacts.
+# On `v*` release tags (created by `release-please` alongside a draft GitHub Release):
+#   1. `plan` validates the tag and initializes the `dist` host plan.
+#   2. `build-local-artifacts` builds `rslbp` archives and SHA-256 checksums for all three
+#      R68 targets (`x86_64-unknown-linux-gnu`, `x86_64-apple-darwin`, `aarch64-apple-darwin`).
+#   3. `build-global-artifacts` generates `rs-launch-blueprint-installer.sh`, `source.tar.gz`,
+#      `sha256.sum`, and `dist-manifest.json`.
+#   4. `host` verifies tag ancestry on `origin/main`, uploads all assets to the draft GitHub
+#      Release, and undrafts it (`--draft=false`). When `RELEASE_PLEASE_CLIENT_ID` +
+#      `RELEASE_PLEASE_PRIVATE_KEY` (or `RELEASE_PLEASE_APP_TOKEN`) is configured, undrafting
+#      uses that token so the `release: published` event triggers `publish-container.yml`.
+#
+# Hardened against R08 (`permissions: {}`, `persist-credentials: false`), R09 (literal runner
+# labels / `${{ matrix.os }}`), R20 (checksum-verified `dist` binary install, no `curl | sh`),
+# `actionlint`, and `zizmor` (`allow-dirty = ["ci"]` in `dist-workspace.toml`).
+name: Release
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+permissions: {}
+
+concurrency:
+  group: release-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read # Check out repository and run dist plan / host create
+    outputs:
+      publishing: ${{ steps.plan.outputs.publishing }}
+      tag: ${{ steps.plan.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install checksum-verified cargo-dist 0.33.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          asset="cargo-dist-x86_64-unknown-linux-gnu.tar.xz"
+          sha="4b3f0a5f0ebbdb798f6db649d01b32ba1518376b6f7a0502b7d92b75cc2c8293"
+          curl -fsSL "https://github.com/axodotdev/cargo-dist/releases/download/v0.33.0/${asset}" \
+            -o "${tmpdir}/${asset}"
+          printf '%s  %s\n' "${sha}" "${tmpdir}/${asset}" | sha256sum -c -
+          mkdir -p "${tmpdir}/extract" "${HOME}/.local/bin"
+          tar -xJf "${tmpdir}/${asset}" -C "${tmpdir}/extract" --strip-components=1
+          install -m 755 "${tmpdir}/extract/dist" "${HOME}/.local/bin/dist"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+      - name: Cache cargo-dist binary for downstream ubuntu-latest jobs
+        uses: actions/upload-artifact@v7
+        with:
+          name: cargo-dist-linux-x86_64
+          path: ~/.local/bin/dist
+      - name: Run dist plan (PR) or dist host create (tag)
+        id: plan
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT_NAME}" = "pull_request" ]; then
+            dist plan --output-format=json > plan-dist-manifest.json
+            {
+              echo "publishing=false"
+              echo "tag="
+            } >> "${GITHUB_OUTPUT}"
+          else
+            dist host --steps=create --tag="${REF_NAME}" --output-format=json > plan-dist-manifest.json
+            {
+              echo "publishing=true"
+              echo "tag=${REF_NAME}"
+            } >> "${GITHUB_OUTPUT}"
+          fi
+          jq '{announcement_tag, releases: [.releases[] | {app_name, app_version, artifacts}]}' plan-dist-manifest.json
+      - name: Upload plan manifest
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts-plan-dist-manifest
+          path: plan-dist-manifest.json
+
+  build-local-artifacts:
+    name: build-local-artifacts (${{ matrix.target }})
+    needs: plan
+    if: ${{ needs.plan.outputs.publishing == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    permissions:
+      contents: read # Check out tag source for release binary build
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain and target
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          rustc --version
+          rustup target add "${TARGET}"
+      - name: Install checksum-verified cargo-dist 0.33.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          os=$(uname -s)
+          arch=$(uname -m)
+          case "${os}.${arch}" in
+            Linux.x86_64)
+              asset="cargo-dist-x86_64-unknown-linux-gnu.tar.xz"
+              sha="4b3f0a5f0ebbdb798f6db649d01b32ba1518376b6f7a0502b7d92b75cc2c8293"
+              ;;
+            Darwin.arm64)
+              asset="cargo-dist-aarch64-apple-darwin.tar.xz"
+              sha="7b3cbe25511de01d74c0f5fcb7909edabd379bea9cfa284d93af5a3cdfa3247c"
+              ;;
+            Darwin.x86_64)
+              asset="cargo-dist-x86_64-apple-darwin.tar.xz"
+              sha="6a49bfb61bd86770d79c27f3d2b40c6b2e71cde940d3d31a6ccaaffc124d7a29"
+              ;;
+            *)
+              echo "unsupported runner: ${os}.${arch}" >&2
+              exit 1
+              ;;
+          esac
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          curl -fsSL "https://github.com/axodotdev/cargo-dist/releases/download/v0.33.0/${asset}" \
+            -o "${tmpdir}/${asset}"
+          if command -v sha256sum >/dev/null 2>&1; then
+            printf '%s  %s\n' "${sha}" "${tmpdir}/${asset}" | sha256sum -c -
+          else
+            printf '%s  %s\n' "${sha}" "${tmpdir}/${asset}" | shasum -a 256 -c -
+          fi
+          mkdir -p "${tmpdir}/extract" "${HOME}/.local/bin"
+          tar -xJf "${tmpdir}/${asset}" -C "${tmpdir}/extract" --strip-components=1
+          install -m 755 "${tmpdir}/extract/dist" "${HOME}/.local/bin/dist"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+      - name: Fetch plan manifest
+        uses: actions/download-artifact@v8
+        with:
+          pattern: artifacts-*
+          path: target/distrib/
+          merge-multiple: true
+      - name: Build target artifacts with dist
+        id: cargo-dist
+        shell: bash
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+          TARGET: ${{ matrix.target }}
+          BUILD_MANIFEST_NAME: target/distrib/${{ matrix.target }}-dist-manifest.json
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          dist build \
+            --tag="${TAG}" \
+            --print=linkage \
+            --output-format=json \
+            --artifacts=local \
+            --target="${TARGET}" > dist-manifest.json
+          {
+            echo "paths<<EOF"
+            dist print-upload-files-from-manifest --manifest dist-manifest.json
+            echo "EOF"
+          } >> "${GITHUB_OUTPUT}"
+          cp dist-manifest.json "${BUILD_MANIFEST_NAME}"
+      - name: Upload target artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts-build-local-${{ matrix.target }}
+          path: |
+            ${{ steps.cargo-dist.outputs.paths }}
+            target/distrib/${{ matrix.target }}-dist-manifest.json
+
+  build-global-artifacts:
+    name: build-global-artifacts
+    needs:
+      - plan
+      - build-local-artifacts
+    if: ${{ needs.plan.outputs.publishing == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # Generate shell installer, source archive, and sha256.sum
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Restore cached cargo-dist binary
+        uses: actions/download-artifact@v8
+        with:
+          name: cargo-dist-linux-x86_64
+          path: ~/.local/bin/
+      - name: Expose cached cargo-dist on PATH
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x "${HOME}/.local/bin/dist"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+      - name: Fetch local artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: artifacts-*
+          path: target/distrib/
+          merge-multiple: true
+      - name: Build global installers and checksums
+        id: cargo-dist
+        shell: bash
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+          BUILD_MANIFEST_NAME: target/distrib/global-dist-manifest.json
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          dist build \
+            --tag="${TAG}" \
+            --output-format=json \
+            --artifacts=global > dist-manifest.json
+          {
+            echo "paths<<EOF"
+            jq --raw-output '.upload_files[]' dist-manifest.json
+            echo "EOF"
+          } >> "${GITHUB_OUTPUT}"
+          cp dist-manifest.json "${BUILD_MANIFEST_NAME}"
+      - name: Upload global artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts-build-global
+          path: |
+            ${{ steps.cargo-dist.outputs.paths }}
+            target/distrib/global-dist-manifest.json
+
+  host:
+    name: host
+    needs:
+      - plan
+      - build-local-artifacts
+      - build-global-artifacts
+    if: ${{ needs.plan.outputs.publishing == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # Upload binary assets to the draft GitHub Release and undraft it
+    env:
+      RP_CLIENT_ID: ${{ secrets.RELEASE_PLEASE_CLIENT_ID }}
+      RP_PRIVATE_KEY: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify release tag is reachable from main
+        shell: bash
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if ! git merge-base --is-ancestor "${GITHUB_SHA}" origin/main; then
+            echo "::error::Tag ${TAG} (${GITHUB_SHA}) is not reachable from origin/main."
+            exit 1
+          fi
+      - name: Restore cached cargo-dist binary
+        uses: actions/download-artifact@v8
+        with:
+          name: cargo-dist-linux-x86_64
+          path: ~/.local/bin/
+      - name: Expose cached cargo-dist on PATH
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x "${HOME}/.local/bin/dist"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+      - name: Fetch all built artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: artifacts-*
+          path: target/distrib/
+          merge-multiple: true
+      - name: Finalize dist-manifest.json
+        id: host
+        shell: bash
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          dist host --tag="${TAG}" --steps=upload --steps=release --output-format=json > dist-manifest.json
+          is_pre=$(jq -r '.announcement_is_prerelease // false' dist-manifest.json)
+          echo "is_prerelease=${is_pre}" >> "${GITHUB_OUTPUT}"
+      - name: Upload final dist-manifest.json
+        uses: actions/upload-artifact@v7
+        with:
+          name: artifacts-dist-manifest
+          path: dist-manifest.json
+      - name: Stage release upload directory
+        uses: actions/download-artifact@v8
+        with:
+          pattern: artifacts-*
+          path: artifacts
+          merge-multiple: true
+      - name: Mint release GitHub App token when configured
+        id: app-token
+        if: ${{ env.RP_CLIENT_ID != '' && env.RP_PRIVATE_KEY != '' }}
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ secrets.RELEASE_PLEASE_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_PRIVATE_KEY }}
+          permission-contents: write
+      - name: Upload assets and undraft GitHub Release
+        shell: bash
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+          IS_PRERELEASE: ${{ steps.host.outputs.is_prerelease }}
+          RELEASE_COMMIT: ${{ github.sha }}
+          # Use App token or PAT when configured so undrafting emits `release: published`
+          # for `publish-container.yml`; fall back to GITHUB_TOKEN otherwise.
+          GH_TOKEN: ${{ steps.app-token.outputs.token || secrets.RELEASE_PLEASE_APP_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          rm -f artifacts/*-dist-manifest.json
+          gh release upload "${TAG}" artifacts/* --clobber
+          edit_args=("${TAG}" --target "${RELEASE_COMMIT}" --draft=false)
+          if [ "${IS_PRERELEASE}" = "true" ]; then
+            edit_args+=(--prerelease)
+          fi
+          gh release edit "${edit_args[@]}"

@@ -1,0 +1,10 @@
+[
+  {
+    "name": "build-script-build",
+    "kind": ["custom-build"]
+  },
+  {
+    "name": "rs_launch_blueprint_cli",
+    "kind": ["lib"]
+  }
+]

@@ -1,0 +1,24 @@
+# actionlint <= 1.7.12 bundles an action schema for
+# `actions/create-github-app-token@v3` that predates the non-deprecated
+# `client-id` input (live v3 action.yml deprecates `app-id`: "Use 'client-id'
+# instead"). Tracked upstream: rhysd/actionlint#648.
+#
+# Remove these narrow path-scoped ignores (and this file) once an actionlint
+# release ships regenerated bundled metadata for create-github-app-token@v3.
+paths:
+  .github/workflows/release-please.yml:
+    ignore:
+      - >-
+        missing input "app-id" which is required by action
+        "actions/create-github-app-token@v3"
+      - >-
+        input "client-id" is not defined in action
+        "actions/create-github-app-token@v3"
+  .github/workflows/release.yml:
+    ignore:
+      - >-
+        missing input "app-id" which is required by action
+        "actions/create-github-app-token@v3"
+      - >-
+        input "client-id" is not defined in action
+        "actions/create-github-app-token@v3"

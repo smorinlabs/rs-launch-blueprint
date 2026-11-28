@@ -1,6 +1,6 @@
 [package]
 name = "rs-launch-blueprint-web"
-version.workspace = true
+version = "0.1.0"
 edition.workspace = true
 include = ["/src"]
 license.workspace = true

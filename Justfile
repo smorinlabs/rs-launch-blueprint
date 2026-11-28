@@ -415,6 +415,11 @@ install-check mode="":
     fi
     echo "install-check (${mode:-default}) passed: ${got}"
 
+# Run all R26 packed `.crate` content and metadata guards across workspace packages
+[group('build'), group('releases')]
+check-packaging *args:
+    bash scripts/check-packed-artifacts.sh --allow-dirty --no-verify --offline {{args}}
+
 # Enforce workspace dependency bans, advisories, licenses, and sources across all features (R02)
 [group('dev')]
 deny:
