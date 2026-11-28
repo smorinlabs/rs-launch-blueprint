@@ -1,0 +1,15 @@
+[package]
+name = "rs-launch-blueprint-web"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Optional web service front end for rs-launch-blueprint."
+include = ["/src"]
+
+[dependencies]
+rs-launch-blueprint-core = { version = "0.1.0", path = "../core" }
+
+[lints]
+workspace = true

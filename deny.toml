@@ -1,0 +1,31 @@
+# Workspace dependency and crate-boundary policy (R02 F008, R58, R67).
+# Invoke with global `--all-features` first: `cargo deny --all-features check`
+
+[graph]
+all-features = true
+
+[advisories]
+ignore = []
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Wrapper entries stay pre-armed for crates introduced in P06–P08 (`axum`, `clap`, `tracing-subscriber`, `anyhow`).
+deny = [
+    { crate = "axum", wrappers = ["rs-launch-blueprint-web"], reason = "core and the CLI are framework-agnostic (F008)" },
+    { crate = "clap", wrappers = ["rs-launch-blueprint-cli", "rs-launch-blueprint"], reason = "argument parsing belongs to the CLI layer and to the serve binary's required global core (F008)" },
+    { crate = "tracing-subscriber", wrappers = ["rs-launch-blueprint"], reason = "subscriber initialization belongs to the root composition package only (R58)" },
+    { crate = "anyhow", wrappers = ["rs-launch-blueprint"], reason = "library crates return typed errors; anyhow is confined to binary entrypoints (R67)" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

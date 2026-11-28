@@ -1,0 +1,81 @@
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/smorinlabs/rs-launch-blueprint"
+
+[workspace.lints.rust]
+# Safe-authoring hard boundary (R06): single source of truth; inherited via `[lints] workspace = true`.
+unsafe_code = "forbid"
+# Curated public-API surface enforcement (R04).
+unreachable_pub = "deny"
+private_interfaces = "deny"
+private_bounds = "deny"
+missing_docs = "deny"
+# Type-check strictness (R30); priority = -1 allows individual lints to override.
+rust_2018_idioms = { level = "warn", priority = -1 }
+
+[workspace.lints.clippy]
+# Pre-armed R06 safety-comment lints so any fork downgrading `unsafe_code` to `deny`
+# inherits a complete safety-comment regime in a one-token edit. `unnecessary_safety_comment`
+# is active under `forbid` and rejects stray `// SAFETY:` comments on safe code.
+undocumented_unsafe_blocks = "deny"
+multiple_unsafe_ops_per_block = "deny"
+unnecessary_safety_comment = "deny"
+# Per-member disallowed API enforcement (R02 F009 + crates/core/clippy.toml).
+disallowed_types = "deny"
+disallowed_methods = "deny"
+# Named lints on top of Clippy's default groups (R28; no group line so correctness stays deny).
+allow_attributes_without_reason = "warn"
+dbg_macro = "warn"
+todo = "warn"
+unimplemented = "warn"
+unwrap_used = "warn"
+
+[package]
+name = "rs-launch-blueprint"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+description = "Production-ready Rust CLI, library, and optional web service blueprint."
+autobins = false
+default-run = "rslbp"
+include = [
+    "/src",
+    "/README.md",
+    "/LICENSE",
+    "/LICENSE-MIT",
+]
+
+[lib]
+name = "rs_launch_blueprint"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rslbp"
+path = "src/main.rs"
+
+[[bin]]
+name = "rslbp-serve"
+path = "src/bin/serve.rs"
+required-features = ["web"]
+
+[features]
+default = []
+web = ["dep:rs-launch-blueprint-web"]
+
+[dependencies]
+rs-launch-blueprint-core = { version = "0.1.0", path = "crates/core" }
+rs-launch-blueprint-cli = { version = "0.1.0", path = "crates/cli" }
+rs-launch-blueprint-web = { version = "0.1.0", path = "crates/web", optional = true }
+
+[lints]
+workspace = true

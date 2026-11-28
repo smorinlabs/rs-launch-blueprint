@@ -1,0 +1,4 @@
+# Workspace-wide Clippy value configuration (R28).
+# Lint levels live in root Cargo.toml [workspace.lints.clippy].
+allow-unwrap-in-tests = true
+allow-dbg-in-tests = true

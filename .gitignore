@@ -2,6 +2,7 @@
 __pycache__/
 research/runs/.locks/
 **/target/
+.blaze/
 research/runs/*/*/raw/*-transcript.txt
 research/runs/*/*/review/*-transcript.txt
 research/runs/*/*/raw/fixture-*/
