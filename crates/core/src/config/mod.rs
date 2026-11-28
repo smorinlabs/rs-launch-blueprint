@@ -19,4 +19,7 @@ pub use schema::{
     ColorPreference, ConfigFile, ConfigOverrides, FileLogFormat, LogLevel, LoggingConfig,
     OutputConfig, OutputFormat, UnvalidatedConfig, ValidConfig, ValidationIssue, ValidationReport,
 };
-pub use writer::{WRITABLE_KEYS, get_config_value, set_config_value};
+pub use writer::{
+    WRITABLE_KEYS, get_config_value, read_config_file_key, set_config_value,
+    validate_config_assignment,
+};

@@ -1,0 +1,21 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Delete a project record by ID
+
+Usage: rslbp project delete [OPTIONS] <ID>
+
+Arguments:
+  <ID>
+          Project identifier to delete
+
+Options:
+      --dry-run
+          Preview deletion without calling the remote API
+
+  -y, --yes
+          Confirm deletion non-interactively without prompting
+
+  -h, --help
+          Print help

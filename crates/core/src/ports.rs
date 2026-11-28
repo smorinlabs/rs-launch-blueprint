@@ -64,6 +64,15 @@ impl Default for InMemoryProjectsPort {
     }
 }
 
+fn lock_port<'a, T>(
+    mutex: &'a Mutex<T>,
+    detail: &str,
+) -> Result<std::sync::MutexGuard<'a, T>, PortError> {
+    mutex.lock().map_err(|_| PortError::Unavailable {
+        detail: detail.to_owned(),
+    })
+}
+
 impl InMemoryProjectsPort {
     /// Create an empty in-memory projects store.
     #[must_use]
@@ -90,23 +99,13 @@ impl InMemoryProjectsPort {
     /// Configure a fault detail returned as [`PortError::Unavailable`] by subsequent calls
     /// (`R48` B2 error injection). Pass `None` to clear the fault.
     pub fn set_failure(&self, detail: Option<String>) -> Result<(), PortError> {
-        let mut guard = self
-            .injected_failure
-            .lock()
-            .map_err(|_| PortError::Unavailable {
-                detail: "in-memory failure lock poisoned".to_owned(),
-            })?;
+        let mut guard = lock_port(&self.injected_failure, "in-memory failure lock poisoned")?;
         *guard = detail;
         Ok(())
     }
 
     fn check_failure(&self) -> Result<(), PortError> {
-        let guard = self
-            .injected_failure
-            .lock()
-            .map_err(|_| PortError::Unavailable {
-                detail: "in-memory failure lock poisoned".to_owned(),
-            })?;
+        let guard = lock_port(&self.injected_failure, "in-memory failure lock poisoned")?;
         if let Some(detail) = guard.as_ref() {
             return Err(PortError::Unavailable {
                 detail: detail.clone(),
@@ -119,9 +118,7 @@ impl InMemoryProjectsPort {
 impl ProjectsPort for InMemoryProjectsPort {
     fn list(&self, query: &ProjectQuery) -> Result<Vec<Project>, PortError> {
         self.check_failure()?;
-        let guard = self.rows.lock().map_err(|_| PortError::Unavailable {
-            detail: "in-memory projects lock poisoned".to_owned(),
-        })?;
+        let guard = lock_port(&self.rows, "in-memory projects lock poisoned")?;
         let limit = query.limit_or_default() as usize;
         let matched = guard
             .iter()
@@ -139,17 +136,13 @@ impl ProjectsPort for InMemoryProjectsPort {
 
     fn get(&self, id: &str) -> Result<Option<Project>, PortError> {
         self.check_failure()?;
-        let guard = self.rows.lock().map_err(|_| PortError::Unavailable {
-            detail: "in-memory projects lock poisoned".to_owned(),
-        })?;
+        let guard = lock_port(&self.rows, "in-memory projects lock poisoned")?;
         Ok(guard.iter().find(|project| project.id == id).cloned())
     }
 
     fn create(&self, input: &CreateProjectInput) -> Result<Project, PortError> {
         self.check_failure()?;
-        let mut guard = self.rows.lock().map_err(|_| PortError::Unavailable {
-            detail: "in-memory projects lock poisoned".to_owned(),
-        })?;
+        let mut guard = lock_port(&self.rows, "in-memory projects lock poisoned")?;
         let id = format!("mem-{}", self.next_id.fetch_add(1, Ordering::Relaxed));
         let project = Project {
             id,
@@ -162,9 +155,7 @@ impl ProjectsPort for InMemoryProjectsPort {
 
     fn delete(&self, id: &str) -> Result<bool, PortError> {
         self.check_failure()?;
-        let mut guard = self.rows.lock().map_err(|_| PortError::Unavailable {
-            detail: "in-memory projects lock poisoned".to_owned(),
-        })?;
+        let mut guard = lock_port(&self.rows, "in-memory projects lock poisoned")?;
         let before = guard.len();
         guard.retain(|project| project.id != id);
         Ok(guard.len() < before)
@@ -230,9 +221,7 @@ impl<P> RecordingPort<P> {
     }
 
     fn record(&self, call: PortCall) -> Result<(), PortError> {
-        let mut guard = self.calls.lock().map_err(|_| PortError::Unavailable {
-            detail: "recording port lock poisoned".to_owned(),
-        })?;
+        let mut guard = lock_port(&self.calls, "recording port lock poisoned")?;
         guard.push(call);
         Ok(())
     }
@@ -272,9 +261,11 @@ pub fn assert_projects_port_contract<P: ProjectsPort>(
 ) {
     // 1. Empty collection read is Ok(vec![]), never an error (R03).
     let empty = make(Vec::new());
-    let empty_rows = empty
-        .list(&ProjectQuery::default())
-        .unwrap_or_else(|err| panic!("[{label}] empty list must return Ok(vec![]), got {err}"));
+    let empty_rows = expect_contract_ok(
+        empty.list(&ProjectQuery::default()),
+        label,
+        "empty list must return Ok(vec![])",
+    );
     assert!(
         empty_rows.is_empty(),
         "[{label}] expected empty list from empty store, got {empty_rows:?}"
@@ -300,56 +291,54 @@ pub fn assert_projects_port_contract<P: ProjectsPort>(
     ];
     let port = make(seed);
 
-    let all = port
-        .list(&ProjectQuery::default())
-        .unwrap_or_else(|err| panic!("[{label}] list all failed: {err}"));
+    let all = expect_contract_ok(port.list(&ProjectQuery::default()), label, "list all");
     assert_eq!(all.len(), 3, "[{label}] expected 3 seeded projects");
 
-    let eng = port
-        .list(&ProjectQuery {
+    let eng = expect_contract_ok(
+        port.list(&ProjectQuery {
             workspace: Some("eng".to_owned()),
             limit: None,
-        })
-        .unwrap_or_else(|err| panic!("[{label}] list by workspace failed: {err}"));
+        }),
+        label,
+        "list by workspace",
+    );
     assert_eq!(eng.len(), 2, "[{label}] expected 2 eng projects");
 
-    let limited = port
-        .list(&ProjectQuery {
+    let limited = expect_contract_ok(
+        port.list(&ProjectQuery {
             workspace: Some("eng".to_owned()),
             limit: NonZeroU32::new(1),
-        })
-        .unwrap_or_else(|err| panic!("[{label}] list with limit failed: {err}"));
+        }),
+        label,
+        "list with limit",
+    );
     assert_eq!(limited.len(), 1, "[{label}] expected limit=1 to cap rows");
 
     // 3. By-identity read: present -> Ok(Some), absent -> Ok(None) (R03 rule 1).
-    let found = port
-        .get("1")
-        .unwrap_or_else(|err| panic!("[{label}] get existing failed: {err}"));
+    let found = expect_contract_ok(port.get("1"), label, "get existing");
     assert_eq!(
         found.as_ref().map(|p| p.name.as_str()),
         Some("Alpha"),
         "[{label}] get('1') returned wrong project"
     );
 
-    let absent = port
-        .get("nonexistent-id")
-        .unwrap_or_else(|err| panic!("[{label}] get absent must return Ok(None), got Err({err})"));
+    let absent = expect_contract_ok(port.get("nonexistent-id"), label, "get absent");
     assert_eq!(
         absent, None,
         "[{label}] get('nonexistent-id') must be Ok(None)"
     );
 
     // 4. Create then retrieve.
-    let created = port
-        .create(&CreateProjectInput {
+    let created = expect_contract_ok(
+        port.create(&CreateProjectInput {
             name: "Delta".to_owned(),
             workspace: Some("ops".to_owned()),
-        })
-        .unwrap_or_else(|err| panic!("[{label}] create failed: {err}"));
+        }),
+        label,
+        "create",
+    );
     assert_eq!(created.name, "Delta", "[{label}] created name mismatch");
-    let fetched = port
-        .get(&created.id)
-        .unwrap_or_else(|err| panic!("[{label}] get created failed: {err}"));
+    let fetched = expect_contract_ok(port.get(&created.id), label, "get created");
     assert_eq!(
         fetched,
         Some(created.clone()),
@@ -357,24 +346,25 @@ pub fn assert_projects_port_contract<P: ProjectsPort>(
     );
 
     // 5. Delete present -> Ok(true) and then Ok(None); delete absent -> Ok(false).
-    let deleted = port
-        .delete(&created.id)
-        .unwrap_or_else(|err| panic!("[{label}] delete existing failed: {err}"));
+    let deleted = expect_contract_ok(port.delete(&created.id), label, "delete existing");
     assert!(deleted, "[{label}] delete of existing id must return true");
 
-    let after_delete = port
-        .get(&created.id)
-        .unwrap_or_else(|err| panic!("[{label}] get after delete failed: {err}"));
+    let after_delete = expect_contract_ok(port.get(&created.id), label, "get after delete");
     assert_eq!(
         after_delete, None,
         "[{label}] deleted project must return Ok(None)"
     );
 
-    let deleted_again = port
-        .delete(&created.id)
-        .unwrap_or_else(|err| panic!("[{label}] delete absent must return Ok(false), got {err}"));
+    let deleted_again = expect_contract_ok(port.delete(&created.id), label, "delete absent");
     assert!(
         !deleted_again,
         "[{label}] delete of absent id must return false"
     );
+}
+
+fn expect_contract_ok<T, E: std::fmt::Display>(res: Result<T, E>, label: &str, step: &str) -> T {
+    match res {
+        Ok(val) => val,
+        Err(err) => panic!("[{label}] {step} failed: {err}"),
+    }
 }

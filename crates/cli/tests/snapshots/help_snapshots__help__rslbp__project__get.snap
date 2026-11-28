@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Fetch a single project record by ID
+
+Usage: rslbp project get <ID>
+
+Arguments:
+  <ID>
+          Project identifier
+
+Options:
+  -h, --help
+          Print help

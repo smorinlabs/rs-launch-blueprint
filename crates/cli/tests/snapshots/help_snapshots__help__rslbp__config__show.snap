@@ -1,0 +1,11 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Show the effective merged configuration and contributing sources
+
+Usage: rslbp config show
+
+Options:
+  -h, --help
+          Print help

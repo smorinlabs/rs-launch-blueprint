@@ -1,0 +1,15 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Show one resolved configuration key and its provenance
+
+Usage: rslbp config get <KEY>
+
+Arguments:
+  <KEY>
+          Dotted configuration key (or `token` for masked credential status)
+
+Options:
+  -h, --help
+          Print help

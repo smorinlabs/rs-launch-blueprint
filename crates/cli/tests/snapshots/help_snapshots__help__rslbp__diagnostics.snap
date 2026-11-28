@@ -1,0 +1,14 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Inspect environment, configuration, and credential readiness
+
+Usage: rslbp diagnostics [OPTIONS]
+
+Options:
+      --bundle
+          Emit a redacted diagnostics bundle safe to attach to bug reports
+
+  -h, --help
+          Print help

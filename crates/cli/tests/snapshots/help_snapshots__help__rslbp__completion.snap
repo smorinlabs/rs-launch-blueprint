@@ -1,0 +1,17 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Print a shell completion script to stdout
+
+Usage: rslbp completion <SHELL>
+
+Arguments:
+  <SHELL>
+          Target shell (`bash`, `zsh`, `fish`, `elvish`, `powershell`)
+          
+          [possible values: bash, elvish, fish, powershell, zsh]
+
+Options:
+  -h, --help
+          Print help

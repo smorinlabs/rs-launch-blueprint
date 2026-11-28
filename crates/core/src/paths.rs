@@ -171,10 +171,13 @@ mod tests {
 
     #[test]
     fn from_strategy_uses_state_dir_when_present_and_falls_back_to_data_when_absent() {
-        let with_state = Paths::from_strategy(&FakeStrategy {
+        let strategy_with = FakeStrategy {
             home: PathBuf::from("/tmp/fake-home"),
             state: Some(PathBuf::from("/tmp/fake-home/.local/state")),
-        });
+        };
+        assert_eq!(strategy_with.home_dir(), Path::new("/tmp/fake-home"));
+        assert!(strategy_with.runtime_dir().is_none());
+        let with_state = Paths::from_strategy(&strategy_with);
         assert_eq!(
             with_state.state_dir(),
             Path::new("/tmp/fake-home/.local/state/rslbp")

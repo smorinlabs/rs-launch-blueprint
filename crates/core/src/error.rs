@@ -434,6 +434,20 @@ pub enum DomainError {
         /// Optional remediation hint.
         hint: Option<String>,
     },
+    /// Resource or file conflict / precondition failed (`RSLB501`, exit `5`).
+    #[error("{message}")]
+    Conflict {
+        /// Human-readable error message.
+        message: String,
+        /// Optional remediation hint.
+        hint: Option<String>,
+    },
+    /// Clipboard backend failure after rendering (`RSLB101`, exit `1`, `R62`).
+    #[error(transparent)]
+    Clipboard(#[from] crate::clipboard::ClipboardError),
+    /// Interactive prompt interrupted by Ctrl-C (`RSLB903`, exit `130`, `R61`, `R67`).
+    #[error("prompt interrupted")]
+    PromptInterrupted,
 }
 
 impl DomainError {
@@ -447,6 +461,9 @@ impl DomainError {
             Self::Auth(err) => err.error_code(),
             Self::Usage { .. } => ErrorCode::Usage,
             Self::InputUnavailable { .. } => ErrorCode::InputUnavailable,
+            Self::Conflict { .. } => ErrorCode::Conflict,
+            Self::Clipboard(err) => err.error_code(),
+            Self::PromptInterrupted => ErrorCode::PromptInterrupted,
         }
     }
 
@@ -460,13 +477,14 @@ impl DomainError {
     #[must_use]
     pub fn hint(&self) -> Option<Cow<'_, str>> {
         match self {
-            Self::NotFound { .. } => None,
+            Self::NotFound { .. } | Self::PromptInterrupted => None,
             Self::Port(err) => err.hint(),
             Self::Config(err) => err.hint(),
             Self::Auth(err) => err.hint(),
-            Self::Usage { hint, .. } | Self::InputUnavailable { hint, .. } => {
-                hint.as_deref().map(Cow::Borrowed)
-            }
+            Self::Clipboard(err) => err.hint(),
+            Self::Usage { hint, .. }
+            | Self::InputUnavailable { hint, .. }
+            | Self::Conflict { hint, .. } => hint.as_deref().map(Cow::Borrowed),
         }
     }
 

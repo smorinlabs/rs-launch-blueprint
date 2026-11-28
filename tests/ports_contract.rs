@@ -112,3 +112,159 @@ fn mockall_automock_distinguishes_absence_from_failure() {
     let err_broken = svc.get_project("broken").expect_err("broken -> Io");
     assert_eq!(err_broken.error_code(), ErrorCode::Io);
 }
+
+#[test]
+fn port_doubles_service_helpers_and_composition_helpers_work() {
+    use rs_launch_blueprint::{
+        CreateProjectInput, Paths, ProjectsPort, default_credential_store, in_memory_service,
+        run_cli,
+    };
+
+    // InMemoryProjectsPort::default & set_failure across all 4 port methods.
+    let mem = InMemoryProjectsPort::default();
+    mem.set_failure(Some("injected".to_owned()))
+        .expect("set failure");
+    assert!(mem.list(&ProjectQuery::default()).is_err());
+    assert!(mem.get("x").is_err());
+    assert!(
+        mem.create(&CreateProjectInput {
+            name: "n".to_owned(),
+            workspace: None,
+        })
+        .is_err()
+    );
+    assert!(mem.delete("x").is_err());
+    mem.set_failure(None).expect("clear failure");
+
+    // RecordingPort create, delete, clear_calls, into_inner.
+    let spy = RecordingPort::new(mem);
+    let created = spy
+        .create(&CreateProjectInput {
+            name: "Rec".to_owned(),
+            workspace: Some("ws".to_owned()),
+        })
+        .expect("create");
+    assert!(spy.delete(&created.id).expect("delete"));
+    assert_eq!(spy.calls().len(), 2);
+    spy.clear_calls();
+    assert!(spy.calls().is_empty());
+    let inner = spy.into_inner();
+    assert!(inner.list(&ProjectQuery::default()).unwrap().is_empty());
+
+    // ProjectsService clone, port(), find_project(), create_project(), delete_project(), and error propagation.
+    let svc = in_memory_service([Project {
+        id: "p1".to_owned(),
+        name: "One".to_owned(),
+        workspace: None,
+    }]);
+    let cloned = svc.clone();
+    assert!(cloned.port().get("p1").unwrap().is_some());
+    assert!(cloned.find_project("p1").unwrap().is_some());
+    assert!(cloned.find_project("missing").unwrap().is_none());
+    let created_svc = cloned
+        .create_project(&CreateProjectInput {
+            name: "Two".to_owned(),
+            workspace: Some("core".to_owned()),
+        })
+        .expect("service create");
+    cloned
+        .delete_project(&created_svc.id)
+        .expect("service delete");
+    assert!(cloned.delete_project_if_exists("p1").unwrap());
+
+    let failing_port = Arc::new(InMemoryProjectsPort::new());
+    failing_port.set_failure(Some("outage".to_owned())).unwrap();
+    let failing_svc = build_projects_service(failing_port);
+    assert!(failing_svc.find_project("p1").is_err());
+    assert!(
+        failing_svc
+            .create_project(&CreateProjectInput {
+                name: "x".to_owned(),
+                workspace: None,
+            })
+            .is_err()
+    );
+    assert!(failing_svc.delete_project("p1").is_err());
+    assert!(failing_svc.delete_project_if_exists("p1").is_err());
+    assert!(
+        svc.create_project(&CreateProjectInput {
+            name: "   ".to_owned(),
+            workspace: None,
+        })
+        .is_err()
+    );
+
+    // Exercise tracing::debug! spans in ProjectsService with an active TRACE subscriber.
+    let (sub, _) = rs_launch_blueprint::build_scoped_subscriber(
+        rs_launch_blueprint::Profile::Cli {
+            format: rs_launch_blueprint::LogFormat::Console,
+            level: rs_launch_blueprint::LogLevel::Trace,
+            ansi: false,
+            debug: false,
+        },
+        std::io::sink,
+    );
+    let _g = tracing::subscriber::set_default(sub);
+    let _ = svc.list_projects(&ProjectQuery::default()).unwrap();
+    let _ = svc
+        .create_project(&CreateProjectInput {
+            name: "Traced".to_owned(),
+            workspace: Some("eng".to_owned()),
+        })
+        .unwrap();
+    drop(_g);
+
+    // default_credential_store & run_cli facade helpers.
+    let paths = Paths::from_roots(
+        "/tmp/c".into(),
+        "/tmp/d".into(),
+        "/tmp/s".into(),
+        "/tmp/k".into(),
+    );
+    let store = default_credential_store(&paths);
+    assert_eq!(store.path(), paths.credentials_file());
+    assert_eq!(
+        run_cli(&["--version".to_owned()]),
+        std::process::ExitCode::SUCCESS
+    );
+
+    #[cfg(feature = "keychain")]
+    {
+        let res = rs_launch_blueprint::keychain_credential_store("rslbp-test", "probe");
+        if let Ok(kc) = res {
+            assert!(format!("{kc:?}").contains("KeychainCredentialStore"));
+        }
+    }
+
+    // Exercise tracing::debug! call-site fields in ProjectsService and web stub under TRACE subscriber.
+    let sub = tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::TRACE)
+        .with_writer(std::io::sink)
+        .finish();
+    tracing::subscriber::with_default(sub, || {
+        let svc = ProjectsService::new(InMemoryProjectsPort::new());
+        let _ = svc.list_projects(&ProjectQuery::default()).unwrap();
+        let created = svc
+            .create_project(&CreateProjectInput {
+                name: "traced".to_owned(),
+                workspace: Some("ws".to_owned()),
+            })
+            .unwrap();
+        let _ = svc.get_project(&created.id).unwrap();
+        svc.delete_project(&created.id).unwrap();
+        assert!(svc.delete_project(&created.id).is_err());
+
+        #[cfg(feature = "web")]
+        {
+            let info = rs_launch_blueprint::workspace_info();
+            assert_eq!(
+                rs_launch_blueprint_web::serve_stub(info, &[]),
+                std::process::ExitCode::SUCCESS
+            );
+            assert_eq!(
+                rs_launch_blueprint_web::serve_stub(info, &["--bad".to_owned()]),
+                std::process::ExitCode::from(2)
+            );
+        }
+    });
+}

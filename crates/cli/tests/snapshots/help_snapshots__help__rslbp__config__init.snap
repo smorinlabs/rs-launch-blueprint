@@ -1,0 +1,17 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Create or update the configuration file via guided prompts
+
+Usage: rslbp config init [OPTIONS]
+
+Options:
+      --dry-run
+          Preview the configuration changes without writing to disk
+
+  -y, --yes
+          Accept the currently resolved defaults without prompting
+
+  -h, --help
+          Print help

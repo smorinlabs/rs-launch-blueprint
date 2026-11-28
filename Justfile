@@ -1,4 +1,4 @@
-# rs-launch-blueprint Level 2 task runner (R42, R27, R28, R29, R30, R31, R37, R38, R39, R40, R41, R02, py P11, Blaze §3.3).
+# rs-launch-blueprint Level 2 task runner (R42, R27–R35, R37–R41, R50, R02, py P11, Blaze §3.3).
 # Level 1 base-toolchain bootstrap (`rustup` + `just`) lives in `Makefile`.
 # Every tool invocation follows R42: `cargo <sub>` for `cargo-<sub>` executables
 # (including rustup components `rustfmt` and `clippy`), bare `<tool>` on PATH
@@ -14,9 +14,12 @@ cargo_binstall_version := "1.23.0"
 ubi_cli_version := "0.12.0"
 lefthook_version := "2.1.14"
 committed_version := "1.1.11"
-rustup_components := "rustfmt clippy"
-cargo_tools := "cargo-deny:cargo-deny@0.20.2 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0"
+rustup_components := "rustfmt clippy llvm-tools-preview"
+cargo_tools := "cargo-deny:cargo-deny@0.20.2 cargo-nextest:cargo-nextest@0.9.146 cargo-insta:cargo-insta@1.48.0 cargo-llvm-cov:cargo-llvm-cov@0.9.1 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0"
 ubi_tools := "lefthook:ubi:evilmartians/lefthook@v2.1.14 gitleaks:ubi:gitleaks/gitleaks@v8.30.1 editorconfig-checker:ubi:editorconfig-checker/editorconfig-checker@v4.0.2 actionlint:ubi:rhysd/actionlint@v1.7.12"
+
+# Coverage floors (LLVM metrics). The ONLY place the threshold values live (R35).
+coverage_fail_under := "--fail-under-lines 95 --fail-under-functions 95 --fail-under-regions 90"
 
 # List all available recipes
 [group('help')]
@@ -43,7 +46,8 @@ check-deps:
     if command -v rustup >/dev/null 2>&1; then
         installed_components=$(rustup component list --installed)
         for comp in {{rustup_components}}; do
-            if ! grep -q "^${comp}-" <<<"$installed_components"; then
+            prefix="${comp%-preview}"
+            if ! grep -q "^${prefix}-" <<<"$installed_components"; then
                 printf 'MISSING %s -> RUN rustup component add %s\n' "$comp" "$comp"
                 missing=$((missing + 1))
             fi
@@ -304,13 +308,103 @@ typecheck:
 
 alias tc := typecheck
 
-# Run workspace unit, integration, and doc tests in default and --all-features configurations
+# Run workspace unit, integration, and doc tests with cargo-nextest (R32 rev 3)
 [group('test'), group('dev')]
 test *options:
-    cargo test --workspace --locked {{options}}
-    cargo test --workspace --all-features --locked {{options}}
+    cargo nextest run --locked --workspace --features web {{options}}
+    cargo test --doc --locked --workspace --features web
 
 alias t := test
+
+# Run ignored slow tests only (R32 M5)
+[group('test')]
+test-slow:
+    cargo nextest run --locked --workspace --features web --run-ignored only -E 'test(/(^|::)slow::/)'
+
+# Run ignored live tests only (R32 M5)
+[group('test')]
+test-live:
+    cargo nextest run --locked --workspace --features web --run-ignored only -E 'test(/(^|::)live::/)'
+
+# Run all workspace tests including slow, live, and doc tests (R32 rev 3)
+[group('test')]
+test-all:
+    cargo nextest run --locked --workspace --features web --run-ignored all
+    cargo test --doc --locked --workspace --features web
+
+# One instrumented run, three reports, gate last so the reports exist when it fails (R35).
+# Every report line carries --workspace: without it, report measures the root package only.
+[group('test'), group('dev')]
+coverage:
+    cargo llvm-cov clean --workspace
+    cargo llvm-cov --no-report --locked --workspace --all-features
+    cargo llvm-cov report --workspace --html
+    cargo llvm-cov report --workspace --lcov --output-path target/llvm-cov/lcov.info
+    cargo llvm-cov report --workspace --show-missing-lines {{coverage_fail_under}}
+
+# Package .crate archives, extract outside the repo, install into a throwaway root, and verify --version (R50)
+[group('build'), group('releases')]
+install-check mode="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mode="{{mode}}"
+    if [ -n "$mode" ] && [ "$mode" != "web" ]; then
+        echo "usage: just install-check [web]" >&2
+        exit 2
+    fi
+    meta=$(cargo metadata --no-deps --format-version 1)
+    ver=$(python3 -c 'import json,sys; m=json.load(sys.stdin); print(next(p["version"] for p in m["packages"] if p["name"]=="rs-launch-blueprint"))' <<<"$meta")
+    target_dir=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])' <<<"$meta")
+    scratch=$(mktemp -d)
+    trap 'rm -rf "$scratch"' EXIT
+
+    cargo package --workspace --locked --no-verify
+    for pkg in rs-launch-blueprint-core rs-launch-blueprint-cli rs-launch-blueprint-web rs-launch-blueprint; do
+        archive="${target_dir}/package/${pkg}-${ver}.crate"
+        test -f "$archive"
+        tar -xzf "$archive" -C "$scratch"
+    done
+
+    cat > "${scratch}/patch.toml" <<EOF
+    [patch.crates-io]
+    rs-launch-blueprint-core = { path = "${scratch}/rs-launch-blueprint-core-${ver}" }
+    rs-launch-blueprint-cli = { path = "${scratch}/rs-launch-blueprint-cli-${ver}" }
+    rs-launch-blueprint-web = { path = "${scratch}/rs-launch-blueprint-web-${ver}" }
+    EOF
+
+    install_args=(
+        --path "${scratch}/rs-launch-blueprint-${ver}"
+        --root "${scratch}/root"
+        --locked
+        --debug
+        --no-track
+        --target-dir "${target_dir}/install-check"
+        --config "${scratch}/patch.toml"
+    )
+    if [ "$mode" = "web" ]; then
+        install_args+=(--features web)
+    fi
+
+    cargo install "${install_args[@]}"
+
+    test -x "${scratch}/root/bin/{{app_name}}"
+    got=$("${scratch}/root/bin/{{app_name}}" --version)
+    want="{{app_name}} ${ver}"
+    if [ "$got" != "$want" ]; then
+        echo "install-check: expected '${want}', got '${got}'" >&2
+        exit 1
+    fi
+
+    if [ "$mode" = "web" ]; then
+        test -x "${scratch}/root/bin/{{app_name}}-serve"
+        "${scratch}/root/bin/{{app_name}}-serve" --version
+    else
+        if [ -e "${scratch}/root/bin/{{app_name}}-serve" ]; then
+            echo "install-check: web feature gate leaked rslbp-serve into default install" >&2
+            exit 1
+        fi
+    fi
+    echo "install-check (${mode:-default}) passed: ${got}"
 
 # Enforce workspace dependency bans, advisories, licenses, and sources across all features (R02)
 [group('dev')]
@@ -408,6 +502,7 @@ blaze-status:
     echo "  --features web            : Cargo-authoritative while indexable-inc/blaze#598 (utoipa-gen) is open (re-probed in P09)"
     echo "  --features metrics        : Cargo-authoritative while indexable-inc/blaze#1826 (metrics-util) is open (re-probed in P09)"
     echo "  http_adapter_boundary     : Cargo-authoritative while blaze hits async-lock easy_wrapper! macro resolution (use \`just blaze-test -- --skip http_\`)"
+    echo "  cli binary/insta/proptest : Cargo-authoritative while blaze skips ring C objs, virtualizes CARGO_MANIFEST_DIR, and hits neon/proptest front2 limits"
 
 # Print official Blaze installer instructions and caveats (pass `apply` to run the installer)
 [group('blaze'), group('install')]
@@ -464,6 +559,9 @@ debug-info:
     echo "- clippy: $(cargo clippy --version 2>/dev/null || echo 'not found')"
     echo "- rustfmt: $(cargo fmt --version 2>/dev/null || echo 'not found')"
     echo "- cargo-deny: $(cargo deny --version 2>/dev/null || echo 'not found')"
+    echo "- cargo-nextest: $(cargo nextest --version 2>/dev/null | head -n 1 || echo 'not found')"
+    echo "- cargo-insta: $(cargo insta --version 2>/dev/null || echo 'not found')"
+    echo "- cargo-llvm-cov: $(cargo llvm-cov --version 2>/dev/null || echo 'not found')"
     echo "- just: $(just --version 2>/dev/null || echo 'not found')"
     echo "- lefthook: $(lefthook version 2>/dev/null || echo 'not found')"
     echo "- dprint: $(dprint --version 2>/dev/null || echo 'not found')"

@@ -1,0 +1,24 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Write a non-secret configuration value while preserving TOML comments
+
+Usage: rslbp config set [OPTIONS] <KEY> <VALUE>
+
+Arguments:
+  <KEY>
+          Dotted configuration key (for example `output.format`)
+
+  <VALUE>
+          Value to assign
+
+Options:
+      --dry-run
+          Preview the write without touching disk
+
+  -y, --yes
+          Overwrite an existing value without confirmation prompt
+
+  -h, --help
+          Print help

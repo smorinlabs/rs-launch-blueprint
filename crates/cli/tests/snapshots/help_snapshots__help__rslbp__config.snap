@@ -1,0 +1,19 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Inspect and edit layered configuration
+
+Usage: rslbp config <COMMAND>
+
+Commands:
+  show  Show the effective merged configuration and contributing sources
+  get   Show one resolved configuration key and its provenance
+  set   Write a non-secret configuration value while preserving TOML comments
+  path  Show the active configuration file path and whether it exists
+  init  Create or update the configuration file via guided prompts
+  help  Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help
+          Print help

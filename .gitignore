@@ -3,6 +3,8 @@ __pycache__/
 research/runs/.locks/
 **/target/
 .blaze/
+*.snap.new
+*.pending-snap
 research/runs/*/*/raw/*-transcript.txt
 research/runs/*/*/review/*-transcript.txt
 research/runs/*/*/raw/fixture-*/

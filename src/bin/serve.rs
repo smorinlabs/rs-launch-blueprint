@@ -1,5 +1,7 @@
 //! Optional web service binary entrypoint (`rslbp-serve`, requires `web` feature).
 
+#![deny(clippy::print_stdout, clippy::print_stderr)]
+
 use std::env;
 use std::process::ExitCode;
 
