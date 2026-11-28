@@ -18,6 +18,6 @@ Start new records from [template.md](template.md) and register them in
 
 ## Index
 
-| ADR                                                                                                           | Title | Status |
-| ------------------------------------------------------------------------------------------------------------- | ----- | ------ |
-| _(none yet — baseline architectural choices are indexed in [Design Decisions](../about/design-decisions.md))_ |       |        |
+| ADR                                              | Title                                                 | Status   |
+| ------------------------------------------------ | ----------------------------------------------------- | -------- |
+| [0001](0001-library-first-workspace-topology.md) | Library-First Workspace Topology (`OVERRIDE (OV-18)`) | Accepted |

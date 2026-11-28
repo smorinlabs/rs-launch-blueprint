@@ -13,14 +13,14 @@ use axum::Router;
 use axum::body::Body;
 use axum::http::{HeaderValue, Method, Request, StatusCode, header};
 use axum::routing::{get, post};
-use rs_launch_blueprint_core::{
+use rs_launch_blueprint::{
     Check, CheckStatus, Diagnostics, DiagnosticsContext, ErrorCode, InMemoryProjectsPort, LogLevel,
-    ProjectsPort, ProjectsService, ServiceLogFormat, run_diagnostics,
+    ProjectsPort, ProjectsService, run_diagnostics,
 };
 use rs_launch_blueprint_web::{
     AppState, InMemoryRateLimitStore, InboundTraceparent, REQUEST_ID, Readiness, ServeError,
-    ShutdownSignal, TRACEPARENT, WEB_ENV_PREFIX, WEB_ENV_VARS, WebSettings, apply_middleware,
-    build_router, inbound_traceparent, serve_until,
+    ServiceLogFormat, ShutdownSignal, TRACEPARENT, WEB_ENV_PREFIX, WEB_ENV_VARS, WebSettings,
+    apply_middleware, build_router, inbound_traceparent, serve_until,
 };
 use tokio::net::TcpListener;
 use tower::ServiceExt;
@@ -170,7 +170,8 @@ fn web_settings_from_vars_prefix_defaults_validation_and_env_isolation() {
         }
     }
 
-    // AC7: std::env::vars_os / std::env::var appears ONLY in crates/web/src/settings.rs.
+    // AC7: process env reads in crates/web are restricted to settings.rs, otel.rs, and the
+    // bin/serve.rs entrypoint — never inside HTTP routes, middleware, or handlers.
     let web_src = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("src");
     fn scan(dir: &std::path::Path, hits: &mut Vec<PathBuf>) {
         for entry in fs::read_dir(dir).unwrap() {
@@ -187,12 +188,21 @@ fn web_settings_from_vars_prefix_defaults_validation_and_env_isolation() {
     }
     let mut env_hits = Vec::new();
     scan(&web_src, &mut env_hits);
+    env_hits.sort();
+    let rel_hits: Vec<String> = env_hits
+        .iter()
+        .map(|p| {
+            p.strip_prefix(&web_src)
+                .unwrap()
+                .to_string_lossy()
+                .replace('\\', "/")
+        })
+        .collect();
     assert_eq!(
-        env_hits.len(),
-        1,
-        "only settings.rs may read process env: {env_hits:?}"
+        rel_hits,
+        vec!["bin/serve.rs", "otel.rs", "settings.rs"],
+        "HTTP routes and middleware must never read process env directly: {rel_hits:?}"
     );
-    assert!(env_hits[0].ends_with("settings.rs"));
 }
 
 #[tokio::test]
@@ -494,7 +504,7 @@ async fn probes_healthz_readyz_redaction_and_shutdown_latch() {
     assert_eq!(b1, b2, "AC2: /healthz body must be byte-stable");
     let hjson: serde_json::Value = serde_json::from_slice(&b1).unwrap();
     assert_eq!(hjson["status"], "ok");
-    assert_eq!(hjson["version"], rs_launch_blueprint_core::VERSION);
+    assert_eq!(hjson["version"], rs_launch_blueprint::VERSION);
     assert_eq!(hjson["os"], std::env::consts::OS);
     assert_eq!(hjson["arch"], std::env::consts::ARCH);
     assert_eq!(hjson.as_object().unwrap().len(), 4);

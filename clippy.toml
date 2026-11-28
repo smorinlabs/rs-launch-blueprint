@@ -1,4 +1,18 @@
-# Workspace-wide Clippy value configuration (R28).
-# Lint levels live in root Cargo.toml [workspace.lints.clippy].
+# Root standalone library Clippy value configuration (R28 + OV-18).
+# Workspace member crates define their own clippy.toml so the standalone root library enforces
+# strict CLI/web isolation without blocking binary entrypoints in crates/cli or crates/web.
 allow-unwrap-in-tests = true
 allow-dbg-in-tests = true
+
+disallowed-methods = [
+    { path = "std::process::exit", reason = "library crates return typed errors; only binary entrypoints exit the process (R67, OV-18)" },
+]
+
+# `std::process::ExitCode` is checked on `src/` & `crates/core/src/` by `tests/workspace_edges.rs`
+# rather than `disallowed-types` because `rustc --test` synthesizes a `main() -> ExitCode` harness.
+disallowed-types = [
+    { path = "anyhow::Error", reason = "standalone library returns typed thiserror errors (R03, OV-18)" },
+    { path = "axum::Router", reason = "web framework types belong exclusively to crates/web (OV-18)" },
+    { path = "clap::Command", reason = "CLI argument parsing belongs exclusively to crates/cli (OV-18)" },
+    { path = "tracing_subscriber::Registry", reason = "subscriber initialization belongs to binary crates (R58, OV-18)" },
+]

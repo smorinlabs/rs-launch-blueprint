@@ -52,7 +52,21 @@ just docs-check
 just docs-api
 ```
 
-## 4. Exercise the CLI (`rslbp`)
+## 4. Verify the Standalone Rust Library (`rs-launch-blueprint`)
+
+The root crate is a standalone `[lib]`-only Rust library with zero CLI or web dependencies.
+Run the downstream consumer smoke check to pack `rs-launch-blueprint-core` and
+`rs-launch-blueprint`, extract them outside the workspace, and verify both default
+(`http`, `config`) and minimal (`--no-default-features`) consumption:
+
+```bash
+just lib-check
+```
+
+See [Library Reference](../reference/library-reference.md) for feature flags, dependency
+footprints, and API examples.
+
+## 5. Exercise the CLI (`rslbp`)
 
 ```bash
 cargo run --bin rslbp -- --version
@@ -64,7 +78,7 @@ cargo run --bin rslbp -- project list --json
 See [CLI Reference](../reference/cli-reference.md) for every flag, output
 format, config rung, and `RSLB###` error code.
 
-## 5. Run the Optional Web Service (`rslbp-serve`)
+## 6. Run the Optional Web Service (`rslbp-serve`)
 
 ```bash
 just serve-once
@@ -84,7 +98,7 @@ curl -s -X POST http://127.0.0.1:8000/v1/projects \
 For hot-reloading while editing `crates/web`, install `bacon` (`cargo binstall
 --locked bacon`) and run `just serve`.
 
-## 6. Create Your Own Project from This Template
+## 7. Create Your Own Project from This Template
 
 To stamp a new Rust repository with your own crate, binary, owner, and package
 identity:

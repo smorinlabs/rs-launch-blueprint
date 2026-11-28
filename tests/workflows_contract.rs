@@ -763,12 +763,18 @@ fn ci_plan_detector_fails_closed_and_supports_release_fast_path_r11() {
     .unwrap();
     fs::write(
         repo.join("Cargo.toml"),
-        "[workspace.package]\nversion = \"0.1.0\"\n[dependencies]\nrs-launch-blueprint-core = { version = \"0.1.0\", path = \"crates/core\" }\n",
+        "[package]\nname = \"rs-launch-blueprint\"\nversion = \"0.1.0\"\n[dependencies]\nrs-launch-blueprint-core = { version = \"0.1.0\", path = \"crates/core\", default-features = false }\n",
     )
     .unwrap();
     fs::write(
         repo.join("crates/core/Cargo.toml"),
         "[package]\nname = \"rs-launch-blueprint-core\"\nversion = \"0.1.0\"\n",
+    )
+    .unwrap();
+    fs::create_dir_all(repo.join("crates/cli/src")).unwrap();
+    fs::write(
+        repo.join("crates/cli/Cargo.toml"),
+        "[package]\nname = \"rs-launch-blueprint-cli\"\nversion = \"0.1.0\"\n[dependencies]\nrs-launch-blueprint = { version = \"0.1.0\", path = \"../..\" }\n",
     )
     .unwrap();
     fs::write(
@@ -964,7 +970,12 @@ fn ci_plan_detector_fails_closed_and_supports_release_fast_path_r11() {
             fs::write(r.join("CHANGELOG.md"), "# changelog\n## 0.2.0\n").unwrap();
             fs::write(
                 r.join("Cargo.toml"),
-                "[workspace.package]\nversion = \"0.2.0\"\n[dependencies]\nrs-launch-blueprint-core = { version = \"0.2.0\", path = \"crates/core\" }\n",
+                "[package]\nname = \"rs-launch-blueprint\"\nversion = \"0.2.0\"\n[dependencies]\nrs-launch-blueprint-core = { version = \"0.2.0\", path = \"crates/core\", default-features = false }\n",
+            )
+            .unwrap();
+            fs::write(
+                r.join("crates/cli/Cargo.toml"),
+                "[package]\nname = \"rs-launch-blueprint-cli\"\nversion = \"0.2.0\"\n[dependencies]\nrs-launch-blueprint = { version = \"0.2.0\", path = \"../..\" }\n",
             )
             .unwrap();
             fs::write(
@@ -1050,6 +1061,7 @@ fn ci_ok_folds_every_ci_job_and_uses_fail_closed_allow_list_r12() {
         "workflow-lint",
         "check",
         "msrv-floor",
+        "semver-checks",
         "install-smoke",
         "coverage",
     ] {
@@ -1358,7 +1370,7 @@ fn security_contract_and_freshness_workflows_satisfy_r13_r14_r16_r17_r19_r34_r38
         "cargo-audit@0.22.2",
         "cargo audit --deny warnings",
         "cargo-deny@0.20.2",
-        "cargo deny --all-features check",
+        "cargo deny --workspace --all-features check",
         "google/osv-scanner-action/osv-scanner-action@a345acffa64b0eaede81a3d9aae6141214d9c8fc # v2.6.0",
     ] {
         assert!(

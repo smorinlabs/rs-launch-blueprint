@@ -7,7 +7,7 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 use anstyle::{AnsiColor, Color, Style};
-use rs_launch_blueprint_core::{DomainError, ErrorCode, ErrorEnvelope, OutputFormat, Project};
+use rs_launch_blueprint::{DomainError, ErrorCode, ErrorEnvelope, OutputFormat, Project};
 use serde::Serialize;
 use tabled::builder::Builder;
 use tabled::settings::Style as TableStyle;
@@ -603,7 +603,7 @@ fn render_markdown(view: &dyn CliView, out: &mut dyn Write) -> io::Result<()> {
 }
 
 fn port_io_error(source: io::Error) -> DomainError {
-    DomainError::Port(rs_launch_blueprint_core::PortError::Io { source })
+    DomainError::Port(rs_launch_blueprint::PortError::Io { source })
 }
 
 /// Atomically persist `bytes` to `target` using a same-directory [`NamedTempFile`] (`R66` AC12,

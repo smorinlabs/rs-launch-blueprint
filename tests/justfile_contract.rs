@@ -110,6 +110,7 @@ fn justfile_lists_required_p04_recipes() {
         "test-live",
         "test-all",
         "coverage",
+        "lib-check",
         "install-check",
         "deny",
         "check-shell",

@@ -10,11 +10,11 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use rs_launch_blueprint_core::{
     AuthError, ColorPreference, ConfigDiscoveryInputs, ConfigError, ConfigOverrides,
-    ConfigWarningKind, CredentialStore, ErrorCode, Exit, FileCredentialStore, FileLogFormat,
-    LogLevel, MERGE_STRATEGY_DOC, OutputFormat, PRECEDENCE_CHAIN_DOC, Paths, PermissionCheck,
-    TOOL_NAME, Token, TokenResolutionInputs, TokenSource, UnvalidatedConfig,
-    discover_project_config_file, discover_system_config_files, inspect_file_permissions,
-    load_config, merge_tables_recursive, resolve_token, set_config_value,
+    ConfigWarningKind, CredentialStore, ErrorCode, FileCredentialStore, FileLogFormat, LogLevel,
+    MERGE_STRATEGY_DOC, OutputFormat, PRECEDENCE_CHAIN_DOC, Paths, PermissionCheck, TOOL_NAME,
+    Token, TokenResolutionInputs, TokenSource, UnvalidatedConfig, discover_project_config_file,
+    discover_system_config_files, inspect_file_permissions, load_config, merge_tables_recursive,
+    resolve_token, set_config_value,
 };
 
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
@@ -475,7 +475,7 @@ fn error_tolerance_preserves_lower_tier_values_and_handles_explicit_faults() {
             .contains("does-not-exist.toml")
     );
 
-    // Corrupt explicit --config is fatal RSLB202 / exit 2 (R55 clause 2 / F237).
+    // Corrupt explicit --config is fatal RSLB202 (R55 clause 2 / F237).
     let bad_explicit = tmp.path().join("bad-explicit.toml");
     write_file(&bad_explicit, "[output\nbad");
     let err_parse = load_config(&ConfigDiscoveryInputs {
@@ -487,9 +487,8 @@ fn error_tolerance_preserves_lower_tier_values_and_handles_explicit_faults() {
     })
     .expect_err("corrupt explicit config must fail");
     assert_eq!(err_parse.error_code(), ErrorCode::ConfigUnparsable);
-    assert_eq!(err_parse.error_code().exit(), Exit::Usage);
 
-    // Unreadable explicit --config (directory path) is fatal RSLB104 / exit 1 (R55 clause 2).
+    // Unreadable explicit --config (directory path) is fatal RSLB104 (R55 clause 2).
     let dir_as_file = tmp.path().join("dir-not-file");
     fs::create_dir_all(&dir_as_file).expect("mkdir");
     let err_io = load_config(&ConfigDiscoveryInputs {
@@ -501,7 +500,6 @@ fn error_tolerance_preserves_lower_tier_values_and_handles_explicit_faults() {
     })
     .expect_err("unreadable explicit config must fail");
     assert_eq!(err_io.error_code(), ErrorCode::ConfigUnreadable);
-    assert_eq!(err_io.error_code().exit(), Exit::Runtime);
 }
 
 #[test]
@@ -509,11 +507,10 @@ fn toml_edit_writer_preserves_comments_enforces_0600_and_refuses_corrupt_or_secr
     let tmp = TempDir::new("writer");
     let cfg_path = tmp.path().join("nested/rslbp_config.toml");
 
-    // R56 AC7: `config set token <value>` MUST fail with RSLB204 / exit 2.
+    // R56 AC7: `config set token <value>` MUST fail with RSLB204.
     let err_secret = set_config_value(&cfg_path, "token", "sk_live_forbidden")
         .expect_err("setting token in config must be refused");
     assert_eq!(err_secret.error_code(), ErrorCode::ProhibitedSecretChannel);
-    assert_eq!(err_secret.error_code().exit(), Exit::Usage);
     assert!(!cfg_path.exists(), "refused write must not create file");
 
     // Seed file with header comment, per-key comment, and inline trailing comment (R52 AC3).
@@ -662,7 +659,7 @@ fn secret_policy_precedence_redaction_and_0600_permissions() {
     assert_eq!(file_resolved.source, TokenSource::TokenFile);
     assert_eq!(file_resolved.token.expose_secret(), secret_file);
 
-    // --token-file pointing to missing file -> RSLB401 / exit 4, NEVER falls through to env (R56 AC6).
+    // Missing token file -> RSLB401, NEVER falls through to env (R56 AC6).
     let missing_tok = tmp.path().join("nope.tok");
     let err_missing = resolve_token(&TokenResolutionInputs {
         token_file: Some(&missing_tok),
@@ -670,11 +667,10 @@ fn secret_policy_precedence_redaction_and_0600_permissions() {
         env_token: Some(secret_env),
         store: Some(&store),
     })
-    .expect_err("missing --token-file must fail with RSLB401");
+    .expect_err("missing token file must fail with RSLB401");
     assert_eq!(err_missing.error_code(), ErrorCode::CredentialsAbsent);
-    assert_eq!(err_missing.error_code().exit(), Exit::Auth);
 
-    // Empty --token-file -> RSLB401 / exit 4.
+    // Empty token file -> RSLB401.
     let empty_tok = tmp.path().join("empty.tok");
     write_file(&empty_tok, "  \n");
     let err_empty = resolve_token(&TokenResolutionInputs {
@@ -683,10 +679,10 @@ fn secret_policy_precedence_redaction_and_0600_permissions() {
         env_token: Some(secret_env),
         store: Some(&store),
     })
-    .expect_err("empty --token-file must fail with RSLB401");
+    .expect_err("empty token file must fail with RSLB401");
     assert_eq!(err_empty.error_code(), ErrorCode::CredentialsAbsent);
 
-    // Unreadable --token-file (directory) -> RSLB101 / exit 1 (R56 AC6).
+    // Unreadable token file (directory) -> RSLB101 (R56 AC6).
     let dir_tok = tmp.path().join("dir.tok");
     fs::create_dir_all(&dir_tok).expect("mkdir");
     let err_io = resolve_token(&TokenResolutionInputs {
@@ -695,9 +691,8 @@ fn secret_policy_precedence_redaction_and_0600_permissions() {
         env_token: Some(secret_env),
         store: Some(&store),
     })
-    .expect_err("unreadable --token-file must fail with RSLB101");
+    .expect_err("unreadable token file must fail with RSLB101");
     assert_eq!(err_io.error_code(), ErrorCode::Io);
-    assert_eq!(err_io.error_code().exit(), Exit::Runtime);
 
     // Stdin (`-`) reads injected stdin token.
     let res_stdin = resolve_token(&TokenResolutionInputs {
@@ -787,36 +782,6 @@ fn keychain_credential_store_round_trips_using_keyring_core_mock() {
         Ok(native) => assert!(format!("{native:?}").contains("KeychainCredentialStore")),
         Err(err) => assert!(matches!(err, AuthError::StoreUnavailable { .. })),
     }
-}
-
-#[cfg(all(feature = "clipboard", target_os = "linux"))]
-#[test]
-fn linux_headless_clipboard_fails_fast_and_daemon_exits_cleanly() {
-    use rs_launch_blueprint::{ArboardClipboard, ClipboardPort};
-    use std::process::{Command, Stdio};
-
-    if std::env::var_os("DISPLAY").is_some() || std::env::var_os("WAYLAND_DISPLAY").is_some() {
-        return;
-    }
-    let err = ArboardClipboard::new()
-        .set_text("headless-probe")
-        .expect_err("headless Linux without display server must fail fast");
-    assert!(
-        err.to_string().contains("Linux display server"),
-        "unexpected clipboard error: {err}"
-    );
-
-    let status = Command::new(env!("CARGO_BIN_EXE_rslbp"))
-        .arg("--clipboard-daemon")
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .expect("spawn rslbp --clipboard-daemon");
-    assert!(
-        !status.success(),
-        "clipboard daemon without Linux display server must exit non-zero"
-    );
 }
 
 #[test]

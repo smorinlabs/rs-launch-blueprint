@@ -24,7 +24,7 @@ use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 use axum::routing::get;
 use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
-use rs_launch_blueprint_core::ErrorCode;
+use rs_launch_blueprint::ErrorCode;
 
 use crate::problems::WebError;
 use crate::settings::WebSettings;

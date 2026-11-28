@@ -166,6 +166,7 @@ fn book_toml_summary_and_dialect_satisfy_r81() {
         "tasks/ci-cd-and-security.md",
         "tasks/troubleshooting.md",
         "reference/README.md",
+        "reference/library-reference.md",
         "reference/cli-reference.md",
         "reference/web-api-reference.md",
         "reference/project-structure.md",
@@ -176,6 +177,7 @@ fn book_toml_summary_and_dialect_satisfy_r81() {
         "contributing/contributing-guide.md",
         "adr/README.md",
         "adr/template.md",
+        "adr/0001-library-first-workspace-topology.md",
         "design/README.md",
         "research/README.md",
     ] {

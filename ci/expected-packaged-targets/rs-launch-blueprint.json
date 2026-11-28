@@ -2,13 +2,5 @@
   {
     "name": "rs_launch_blueprint",
     "kind": ["lib"]
-  },
-  {
-    "name": "rslbp",
-    "kind": ["bin"]
-  },
-  {
-    "name": "rslbp-serve",
-    "kind": ["bin"]
   }
 ]

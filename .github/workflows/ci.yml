@@ -98,7 +98,7 @@ jobs:
                   patch="$(git diff -U0 "${BASE_SHA}...HEAD" -- "$f")" || return 1
                   hunks="$(grep -E '^[+-]' <<<"$patch" | grep -vE '^(\+\+\+|---) ' || true)"
                   [ -n "$hunks" ] || continue
-                  if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-(rs-launch-blueprint-core|rs-launch-blueprint-cli|rs-launch-blueprint-web) = \\{ version = \"${old}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\}|\\+(rs-launch-blueprint-core|rs-launch-blueprint-cli|rs-launch-blueprint-web) = \\{ version = \"${new}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
+                  if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-(rs-launch-blueprint(-core|-cli|-web)?) = \\{ version = \"${old}\", path = \"(crates/(core|cli|web)|\\.\\./(core|cli|web)|\\.\\./\\.\\.)\"(, default-features = false)?(, optional = true)? \\}|\\+(rs-launch-blueprint(-core|-cli|-web)?) = \\{ version = \"${new}\", path = \"(crates/(core|cli|web)|\\.\\./(core|cli|web)|\\.\\./\\.\\.)\"(, default-features = false)?(, optional = true)? \\})\$" <<<"$hunks"; then
                     return 1
                   fi
                   ;;
@@ -407,39 +407,47 @@ jobs:
         run: echo "ImageOS=${ImageOS:-unknown}"
       - name: Enforce workspace bans, advisories, licenses, and sources (R02)
         if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
-        run: cargo deny --all-features check
+        run: cargo deny --workspace --all-features check
       - name: Clippy, default features (R28)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
         run: cargo clippy --locked --workspace --all-targets -- -D warnings
-      - name: Clippy, web feature on (R28)
+      - name: Clippy, minimal standalone library crates (--no-default-features) (OV-18)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
-        run: cargo clippy --locked --workspace --all-targets --features web -- -D warnings
-      - name: Clippy, all features (web, otel, metrics, keychain, mock)
+        run: |
+          cargo clippy --locked -p rs-launch-blueprint-core --no-default-features -- -D warnings
+          cargo clippy --locked -p rs-launch-blueprint --no-default-features -- -D warnings
+      - name: Clippy, all features (http, config, mock, keychain, clipboard, metrics, otel)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
         run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
-      - name: Facade builds with no default features (R69)
+      - name: Standalone library builds with no default features (OV-18)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
-        run: cargo check --locked --no-default-features -p rs-launch-blueprint
+        run: |
+          cargo check --locked --no-default-features -p rs-launch-blueprint-core
+          cargo check --locked --no-default-features -p rs-launch-blueprint
       - name: Type-check strict across all features (R30)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
         env:
           CARGO_BUILD_WARNINGS: deny
         run: cargo check --workspace --all-targets --all-features --locked --keep-going
-      - name: Test, feature-off (non-web packages, proven not assumed) (R11, R32)
+      - name: Test, library and CLI packages (zero web crates) (R11, R32, OV-18)
         if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
         run: cargo nextest run --locked --profile ci -p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli
-      - name: Test, web feature only (without otel/metrics) (py P10)
+      - name: Test, full workspace default features (without otel/metrics) (py P10)
         if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
-        run: cargo nextest run --locked --profile ci --workspace --features web
-      - name: Test, all features (web, otel, metrics, keychain, mock) (R32, py P10)
+        run: cargo nextest run --locked --profile ci --workspace
+      - name: Test, all features (http, config, mock, keychain, clipboard, metrics, otel) (R32, py P10)
         if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
         run: cargo nextest run --locked --profile ci --workspace --all-features
-      - name: Doc tests, all features (R32)
+      - name: Doc tests, minimal, default, and all features (R32, OV-18)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
-        run: cargo test --doc --locked --workspace --all-features
+        run: |
+          cargo test --doc --locked -p rs-launch-blueprint-core --no-default-features
+          cargo test --doc --locked -p rs-launch-blueprint --no-default-features
+          cargo test --doc --locked --workspace
+          cargo test --doc --locked --workspace --all-features
       - name: Build rslbp-serve binary
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
-        run: cargo build --locked --features web --bin rslbp-serve
+        run: cargo build --locked -p rs-launch-blueprint-web --bin rslbp-serve
       - name: Rustdoc build (warnings denied) (R82)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
         env:
@@ -479,7 +487,59 @@ jobs:
           cargo check --locked --workspace --all-targets
           cargo check --locked --workspace --all-targets --all-features
 
-  # Tier 2 — pack -> extract -> install -> run smoke check (R50).
+  # Tier 2 — PR-time SemVer API check across both published library crates (R04, OV-18).
+  semver-checks:
+    name: semver-checks
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve latest prior Rust release tag for cargo-semver-checks baseline (R04)
+        id: semver-baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          baseline=""
+          while IFS= read -r tag; do
+            [ -n "${tag}" ] || continue
+            if git cat-file -e "${tag}:Cargo.toml" 2>/dev/null \
+              && git cat-file -e "${tag}:crates/core/Cargo.toml" 2>/dev/null \
+              && git cat-file -e "${tag}:src/lib.rs" 2>/dev/null; then
+              baseline="${tag}"
+              break
+            fi
+          done < <(git tag --list 'v*' --sort=-version:refname --merged HEAD)
+          if [ -n "${baseline}" ]; then
+            echo "rev=${baseline}" >> "${GITHUB_OUTPUT}"
+            echo "SemVer baseline tag: ${baseline}"
+          else
+            echo "rev=" >> "${GITHUB_OUTPUT}"
+            echo "::notice title=cargo-semver-checks baseline::No prior Rust crate release tag found; skipping baseline comparison before initial publication."
+          fi
+      - name: Check rs-launch-blueprint-core public API with cargo-semver-checks (R04)
+        if: ${{ steps.semver-baseline.outputs.rev != '' }}
+        uses: obi1kenobi/cargo-semver-checks-action@6b69fcf40e9b5fb17adeb57e4b6ecd020649a239 # v2.9
+        with:
+          package: rs-launch-blueprint-core
+          baseline-rev: ${{ steps.semver-baseline.outputs.rev }}
+          feature-group: all-features
+          rust-toolchain: stable
+      - name: Check rs-launch-blueprint standalone library public API with cargo-semver-checks (R04)
+        if: ${{ steps.semver-baseline.outputs.rev != '' }}
+        uses: obi1kenobi/cargo-semver-checks-action@6b69fcf40e9b5fb17adeb57e4b6ecd020649a239 # v2.9
+        with:
+          package: rs-launch-blueprint
+          baseline-rev: ${{ steps.semver-baseline.outputs.rev }}
+          feature-group: all-features
+          rust-toolchain: stable
+
+  # Tier 2 — pack -> extract -> library consumer + CLI install smoke checks (R50, OV-18).
   # Also runs on the release-please fast-path because the bumped version is a packaging input.
   install-smoke:
     name: install-smoke
@@ -502,9 +562,11 @@ jobs:
         uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
         with:
           tool: just@1.58.0
-      - name: Install smoke, default surface
+      - name: Library consumer smoke (default and --no-default-features) (OV-18)
+        run: just lib-check
+      - name: Install smoke, CLI crate (rslbp)
         run: just install-check
-      - name: Install smoke, web surface
+      - name: Install smoke, web binary (rslbp-serve)
         if: ${{ needs.plan.outputs.web == 'true' || needs.plan.outputs.release == 'true' }}
         run: just install-check web
 
@@ -568,6 +630,7 @@ jobs:
       - workflow-lint
       - check
       - msrv-floor
+      - semver-checks
       - install-smoke
       - coverage
     if: ${{ always() }}

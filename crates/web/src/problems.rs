@@ -12,7 +12,7 @@ use axum::http::request::Parts;
 use axum::http::{HeaderMap, HeaderName, HeaderValue, StatusCode, Uri, header};
 use axum::response::{IntoResponse, Response};
 use problem_details::ProblemDetails;
-use rs_launch_blueprint_core::{Diagnostics, DomainError, ErrorCode};
+use rs_launch_blueprint::{Diagnostics, DomainError, ErrorCode};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use tokio::task::JoinError;

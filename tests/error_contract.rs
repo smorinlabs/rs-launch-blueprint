@@ -1,35 +1,21 @@
-//! Contract tests for `error-contract/v1` (`R67`) and absence-vs-failure mapping (`R03`).
+//! Contract tests for `error-contract/v1` (`R67`) and absence-vs-failure mapping (`R03`)
+//! on the standalone library crate (transport-neutral, zero POSIX exit codes or CLI flags).
 
 use std::error::Error as _;
 use std::io;
-use std::process::ExitCode;
 
 use rs_launch_blueprint_core::{
-    AuthError, ConfigError, DomainError, ErrorCode, ErrorEnvelope, Exit, PortError,
+    AuthError, ConfigError, DomainError, ErrorCode, ErrorEnvelope, PortError,
 };
 
 #[test]
 fn error_code_all_is_pinned_and_append_only() {
-    // R67: every existing (code, exit) row is pinned in registration order.
+    // R67: every existing wire token row is pinned in registration order.
     // Future rows may ONLY be appended after index 16.
-    const PINNED: &[(&str, u8)] = &[
-        ("RSLB000", 1),
-        ("RSLB101", 1),
-        ("RSLB102", 1),
-        ("RSLB103", 1),
-        ("RSLB104", 1),
-        ("RSLB201", 2),
-        ("RSLB202", 2),
-        ("RSLB203", 2),
-        ("RSLB204", 2),
-        ("RSLB205", 2),
-        ("RSLB301", 3),
-        ("RSLB401", 4),
-        ("RSLB402", 4),
-        ("RSLB501", 5),
-        ("RSLB901", 130),
-        ("RSLB902", 143),
-        ("RSLB903", 130),
+    const PINNED: &[&str] = &[
+        "RSLB000", "RSLB101", "RSLB102", "RSLB103", "RSLB104", "RSLB201", "RSLB202", "RSLB203",
+        "RSLB204", "RSLB205", "RSLB301", "RSLB401", "RSLB402", "RSLB501", "RSLB901", "RSLB902",
+        "RSLB903",
     ];
 
     assert!(
@@ -38,17 +24,12 @@ fn error_code_all_is_pinned_and_append_only() {
         PINNED.len()
     );
 
-    for (idx, (expected_code, expected_exit)) in PINNED.iter().enumerate() {
+    for (idx, expected_code) in PINNED.iter().enumerate() {
         let actual = ErrorCode::ALL[idx];
         assert_eq!(
             actual.as_str(),
             *expected_code,
             "pinned ErrorCode::ALL[{idx}] drifted"
-        );
-        assert_eq!(
-            actual.exit().code(),
-            *expected_exit,
-            "pinned exit code for {expected_code} drifted"
         );
         assert_eq!(actual.to_string(), *expected_code);
     }
@@ -67,21 +48,6 @@ fn error_code_all_is_pinned_and_append_only() {
 }
 
 #[test]
-fn exit_taxonomy_matches_cli_design_standard_r6_1() {
-    assert_eq!(Exit::Success.code(), 0);
-    assert_eq!(Exit::Runtime.code(), 1);
-    assert_eq!(Exit::Usage.code(), 2);
-    assert_eq!(Exit::NotFound.code(), 3);
-    assert_eq!(Exit::Auth.code(), 4);
-    assert_eq!(Exit::Conflict.code(), 5);
-    assert_eq!(Exit::SigInt.code(), 130);
-    assert_eq!(Exit::SigTerm.code(), 143);
-
-    // Ensure `From<Exit> for ExitCode` compiles and works.
-    let _code: ExitCode = Exit::NotFound.into();
-}
-
-#[test]
 fn domain_not_found_maps_to_rslb301_names_input_and_has_no_source() {
     let err = DomainError::NotFound {
         kind: "project",
@@ -90,8 +56,6 @@ fn domain_not_found_maps_to_rslb301_names_input_and_has_no_source() {
 
     assert_eq!(err.error_code(), ErrorCode::NotFound);
     assert_eq!(err.error_code().as_str(), "RSLB301");
-    assert_eq!(err.exit(), Exit::NotFound);
-    assert_eq!(err.exit().code(), 3);
     assert!(err.source().is_none(), "absence has no transport cause");
 
     let msg = err.to_string();
@@ -107,13 +71,11 @@ fn port_error_variants_map_to_r67_rows_and_preserve_cause_chain() {
         source: io::Error::new(io::ErrorKind::PermissionDenied, "disk denied"),
     });
     assert_eq!(io_err.error_code(), ErrorCode::Io);
-    assert_eq!(io_err.exit(), Exit::Runtime);
 
     let transport_err = DomainError::from(PortError::Transport {
         source: Box::new(io::Error::new(io::ErrorKind::TimedOut, "connect timed out")),
     });
     assert_eq!(transport_err.error_code(), ErrorCode::Transport);
-    assert_eq!(transport_err.exit(), Exit::Runtime);
     let mut chain = Vec::new();
     let mut cur: Option<&(dyn std::error::Error + 'static)> = Some(&transport_err);
     while let Some(e) = cur {
@@ -130,37 +92,37 @@ fn port_error_variants_map_to_r67_rows_and_preserve_cause_chain() {
         source: None,
     });
     assert_eq!(remote_err.error_code(), ErrorCode::RemoteApi);
-    assert_eq!(remote_err.exit(), Exit::Runtime);
 
     let unauth_err = DomainError::from(PortError::Unauthorized {
         detail: "token expired".to_owned(),
         source: None,
     });
     assert_eq!(unauth_err.error_code(), ErrorCode::CredentialsRejected);
-    assert_eq!(unauth_err.exit(), Exit::Auth);
+    let unauth_hint = unauth_err.hint().expect("unauthorized hint");
+    assert!(
+        !unauth_hint.contains("--token-file") && !unauth_hint.contains("rslbp auth login"),
+        "library hint must stay transport-neutral: {unauth_hint}"
+    );
 
     let conflict_err = DomainError::from(PortError::Conflict {
         detail: "already exists".to_owned(),
         source: None,
     });
     assert_eq!(conflict_err.error_code(), ErrorCode::Conflict);
-    assert_eq!(conflict_err.exit(), Exit::Conflict);
 
     let unavail_err = DomainError::from(PortError::Unavailable {
         detail: "mutex poisoned".to_owned(),
     });
     assert_eq!(unavail_err.error_code(), ErrorCode::Io);
-    assert_eq!(unavail_err.exit(), Exit::Runtime);
 }
 
 #[test]
-fn config_and_auth_errors_map_to_expected_r67_codes() {
+fn config_and_auth_errors_map_to_expected_r67_codes_with_transport_neutral_hints() {
     let unreadable = DomainError::from(ConfigError::Unreadable {
         path: "/etc/rslbp/rslbp_config.toml".into(),
         source: io::Error::new(io::ErrorKind::PermissionDenied, "denied"),
     });
     assert_eq!(unreadable.error_code(), ErrorCode::ConfigUnreadable);
-    assert_eq!(unreadable.exit(), Exit::Runtime);
 
     let unparsable = DomainError::from(ConfigError::Unparsable {
         path: "bad.toml".into(),
@@ -168,20 +130,26 @@ fn config_and_auth_errors_map_to_expected_r67_codes() {
         span: Some(4..5),
     });
     assert_eq!(unparsable.error_code(), ErrorCode::ConfigUnparsable);
-    assert_eq!(unparsable.exit(), Exit::Usage);
 
     let prohibited = DomainError::from(ConfigError::ProhibitedSecretChannel {
         key: "token".to_owned(),
     });
     assert_eq!(prohibited.error_code(), ErrorCode::ProhibitedSecretChannel);
-    assert_eq!(prohibited.exit(), Exit::Usage);
-    assert!(prohibited.hint().is_some());
+    let prohibited_hint = prohibited.hint().expect("prohibited secret hint");
+    assert!(
+        !prohibited_hint.contains("--token-file") && !prohibited_hint.contains("rslbp auth login"),
+        "library hint must stay transport-neutral: {prohibited_hint}"
+    );
 
     let auth_missing = DomainError::from(AuthError::CredentialsAbsent {
         detail: "no token configured".to_owned(),
     });
     assert_eq!(auth_missing.error_code(), ErrorCode::CredentialsAbsent);
-    assert_eq!(auth_missing.exit(), Exit::Auth);
+    let auth_hint = auth_missing.hint().expect("credentials absent hint");
+    assert!(
+        !auth_hint.contains("--token-file") && !auth_hint.contains("rslbp auth login"),
+        "library hint must stay transport-neutral: {auth_hint}"
+    );
 }
 
 #[test]
@@ -201,7 +169,7 @@ fn error_envelope_omits_null_hint_and_serializes_exact_r67_keys() {
     let with_hint = ErrorEnvelope::new(
         ErrorCode::ProhibitedSecretChannel,
         "cannot store secret in config file",
-        Some("use --token-file, RSLBP_TOKEN, or `rslbp auth login`".to_owned()),
+        Some("supply credentials via a secret provider or credential store".to_owned()),
     );
     let json_with_hint = serde_json::to_value(&with_hint).expect("serialize envelope with hint");
     assert_eq!(
@@ -210,51 +178,41 @@ fn error_envelope_omits_null_hint_and_serializes_exact_r67_keys() {
             "error": {
                 "code": "RSLB204",
                 "message": "cannot store secret in config file",
-                "hint": "use --token-file, RSLBP_TOKEN, or `rslbp auth login`"
+                "hint": "supply credentials via a secret provider or credential store"
             }
         })
     );
 }
 
 #[test]
-fn domain_error_to_envelope_and_clipboard_error_variants() {
-    use rs_launch_blueprint_core::{ClipboardError, ClipboardPort, FailingClipboard};
-
+fn domain_error_to_envelope_and_remaining_hint_branches() {
     let usage = DomainError::Usage {
         message: "bad arg".to_owned(),
-        hint: Some("try --help".to_owned()),
+        hint: Some("provide a non-empty value".to_owned()),
     };
     let env_usage = usage.to_envelope();
     assert_eq!(env_usage.error.code, "RSLB201");
-    assert_eq!(env_usage.error.hint.as_deref(), Some("try --help"));
+    assert_eq!(
+        env_usage.error.hint.as_deref(),
+        Some("provide a non-empty value")
+    );
 
     let conflict = DomainError::Conflict {
         message: "file exists".to_owned(),
         hint: None,
     };
     assert_eq!(conflict.to_envelope().error.code, "RSLB501");
-    assert_eq!(conflict.exit(), Exit::Conflict);
 
-    let interrupted = DomainError::PromptInterrupted;
-    assert_eq!(interrupted.to_envelope().error.code, "RSLB903");
-    assert_eq!(interrupted.exit(), Exit::SigInt);
-
-    let clip_src = ClipboardError::with_source(
-        "clipboard failed",
-        Some("pipe instead".to_owned()),
-        Box::new(io::Error::other("x11 down")),
+    let input_unavail = DomainError::InputUnavailable {
+        message: "non-interactive input".to_owned(),
+        hint: Some("pass explicit arguments".to_owned()),
+    };
+    assert_eq!(input_unavail.error_code(), ErrorCode::InputUnavailable);
+    assert_eq!(
+        input_unavail.hint().as_deref(),
+        Some("pass explicit arguments")
     );
-    assert!(clip_src.source().is_some());
-    assert_eq!(clip_src.hint().as_deref(), Some("pipe instead"));
-    let clip_dom = DomainError::Clipboard(clip_src);
-    assert_eq!(clip_dom.to_envelope().error.code, "RSLB101");
-    assert_eq!(clip_dom.exit(), Exit::Runtime);
 
-    let failing_default = FailingClipboard::default();
-    let err = failing_default.set_text("hello").unwrap_err();
-    assert!(err.hint().is_some());
-
-    // Exercise remaining DomainError::hint & ConfigError/AuthError/PortError branches.
     let port_transport = DomainError::from(PortError::Transport {
         source: Box::new(io::Error::other("timeout")),
     });

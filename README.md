@@ -8,50 +8,86 @@
 
 The Rust sibling of [py-launch-blueprint](https://github.com/smorinlabs/py-launch-blueprint)
 and [ts-launch-blueprint](https://github.com/smorinlabs/ts-launch-blueprint): a
-production-ready Rust template for a **CLI (`rslbp`)**, **library (`rs_launch_blueprint`)**,
-and **optional Axum web service (`rslbp-serve`)** with integrated architecture
-enforcement, security gates, automated releases, and Template Press rebranding.
+production-ready Rust template built **library-first** (`OV-18`) for a
+**standalone Rust library (`rs-launch-blueprint`)**, a **CLI (`rslbp` in `crates/cli`)**,
+and an **optional Axum web service (`rslbp-serve` in `crates/web`)** with
+integrated architecture enforcement, security gates, automated releases, and
+Template Press rebranding.
 
 Every engineering choice is grounded in 85 audited research decisions (`R01`–`R86`)
-and verified by contract tests across Linux (`ubuntu-latest`) and macOS
+plus [ADR 0001 (`OV-18`)](docs/adr/0001-library-first-workspace-topology.md) and
+verified by contract tests across Linux (`ubuntu-latest`) and macOS
 (`macos-latest`) on Rust Edition 2024.
 
 ## Features at a Glance
 
-- **4-Crate Hexagonal Workspace:** root facade (`rs-launch-blueprint`, composition
-  root, `rslbp` and optional `rslbp-serve` binaries), sync `crates/core` (`ProjectsPort`,
-  `ProjectsService`, `ureq` adapter), `crates/cli`, and optional `crates/web`
-  (`--features web`). Workspace-wide `unsafe_code = "forbid"`, `cargo-deny` bans,
-  and `cargo-semver-checks` public-API guards.
+- **Library-First 4-Crate Hexagonal Workspace (`OV-18`):** `[lib]`-only root crate
+  (`rs-launch-blueprint`, zero CLI/web/Tokio/OTel dependencies — **17** crates with
+  `--no-default-features`, **56** with default `http,config`), pure domain `crates/core`
+  (`ProjectsPort`, `ProjectsService`, layered TOML config, secret policy, `RSLB###` error
+  catalog), `crates/cli` (`[[bin]] rslbp`), and internal `crates/web` (`publish = false`,
+  `[[bin]] rslbp-serve`). Mechanically enforced by Cargo's DAG, `cargo-deny` bans,
+  per-crate `clippy.toml`, `tests/workspace_edges.rs`, `just lib-check`, and PR + release
+  `cargo-semver-checks`.
 - **Native Toolchain & Quality Gates:** two-level bootstrap (`Makefile` + `Justfile`),
   `rust-toolchain.toml`, `rustfmt`, `clippy`, strict `cargo check`, `dprint`
   (checksum-pinned Wasm plugins for TOML/JSON/YAML/Markdown), `ast-grep` security
   rules, `lefthook`, `committed`, `gitleaks`, `editorconfig-checker`, `ryl`,
   `typos`, `actionlint`, `zizmor`, ShellCheck, and `[parallel]` `just check`.
-- **Production CLI (`rslbp`):** `clap` derive noun-verb grammar, `-o table|json|markdown|name`
-  and `--output-file`, 6-rung TOML config discovery with `toml_edit` writes,
-  3-tier secret policy (`--token-file` / `RSLBP_TOKEN` / `0600 credentials.toml` +
-  optional `keychain`), `tracing` redacting logs + rotating file sink, pager,
-  clipboard, spinner, rich OSC-8 rows, and append-only `RSLB###` error/exit taxonomy.
-- **Optional Web Service (`rslbp-serve`):** Axum + Tokio behind off-by-default
-  `--features web`, RFC 9457 `application/problem+json` errors, `/v1` routing,
+- **Production CLI (`rslbp` in `crates/cli`):** `clap` derive noun-verb grammar,
+  `-o table|json|markdown|name` and `--output-file`, 6-rung TOML config discovery with
+  `toml_edit` writes, 3-tier secret policy (`--token-file` / `RSLBP_TOKEN` /
+  `0600 credentials.toml` + optional `keychain`), `tracing` redacting logs + rotating file
+  sink, pager, clipboard, spinner, rich OSC-8 rows, and append-only `RSLB###` error/exit
+  taxonomy.
+- **Optional Web Service (`rslbp-serve` in `crates/web`):** Axum + Tokio HTTP service
+  (`publish = false`), RFC 9457 `application/problem+json` errors, `/v1` routing,
   cursor pagination, `Idempotency-Key` replay, per-IP rate limiting, security headers,
   conditional CORS, `/healthz` + `/readyz`, optional Prometheus `/metrics` (`--features metrics`),
   optional OpenTelemetry OTLP tracing (`--features otel`), committed OpenAPI 3.1
   snapshot (`utoipa`) + `oasdiff` breaking-change CI + contract fuzzing +
   `openapi-to-rust` typed client generation, and a multi-stage distroless `Dockerfile`.
 - **CI, Security & Releases:** plan-gated `ci.yml` with single required check
-  `ci-ok`, MSRV floor job, install-smoke test, `cargo-llvm-cov` coverage floors,
-  weekly dependency audit (`cargo-audit`, `cargo-deny`, OSV-Scanner), CodeQL,
-  TruffleHog, weekly freshness canary, credential-preflighted Claude/Codex/Muse
-  workflows, `release-please` (`release-type: rust`), `cargo-dist` pre-built CLI
-  binaries, and GHCR container publishing.
+  `ci-ok`, MSRV floor job, PR-time `semver-checks`, `lib-check` + `install-smoke`,
+  `cargo-llvm-cov` coverage floors, weekly dependency audit (`cargo-audit`,
+  `cargo-deny`, OSV-Scanner), CodeQL, TruffleHog, weekly freshness canary,
+  credential-preflighted Claude/Codex/Muse workflows, `release-please`
+  (`release-type: rust`), `cargo-dist` pre-built CLI binaries, and GHCR container
+  publishing.
 - **AI-Ready & Template Press:** single canonical [AGENTS.md](AGENTS.md) hub
   (`CLAUDE.md` imports `@AGENTS.md`), zero vendor rule directories, pinned
   `template-press` rules + stubs, and the [`new-rust-project`](.claude/skills/new-rust-project/SKILL.md)
   bootstrap skill (symlinked under `.agents/skills/`).
 
-## Quick Start
+## Standalone Rust Library (`rs-launch-blueprint`)
+
+Add the standalone library directly to any Rust project without pulling CLI or web
+dependencies (see [Library Reference](docs/reference/library-reference.md)):
+
+```bash
+cargo add rs-launch-blueprint                        # default: http + config (56 normal crates)
+cargo add rs-launch-blueprint --no-default-features  # minimal domain + ports only (17 normal crates)
+```
+
+```rust
+use rs_launch_blueprint::{CreateProjectInput, ProjectQuery, in_memory_service};
+
+let service = in_memory_service([]);
+let project = service.create_project(&CreateProjectInput {
+    name: "Roadmap".to_owned(),
+    workspace: Some("core".to_owned()),
+})?;
+assert_eq!(service.list_projects(&ProjectQuery::default())?.len(), 1);
+```
+
+Verify packed downstream consumption (default features, `--no-default-features`, and
+private-module compile-fail boundary) locally at any time:
+
+```bash
+just lib-check
+```
+
+## Quick Start (Contributors)
 
 ```bash
 git clone https://github.com/smorinlabs/rs-launch-blueprint.git
@@ -64,21 +100,21 @@ just check               # Run all read-only quality, security, lint, typecheck,
 End-user CLI installation (once a release is published):
 
 ```bash
-cargo binstall rs-launch-blueprint
+cargo binstall rs-launch-blueprint-cli
 # or via the cargo-dist shell installer attached to each GitHub Release:
 curl --proto '=https' --tlsv1.2 -LsSf \
-  https://github.com/smorinlabs/rs-launch-blueprint/releases/latest/download/rs-launch-blueprint-installer.sh | sh
-# or compile from crates.io source:
-cargo install --locked rs-launch-blueprint
+  https://github.com/smorinlabs/rs-launch-blueprint/releases/latest/download/rs-launch-blueprint-cli-installer.sh | sh
+# or compile the CLI crate from crates.io source:
+cargo install --locked rs-launch-blueprint-cli
 ```
 
 ## CLI (`rslbp`)
 
-The [`rslbp` noun-verb CLI](EXAMPLECLI.md) demonstrates every command-line
-convention baked into the blueprint: stackable global flags, `table|json|markdown|name`
-output rendering, 6-rung TOML configuration, strict secret isolation, structured
-redacting logs, interactive prompts, pager/clipboard integration, and the stable
-`RSLB###` error and exit-code contract.
+The [`rslbp` noun-verb CLI](EXAMPLECLI.md) lives in `crates/cli` (`rs-launch-blueprint-cli`)
+and demonstrates every command-line convention baked into the blueprint: stackable global
+flags, `table|json|markdown|name` output rendering, 6-rung TOML configuration, strict secret
+isolation, structured redacting logs, interactive prompts, pager/clipboard integration, and
+the stable `RSLB###` error and exit-code contract.
 
 ```bash
 cargo run --bin rslbp -- --help
@@ -88,10 +124,10 @@ cargo run --bin rslbp -- config init --dry-run --yes
 
 ## Optional Web Service (`rslbp-serve`)
 
-Enable the off-by-default `web` feature to build and run the Axum REST service
-over the same synchronous `crates/core` domain layer. See [EXAMPLEWEB.md](EXAMPLEWEB.md)
-for the complete walkthrough (endpoints, `RSLBP_WEB_*` environment variables,
-RFC 9457 error envelope, OpenAPI contract pipeline, and observability).
+`crates/web` (`rs-launch-blueprint-web`, `publish = false`) builds the Axum REST service
+over the same synchronous `rs-launch-blueprint` library crate. See [EXAMPLEWEB.md](EXAMPLEWEB.md)
+for the complete walkthrough (endpoints, `RSLBP_WEB_*` environment variables, RFC 9457 error
+envelope, OpenAPI contract pipeline, and observability).
 
 ```bash
 just serve                      # Auto-reloading dev loop via bacon (or `just serve-once`)
@@ -123,7 +159,7 @@ for `crates/web` and clippy edit loops.
   `rustfmt`, `cargo-deny`, coverage, packaging, and releases.
 - **Live compatibility:** run `just blaze-status` to inspect your installed
   Blaze version and live probes (currently `blaze test -p rs-launch-blueprint-core`
-  and `blaze build -p rs-launch-blueprint --bin rslbp` accelerate the core/CLI loop,
+  and `blaze build -p rs-launch-blueprint-cli --bin rslbp` accelerate the core/CLI loop,
   while `crates/web` and `--features` stay on Cargo/bacon). See
   [Blaze Local Accelerator](docs/tools/blaze.md) for details.
 
@@ -136,6 +172,8 @@ through `gh repo create --template`, identity collection, `press clean`,
 `press rebrand --dry-run`, `press rebrand`, `press verify`, and full verification.
 Humans can follow the same file as a copy-pasteable runbook, then complete the
 one-time repository settings in [docs/PROJECT_SETUP.md](docs/PROJECT_SETUP.md).
+If your project is **library-only**, see the opt-out section in
+[docs/RELEASE.md](docs/RELEASE.md) to drop `crates/cli` and/or `crates/web`.
 
 ## Documentation
 

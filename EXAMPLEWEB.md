@@ -1,31 +1,32 @@
 # `rslbp-serve` — Optional Web Service Walkthrough
 
 `rslbp-serve` is the Axum HTTP counterpart of the `rslbp` CLI: a thin async web
-adapter over the same synchronous `crates/core` domain layer (`ProjectsPort`,
-`ProjectsService`, `Diagnostics`, `ErrorCode`), gated behind Cargo's
-off-by-default `web` feature (`R69`).
+adapter over the same synchronous `rs-launch-blueprint` standalone library crate
+(`ProjectsPort`, `ProjectsService`, `Diagnostics`, `ErrorCode`), isolated in the
+internal workspace crate `crates/web` (`publish = false`, `R69`, `OV-18`).
 
 ## Architecture & Cargo Features
 
-| Feature   | Enables                                                                                                       |
-| --------- | ------------------------------------------------------------------------------------------------------------- |
-| _(none)_  | Default CLI + core library (`~38` crates, zero Tokio/Axum/OpenAPI dependencies; `rslbp-serve` not built).     |
-| `web`     | `crates/web` (`axum`, `tokio`, `tower-http`, `utoipa`, `problem_details`) and `[[bin]] rslbp-serve`.          |
-| `metrics` | Nests on `web`; exposes Prometheus RED metrics on `GET /metrics` (`metrics` + `metrics-exporter-prometheus`). |
-| `otel`    | Nests on `web`; exports OpenTelemetry OTLP traces when `RSLBP_WEB_OTEL_ENABLED=true`.                         |
+| Package / Feature                            | Enables                                                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `rs-launch-blueprint --no-default-features`  | Standalone minimal library (**17** normal crates; zero HTTP, TOML, CLI, Tokio, or Axum).                     |
+| `rs-launch-blueprint` (default)              | Standalone library with `http` + `config` (**56** normal crates; zero CLI, Tokio, or Axum).                  |
+| `rs-launch-blueprint-web` (default)          | `axum`, `tokio`, `tower-http`, `utoipa`, `problem_details`, `IdempotencyStore`, and `[[bin]] rslbp-serve`.   |
+| `rs-launch-blueprint-web --features metrics` | Exposes Prometheus RED metrics on `GET /metrics` (`metrics` + `metrics-exporter-prometheus`).                |
+| `rs-launch-blueprint-web --features otel`    | Exports OpenTelemetry OTLP traces when `RSLBP_WEB_OTEL_ENABLED=true` and injects outbound W3C `traceparent`. |
 
-Handlers run synchronous `crates/core` port operations on Tokio's blocking pool
-via `tokio::task::spawn_blocking` (`R05`), keeping the core library sync and
+Handlers run synchronous `rs-launch-blueprint` port operations on Tokio's blocking pool
+via `tokio::task::spawn_blocking` (`R05`), keeping the standalone library sync and
 runtime-agnostic.
 
 ## Running Locally
 
 ```bash
-just serve                                            # Live-reload dev loop via bacon (bacon.toml)
-just serve-once                                       # Single foreground run via Cargo
-cargo run --features web --bin rslbp-serve            # Direct Cargo run (default 127.0.0.1:8000)
-cargo run --all-features --bin rslbp-serve            # Run with web + metrics + otel compiled in
-just docker-web                                       # Build local multi-stage distroless image
+just serve                                                        # Live-reload dev loop via bacon (bacon.toml)
+just serve-once                                                   # Single foreground run via Cargo
+cargo run -p rs-launch-blueprint-web --bin rslbp-serve            # Direct Cargo run (default 127.0.0.1:8000)
+cargo run -p rs-launch-blueprint-web --all-features --bin rslbp-serve  # Run with metrics + otel compiled in
+just docker-web                                                   # Build local multi-stage distroless image
 ```
 
 Run the published GHCR container image (once released and made public per

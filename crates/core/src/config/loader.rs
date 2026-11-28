@@ -87,7 +87,7 @@ impl fmt::Display for ConfigWarning {
                 let key = self.key.as_deref().unwrap_or("token");
                 write!(
                     f,
-                    "ignoring prohibited secret key '{key}' in '{}'; supply credentials via --token-file, RSLBP_TOKEN, or `rslbp auth login`",
+                    "ignoring prohibited secret key '{key}' in '{}'; supply credentials via a token file, RSLBP_TOKEN, or a dedicated credential store",
                     self.path.display()
                 )
             }

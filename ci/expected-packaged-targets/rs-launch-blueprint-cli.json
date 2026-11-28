@@ -6,5 +6,9 @@
   {
     "name": "rs_launch_blueprint_cli",
     "kind": ["lib"]
+  },
+  {
+    "name": "rslbp",
+    "kind": ["bin"]
   }
 ]

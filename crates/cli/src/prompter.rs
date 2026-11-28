@@ -12,7 +12,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use inquire::error::InquireError;
 use inquire::ui::RenderConfig;
 use inquire::{Confirm, MultiSelect, Select, Text};
-use rs_launch_blueprint_core::{DomainError, PortError};
+use rs_launch_blueprint::{DomainError, PortError};
 
 /// Single call-site interactivity gate evaluated BEFORE any prompt type is constructed (`R61`).
 #[must_use]
@@ -34,15 +34,19 @@ pub enum PromptError {
 }
 
 impl PromptError {
-    /// Convert a [`PromptError`] on a consent or required-value prompt into a [`DomainError`].
-    pub fn into_required_domain_error(self, missing_hint: &str) -> Result<DomainError, String> {
+    /// Convert a non-interrupt [`PromptError`] on a consent or required-value prompt into a
+    /// [`DomainError`]; `Ok(None)` signals [`PromptError::Interrupted`] (`RSLB903`, exit `130`).
+    pub fn into_required_domain_error(
+        self,
+        missing_hint: &str,
+    ) -> Result<Option<DomainError>, String> {
         match self {
-            Self::NotTty => Ok(DomainError::InputUnavailable {
+            Self::NotTty => Ok(Some(DomainError::InputUnavailable {
                 message: "interactive prompt unavailable (no TTY)".to_owned(),
                 hint: Some(missing_hint.to_owned()),
-            }),
-            Self::Interrupted => Ok(DomainError::PromptInterrupted),
-            Self::Io(source) => Ok(DomainError::Port(PortError::Io { source })),
+            })),
+            Self::Interrupted => Ok(None),
+            Self::Io(source) => Ok(Some(DomainError::Port(PortError::Io { source }))),
             Self::Unexpected(detail) => Err(detail),
         }
     }

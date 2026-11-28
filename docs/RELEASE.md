@@ -3,12 +3,12 @@
 This repository automates semantic versioning, crates.io packaging guards, pre-built CLI binary
 distribution, and GHCR container publication across four coordinated workflows:
 
-| Workflow                                  | Trigger                               | Responsibility                                                                                                                                                                                                                            |
-| ----------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/release-please.yml`    | Push to `main` (or manual dispatch)   | Maintains the Release PR; on merge, pushes tag `vX.Y.Z` and creates a **draft** GitHub Release (`R23`, `R24`, `R25`, `R68`).                                                                                                              |
-| `.github/workflows/publish.yml`           | Tag `v*` (or manual dispatch on `v*`) | Verifies tag ancestry & version lockstep, runs all 4 packed `.crate` guards (`R26`), runs `cargo-semver-checks` (`R04`), dry-runs workspace publish, and publishes to crates.io in the protected `crates-io` environment.                 |
-| `.github/workflows/release.yml`           | PRs (`dist plan`) and tag `v*`        | Runs `cargo-dist` (`dist` `0.33.0`) in follower mode (`create-release = false`): builds `rslbp` archives + shell installer + SHA-256 checksums for all 3 targets, uploads assets to the draft GitHub Release, and undrafts it (`R68`).    |
-| `.github/workflows/publish-container.yml` | Published stable GitHub Release       | Builds, smoke-tests, and publishes `linux/amd64` `rslbp-serve` to `ghcr.io/smorinlabs/rs-launch-blueprint`, verifies anonymous pull + immutable `@sha256:` digest, and reconciles `:latest` (owner review-gate `1a-A` OVERRIDE of `R51`). |
+| Workflow                                  | Trigger                               | Responsibility                                                                                                                                                                                                                                                                                 |
+| ----------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/release-please.yml`    | Push to `main` (or manual dispatch)   | Maintains the Release PR; on merge, pushes tag `vX.Y.Z` and creates a **draft** GitHub Release (`R23`, `R24`, `R25`, `R68`).                                                                                                                                                                   |
+| `.github/workflows/publish.yml`           | Tag `v*` (or manual dispatch on `v*`) | Verifies tag ancestry & version lockstep, runs all 3 publishable packed `.crate` guards (`R26`), runs `cargo-semver-checks` on both library crates (`R04`, `OV-18`), dry-runs workspace publish, and publishes the 3 publishable crates to crates.io in the protected `crates-io` environment. |
+| `.github/workflows/release.yml`           | PRs (`dist plan`) and tag `v*`        | Runs `cargo-dist` (`dist` `0.33.0`) in follower mode (`create-release = false`): builds `rslbp` archives + shell installer + SHA-256 checksums for all 3 targets, uploads assets to the draft GitHub Release, and undrafts it (`R68`).                                                         |
+| `.github/workflows/publish-container.yml` | Published stable GitHub Release       | Builds, smoke-tests, and publishes `linux/amd64` `rslbp-serve` to `ghcr.io/smorinlabs/rs-launch-blueprint`, verifies anonymous pull + immutable `@sha256:` digest, and reconciles `:latest` (owner review-gate `1a-A` OVERRIDE of `R51`).                                                      |
 
 ---
 
@@ -61,8 +61,10 @@ Before anything can reach crates.io, the read-only `verify` job enforces:
 1. **Tag ancestry and version lockstep (`F074`):** The workflow ref must be a `v*` tag whose commit
    is an ancestor of `origin/main`, and its version `X.Y.Z` must equal all four workspace
    `Cargo.toml` manifests and `.release-please-manifest.json`.
-2. **All 4 first-party packed `.crate` content guards (`R26`):** Executed via
-   `bash scripts/check-packed-artifacts.sh` (also runnable locally via `just check-packaging`):
+2. **Packed `.crate` content guards (`R26`, `OV-18`):** Executed via
+   `bash scripts/check-packed-artifacts.sh` (also runnable locally via `just check-packaging`)
+   across the **3 publishable crates** (`rs-launch-blueprint-core`, `rs-launch-blueprint`, and
+   `rs-launch-blueprint-cli`) while asserting that `rs-launch-blueprint-web` remains `publish = false`:
    - **Element 1 (`F039` file-set allow-list):** `cargo package -p <pkg> --list --no-verify --offline --locked`
      diffed in byte order (`LC_ALL=C`) against `ci/expected-packed-files/<pkg>.txt`.
    - **Element 2 (`F078` packaged-metadata):** Packs freshly (removing any prior `.crate` and
@@ -72,14 +74,18 @@ Before anything can reach crates.io, the read-only `verify` job enforces:
      source `Cargo.toml`, and diffs the publish-facing metadata projection between source and
      extracted archive.
    - **Element 3:** Runs `cargo publish --workspace --dry-run --locked`.
-   - **Element 4:** Enforces explicit `[package] include` with no `[package] exclude` in every
-     publishable crate manifest.
-3. **Public-API SemVer check (`R04`):** Runs `obi1kenobi/cargo-semver-checks-action` against the
-   most recent prior Rust crate release tag (`--feature-group only-explicit-features --features web`),
-   skipping with a notice on the initial crate release when no prior Rust tag exists.
+   - **Element 4:** Enforces explicit `[package] include` (including `README.md`, `LICENSE`, and
+     `LICENSE-MIT`) with no `[package] exclude` in every publishable crate manifest.
+3. **Public-API SemVer check (`R04`, `OV-18`):** Runs `obi1kenobi/cargo-semver-checks-action`
+   (`feature-group: all-features`) on **both** `rs-launch-blueprint-core` and
+   `rs-launch-blueprint` against the most recent prior Rust crate release tag (both on PRs in
+   `ci.yml` and on release tags in `publish.yml`), skipping with a notice before the initial
+   crate publication.
 4. **Workspace publish (`F075`):** The `publish-crates-io` job runs in the protected `crates-io`
-   GitHub Environment and publishes all four workspace crates in dependency order via
-   `cargo publish --workspace --locked`.
+   GitHub Environment and publishes the three publishable crates in topological order
+   (`rs-launch-blueprint-core` -> `rs-launch-blueprint` -> `rs-launch-blueprint-cli`) via
+   `cargo publish --workspace --locked` (Cargo automatically skips `publish = false`
+   `rs-launch-blueprint-web`).
 
 ---
 
@@ -104,15 +110,22 @@ Before anything can reach crates.io, the read-only `verify` job enforces:
   `cargo-dist` archive names (`{name}-{target}.tar.xz`) and binary name (`rslbp`) match
   `cargo-binstall`'s built-in GitHub release defaults.
 
-### End-User Install Commands (`F220`)
+### End-User Install Commands (`F220`, `OV-18`)
 
-1. `cargo binstall rs-launch-blueprint` (pre-built binary via GitHub Release metadata)
-2. Shell installer (`rs-launch-blueprint-installer.sh` attached to each GitHub Release):
+Standalone Rust library:
+
+1. `cargo add rs-launch-blueprint` (default `http` + `config` features)
+2. `cargo add rs-launch-blueprint --no-default-features` (minimal domain/ports surface)
+
+CLI binary (`rslbp` in `rs-launch-blueprint-cli`):
+
+1. `cargo binstall rs-launch-blueprint-cli` (pre-built binary via GitHub Release metadata)
+2. Shell installer (`rs-launch-blueprint-cli-installer.sh` attached to each GitHub Release):
    ```bash
    curl --proto '=https' --tlsv1.2 -LsSf \
-     https://github.com/smorinlabs/rs-launch-blueprint/releases/latest/download/rs-launch-blueprint-installer.sh | sh
+     https://github.com/smorinlabs/rs-launch-blueprint/releases/latest/download/rs-launch-blueprint-cli-installer.sh | sh
    ```
-3. `cargo install --locked rs-launch-blueprint` (source compile from crates.io)
+3. `cargo install --locked rs-launch-blueprint-cli` (source compile from crates.io)
 
 ### Updating `dist-workspace.toml`
 
@@ -163,14 +176,14 @@ release run can therefore push `:X.Y.Z` successfully and then fail its anonymous
 Every workflow that relies on optional secrets uses a `credential-preflight` job so forks and
 unprovisioned repositories stay green instead of failing on missing secrets.
 
-| Surface                                      | Credential / Setting                                                                  | Required Permissions / Scope                                                                                    | Notes                                                                                                                                                                                                                                      |
-| -------------------------------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `release-please.yml` & `release.yml` undraft | **GitHub App (preferred):** `RELEASE_PLEASE_CLIENT_ID` + `RELEASE_PLEASE_PRIVATE_KEY` | Repository **Contents: Read & Write**, **Pull requests: Read & Write**                                          | Mints short-lived installation token via `actions/create-github-app-token@v3`. Required so tags trigger `publish.yml`/`release.yml` and undrafting triggers `publish-container.yml`. `GITHUB_TOKEN` is never used by `release-please.yml`. |
-| `release-please.yml` & `release.yml` undraft | **Fallback PAT:** `RELEASE_PLEASE_APP_TOKEN`                                          | Fine-grained PAT scoped to repo with **Contents** + **Pull requests: write**                                    | Used only if the GitHub App secrets are unset.                                                                                                                                                                                             |
-| `publish.yml` (crates.io)                    | **GitHub Environment:** `crates-io`                                                   | Configure required reviewers if manual approval before upload is desired                                        | Must match the environment name configured on crates.io Trusted Publishing.                                                                                                                                                                |
-| `publish.yml` (crates.io, preferred)         | **OIDC Trusted Publishing:** repo variable `CRATES_IO_TRUSTED_PUBLISHING=true`        | Register this repo, workflow `publish.yml`, and environment `crates-io` on crates.io for all 4 workspace crates | Mints a short-lived token via `rust-lang/crates-io-auth-action` (`id-token: write`); no long-lived token stored.                                                                                                                           |
-| `publish.yml` (crates.io, fallback)          | **Token secret:** `CRATES_IO_TOKEN`                                                   | crates.io API token with `publish-new` / `publish-update` scope                                                 | Used only if `CRATES_IO_TRUSTED_PUBLISHING` is not `true`.                                                                                                                                                                                 |
-| `publish-container.yml` (GHCR)               | Automatic `GITHUB_TOKEN`                                                              | Job-scoped `contents: read` + `packages: write`                                                                 | No stored GHCR secret needed. Flip package visibility to **Public** after the first push.                                                                                                                                                  |
+| Surface                                      | Credential / Setting                                                                  | Required Permissions / Scope                                                                                                                      | Notes                                                                                                                                                                                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `release-please.yml` & `release.yml` undraft | **GitHub App (preferred):** `RELEASE_PLEASE_CLIENT_ID` + `RELEASE_PLEASE_PRIVATE_KEY` | Repository **Contents: Read & Write**, **Pull requests: Read & Write**                                                                            | Mints short-lived installation token via `actions/create-github-app-token@v3`. Required so tags trigger `publish.yml`/`release.yml` and undrafting triggers `publish-container.yml`. `GITHUB_TOKEN` is never used by `release-please.yml`. |
+| `release-please.yml` & `release.yml` undraft | **Fallback PAT:** `RELEASE_PLEASE_APP_TOKEN`                                          | Fine-grained PAT scoped to repo with **Contents** + **Pull requests: write**                                                                      | Used only if the GitHub App secrets are unset.                                                                                                                                                                                             |
+| `publish.yml` (crates.io)                    | **GitHub Environment:** `crates-io`                                                   | Configure required reviewers if manual approval before upload is desired                                                                          | Must match the environment name configured on crates.io Trusted Publishing.                                                                                                                                                                |
+| `publish.yml` (crates.io, preferred)         | **OIDC Trusted Publishing:** repo variable `CRATES_IO_TRUSTED_PUBLISHING=true`        | Register this repo, workflow `publish.yml`, and environment `crates-io` on crates.io for all 3 publishable crates (`-core`, root library, `-cli`) | Mints a short-lived token via `rust-lang/crates-io-auth-action` (`id-token: write`); no long-lived token stored.                                                                                                                           |
+| `publish.yml` (crates.io, fallback)          | **Token secret:** `CRATES_IO_TOKEN`                                                   | crates.io API token with `publish-new` / `publish-update` scope                                                                                   | Used only if `CRATES_IO_TRUSTED_PUBLISHING` is not `true`.                                                                                                                                                                                 |
+| `publish-container.yml` (GHCR)               | Automatic `GITHUB_TOKEN`                                                              | Job-scoped `contents: read` + `packages: write`                                                                                                   | No stored GHCR secret needed. Flip package visibility to **Public** after the first push.                                                                                                                                                  |
 
 ### Opting Out (Downstream Projects)
 
@@ -180,3 +193,22 @@ unprovisioned repositories stay green instead of failing on missing secrets.
   `dist-workspace.toml`.
 - To disable GHCR container publishing while keeping PR container verification, delete
   `.github/workflows/publish-container.yml` and `scripts/publish_container.py`.
+
+### Library-Only Opt-Out (Dropping `crates/cli` and/or `crates/web`)
+
+Because the root crate (`rs-launch-blueprint`) and `crates/core` have zero dependencies on
+`crates/cli` or `crates/web` (`OV-18`), a downstream project that only ships a Rust library can
+drop either or both front-end crates cleanly:
+
+1. **Drop the web service (`crates/web`):** remove `crates/web/` and `"crates/web"` from
+   `[workspace] members` in root `Cargo.toml`, delete `Dockerfile`, `.dockerignore`, `openapi/`,
+   `openapi-to-rust.toml`, `EXAMPLEWEB.md`, `.github/workflows/api-contract.yml`,
+   `.github/workflows/docker-web.yml`, `.github/workflows/publish-container.yml`, and
+   `scripts/publish_container.py`, and remove the web recipes from `Justfile`.
+2. **Drop the CLI (`crates/cli`):** remove `crates/cli/`, `"crates/cli"` from `[workspace] members`
+   and `default-members`, delete `EXAMPLECLI.md`, `dist-workspace.toml`,
+   `.github/workflows/release.yml`, and `ci/expected-packed-*/<repo>-cli.*`, and update
+   `scripts/check-packed-artifacts.sh` + `Justfile` (`install-check`) to check only the library
+   crates (`just lib-check`).
+3. Run `cargo update --workspace --offline && just check && just lib-check && just check-packaging`
+   to confirm the trimmed library workspace is green.

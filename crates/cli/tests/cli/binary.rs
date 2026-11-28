@@ -766,17 +766,3 @@ fn telemetry_flags_config_token_and_clipboard_daemon_paths() {
         .assert()
         .success();
 }
-
-#[cfg(feature = "web")]
-#[test]
-fn serve_binary_version_exits_zero() {
-    let mut cmd = cargo_bin_cmd!("rslbp-serve");
-    cmd.timeout(CMD_TIMEOUT)
-        .arg("--version")
-        .assert()
-        .success()
-        .stdout(contains(format!(
-            "rslbp-serve {}",
-            rs_launch_blueprint::VERSION
-        )));
-}

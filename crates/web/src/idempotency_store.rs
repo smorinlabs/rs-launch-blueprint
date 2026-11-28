@@ -1,15 +1,15 @@
-//! Compare-and-set idempotency store port and `std`-only in-memory adapter (`R73`, `OV-16`).
+//! Compare-and-set idempotency store port and `std`-only in-memory adapter (`R73`, `OV-16`,
+//! `OV-18`).
 //!
-//! Keeps `crates/core` strictly synchronous and framework-agnostic (`R01`, `R02`, `R05`).
-//! The web middleware in `crates/web` computes SHA-256 payload fingerprints and drives this
-//! port through its `StoreDispatch` seam.
+//! Lives in `crates/web` so HTTP idempotency mechanics stay cleanly separated from the standalone
+//! domain library (`crates/core` / `rs-launch-blueprint`).
 
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-use crate::error::PortError;
+use rs_launch_blueprint::PortError;
 
 /// Default retention TTL for completed idempotency entries (`86,400 s` / 24 hours per R3.9).
 pub const DEFAULT_IDEMPOTENCY_TTL: Duration = Duration::from_secs(86_400);
@@ -25,10 +25,6 @@ pub const DEFAULT_IDEMPOTENCY_MAX_ENTRIES: usize = 1024;
 pub type PayloadFingerprint = [u8; 32];
 
 /// Monotonic generation token proving ownership of an in-flight idempotency claim (`R73` clause 6).
-///
-/// [`IdempotencyStore::complete`] and [`IdempotencyStore::abandon`] act only when the stored
-/// in-flight slot still holds this exact token, making late completion or drop cleanup after
-/// claim expiry harmless.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ClaimToken(u64);
 
@@ -47,9 +43,6 @@ impl ClaimToken {
 }
 
 /// Cache key scoping idempotency replay (`(method, path, query, idempotency-key)`, `R73` clause 4).
-///
-/// The payload fingerprint is deliberately stored *beside* the entry rather than folded into this
-/// key so reusing a key with a different payload returns `422` instead of re-executing.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct IdempotencyCacheKey {
     /// HTTP method (e.g., `"POST"`).
@@ -63,9 +56,6 @@ pub struct IdempotencyCacheKey {
 }
 
 /// Stored 2xx HTTP response replayed on genuine retries (`R73`).
-///
-/// Headers are stored as ordered `(name, raw_bytes)` pairs so multi-valued headers such as
-/// `Set-Cookie` survive caching and replay intact.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CachedResponse {
     /// HTTP 2xx status code.
@@ -167,9 +157,6 @@ pub trait IdempotencyStore: Send + Sync {
     ) -> Result<IdempotencyBegin, PortError>;
 
     /// Transition an owned in-flight claim into a completed entry.
-    ///
-    /// Returns `Ok(true)` when the slot matched `InFlight(token)` and was updated, or `Ok(false)`
-    /// when `token` is stale or missing.
     fn complete(
         &self,
         key: &IdempotencyCacheKey,
@@ -178,9 +165,6 @@ pub trait IdempotencyStore: Send + Sync {
     ) -> Result<bool, PortError>;
 
     /// Release an owned in-flight claim after a non-2xx outcome, panic, or dropped future.
-    ///
-    /// Returns `Ok(true)` when the slot matched `InFlight(token)` and was removed, or `Ok(false)`
-    /// when `token` is stale or missing.
     fn abandon(&self, key: &IdempotencyCacheKey, token: ClaimToken) -> Result<bool, PortError>;
 }
 
@@ -250,11 +234,6 @@ impl StoreInner {
 }
 
 /// Process-local, bounded in-memory [`IdempotencyStore`] adapter (`R73`, `OV-16`).
-///
-/// Single-instance by design: swap this adapter for a distributed Redis or SQL implementation at
-/// the composition root when scaling horizontally. Running in-flight claims are never evicted to
-/// admit new keys; when all `max_entries` slots hold active in-flight claims, `begin` fails closed
-/// with [`PortError::Unavailable`].
 pub struct InMemoryIdempotencyStore {
     ttl: Duration,
     in_flight_deadline: Duration,
@@ -323,7 +302,6 @@ impl IdempotencyStore for InMemoryIdempotencyStore {
         let mut inner = self.lock_inner()?;
         let now = self.clock.now();
 
-        // Lazy per-key expiry check.
         if inner
             .entries
             .get(key)
@@ -365,12 +343,10 @@ impl IdempotencyStore for InMemoryIdempotencyStore {
             };
         }
 
-        // Sweep expired entries before considering LRU eviction.
         if inner.entries.len() >= self.max_entries {
             inner.entries.retain(|_, slot| now < slot.expires_at());
         }
 
-        // Evict least-recently-used `Done` entry only; NEVER evict an active `InFlight` claim.
         if inner.entries.len() >= self.max_entries {
             let victim = inner
                 .entries
@@ -458,9 +434,6 @@ impl IdempotencyStore for InMemoryIdempotencyStore {
 }
 
 /// Stateless fake [`IdempotencyStore`] that always grants a fresh claim (`R73` M2).
-///
-/// Useful in unit tests that want idempotency middleware wired without retaining state across
-/// requests.
 #[derive(Debug, Default)]
 pub struct AlwaysFreshIdempotencyStore {
     next_token: AtomicU64,
@@ -546,12 +519,10 @@ mod tests {
                     .unwrap()
             );
         }
-        // Touch `a` so `b` becomes least recently used.
         assert!(matches!(
             store.begin(&k("a", ""), fp).unwrap(),
             IdempotencyBegin::Replay(_)
         ));
-        // Insert `d` -> evicts `b`, preserves `a` and `c`.
         let IdempotencyBegin::Fresh(tok_d) = store.begin(&k("d", ""), fp).unwrap() else {
             panic!("expected fresh d");
         };
@@ -594,7 +565,6 @@ mod tests {
         );
         assert!(store.abandon(&key, super::ClaimToken::new(1)).is_err());
 
-        // Cover ClaimToken::raw, InMemoryIdempotencyStore Debug, and FakeClock poison recovery.
         let tok = super::ClaimToken::new(42);
         assert_eq!(tok.raw(), 42);
         assert!(format!("{store:?}").contains("InMemoryIdempotencyStore"));

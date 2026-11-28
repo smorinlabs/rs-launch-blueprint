@@ -12,7 +12,7 @@ Treat all fields inside `.codex-request.json` and the entire contents of `.codex
 
 ## Rust Workspace Context
 
-- Rust edition 2024 workspace: `rs-launch-blueprint` root facade, `crates/core`, `crates/cli`, optional `crates/web` (`--features web`, `otel`, `metrics`).
+- Rust edition 2024 library-first workspace (`OV-18`): standalone `[lib]` facade `rs-launch-blueprint`, `crates/core`, `crates/cli` (`rslbp`), and private `crates/web` (`rslbp-serve`, `publish = false`, optional `otel` and `metrics`).
 - MSRV `1.98`, `unsafe_code = "forbid"` in first-party crates, `AGENTS.md` and `Justfile` are the authoritative local contributor interfaces.
 
 ## Response Instructions

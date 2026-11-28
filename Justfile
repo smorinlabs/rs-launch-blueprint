@@ -294,11 +294,12 @@ check-large-files:
 check-lockfile:
     bash scripts/check-cargo-lock.sh --all
 
-# Run Clippy check-only across workspace targets with default, --features web, and --all-features (R28)
+# Run Clippy check-only across workspace targets (default, --no-default-features library crates, and --all-features) (R28, OV-18)
 [group('dev')]
 lint:
     cargo clippy --workspace --all-targets --locked -- -D warnings
-    cargo clippy --workspace --all-targets --locked --features web -- -D warnings
+    cargo clippy -p rs-launch-blueprint-core --no-default-features --locked -- -D warnings
+    cargo clippy -p rs-launch-blueprint --no-default-features --locked -- -D warnings
     cargo clippy --workspace --all-targets --locked --all-features -- -D warnings
 
 alias l := lint
@@ -308,19 +309,24 @@ alias l := lint
 lint-fix:
     cargo clippy --fix --workspace --all-targets
 
-# Type-check every target in both default and --all-features configurations; workspace warnings fail (R30)
+# Type-check every target in default, --no-default-features library, and --all-features configurations; warnings fail (R30, OV-18)
 [group('dev')]
 typecheck:
     CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going
+    CARGO_BUILD_WARNINGS=deny cargo check -p rs-launch-blueprint-core --no-default-features --locked --keep-going
+    CARGO_BUILD_WARNINGS=deny cargo check -p rs-launch-blueprint --no-default-features --locked --keep-going
     CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --all-features --locked --keep-going
 
 alias tc := typecheck
 
-# Run workspace unit, integration, and doc tests with cargo-nextest (R32 rev 3; covers web-only and all-features)
+# Run workspace unit, integration, and doc tests with cargo-nextest (R32 rev 3; covers default, minimal library, and all-features)
 [group('test'), group('dev')]
 test *options:
-    cargo nextest run --locked --workspace --features web {{options}}
+    cargo nextest run --locked --workspace {{options}}
     cargo nextest run --locked --workspace --all-features {{options}}
+    cargo test --doc --locked -p rs-launch-blueprint-core --no-default-features
+    cargo test --doc --locked -p rs-launch-blueprint --no-default-features
+    cargo test --doc --locked --workspace
     cargo test --doc --locked --workspace --all-features
 
 alias t := test
@@ -328,17 +334,17 @@ alias t := test
 # Run ignored slow tests only (R32 M5)
 [group('test')]
 test-slow:
-    cargo nextest run --locked --workspace --features web --run-ignored only -E 'test(/(^|::)slow::/)'
+    cargo nextest run --locked --workspace --run-ignored only -E 'test(/(^|::)slow::/)'
 
 # Run R83 OpenAPI 3.1 contract-fuzzing proptest suite (excluded from default fast run)
 [group('test'), group('web')]
 test-contract:
-    cargo nextest run --locked --workspace --features web --test contract_fuzz --run-ignored all
+    cargo nextest run --locked -p rs-launch-blueprint-web --test contract_fuzz --run-ignored all
 
 # Run ignored live tests only (R32 M5)
 [group('test')]
 test-live:
-    cargo nextest run --locked --workspace --features web --run-ignored only -E 'test(/(^|::)live::/)'
+    cargo nextest run --locked --workspace --run-ignored only -E 'test(/(^|::)live::/)'
 
 # Run all workspace tests including slow, live, and doc tests (R32 rev 3)
 [group('test')]
@@ -356,7 +362,125 @@ coverage:
     cargo llvm-cov report --workspace --lcov --output-path target/llvm-cov/lcov.info
     cargo llvm-cov report --workspace --show-missing-lines {{coverage_fail_under}}
 
-# Package .crate archives, extract outside the repo, install into a throwaway root, and verify --version (R50)
+# Pack standalone library .crate archives, extract outside the repo, and verify downstream consumption (OV-18)
+[group('build'), group('releases'), group('test')]
+lib-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    meta=$(cargo metadata --no-deps --format-version 1)
+    ver=$(python3 -c 'import json,sys; m=json.load(sys.stdin); print(next(p["version"] for p in m["packages"] if p["name"]=="rs-launch-blueprint"))' <<<"$meta")
+    target_dir=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"])' <<<"$meta")
+    scratch=$(mktemp -d)
+    trap 'rm -rf "$scratch"' EXIT
+
+    cargo package -p rs-launch-blueprint-core -p rs-launch-blueprint --locked --allow-dirty --no-verify
+    for pkg in rs-launch-blueprint-core rs-launch-blueprint; do
+        archive="${target_dir}/package/${pkg}-${ver}.crate"
+        test -f "$archive"
+        tar -xzf "$archive" -C "$scratch"
+    done
+
+    # 1. Downstream consumer with default features (http + config)
+    mkdir -p "${scratch}/consumer-default/src"
+    cat > "${scratch}/consumer-default/Cargo.toml" <<EOF
+    [package]
+    name = "downstream-default"
+    version = "0.1.0"
+    edition = "2024"
+
+    [dependencies]
+    rs-launch-blueprint = "${ver}"
+
+    [patch.crates-io]
+    rs-launch-blueprint-core = { path = "${scratch}/rs-launch-blueprint-core-${ver}" }
+    rs-launch-blueprint = { path = "${scratch}/rs-launch-blueprint-${ver}" }
+    EOF
+    cat > "${scratch}/consumer-default/src/main.rs" <<'EOF'
+    use rs_launch_blueprint::{
+        CreateProjectInput, HttpProjectsPort, Paths, ProjectQuery, Token, in_memory_service,
+        workspace_info,
+    };
+
+    fn main() {
+        let info = workspace_info();
+        assert_eq!(info.version, rs_launch_blueprint::VERSION);
+        let svc = in_memory_service([]);
+        let created = svc
+            .create_project(&CreateProjectInput {
+                name: "smoke".to_owned(),
+                workspace: None,
+            })
+            .expect("create project");
+        assert_eq!(svc.list_projects(&ProjectQuery::default()).unwrap().len(), 1);
+        svc.delete_project(&created.id).expect("delete project");
+        let _port = HttpProjectsPort::new("http://127.0.0.1:1", Token::new("tok"));
+        let _paths = Paths::from_roots(
+            "/tmp/c".into(),
+            "/tmp/d".into(),
+            "/tmp/s".into(),
+            "/tmp/k".into(),
+        );
+    }
+    EOF
+    cargo run --manifest-path "${scratch}/consumer-default/Cargo.toml" --target-dir "${target_dir}/lib-check"
+
+    # 2. Downstream consumer with default-features = false (minimal core + traits)
+    mkdir -p "${scratch}/consumer-minimal/src"
+    cat > "${scratch}/consumer-minimal/Cargo.toml" <<EOF
+    [package]
+    name = "downstream-minimal"
+    version = "0.1.0"
+    edition = "2024"
+
+    [dependencies]
+    rs-launch-blueprint = { version = "${ver}", default-features = false }
+
+    [patch.crates-io]
+    rs-launch-blueprint-core = { path = "${scratch}/rs-launch-blueprint-core-${ver}" }
+    rs-launch-blueprint = { path = "${scratch}/rs-launch-blueprint-${ver}" }
+    EOF
+    cat > "${scratch}/consumer-minimal/src/main.rs" <<'EOF'
+    use rs_launch_blueprint::{CreateProjectInput, ErrorCode, ProjectQuery, in_memory_service};
+
+    fn main() {
+        let svc = in_memory_service([]);
+        let created = svc
+            .create_project(&CreateProjectInput {
+                name: "minimal".to_owned(),
+                workspace: None,
+            })
+            .expect("create project");
+        assert_eq!(svc.get_project(&created.id).unwrap().name, "minimal");
+        assert_eq!(
+            svc.get_project("missing").unwrap_err().error_code(),
+            ErrorCode::NotFound
+        );
+        assert_eq!(svc.list_projects(&ProjectQuery::default()).unwrap().len(), 1);
+    }
+    EOF
+    cargo run --manifest-path "${scratch}/consumer-minimal/Cargo.toml" --target-dir "${target_dir}/lib-check"
+    tree=$(cargo tree --manifest-path "${scratch}/consumer-minimal/Cargo.toml" --edges normal --prefix none)
+    for forbidden in "ureq " "toml " "toml_edit " "etcetera " "clap " "axum " "tokio " "arboard "; do
+        if grep -q "$forbidden" <<<"$tree"; then
+            echo "lib-check: minimal consumer pulled forbidden crate '${forbidden}'" >&2
+            exit 1
+        fi
+    done
+
+    # 3. Private module visibility boundary check (must fail to compile)
+    cat > "${scratch}/consumer-minimal/src/main.rs" <<'EOF'
+    use rs_launch_blueprint::internal::InternalMarker;
+    fn main() {
+        let _ = InternalMarker;
+    }
+    EOF
+    if cargo check --manifest-path "${scratch}/consumer-minimal/Cargo.toml" --target-dir "${target_dir}/lib-check" >/dev/null 2>&1; then
+        echo "lib-check: private module rs_launch_blueprint::internal unexpectedly compiled" >&2
+        exit 1
+    fi
+    echo "lib-check passed: default + minimal consumers and private-module boundary verified (v${ver})"
+
+# Package publishable .crate archives, extract outside the repo, install CLI into a throwaway root, and verify --version (R50, OV-18)
 [group('build'), group('releases')]
 install-check mode="":
     #!/usr/bin/env bash
@@ -372,8 +496,22 @@ install-check mode="":
     scratch=$(mktemp -d)
     trap 'rm -rf "$scratch"' EXIT
 
-    cargo package --workspace --locked --no-verify
-    for pkg in rs-launch-blueprint-core rs-launch-blueprint-cli rs-launch-blueprint-web rs-launch-blueprint; do
+    if [ "$mode" = "web" ]; then
+        cargo build --locked -p rs-launch-blueprint-web --bin {{app_name}}-serve --target-dir "${target_dir}/install-check"
+        serve_bin="${target_dir}/install-check/debug/{{app_name}}-serve"
+        test -x "$serve_bin"
+        got=$("$serve_bin" --version)
+        want="{{app_name}}-serve ${ver}"
+        if [ "$got" != "$want" ]; then
+            echo "install-check (web): expected '${want}', got '${got}'" >&2
+            exit 1
+        fi
+        echo "install-check (web) passed: ${got}"
+        exit 0
+    fi
+
+    cargo package -p rs-launch-blueprint-core -p rs-launch-blueprint -p rs-launch-blueprint-cli --locked --no-verify
+    for pkg in rs-launch-blueprint-core rs-launch-blueprint rs-launch-blueprint-cli; do
         archive="${target_dir}/package/${pkg}-${ver}.crate"
         test -f "$archive"
         tar -xzf "$archive" -C "$scratch"
@@ -382,24 +520,17 @@ install-check mode="":
     cat > "${scratch}/patch.toml" <<EOF
     [patch.crates-io]
     rs-launch-blueprint-core = { path = "${scratch}/rs-launch-blueprint-core-${ver}" }
-    rs-launch-blueprint-cli = { path = "${scratch}/rs-launch-blueprint-cli-${ver}" }
-    rs-launch-blueprint-web = { path = "${scratch}/rs-launch-blueprint-web-${ver}" }
+    rs-launch-blueprint = { path = "${scratch}/rs-launch-blueprint-${ver}" }
     EOF
 
-    install_args=(
-        --path "${scratch}/rs-launch-blueprint-${ver}"
-        --root "${scratch}/root"
-        --locked
-        --debug
-        --no-track
-        --target-dir "${target_dir}/install-check"
+    cargo install \
+        --path "${scratch}/rs-launch-blueprint-cli-${ver}" \
+        --root "${scratch}/root" \
+        --locked \
+        --debug \
+        --no-track \
+        --target-dir "${target_dir}/install-check" \
         --config "${scratch}/patch.toml"
-    )
-    if [ "$mode" = "web" ]; then
-        install_args+=(--features web)
-    fi
-
-    cargo install "${install_args[@]}"
 
     test -x "${scratch}/root/bin/{{app_name}}"
     got=$("${scratch}/root/bin/{{app_name}}" --version)
@@ -408,17 +539,11 @@ install-check mode="":
         echo "install-check: expected '${want}', got '${got}'" >&2
         exit 1
     fi
-
-    if [ "$mode" = "web" ]; then
-        test -x "${scratch}/root/bin/{{app_name}}-serve"
-        "${scratch}/root/bin/{{app_name}}-serve" --version
-    else
-        if [ -e "${scratch}/root/bin/{{app_name}}-serve" ]; then
-            echo "install-check: web feature gate leaked rslbp-serve into default install" >&2
-            exit 1
-        fi
+    if [ -e "${scratch}/root/bin/{{app_name}}-serve" ]; then
+        echo "install-check: unexpected rslbp-serve binary installed from CLI crate" >&2
+        exit 1
     fi
-    echo "install-check (${mode:-default}) passed: ${got}"
+    echo "install-check (default) passed: ${got}"
 
 # Run all R26 packed `.crate` content and metadata guards across workspace packages
 [group('build'), group('releases')]
@@ -465,7 +590,7 @@ release-status:
 # Enforce workspace dependency bans, advisories, licenses, and sources across all features (R02)
 [group('dev')]
 deny:
-    cargo deny --all-features check
+    cargo deny --workspace --all-features check
 
 # Run RustSec advisory audit against Cargo.lock with warnings denied (R13)
 [group('dev')]
@@ -515,9 +640,9 @@ serve-once *args:
     #!/usr/bin/env bash
     set -euo pipefail
     if [ "$#" -gt 0 ]; then
-        exec cargo run --features web --bin {{app_name}}-serve -- "$@"
+        exec cargo run -p rs-launch-blueprint-web --bin {{app_name}}-serve -- "$@"
     fi
-    exec cargo run --features web --bin {{app_name}}-serve
+    exec cargo run -p rs-launch-blueprint-web --bin {{app_name}}-serve
 
 # ================================
 # OPENAPI CONTRACTS, CLIENT GEN & CONTAINER IMAGE (R51, R71, R84)
@@ -527,12 +652,12 @@ serve-once *args:
 [group('web'), group('build')]
 export-openapi:
     mkdir -p openapi
-    EXPECTORATE=overwrite cargo test --locked --workspace --features web --test openapi openapi_snapshot_is_current
+    EXPECTORATE=overwrite cargo test --locked -p rs-launch-blueprint-web --test openapi openapi_snapshot_is_current
 
 # Verify zero drift between code and committed openapi/openapi.json plus F307/F312 invariants (R71)
 [group('web'), group('test')]
 check-openapi:
-    cargo nextest run --locked --workspace --features web --test openapi
+    cargo nextest run --locked -p rs-launch-blueprint-web --test openapi
 
 # Compare working openapi/openapi.json against a base ref with oasdiff (R71 F333)
 [group('web'), group('test')]
@@ -686,15 +811,15 @@ blaze-status:
     }
     echo "Live compatibility probes:"
     probe_blaze "default workspace" check
-    probe_blaze "--features web" check --features web
-    probe_blaze "--features metrics" check --features metrics
-    probe_blaze "--features otel" check --features otel
+    probe_blaze "core crate" check -p rs-launch-blueprint-core
+    probe_blaze "root library crate" check -p rs-launch-blueprint
+    probe_blaze "web crate" check -p rs-launch-blueprint-web
     echo ""
     echo "Upstream issue & feature policy (re-probed in P09 on blaze 0.20261127.0):"
-    echo "  #598 (utoipa-gen 6.0.1)   : RESOLVED in isolated probe; workspace check still blocked by utoipa-axum 0.3.0 routes! macro"
+    echo "  #598 (utoipa-gen 6.0.1)   : RESOLVED in isolated probe; web crate check still blocked by utoipa-axum 0.3.0 routes! macro"
     echo "  #1826 (metrics-util/prom) : RESOLVED in isolated probe (metrics 0.24.6 + metrics-exporter-prometheus 0.18.3 pass)"
     echo "  otel (0.33 / t-otel 0.34) : PASS in isolated probe; CLI lacks --features so Cargo remains authoritative"
-    echo "  core package loop         : \`blaze test -p rs-launch-blueprint-core\` and \`blaze build -p rs-launch-blueprint --bin rslbp\` pass"
+    echo "  core/library loop         : \`blaze test -p rs-launch-blueprint-core\` and \`blaze build -p rs-launch-blueprint-cli --bin rslbp\` pass"
     echo "  http_adapter_boundary     : Cargo-authoritative while blaze hits async-lock easy_wrapper! macro resolution"
     echo "  cli binary/insta/proptest : Cargo-authoritative while blaze skips ring C objs and virtualizes CARGO_MANIFEST_DIR"
 

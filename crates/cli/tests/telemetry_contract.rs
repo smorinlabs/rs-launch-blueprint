@@ -10,13 +10,12 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use rs_launch_blueprint::{
-    ErrorCode, FileLogFormat, LevelLadderInput, LogFormat, LogLevel, Profile, REDACTED,
-    ResolvedLogFormat, RotatingFile, SENSITIVE_KEY_PARTS, ServiceLogFormat, TelemetryInit,
-    build_scoped_subscriber, init_telemetry, is_sensitive_key, resolve_console_level,
-    resolve_log_file, resolve_log_format,
+use rs_launch_blueprint::{ErrorCode, FileLogFormat, LogLevel, Token};
+use rs_launch_blueprint_cli::{
+    CliTelemetryProfile, LevelLadderInput, LogFormat, REDACTED, ResolvedLogFormat, RotatingFile,
+    SENSITIVE_KEY_PARTS, TelemetryInit, build_scoped_subscriber, init_telemetry, is_sensitive_key,
+    resolve_console_level, resolve_log_file, resolve_log_format,
 };
-use secrecy::SecretString;
 use tracing::{debug, info, info_span, warn};
 
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
@@ -115,14 +114,16 @@ fn json_formatter_redacts_event_and_span_fields_with_utc_timestamp_and_key_order
     let buf = CaptureBuf::default();
     let writer_buf = buf.clone();
     let (subscriber, _handles) = build_scoped_subscriber(
-        Profile::Service {
+        CliTelemetryProfile {
+            format: LogFormat::Json,
             level: LogLevel::Info,
-            format: ServiceLogFormat::Json,
+            ansi: false,
+            debug: false,
         },
         move || writer_buf.clone(),
     );
 
-    let typed_secret = SecretString::from("sk_live_TYPED_SECRET".to_owned());
+    let typed_secret = Token::new("sk_live_TYPED_SECRET");
     let _guard = tracing::subscriber::set_default(subscriber);
     {
         let span = info_span!(
@@ -191,7 +192,7 @@ fn console_formatter_redacts_fields_escapes_control_bytes_and_documents_ov09_bou
     let buf = CaptureBuf::default();
     let writer_buf = buf.clone();
     let (subscriber, _handles) = build_scoped_subscriber(
-        Profile::Cli {
+        CliTelemetryProfile {
             format: LogFormat::Console,
             level: LogLevel::Info,
             ansi: false,
@@ -326,7 +327,7 @@ fn level_ladder_follows_seven_rung_r58_order() {
 }
 
 #[test]
-fn format_resolution_and_service_format_validation_match_r58() {
+fn format_resolution_and_validation_match_r58() {
     assert_eq!(LogFormat::Auto.resolve(true), ResolvedLogFormat::Console);
     assert_eq!(LogFormat::Auto.resolve(false), ResolvedLogFormat::Json);
     assert_eq!(
@@ -345,16 +346,8 @@ fn format_resolution_and_service_format_validation_match_r58() {
     );
     assert_eq!(resolve_log_format(None, None), LogFormat::Auto);
 
-    assert_eq!(
-        ServiceLogFormat::from_str("json").expect("json"),
-        ServiceLogFormat::Json
-    );
-    assert_eq!(
-        ServiceLogFormat::from_str("console").expect("console"),
-        ServiceLogFormat::Console
-    );
-    let err_auto = ServiceLogFormat::from_str("auto").expect_err("service rejects auto");
-    assert_eq!(err_auto.error_code(), ErrorCode::ConfigInvalid);
+    let err_xml = LogFormat::from_str("xml").expect_err("reject unknown log format");
+    assert_eq!(err_xml.error_code(), ErrorCode::ConfigInvalid);
 }
 
 #[test]
@@ -368,7 +361,7 @@ fn reload_handle_swaps_level_and_file_sink_slot_has_independent_level_and_redact
         let buf = CaptureBuf::default();
         let writer_buf = buf.clone();
         let (subscriber, handles) = build_scoped_subscriber(
-            Profile::Cli {
+            CliTelemetryProfile {
                 format: LogFormat::Console,
                 level: LogLevel::Warn,
                 ansi: true,
@@ -422,7 +415,7 @@ fn reload_handle_swaps_level_and_file_sink_slot_has_independent_level_and_redact
         let buf = CaptureBuf::default();
         let writer_buf = buf.clone();
         let (subscriber, handles) = build_scoped_subscriber(
-            Profile::Cli {
+            CliTelemetryProfile {
                 format: LogFormat::Console,
                 level: LogLevel::Warn,
                 ansi: false,
@@ -579,9 +572,11 @@ fn init_telemetry_never_panics_when_called_twice_and_renders_sample_lines() {
     let json_buf = CaptureBuf::default();
     let json_writer = json_buf.clone();
     let (json_sub, _) = build_scoped_subscriber(
-        Profile::Service {
+        CliTelemetryProfile {
+            format: LogFormat::Json,
             level: LogLevel::Info,
-            format: ServiceLogFormat::Json,
+            ansi: false,
+            debug: true,
         },
         move || json_writer.clone(),
     );
@@ -599,13 +594,14 @@ fn init_telemetry_never_panics_when_called_twice_and_renders_sample_lines() {
     let json_line = json_buf.text();
     println!("SAMPLE_JSON: {}", json_line.trim());
     assert!(json_line.contains("[REDACTED]"));
+    assert!(json_line.contains("\"file\":") && json_line.contains("\"line\":"));
     assert!(!json_line.contains("sk_live_secret"));
     assert!(!json_line.contains("sk_span_secret"));
 
     let console_buf = CaptureBuf::default();
     let console_writer = console_buf.clone();
     let (console_sub, _) = build_scoped_subscriber(
-        Profile::Cli {
+        CliTelemetryProfile {
             format: LogFormat::Console,
             level: LogLevel::Info,
             ansi: false,
@@ -631,7 +627,7 @@ fn init_telemetry_never_panics_when_called_twice_and_renders_sample_lines() {
     assert!(!console_line.contains("sk_span_secret"));
 
     // Global `init_telemetry` never panics; a second call always reports `HostOwned` (R58).
-    let first = init_telemetry(Profile::Cli {
+    let first = init_telemetry(CliTelemetryProfile {
         format: LogFormat::Console,
         level: LogLevel::Warn,
         ansi: false,
@@ -641,16 +637,18 @@ fn init_telemetry_never_panics_when_called_twice_and_renders_sample_lines() {
         first,
         TelemetryInit::Installed(_) | TelemetryInit::HostOwned
     ));
-    let second = init_telemetry(Profile::Service {
+    let second = init_telemetry(CliTelemetryProfile {
+        format: LogFormat::Json,
         level: LogLevel::Info,
-        format: ServiceLogFormat::Json,
+        ansi: false,
+        debug: false,
     });
     assert!(matches!(second, TelemetryInit::HostOwned));
 }
 
 #[test]
 fn telemetry_formats_visitors_span_updates_and_handle_controls() {
-    // LogFormat & ServiceLogFormat Display / as_str / FromStr coverage.
+    // LogFormat Display / as_str / FromStr coverage.
     for (raw, expected) in [
         ("auto", LogFormat::Auto),
         ("console", LogFormat::Console),
@@ -662,32 +660,26 @@ fn telemetry_formats_visitors_span_updates_and_handle_controls() {
     }
     assert!(LogFormat::from_str("xml").is_err());
 
-    assert_eq!(ServiceLogFormat::Json.as_str(), "json");
-    assert_eq!(ServiceLogFormat::Json.to_string(), "json");
-    assert_eq!(ServiceLogFormat::Console.as_str(), "console");
-    assert_eq!(ServiceLogFormat::Console.to_string(), "console");
-    assert_eq!(
-        ServiceLogFormat::Console.resolved(),
-        ResolvedLogFormat::Console
-    );
-    assert_eq!(ServiceLogFormat::Json.resolved(), ResolvedLogFormat::Json);
-
     let sample_err = std::io::Error::other("sample-io-err");
 
     // Exercise every Visit scalar type (f64, NaN, i64, u64, i128, u128, bool, error)
     // and span record updates (`add_fields`) under both Console and JSON profiles.
     for (profile, expect_json) in [
         (
-            Profile::Service {
+            CliTelemetryProfile {
+                format: LogFormat::Json,
                 level: LogLevel::Trace,
-                format: ServiceLogFormat::Json,
+                ansi: false,
+                debug: false,
             },
             true,
         ),
         (
-            Profile::Service {
+            CliTelemetryProfile {
+                format: LogFormat::Console,
                 level: LogLevel::Trace,
-                format: ServiceLogFormat::Console,
+                ansi: false,
+                debug: false,
             },
             false,
         ),
@@ -773,7 +765,7 @@ fn telemetry_formats_visitors_span_updates_and_handle_controls() {
         let buf = CaptureBuf::default();
         let writer_buf = buf.clone();
         let (subscriber, handles) = build_scoped_subscriber(
-            Profile::Cli {
+            CliTelemetryProfile {
                 format: LogFormat::Console,
                 level: LogLevel::Trace,
                 ansi: true,
@@ -799,9 +791,11 @@ fn telemetry_formats_visitors_span_updates_and_handle_controls() {
     let buf_res = CaptureBuf::default();
     let w_res = buf_res.clone();
     let (sub_res, handles_res) = build_scoped_subscriber(
-        Profile::Service {
+        CliTelemetryProfile {
+            format: LogFormat::Json,
             level: LogLevel::Info,
-            format: ServiceLogFormat::Json,
+            ansi: false,
+            debug: false,
         },
         move || w_res.clone(),
     );
@@ -818,8 +812,7 @@ fn telemetry_formats_visitors_span_updates_and_handle_controls() {
             .is_err()
     );
 
-    // Exercise ServiceLogFormat invalid value, empty RotatingFile path, and backup_count=0 truncate rotation.
-    assert!(ServiceLogFormat::from_str("xml").is_err());
+    // Exercise empty RotatingFile path and backup_count=0 truncate rotation.
     assert!(RotatingFile::open("", 1024, 1).is_err());
     let zero_backup_log = tmp_rot.path().join("zero-backup.log");
     let mut rot0 = RotatingFile::open(&zero_backup_log, 10, 0).expect("open zero-backup log");

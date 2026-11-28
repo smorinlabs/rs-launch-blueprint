@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use axum::body::Body;
 use axum::http::{Method, Request, StatusCode, header};
-use rs_launch_blueprint_core::{InMemoryProjectsPort, Project, ProjectsService};
+use rs_launch_blueprint::{InMemoryProjectsPort, Project, ProjectsService};
 use rs_launch_blueprint_web::{
     AppState, ListResponse, PaginationLimits, WebSettings, build_router, decode_cursor,
     encode_cursor,
@@ -27,7 +27,7 @@ fn seeded_projects(count: usize) -> Vec<Project> {
 fn state_with_projects(projects: Vec<Project>) -> AppState {
     let port = Arc::new(InMemoryProjectsPort::with_projects(projects));
     let service = Arc::new(ProjectsService::new(
-        port as Arc<dyn rs_launch_blueprint_core::ProjectsPort>,
+        port as Arc<dyn rs_launch_blueprint::ProjectsPort>,
     ));
     AppState::for_testing(service)
 }

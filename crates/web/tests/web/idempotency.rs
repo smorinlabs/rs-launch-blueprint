@@ -9,14 +9,12 @@ use axum::Router;
 use axum::body::Body;
 use axum::http::{HeaderValue, Method, Request, StatusCode, header};
 use axum::routing::{get, post};
-use rs_launch_blueprint_core::{
-    AlwaysFreshIdempotencyStore, CachedResponse, CompletedOutcome, FakeClock, IdempotencyBegin,
-    IdempotencyCacheKey, IdempotencyStore, InMemoryIdempotencyStore, InMemoryProjectsPort,
-    PortError, ProjectsPort, ProjectsService,
-};
+use rs_launch_blueprint::{InMemoryProjectsPort, PortError, ProjectsPort, ProjectsService};
 use rs_launch_blueprint_web::{
-    AppState, DEFAULT_PROBLEM_BASE_URI, IDEMPOTENCY_KEY_HEADER, IDEMPOTENCY_REPLAYED_HEADER,
-    IdempotencyConfig, REQUEST_ID, StoreDispatch, apply_idempotency, build_router,
+    AlwaysFreshIdempotencyStore, AppState, CachedResponse, CompletedOutcome,
+    DEFAULT_PROBLEM_BASE_URI, FakeClock, IDEMPOTENCY_KEY_HEADER, IDEMPOTENCY_REPLAYED_HEADER,
+    IdempotencyBegin, IdempotencyCacheKey, IdempotencyConfig, IdempotencyStore,
+    InMemoryIdempotencyStore, REQUEST_ID, StoreDispatch, apply_idempotency, build_router,
     compute_fingerprint,
 };
 use tower::ServiceExt;
@@ -241,7 +239,7 @@ async fn idempotency_middleware_replay_mismatch_query_headers_and_405_before_cla
 
     // Only ONE project exists in the store.
     assert_eq!(
-        port.list(&rs_launch_blueprint_core::ProjectQuery::default())
+        port.list(&rs_launch_blueprint::ProjectQuery::default())
             .unwrap()
             .len(),
         1

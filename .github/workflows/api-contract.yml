@@ -80,4 +80,4 @@ jobs:
           env-vars: "ImageOS"
           prefix-key: "v1-rslbp"
       - name: Verify committed openapi/openapi.json has zero drift
-        run: cargo test --locked --workspace --features web --test openapi
+        run: cargo test --locked -p rs-launch-blueprint-web --test openapi

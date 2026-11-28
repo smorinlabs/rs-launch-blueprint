@@ -2,18 +2,35 @@
 name = "rs-launch-blueprint-web"
 version = "0.1.0"
 authors.workspace = true
+autobins = false
+default-run = "rslbp-serve"
 edition.workspace = true
+homepage.workspace = true
 include = ["/src"]
 license.workspace = true
+publish = false
 repository.workspace = true
 rust-version.workspace = true
-description = "Optional web service front end for rs-launch-blueprint."
+description = "Optional Axum HTTP web service binary (`rslbp-serve`) and middleware for rs-launch-blueprint."
+
+[package.metadata.dist]
+dist = false
+
+[lib]
+name = "rs_launch_blueprint_web"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rslbp-serve"
+path = "src/bin/serve.rs"
 
 [features]
 default = []
 metrics = ["dep:metrics", "dep:metrics-exporter-prometheus"]
 otel = [
     "dep:opentelemetry",
+    "dep:opentelemetry_sdk",
+    "dep:opentelemetry-otlp",
     "dep:opentelemetry-http",
     "dep:tracing-opentelemetry",
 ]
@@ -21,6 +38,7 @@ otel = [
 [dependencies]
 axum = "0.8.9"
 base64 = { version = "0.23.1", default-features = false, features = ["std"] }
+clap = { version = "4.6.6", features = ["derive", "env", "wrap_help"] }
 http-body = "1.0.1"
 metrics = { version = "0.24.6", optional = true }
 metrics-exporter-prometheus = { version = "0.18.3", optional = true, default-features = false }
@@ -28,8 +46,17 @@ opentelemetry = { version = ">=0.33.0, <0.34.0", optional = true, default-featur
     "trace",
 ] }
 opentelemetry-http = { version = ">=0.33.0, <0.34.0", optional = true, default-features = false }
+opentelemetry-otlp = { version = ">=0.33.0, <0.34.0", optional = true, default-features = false, features = [
+    "trace",
+    "http-proto",
+    "reqwest-blocking-client",
+    "internal-logs",
+] }
+opentelemetry_sdk = { version = ">=0.33.0, <0.34.0", optional = true, default-features = false, features = [
+    "trace",
+] }
 problem_details = { version = "0.10.0", features = ["axum", "json"] }
-rs-launch-blueprint-core = { version = "0.1.0", path = "../core" }
+rs-launch-blueprint = { version = "0.1.0", path = "../.." }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 sha2 = { version = "0.11.0", default-features = false, features = ["alloc"] }
@@ -53,13 +80,18 @@ tower-http = { version = "0.7.1", default-features = false, features = [
 ] }
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
 tracing-opentelemetry = { version = ">=0.34.0, <0.35.0", optional = true, default-features = false }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 utoipa = "6.0.0"
 utoipa-axum = "0.3.0"
 
 [dev-dependencies]
+assert_cmd = "2.2.2"
 expectorate = "1.3.0"
+httpmock = { version = "0.8.3", default-features = false }
 oas3 = "0.22.0"
+predicates = "3.1.4"
 proptest = "1.11.0"
+tempfile = "3.27.0"
 tower = { version = "0.5.3", features = ["util"] }
 
 [lints]

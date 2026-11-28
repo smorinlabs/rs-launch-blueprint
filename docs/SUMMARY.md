@@ -25,6 +25,7 @@
 # Reference
 
 - [Reference Overview](reference/README.md)
+  - [Library Reference](reference/library-reference.md)
   - [CLI Reference](reference/cli-reference.md)
   - [Web API Reference](reference/web-api-reference.md)
   - [Project Structure](reference/project-structure.md)
@@ -54,5 +55,6 @@
 
 - [Architecture Decision Records](adr/README.md)
   - [ADR Template](adr/template.md)
+  - [0001 — Library-First Workspace Topology](adr/0001-library-first-workspace-topology.md)
 - [Design Specifications](design/README.md)
 - [Research Notes](research/README.md)

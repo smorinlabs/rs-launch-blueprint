@@ -5,8 +5,8 @@ use std::sync::{Arc, Mutex};
 
 use httpmock::prelude::*;
 use rs_launch_blueprint::{
-    CreateProjectInput, DomainError, ErrorCode, Exit, HttpProjectsPort, PortError, Project,
-    ProjectQuery, ProjectsPort, Token, assert_projects_port_contract, production_service,
+    CreateProjectInput, DomainError, ErrorCode, HttpProjectsPort, PortError, Project, ProjectQuery,
+    ProjectsPort, Token, assert_projects_port_contract, production_service,
 };
 
 #[test]
@@ -302,7 +302,10 @@ fn http_adapter_boundary_maps_statuses_and_rejects_schema_drift() {
         .get("any")
         .expect_err("closed port must return Transport error");
     assert_eq!(transport.error_code(), ErrorCode::Transport);
-    assert_eq!(DomainError::from(transport).exit(), Exit::Runtime);
+    assert_eq!(
+        DomainError::from(transport).error_code(),
+        ErrorCode::Transport
+    );
     assert_eq!(
         broken_port
             .list(&ProjectQuery::default())
@@ -363,4 +366,57 @@ fn http_adapter_boundary_maps_statuses_and_rejects_schema_drift() {
         p2.delete("err500").unwrap_err().error_code(),
         ErrorCode::RemoteApi
     );
+}
+
+#[test]
+fn http_adapter_header_injector_applies_custom_headers_across_all_methods() {
+    let server = MockServer::start();
+    let list_mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/projects")
+            .header("x-custom-trace", "trace-abc");
+        then.status(200)
+            .header("content-type", "application/json")
+            .body(r#"{"data":[]}"#);
+    });
+    let get_mock = server.mock(|when, then| {
+        when.method(GET)
+            .path("/projects/p1")
+            .header("x-custom-trace", "trace-abc");
+        then.status(404);
+    });
+    let create_mock = server.mock(|when, then| {
+        when.method(POST)
+            .path("/projects")
+            .header("x-custom-trace", "trace-abc");
+        then.status(201)
+            .header("content-type", "application/json")
+            .body(r#"{"data":{"gid":"p9","name":"Injected","workspace":null}}"#);
+    });
+    let delete_mock = server.mock(|when, then| {
+        when.method(DELETE)
+            .path("/projects/p9")
+            .header("x-custom-trace", "trace-abc");
+        then.status(204);
+    });
+
+    let port = HttpProjectsPort::new(server.base_url(), Token::new("tok")).with_header_injector(
+        Arc::new(|| vec![("x-custom-trace".to_owned(), "trace-abc".to_owned())]),
+    );
+
+    assert!(port.list(&ProjectQuery::default()).unwrap().is_empty());
+    assert!(port.get("p1").unwrap().is_none());
+    let created = port
+        .create(&CreateProjectInput {
+            name: "Injected".to_owned(),
+            workspace: None,
+        })
+        .unwrap();
+    assert_eq!(created.id, "p9");
+    assert!(port.delete("p9").unwrap());
+
+    list_mock.assert();
+    get_mock.assert();
+    create_mock.assert();
+    delete_mock.assert();
 }

@@ -17,8 +17,7 @@ pub use loader::{
 };
 pub use schema::{
     ColorPreference, ConfigFile, ConfigOverrides, FileLogFormat, LogLevel, LoggingConfig,
-    OutputConfig, OutputFormat, ResolvedLogFormat, ServiceLogFormat, UnvalidatedConfig,
-    ValidConfig, ValidationIssue, ValidationReport,
+    OutputConfig, OutputFormat, UnvalidatedConfig, ValidConfig, ValidationIssue, ValidationReport,
 };
 pub use writer::{
     WRITABLE_KEYS, get_config_value, read_config_file_key, set_config_value,

@@ -2,20 +2,49 @@
 name = "rs-launch-blueprint-cli"
 version = "0.1.0"
 authors.workspace = true
+autobins = false
+categories = ["command-line-utilities"]
+default-run = "rslbp"
 edition.workspace = true
+homepage.workspace = true
 include = [
     "/src",
     "/build.rs",
+    "/README.md",
+    "/LICENSE",
+    "/LICENSE-MIT",
 ]
+keywords = ["blueprint", "cli", "command-line"]
 license.workspace = true
+readme = "README.md"
 repository.workspace = true
 rust-version.workspace = true
-description = "CLI front end for rs-launch-blueprint."
+description = "CLI binary (`rslbp`) and terminal front end for rs-launch-blueprint."
+
+[package.metadata.docs.rs]
+all-features = true
+
+[lib]
+name = "rs_launch_blueprint_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rslbp"
+path = "src/main.rs"
+
+[features]
+default = ["clipboard"]
+clipboard = ["dep:arboard"]
+keychain = ["rs-launch-blueprint/keychain"]
 
 [dependencies]
 anstream = "1.0.0"
 anstyle = "1.0.14"
 anstyle-hyperlink = { version = "1.0.2", features = ["file"] }
+anyhow = "1.0.104"
+arboard = { version = "3.6.1", default-features = false, features = [
+    "wayland-data-control",
+], optional = true }
 clap = { version = "4.6.6", features = ["derive", "env", "wrap_help"] }
 clap_complete = "4.6.9"
 indicatif = "0.18"
@@ -24,19 +53,28 @@ inquire = { version = "0.9.4", default-features = false, features = [
     "macros",
 ] }
 percent-encoding = "2.3.2"
-rs-launch-blueprint-core = { version = "0.1.0", path = "../core" }
+rs-launch-blueprint = { version = "0.1.0", path = "../.." }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 shlex = "2.0.1"
 supports-hyperlinks = "3.2.0"
 tabled = { version = "=0.22.0", default-features = false, features = ["ansi"] }
 tempfile = "3.27.0"
+thiserror = "2.0.20"
 tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[target.'cfg(unix)'.dependencies]
+signal-hook = { version = "0.4.4", default-features = false }
 
 [dev-dependencies]
 anstream = { version = "1.0.0", features = ["test"] }
+assert_cmd = "2.2.2"
+httpmock = { version = "0.8.3", default-features = false }
 indicatif = { version = "0.18", features = ["in_memory"] }
 insta = "1.48.0"
+predicates = "3.1.4"
+proptest = "1.11.0"
 
 [lints]
 workspace = true

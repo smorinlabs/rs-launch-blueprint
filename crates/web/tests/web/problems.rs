@@ -7,7 +7,7 @@ use std::sync::Arc;
 use axum::body::Body;
 use axum::http::{HeaderValue, Method, Request, StatusCode, header};
 use axum::response::IntoResponse;
-use rs_launch_blueprint_core::{
+use rs_launch_blueprint::{
     AuthError, DomainError, ErrorCode, InMemoryProjectsPort, PortError, ProjectsPort,
     ProjectsService,
 };

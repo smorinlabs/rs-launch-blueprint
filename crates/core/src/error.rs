@@ -1,53 +1,18 @@
-//! Error taxonomy, stable `RSLB###` error catalog, exit codes, and typed library errors
-//! (`R67`, `R03`, `R55`, `R56`).
+//! Error taxonomy, stable `RSLB###` error catalog, and typed library errors
+//! (`R67`, `R03`, `R55`, `R56`, `OV-18`).
+//!
+//! Process exit codes and surface-specific error variants (such as CLI clipboard and prompt
+//! interruptions) belong to front-end crates, keeping `crates/core` strictly transport- and
+//! presentation-neutral.
 
 use std::borrow::Cow;
 use std::fmt;
 use std::io;
 use std::ops::Range;
 use std::path::PathBuf;
-use std::process::ExitCode;
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
-
-/// Process exit-code taxonomy from the org CLI Design Standard R6.1 (`R67`).
-///
-/// Unlisted failures collapse to [`Exit::Runtime`] (`1`).
-#[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Exit {
-    /// Successful completion (`0`).
-    Success = 0,
-    /// Generic runtime, I/O, transport, or unexpected failure (`1`).
-    Runtime = 1,
-    /// Command usage, argument parse, configuration, or input error (`2`).
-    Usage = 2,
-    /// Requested resource does not exist (`3`).
-    NotFound = 3,
-    /// Authentication or authorization required or rejected (`4`).
-    Auth = 4,
-    /// Resource conflict or precondition failure (`5`).
-    Conflict = 5,
-    /// Interrupted by `SIGINT` or Ctrl-C (`130`).
-    SigInt = 130,
-    /// Terminated by `SIGTERM` (`143`).
-    SigTerm = 143,
-}
-
-impl Exit {
-    /// Return the numeric POSIX exit code for this taxonomy variant.
-    #[must_use]
-    pub const fn code(self) -> u8 {
-        self as u8
-    }
-}
-
-impl From<Exit> for ExitCode {
-    fn from(value: Exit) -> Self {
-        Self::from(value.code())
-    }
-}
 
 /// Stable, append-only `error-contract/v1` error code catalog (`R67`).
 ///
@@ -57,39 +22,39 @@ impl From<Exit> for ExitCode {
 #[non_exhaustive]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ErrorCode {
-    /// `RSLB000` — unexpected/internal error (`Exit::Runtime`).
+    /// `RSLB000` — unexpected or internal error.
     Unexpected,
-    /// `RSLB101` — local I/O or unavailable resource error (`Exit::Runtime`).
+    /// `RSLB101` — local I/O or unavailable resource error.
     Io,
-    /// `RSLB102` — network transport failure (DNS/connect/timeout/TLS) (`Exit::Runtime`).
+    /// `RSLB102` — network transport failure (DNS/connect/timeout/TLS).
     Transport,
-    /// `RSLB103` — remote API protocol/status/schema failure (`Exit::Runtime`).
+    /// `RSLB103` — remote API protocol/status/schema failure.
     RemoteApi,
-    /// `RSLB104` — explicit configuration layer unreadable (`Exit::Runtime`).
+    /// `RSLB104` — explicit configuration layer unreadable.
     ConfigUnreadable,
-    /// `RSLB201` — CLI usage or argument parse error (`Exit::Usage`).
+    /// `RSLB201` — invalid caller input or usage error.
     Usage,
-    /// `RSLB202` — explicit configuration document unparsable (`Exit::Usage`).
+    /// `RSLB202` — explicit configuration document unparsable.
     ConfigUnparsable,
-    /// `RSLB203` — configuration value or key invalid (`Exit::Usage`).
+    /// `RSLB203` — configuration value or key invalid.
     ConfigInvalid,
-    /// `RSLB204` — secret supplied through a prohibited channel (`Exit::Usage`).
+    /// `RSLB204` — secret supplied through a prohibited channel.
     ProhibitedSecretChannel,
-    /// `RSLB205` — required non-auth input or consent unavailable (`Exit::Usage`).
+    /// `RSLB205` — required non-auth input or consent unavailable.
     InputUnavailable,
-    /// `RSLB301` — requested resource not found (`Exit::NotFound`).
+    /// `RSLB301` — requested resource not found.
     NotFound,
-    /// `RSLB401` — required credentials absent (`Exit::Auth`).
+    /// `RSLB401` — required credentials absent.
     CredentialsAbsent,
-    /// `RSLB402` — credentials rejected by remote service (`Exit::Auth`).
+    /// `RSLB402` — credentials rejected by remote service.
     CredentialsRejected,
-    /// `RSLB501` — conflict or precondition failed (`Exit::Conflict`).
+    /// `RSLB501` — conflict or precondition failed.
     Conflict,
-    /// `RSLB901` — process interrupted by `SIGINT` (`Exit::SigInt`).
+    /// `RSLB901` — process interrupted by `SIGINT`.
     SigInt,
-    /// `RSLB902` — process terminated by `SIGTERM` (`Exit::SigTerm`).
+    /// `RSLB902` — process terminated by `SIGTERM`.
     SigTerm,
-    /// `RSLB903` — interactive prompt interrupted by Ctrl-C (`Exit::SigInt`).
+    /// `RSLB903` — interactive prompt interrupted by Ctrl-C.
     PromptInterrupted,
 }
 
@@ -136,28 +101,6 @@ impl ErrorCode {
             Self::SigInt => "RSLB901",
             Self::SigTerm => "RSLB902",
             Self::PromptInterrupted => "RSLB903",
-        }
-    }
-
-    /// Return the [`Exit`] taxonomy status mapped to this error code.
-    #[must_use]
-    pub const fn exit(&self) -> Exit {
-        match self {
-            Self::Unexpected
-            | Self::Io
-            | Self::Transport
-            | Self::RemoteApi
-            | Self::ConfigUnreadable => Exit::Runtime,
-            Self::Usage
-            | Self::ConfigUnparsable
-            | Self::ConfigInvalid
-            | Self::ProhibitedSecretChannel
-            | Self::InputUnavailable => Exit::Usage,
-            Self::NotFound => Exit::NotFound,
-            Self::CredentialsAbsent | Self::CredentialsRejected => Exit::Auth,
-            Self::Conflict => Exit::Conflict,
-            Self::SigInt | Self::PromptInterrupted => Exit::SigInt,
-            Self::SigTerm => Exit::SigTerm,
         }
     }
 }
@@ -237,12 +180,12 @@ impl PortError {
         }
     }
 
-    /// Optional actionable next step for human and JSON error envelopes.
+    /// Optional actionable next step for error envelopes.
     #[must_use]
     pub fn hint(&self) -> Option<Cow<'_, str>> {
         match self {
             Self::Unauthorized { .. } => Some(Cow::Borrowed(
-                "check RSLBP_TOKEN or re-authenticate with `rslbp auth login`",
+                "verify credentials or refresh your authentication token",
             )),
             Self::Transport { .. } => Some(Cow::Borrowed(
                 "verify network connectivity and endpoint URL",
@@ -326,12 +269,12 @@ impl ConfigError {
         }
     }
 
-    /// Optional actionable next step for human and JSON error envelopes.
+    /// Optional actionable next step for error envelopes.
     #[must_use]
     pub fn hint(&self) -> Option<Cow<'_, str>> {
         match self {
             Self::ProhibitedSecretChannel { .. } => Some(Cow::Borrowed(
-                "supply credentials via --token-file, RSLBP_TOKEN, or `rslbp auth login`",
+                "supply credentials via a token file, RSLBP_TOKEN, or a dedicated credential store",
             )),
             Self::UnknownKey { valid_keys, .. } if !valid_keys.is_empty() => Some(Cow::Owned(
                 format!("settable keys: {}", valid_keys.join(", ")),
@@ -390,7 +333,7 @@ impl AuthError {
     pub fn hint(&self) -> Option<Cow<'_, str>> {
         match self {
             Self::CredentialsAbsent { .. } => Some(Cow::Borrowed(
-                "provide a token with --token-file, RSLBP_TOKEN, or `rslbp auth login`",
+                "provide a token via a token file, RSLBP_TOKEN, or a dedicated credential store",
             )),
             Self::Io { .. } | Self::StoreUnavailable { .. } => None,
         }
@@ -401,7 +344,7 @@ impl AuthError {
 #[non_exhaustive]
 #[derive(Debug, Error)]
 pub enum DomainError {
-    /// Requested resource was authoritatively absent (`RSLB301`, exit `3`).
+    /// Requested resource was authoritatively absent (`RSLB301`).
     #[error("{kind} '{id}' not found")]
     NotFound {
         /// Resource kind (e.g., `"project"`).
@@ -418,7 +361,7 @@ pub enum DomainError {
     /// Authentication or credential-resolution error.
     #[error(transparent)]
     Auth(#[from] AuthError),
-    /// Invalid user input or domain usage error (`RSLB201`, exit `2`).
+    /// Invalid caller input or domain usage error (`RSLB201`).
     #[error("{message}")]
     Usage {
         /// Human-readable error message.
@@ -426,7 +369,7 @@ pub enum DomainError {
         /// Optional remediation hint.
         hint: Option<String>,
     },
-    /// Required non-auth input or confirmation unavailable (`RSLB205`, exit `2`).
+    /// Required non-auth input or confirmation unavailable (`RSLB205`).
     #[error("{message}")]
     InputUnavailable {
         /// Human-readable error message.
@@ -434,7 +377,7 @@ pub enum DomainError {
         /// Optional remediation hint.
         hint: Option<String>,
     },
-    /// Resource or file conflict / precondition failed (`RSLB501`, exit `5`).
+    /// Resource or file conflict / precondition failed (`RSLB501`).
     #[error("{message}")]
     Conflict {
         /// Human-readable error message.
@@ -442,12 +385,6 @@ pub enum DomainError {
         /// Optional remediation hint.
         hint: Option<String>,
     },
-    /// Clipboard backend failure after rendering (`RSLB101`, exit `1`, `R62`).
-    #[error(transparent)]
-    Clipboard(#[from] crate::clipboard::ClipboardError),
-    /// Interactive prompt interrupted by Ctrl-C (`RSLB903`, exit `130`, `R61`, `R67`).
-    #[error("prompt interrupted")]
-    PromptInterrupted,
 }
 
 impl DomainError {
@@ -462,26 +399,17 @@ impl DomainError {
             Self::Usage { .. } => ErrorCode::Usage,
             Self::InputUnavailable { .. } => ErrorCode::InputUnavailable,
             Self::Conflict { .. } => ErrorCode::Conflict,
-            Self::Clipboard(err) => err.error_code(),
-            Self::PromptInterrupted => ErrorCode::PromptInterrupted,
         }
-    }
-
-    /// Return the process [`Exit`] code for this domain error.
-    #[must_use]
-    pub const fn exit(&self) -> Exit {
-        self.error_code().exit()
     }
 
     /// Return an optional structured hint naming a concrete next step (`R67`, `R7.6`).
     #[must_use]
     pub fn hint(&self) -> Option<Cow<'_, str>> {
         match self {
-            Self::NotFound { .. } | Self::PromptInterrupted => None,
+            Self::NotFound { .. } => None,
             Self::Port(err) => err.hint(),
             Self::Config(err) => err.hint(),
             Self::Auth(err) => err.hint(),
-            Self::Clipboard(err) => err.hint(),
             Self::Usage { hint, .. }
             | Self::InputUnavailable { hint, .. }
             | Self::Conflict { hint, .. } => hint.as_deref().map(Cow::Borrowed),
@@ -511,7 +439,7 @@ pub struct ErrorBody {
     pub hint: Option<String>,
 }
 
-/// Machine-readable stderr error envelope defined by `error-contract/v1` (`R67`, CLI R7.8).
+/// Machine-readable error envelope defined by `error-contract/v1` (`R67`, CLI R7.8).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ErrorEnvelope {
     /// Nested error object (`{"error": { ... }}`).

@@ -123,4 +123,4 @@ jobs:
           bash scripts/install-shellcheck.sh
           echo "$install_dir" >> "$GITHUB_PATH"
       - name: Run Template Press and stamped-child bootstrap acceptance suite
-        run: cargo test --locked --features web --test bootstrap_acceptance -- --ignored --nocapture
+        run: cargo test --locked --test bootstrap_acceptance -- --ignored --nocapture

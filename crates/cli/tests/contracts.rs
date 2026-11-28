@@ -1,17 +1,26 @@
 //! CLI-crate contract tests exercising `clap`, `indicatif::InMemoryTerm`, and `anstream`
 //! (`R60`, `R63`, `R65`).
 
+use std::error::Error as _;
 use std::ffi::OsString;
+use std::io;
+use std::process::ExitCode;
 
 use anstream::{AutoStream, ColorChoice};
 use clap::CommandFactory;
 use indicatif::{InMemoryTerm, ProgressDrawTarget};
-use rs_launch_blueprint_cli::{
-    CURATED_ENV_VARS, Cli, ColorArg, EnvLookup, LogFormatArg, LogLevelArg, MapEnv, OutputFormatArg,
-    ProcessEnv, SpinnerGuard, is_clipboard_daemon_argv, render_version_line, resolve_color,
-    resolve_stream_color, should_show_spinner, sniff_initial_log_settings,
+use proptest::prelude::*;
+use rs_launch_blueprint::{
+    AuthError, ColorPreference, ConfigError, DomainError, ErrorCode, LogLevel, OutputFormat,
+    PortError, Project,
 };
-use rs_launch_blueprint_core::{ColorPreference, LogLevel, OutputFormat};
+use rs_launch_blueprint_cli::{
+    CURATED_ENV_VARS, Cli, ClipboardError, ClipboardPort, ColorArg, EnvLookup, Exit,
+    FailingClipboard, LogFormatArg, LogLevelArg, MapEnv, OutputFormatArg, ProcessEnv,
+    ProjectListView, SpinnerGuard, TermCaps, cli_hint_for_domain_error, is_clipboard_daemon_argv,
+    render_version_line, render_view, resolve_color, resolve_stream_color, should_show_spinner,
+    sniff_initial_log_settings,
+};
 
 fn args(slice: &[&str]) -> Vec<OsString> {
     let mut out = Vec::with_capacity(slice.len() + 1);
@@ -276,4 +285,193 @@ fn r65_color_precedence_ladder_and_stream_independence() {
         ]
     );
     let _ = ProcessEnv.iter_prefixed("");
+}
+
+#[test]
+fn exit_taxonomy_and_error_code_mapping_match_cli_design_standard_r6_1() {
+    assert_eq!(Exit::Success.code(), 0);
+    assert_eq!(Exit::Runtime.code(), 1);
+    assert_eq!(Exit::Usage.code(), 2);
+    assert_eq!(Exit::NotFound.code(), 3);
+    assert_eq!(Exit::Auth.code(), 4);
+    assert_eq!(Exit::Conflict.code(), 5);
+    assert_eq!(Exit::SigInt.code(), 130);
+    assert_eq!(Exit::SigTerm.code(), 143);
+
+    let _code: ExitCode = Exit::NotFound.into();
+
+    const PINNED: &[(&str, u8)] = &[
+        ("RSLB000", 1),
+        ("RSLB101", 1),
+        ("RSLB102", 1),
+        ("RSLB103", 1),
+        ("RSLB104", 1),
+        ("RSLB201", 2),
+        ("RSLB202", 2),
+        ("RSLB203", 2),
+        ("RSLB204", 2),
+        ("RSLB205", 2),
+        ("RSLB301", 3),
+        ("RSLB401", 4),
+        ("RSLB402", 4),
+        ("RSLB501", 5),
+        ("RSLB901", 130),
+        ("RSLB902", 143),
+        ("RSLB903", 130),
+    ];
+    for (idx, (expected_code, expected_exit)) in PINNED.iter().enumerate() {
+        let actual = ErrorCode::ALL[idx];
+        assert_eq!(actual.as_str(), *expected_code);
+        assert_eq!(
+            Exit::from_error_code(actual).code(),
+            *expected_exit,
+            "pinned exit code for {expected_code} drifted"
+        );
+    }
+
+    let missing_auth = DomainError::from(AuthError::CredentialsAbsent {
+        detail: "no token".to_owned(),
+    });
+    assert_eq!(Exit::from_domain_error(&missing_auth), Exit::Auth);
+    assert!(
+        cli_hint_for_domain_error(&missing_auth)
+            .expect("CLI hint")
+            .contains("--token-file")
+    );
+    let prohibited = DomainError::from(ConfigError::ProhibitedSecretChannel {
+        key: "token".to_owned(),
+    });
+    assert!(
+        cli_hint_for_domain_error(&prohibited)
+            .expect("CLI hint")
+            .contains("RSLBP_TOKEN")
+    );
+    let unauth = DomainError::from(PortError::Unauthorized {
+        detail: "expired".to_owned(),
+        source: None,
+    });
+    assert!(
+        cli_hint_for_domain_error(&unauth)
+            .expect("CLI hint")
+            .contains("--token-file")
+    );
+    let nf = DomainError::NotFound {
+        kind: "project",
+        id: "demo".to_owned(),
+    };
+    assert!(cli_hint_for_domain_error(&nf).is_none());
+}
+
+#[test]
+fn clipboard_error_variants_and_failing_default() {
+    let clip_src = ClipboardError::with_source(
+        "clipboard failed",
+        Some("pipe instead".to_owned()),
+        Box::new(io::Error::other("x11 down")),
+    );
+    assert!(clip_src.source().is_some());
+    assert_eq!(clip_src.hint().as_deref(), Some("pipe instead"));
+
+    let failing_default = FailingClipboard::default();
+    let err = failing_default.set_text("hello").unwrap_err();
+    assert!(err.hint().is_some());
+}
+
+#[test]
+fn rslbp_binary_reports_version() {
+    let bin = env!("CARGO_BIN_EXE_rslbp");
+    let output = std::process::Command::new(bin)
+        .arg("--version")
+        .output()
+        .expect("rslbp --version must execute");
+    assert!(
+        output.status.success(),
+        "rslbp --version exited with {:?}",
+        output.status
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert_eq!(
+        stdout.trim(),
+        format!("rslbp {}", rs_launch_blueprint::VERSION),
+        "rslbp --version must print `rslbp <VERSION>`"
+    );
+}
+
+#[cfg(all(feature = "clipboard", target_os = "linux"))]
+#[test]
+fn linux_headless_clipboard_fails_fast_and_daemon_exits_cleanly() {
+    use rs_launch_blueprint_cli::ArboardClipboard;
+    use std::process::{Command, Stdio};
+
+    if std::env::var_os("DISPLAY").is_some() || std::env::var_os("WAYLAND_DISPLAY").is_some() {
+        return;
+    }
+    let err = ArboardClipboard::new()
+        .set_text("headless-probe")
+        .expect_err("headless Linux without display server must fail fast");
+    assert!(
+        err.to_string().contains("Linux display server"),
+        "unexpected clipboard error: {err}"
+    );
+
+    let status = Command::new(env!("CARGO_BIN_EXE_rslbp"))
+        .arg("--clipboard-daemon")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .expect("spawn rslbp --clipboard-daemon");
+    assert!(
+        !status.success(),
+        "clipboard daemon without Linux display server must exit non-zero"
+    );
+}
+
+proptest! {
+    #[test]
+    fn cli_output_renderers_preserve_machine_invariants_across_arbitrary_projects(
+        projects in proptest::collection::vec(
+            (
+                "[A-Za-z0-9_|\\\\ -]{1,20}",
+                "[A-Za-z0-9_|\\\\\",\\n\\x1b -]{0,32}",
+                prop::option::of("[A-Za-z0-9_|\\\\\",\\n -]{0,20}"),
+            )
+                .prop_map(|(id, name, workspace)| Project { id, name, workspace }),
+            0..8,
+        ),
+    ) {
+        let view = ProjectListView {
+            projects: projects.clone(),
+        };
+
+        let mut json_buf = Vec::new();
+        render_view(&view, OutputFormat::Json, TermCaps::plain(), &mut json_buf)
+            .expect("render json");
+        prop_assert!(!json_buf.contains(&0x1b));
+        let parsed: serde_json::Value = serde_json::from_slice(&json_buf).expect("valid json");
+        prop_assert_eq!(parsed["projects"].as_array().unwrap().len(), projects.len());
+
+        let mut md_buf = Vec::new();
+        render_view(&view, OutputFormat::Markdown, TermCaps::plain(), &mut md_buf)
+            .expect("render markdown");
+        prop_assert!(!md_buf.contains(&0x1b));
+        let md = String::from_utf8(md_buf).expect("utf-8 md");
+        if projects.is_empty() {
+            prop_assert_eq!(md.lines().count(), 1);
+        } else {
+            prop_assert_eq!(md.lines().count(), projects.len() + 4);
+        }
+
+        let mut name_buf = Vec::new();
+        render_view(&view, OutputFormat::Name, TermCaps::plain(), &mut name_buf)
+            .expect("render name");
+        prop_assert!(!name_buf.contains(&0x1b));
+        let names = String::from_utf8(name_buf).expect("utf-8 name");
+        prop_assert_eq!(names.lines().count(), projects.len());
+
+        let mut table_buf = Vec::new();
+        render_view(&view, OutputFormat::Table, TermCaps::plain(), &mut table_buf)
+            .expect("render table");
+        prop_assert!(!table_buf.contains(&0x1b));
+    }
 }

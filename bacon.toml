@@ -5,8 +5,8 @@
 command = [
     "cargo",
     "run",
-    "--features",
-    "web",
+    "-p",
+    "rs-launch-blueprint-web",
     "--bin",
     "rslbp-serve",
 ]

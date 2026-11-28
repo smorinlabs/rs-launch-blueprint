@@ -11,7 +11,7 @@ use std::sync::Arc;
 
 use axum::body::{Body, to_bytes};
 use axum::http::{Request, StatusCode, header};
-use rs_launch_blueprint_core::{InMemoryProjectsPort, ProjectsPort, ProjectsService};
+use rs_launch_blueprint::{InMemoryProjectsPort, ProjectsPort, ProjectsService};
 use rs_launch_blueprint_web::{
     API_DOCUMENT_VERSION, AppState, OPENAPI_PATH, build_router, openapi_json,
 };
@@ -33,7 +33,7 @@ fn empty_state() -> AppState {
 }
 
 /// Regenerate with:
-/// `EXPECTORATE=overwrite cargo test --locked --workspace --features web --test openapi openapi_snapshot_is_current`
+/// `EXPECTORATE=overwrite cargo test --locked -p rs-launch-blueprint-web --test openapi openapi_snapshot_is_current`
 #[test]
 fn openapi_snapshot_is_current() {
     expectorate::assert_contents(SNAPSHOT, &openapi_json());

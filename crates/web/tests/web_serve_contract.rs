@@ -1,49 +1,75 @@
-//! Feature-off compile isolation (`R69`) and `rslbp-serve` binary contract tests (`R69`, `R77`,
+//! Crate-isolation (`R69`, `OV-18`) and `rslbp-serve` binary contract tests (`R69`, `R77`,
 //! `R80`, `R67`).
 
 use std::path::PathBuf;
 use std::process::Command;
 
 fn repo_root() -> PathBuf {
-    if let Some(dir) = std::env::var_os("CARGO_MANIFEST_DIR") {
-        let candidate = PathBuf::from(dir);
-        if candidate.join("Cargo.toml").is_file() {
-            return candidate;
-        }
+    let manifest_dir = std::env::var_os("CARGO_MANIFEST_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
+    if let Some(root) = manifest_dir.parent().and_then(|p| p.parent())
+        && root.join("Cargo.toml").is_file()
+    {
+        return root.to_path_buf();
     }
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    manifest_dir
 }
 
 #[test]
-fn feature_off_default_graph_contains_no_axum_or_tokio() {
+fn library_and_cli_graphs_contain_no_axum_or_tokio() {
     let cargo = option_env!("CARGO").unwrap_or("cargo");
-    let out = Command::new(cargo)
-        .args([
+    for args in [
+        &[
             "tree",
+            "-p",
+            "rs-launch-blueprint",
             "--no-default-features",
             "--edges",
             "normal",
             "--prefix",
             "none",
-        ])
-        .current_dir(repo_root())
-        .output()
-        .expect("cargo tree must execute");
-    assert!(
-        out.status.success(),
-        "cargo tree failed: {}",
-        String::from_utf8_lossy(&out.stderr)
-    );
-    let tree = String::from_utf8_lossy(&out.stdout);
-    for forbidden in ["axum ", "tokio ", "tower-http ", "problem_details "] {
+        ][..],
+        &[
+            "tree",
+            "-p",
+            "rs-launch-blueprint",
+            "--all-features",
+            "--edges",
+            "normal",
+            "--prefix",
+            "none",
+        ][..],
+        &[
+            "tree",
+            "-p",
+            "rs-launch-blueprint-cli",
+            "--edges",
+            "normal",
+            "--prefix",
+            "none",
+        ][..],
+    ] {
+        let out = Command::new(cargo)
+            .args(args)
+            .current_dir(repo_root())
+            .output()
+            .expect("cargo tree must execute");
         assert!(
-            !tree.contains(forbidden),
-            "feature-off normal dependency graph must not contain `{forbidden}`:\n{tree}"
+            out.status.success(),
+            "cargo {args:?} failed: {}",
+            String::from_utf8_lossy(&out.stderr)
         );
+        let tree = String::from_utf8_lossy(&out.stdout);
+        for forbidden in ["axum ", "tokio ", "tower-http ", "problem_details "] {
+            assert!(
+                !tree.contains(forbidden),
+                "non-web normal dependency graph ({args:?}) must not contain `{forbidden}`:\n{tree}"
+            );
+        }
     }
 }
 
-#[cfg(feature = "web")]
 mod serve_binary {
     use std::io::{Read, Write};
     use std::net::{TcpListener, TcpStream};

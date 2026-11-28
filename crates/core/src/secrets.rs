@@ -1,18 +1,23 @@
 //! Secret policy, redacted [`Token`] carrier, credential stores, and three-tier resolution
-//! (`R56`, CLI Design Standard R5.5 / R5.6 / R10.1).
+//! (`R56`).
 //!
 //! Layered configuration files (`rslbp_config.toml`) NEVER supply credentials. Credentials
 //! resolve strictly in the order:
 //!
-//! 1. `--token-file <PATH>` (or `-` for stdin)
+//! 1. Explicit token file path (or `Path::new("-")` for pre-read stdin contents)
 //! 2. `RSLBP_TOKEN` environment variable (empty string treated as unset per F242)
 //! 3. Stored credential (`0600 credentials.toml` under `state_dir()`, or optional OS keychain)
 
 use std::fmt;
-use std::fs::{self, OpenOptions};
-use std::io::{self, Write};
+use std::fs;
+#[cfg(feature = "config")]
+use std::fs::OpenOptions;
+use std::io;
+#[cfg(feature = "config")]
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
+#[cfg(feature = "config")]
 use std::sync::atomic::{AtomicU64, Ordering};
 
 use secrecy::{ExposeSecret, SecretString};
@@ -23,6 +28,7 @@ use crate::error::AuthError;
 /// Environment variable supplying an API token (`R56` F241).
 pub const TOKEN_ENV_VAR: &str = "RSLBP_TOKEN";
 
+#[cfg(feature = "config")]
 static NEXT_TMP_SEQ: AtomicU64 = AtomicU64::new(0);
 
 /// Redacted API token backed by [`secrecy::SecretString`] (`R56`).
@@ -72,12 +78,12 @@ impl fmt::Display for Token {
     }
 }
 
-/// Which channel supplied a resolved [`Token`] (`R56`, CLI R5.7).
+/// Which channel supplied a resolved [`Token`] (`R56`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TokenSource {
-    /// Supplied via `--token-file <PATH>`.
+    /// Supplied via an explicit token file path.
     TokenFile,
-    /// Supplied via `--token-file -` (standard input).
+    /// Supplied via pre-read standard input (`Path::new("-")`).
     Stdin,
     /// Supplied via `RSLBP_TOKEN`.
     Env,
@@ -86,7 +92,7 @@ pub enum TokenSource {
 }
 
 impl TokenSource {
-    /// Stable display label for `--show-origin` and diagnostics.
+    /// Stable display label for provenance and diagnostics.
     #[must_use]
     pub const fn as_str(&self) -> &'static str {
         match self {
@@ -213,11 +219,13 @@ pub trait CredentialStore: Send + Sync {
 }
 
 /// Default plaintext `0600` TOML credential file store under `state_dir()` (`R56`).
+#[cfg(feature = "config")]
 #[derive(Debug, Clone)]
 pub struct FileCredentialStore {
     path: PathBuf,
 }
 
+#[cfg(feature = "config")]
 impl FileCredentialStore {
     /// Create a file-backed credential store at `path` (typically `paths.credentials_file()`).
     #[must_use]
@@ -232,6 +240,7 @@ impl FileCredentialStore {
     }
 }
 
+#[cfg(feature = "config")]
 impl CredentialStore for FileCredentialStore {
     fn load(&self) -> Result<(Option<Token>, Vec<CredentialWarning>), AuthError> {
         let mut raw = match fs::read_to_string(&self.path) {
@@ -356,7 +365,7 @@ impl CredentialStore for InMemoryCredentialStore {
 /// Inputs to [`resolve_token`], injected so resolution stays pure and hermetically testable.
 #[derive(Default)]
 pub struct TokenResolutionInputs<'a> {
-    /// Value of `--token-file <PATH>` (`Path::new("-")` selects stdin).
+    /// Explicit token file path (`Path::new("-")` selects pre-read stdin contents).
     pub token_file: Option<&'a Path>,
     /// Pre-read stdin contents used when `token_file == Some(Path::new("-"))`.
     pub stdin_token: Option<&'a str>,
@@ -366,13 +375,13 @@ pub struct TokenResolutionInputs<'a> {
     pub store: Option<&'a dyn CredentialStore>,
 }
 
-/// Resolve an API token across the three R56 tiers (`--token-file` > `RSLBP_TOKEN` > stored).
+/// Resolve an API token across the three R56 tiers (explicit token file > `RSLBP_TOKEN` > stored).
 ///
 /// Never reads the layered config file and never writes to stdout or stderr (`R56` AC10).
-/// An explicit `--token-file` pointing to a missing or empty file fails with
+/// An explicit token file pointing to a missing or empty file fails with
 /// [`AuthError::CredentialsAbsent`] (`RSLB401`) and never falls through to lower tiers (`R56` AC6).
 pub fn resolve_token(inputs: &TokenResolutionInputs<'_>) -> Result<TokenResolution, AuthError> {
-    // Tier 1: --token-file <PATH> (or `-` for stdin).
+    // Tier 1: explicit token file path (or `-` for pre-read stdin).
     if let Some(path) = inputs.token_file {
         if path == Path::new("-") {
             let trimmed = inputs
@@ -463,6 +472,7 @@ pub fn resolve_token(inputs: &TokenResolutionInputs<'_>) -> Result<TokenResoluti
 ///
 /// Creates parent directories with mode `0700` on Unix. Never uses `std::env::temp_dir()` so the
 /// rename is guaranteed same-filesystem and atomic.
+#[cfg(feature = "config")]
 pub(crate) fn write_atomic_0600(target: &Path, bytes: &[u8]) -> io::Result<()> {
     let parent = target
         .parent()

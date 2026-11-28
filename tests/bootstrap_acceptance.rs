@@ -841,6 +841,7 @@ mod live {
         run_checked(&child, &just, &["check"], &target_env);
         run_checked(&child, &press, &["verify", "--target", "."], &[]);
         run_checked(&child, &just, &["check-packaging"], &target_env);
+        run_checked(&child, &just, &["lib-check"], &target_env);
 
         // CLI binary & web serve binary smoke tests.
         let cli_ver = run_checked(
@@ -857,8 +858,8 @@ mod live {
             &[
                 "run",
                 "--locked",
-                "--features",
-                "web",
+                "-p",
+                "harbor-sample-web",
                 "--bin",
                 "harborctl-serve",
                 "--",
