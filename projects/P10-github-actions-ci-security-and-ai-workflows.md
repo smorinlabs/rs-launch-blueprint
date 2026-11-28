@@ -10,7 +10,7 @@
 - **Prior art:** [R18 ai-assisted-review-workflows](../research/topics/18-ai-assisted-review-workflows/DECISION.md)
 - **Prior art:** [R86 codex-assisted-review-workflows](../research/topics/86-codex-assisted-review-workflows/DECISION.md)
 
-**Status:** `[ ]` scoped, not started.
+**Status:** `[x]` completed.
 
 ### Scope
 Build the full GitHub Actions CI, security scanning, freshness canary, Dependabot, and AI review/triage workflow suite:
@@ -29,11 +29,11 @@ Build the full GitHub Actions CI, security scanning, freshness canary, Dependabo
 - Anthropic OSS Scanner enrollment (deferred post-`P13` per owner decision `1c-A`)
 
 ### Tests & Tasks
-- [ ] [P10-TS01] Add workflow meta-tests validating top-level `permissions: {}` (`R08`), full-SHA action pinning + release comments (`R20`), `plan` path-filter fail-closed cases (`R11`), `ci-ok` coverage of all `ci.yml` jobs (`R12`), and credential-preflight gating on all AI/triage workflows (`R18`, `R86`, `1b-A`)
-- [ ] [P10-T01] Author `.github/workflows/ci.yml` (`plan`, `hygiene`, `workflow-lint`, OS-matrix `check` incl. `--all-features`/OTel leg, `msrv-floor`, `install-smoke`, `ci-ok`) and retire standalone `shellcheck.yml` once covered by `hygiene`
-- [ ] [P10-T02] Author security & contract workflows (`dep-audit.yml`, `dependency-review.yml`, `codeql.yml` + `.github/codeql/codeql-config.yml`, `secret-scan.yml`, `large-file-guard.yml`, `commitlint.yml`, `api-contract.yml`, `docker-web.yml`, `canary.yml`) and `.github/dependabot.yml`
-- [ ] [P10-T03] Author AI review & triage workflows (`claude-code-review.yml`, `claude.yml`, `codex-code-review.yml`, `codex.yml`, and Muse `audit-triage.yml` + `.github/muse-audit-triage/` policy) with credential-preflight gating
-- [ ] [P10-T04] Verify `actionlint`, `zizmor`, SHA-pin comment check, workflow meta-tests, and live GitHub Actions PR checks (including `ci-ok`) all pass green
+- [x] [P10-TS01] Add workflow meta-tests validating top-level `permissions: {}` (`R08`), full-SHA action pinning + release comments (`R20`), `plan` path-filter fail-closed cases (`R11`), `ci-ok` coverage of all `ci.yml` jobs (`R12`), and credential-preflight gating on all AI/triage workflows (`R18`, `R86`, `1b-A`)
+- [x] [P10-T01] Author `.github/workflows/ci.yml` (`plan`, `hygiene`, `workflow-lint`, OS-matrix `check` incl. `--all-features`/OTel leg, `msrv-floor`, `install-smoke`, `ci-ok`) and retire standalone `shellcheck.yml` once covered by `hygiene`
+- [x] [P10-T02] Author security & contract workflows (`dep-audit.yml`, `dependency-review.yml`, `codeql.yml` + `.github/codeql/codeql-config.yml`, `secret-scan.yml`, `large-file-guard.yml`, `commitlint.yml`, `api-contract.yml`, `docker-web.yml`, `canary.yml`) and `.github/dependabot.yml`
+- [x] [P10-T03] Author AI review & triage workflows (`claude-code-review.yml`, `claude.yml`, `codex-code-review.yml`, `codex.yml`, and Muse `audit-triage.yml` + `.github/muse-audit-triage/` policy) with credential-preflight gating
+- [x] [P10-T04] Verify `actionlint`, `zizmor`, SHA-pin comment check, workflow meta-tests, and live GitHub Actions PR checks (including `ci-ok`) all pass green
 
 ### Deliverable
 ```bash

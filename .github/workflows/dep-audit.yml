@@ -1,0 +1,65 @@
+# Weekly full-graph dependency vulnerability and policy audit (R13 F042, R02).
+# Runs on a Monday schedule and manual dispatch only — never gates unrelated PRs.
+# Local equivalent: `just audit` (`cargo audit --deny warnings`) and `just deny`.
+name: weekly-audit
+
+on:
+  schedule:
+    - cron: "0 5 * * 1" # Monday 05:00 UTC
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: weekly-audit
+  cancel-in-progress: false
+
+jobs:
+  cargo-audit:
+    name: cargo-audit (RustSec)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # Check out Cargo.lock and .cargo/audit.toml
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install cargo-audit 0.22.2
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: cargo-audit@0.22.2
+      - name: Audit Cargo.lock against RustSec (warnings denied)
+        run: cargo audit --deny warnings
+
+  cargo-deny:
+    name: cargo-deny (advisories, bans, licenses, sources)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # Check out manifests, Cargo.lock, and deny.toml
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install cargo-deny 0.20.2
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: cargo-deny@0.20.2
+      - name: Run cargo deny across all features
+        run: cargo deny --all-features check
+
+  osv-scanner:
+    name: osv-scanner (OSV + GHSA breadth)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # Check out repository lockfiles for OSV scan
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Scan repository lockfiles with OSV-Scanner
+        uses: google/osv-scanner-action/osv-scanner-action@a345acffa64b0eaede81a3d9aae6141214d9c8fc # v2.6.0
+        with:
+          scan-args: --recursive ./

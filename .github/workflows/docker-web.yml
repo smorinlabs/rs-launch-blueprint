@@ -1,0 +1,123 @@
+# Container image build and runtime smoke verification for rslbp-serve (R51 member 5).
+# Local BuildKit build only — no registry login or push (GHCR publish lives in P11).
+# Gated by R11's fail-closed web skip-list with Dockerfile, .dockerignore, and
+# this workflow file forced non-skippable.
+name: docker-web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: docker-web-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read # Read git diff to decide whether container build is needed
+    outputs:
+      build: ${{ steps.detect.outputs.build }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect whether container image inputs changed (fail-closed)
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT_NAME}" != "pull_request" ]; then
+            echo "build=true" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          changed="$(git diff --no-ext-diff --no-textconv --no-renames --name-only "${BASE_SHA}...HEAD")"
+          skip='^docs/|^\.vscode/|^\.github/ISSUE_TEMPLATE/|^[^/]+\.md$'
+          packaging='^README\.md$|^CHANGELOG\.md$|^LICENSE$|^LICENSE-MIT$|^LICENSE-APACHE$'
+          docker_inputs='^(Dockerfile|\.dockerignore|\.github/workflows/docker-web\.yml)$'
+          build=true
+          pkg=0; grep -qE "$packaging" <<<"$changed" || pkg=$?
+          dck=0; grep -qE "$docker_inputs" <<<"$changed" || dck=$?
+          rest=0; grep -qvE "${skip}|^\$" <<<"$changed" || rest=$?
+          if [ "$pkg" -eq 1 ] && [ "$dck" -eq 1 ] && [ "$rest" -eq 1 ]; then
+            build=false
+          fi
+          echo "build=${build}" >> "${GITHUB_OUTPUT}"
+          echo "INFO: docker-web build=${build}"
+
+  docker-web:
+    name: docker-web (build and smoke)
+    needs: plan
+    if: ${{ needs.plan.outputs.build == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read # Check out workspace for local BuildKit container build
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Build production rslbp-serve image with BuildKit
+        shell: bash
+        run: |
+          set -euo pipefail
+          DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t rslbp-serve:ci .
+      - name: Verify non-root user, healthcheck, /healthz, and SIGTERM exit 143
+        shell: bash
+        run: |
+          set -euo pipefail
+          user=$(docker inspect --format '{{.Config.User}}' rslbp-serve:ci)
+          if [ "${user}" != "nonroot:nonroot" ]; then
+            echo "error: expected image User=nonroot:nonroot, got '${user}'" >&2
+            exit 1
+          fi
+
+          cid=$(docker run -d \
+            --health-interval=2s \
+            --health-start-period=1s \
+            -p 127.0.0.1:18080:8000 \
+            rslbp-serve:ci)
+          trap 'docker rm -f "${cid}" >/dev/null 2>&1 || true' EXIT
+
+          healthy=0
+          for _ in $(seq 1 30); do
+            state=$(docker inspect --format '{{.State.Health.Status}}' "${cid}" 2>/dev/null || echo "starting")
+            if [ "${state}" = "healthy" ]; then
+              healthy=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "${healthy}" -ne 1 ]; then
+            docker logs "${cid}" || true
+            echo "error: container never reached healthy state" >&2
+            exit 1
+          fi
+
+          http_code=$(curl -fsS -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/healthz)
+          if [ "${http_code}" != "200" ]; then
+            echo "error: expected HTTP 200 from /healthz, got ${http_code}" >&2
+            exit 1
+          fi
+
+          docker stop -t 10 "${cid}" >/dev/null
+          exit_code=$(docker inspect --format '{{.State.ExitCode}}' "${cid}")
+          oom=$(docker inspect --format '{{.State.OOMKilled}}' "${cid}")
+          if [ "${exit_code}" != "143" ] || [ "${oom}" != "false" ]; then
+            docker logs "${cid}" || true
+            echo "error: expected ExitCode=143 and OOMKilled=false after docker stop, got ExitCode=${exit_code} OOMKilled=${oom}" >&2
+            exit 1
+          fi
+          echo "docker-web smoke passed: user=${user} health=healthy /healthz=${http_code} exit=${exit_code}"

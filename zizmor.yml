@@ -1,0 +1,23 @@
+# zizmor static security policy for GitHub Actions workflows (R08, R20).
+# Third-party actions (any owner other than `actions/*` or `github/*`) must be
+# full-SHA pinned. `difftree-pr-comment.yml:63` carries a single path-scoped
+# exemption to preserve byte identity with the canonical upstream template (F062).
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        actions/*: ref-pin
+        github/*: ref-pin
+        "*": hash-pin
+    ignore:
+      - difftree-pr-comment.yml:63
+  # R19 harmonizes a 5-day Dependabot cooldown across py/rs (version updates only).
+  dependabot-cooldown:
+    config:
+      days: 5
+  # Owner decision 1b-A: audit-triage.yml uses workflow_run on weekly-audit, strictly
+  # gated to Organization repos, schedule-only default-branch runs, trusted default-branch
+  # checkout, frozen bounded failure logs, and docs-only edit validation.
+  dangerous-triggers:
+    ignore:
+      - audit-triage.yml

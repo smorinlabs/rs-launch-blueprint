@@ -1,0 +1,566 @@
+# Plan-gated compile-tier CI (R11, R12, R08, R09, R10, R14, R20, R32, R35, R50, py P10/P12).
+#
+# Jobs are partitioned by whether they compile Rust, never by which check they run:
+# - Tier 0: `plan` (fail-closed path detector + release-please fast-path)
+# - Tier 1: `hygiene` (always-run, no `needs:`) and `workflow-lint` (gated on `workflows`)
+# - Tier 2: `check` (OS matrix), `msrv-floor`, `install-smoke`, `coverage`
+# - Aggregate: `ci-ok` (the single required status check for branch protection / rulesets)
+#
+# Contributor rule (R12): every new job added to `ci.yml` MUST join `ci-ok`'s `needs:`;
+# the completeness guard in `workflow-lint` enforces this automatically.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Tier 0 — always runs. No toolchain, no cache action, no target/ directory.
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+      web: ${{ steps.detect.outputs.web }}
+      workflows: ${{ steps.detect.outputs.workflows }}
+      docs: ${{ steps.detect.outputs.docs }}
+      release: ${{ steps.detect.outputs.release }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect changed paths
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # R11-DETECTOR-BEGIN
+          out() { printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"; }
+          if [ "${EVENT_NAME}" != "pull_request" ]; then
+            out code true; out web true; out workflows true; out docs true; out release false
+            echo "INFO: ${EVENT_NAME} event - nothing is skip-gated"
+            exit 0
+          fi
+          # --no-renames lists a rename as a deletion of its source plus an
+          # addition, so moving a packaged file into a skipped directory still
+          # names the packaged path.
+          changed="$(git diff --no-ext-diff --no-textconv --no-renames --name-only "${BASE_SHA}...HEAD")"
+
+          # Release-please fast path (py P12): same-repo release-please branch AND a
+          # diff touching only the manifest, CHANGELOG.md, Cargo.toml version lines,
+          # and Cargo.lock workspace version lines. Content verification, not the
+          # branch name, is what makes skipping heavy compile jobs safe; merge_group
+          # still runs everything.
+          release_only() {
+            local allowed ver old new strip base_manifest head_manifest f
+            case "${HEAD_REF}" in release-please--*) ;; *) return 1 ;; esac
+            [ "${HEAD_REPO}" = "${REPOSITORY}" ] || return 1
+            [ -n "$changed" ] || return 1
+            allowed='^(\.release-please-manifest\.json|CHANGELOG\.md|Cargo\.toml|crates/[^/]+/Cargo\.toml|Cargo\.lock)$'
+            if grep -qvE "${allowed}|^\$" <<<"$changed"; then
+              return 1
+            fi
+            ver='s/.*"\.": *"([^"]+)".*/\1/p'
+            old="$(git show "${BASE_SHA}:.release-please-manifest.json" 2>/dev/null \
+              | sed -nE "$ver")" || return 1
+            new="$(sed -nE "$ver" .release-please-manifest.json 2>/dev/null)" || return 1
+            [ -n "$old" ] && [ -n "$new" ] && [ "$old" != "$new" ] || return 1
+            strip='s/"\.": *"[^"]+"/".": ""/'
+            base_manifest="$(git show "${BASE_SHA}:.release-please-manifest.json" \
+              | sed -E "$strip")" || return 1
+            head_manifest="$(sed -E "$strip" .release-please-manifest.json)" || return 1
+            [ "$head_manifest" = "$base_manifest" ] || return 1
+            for f in Cargo.toml crates/*/Cargo.toml Cargo.lock; do
+              [ -f "$f" ] || continue
+              local hunks
+              hunks="$(git diff -U0 "${BASE_SHA}...HEAD" -- "$f" \
+                | grep -E '^[+-]' | grep -vE '^(\+\+\+|---) ' || true)"
+              [ -n "$hunks" ] || continue
+              if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-rs-launch-blueprint-(core|cli|web) = \\{ version = \"${old}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\}|\\+rs-launch-blueprint-(core|cli|web) = \\{ version = \"${new}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
+                return 1
+              fi
+            done
+            return 0
+          }
+          if release_only; then
+            out code false; out web false; out workflows false; out docs true; out release true
+            echo "INFO: release-please version bump - running hygiene and install-smoke only"
+            exit 0
+          fi
+
+          # Every output starts true and turns false only on affirmative proof
+          # (grep exit 1), reading the full path list from a here-string so an
+          # early-exiting grep -q cannot SIGPIPE an upstream stage under pipefail.
+          code=true; web=true; workflows=true; docs=true
+          skip='^docs/|^\.vscode/|^\.github/ISSUE_TEMPLATE/|^[^/]+\.md$'
+          # R49 [package] include allow-list inputs are never skippable.
+          packaging='^README\.md$|^CHANGELOG\.md$|^LICENSE$|^LICENSE-MIT$|^LICENSE-APACHE$'
+          pkg=0; grep -qE "$packaging" <<<"$changed" || pkg=$?
+          rest=0; grep -qvE "${skip}|^\$" <<<"$changed" || rest=$?
+          if [ "$pkg" -eq 1 ] && [ "$rest" -eq 1 ]; then code=false; fi
+          webdir=0; grep -qE '^crates/web/' <<<"$changed" || webdir=$?
+          if [ "$code" = false ] && [ "$webdir" -eq 1 ]; then web=false; fi
+          wf=0; grep -qE '^\.github/workflows/|^\.github/actions/|^\.github/actionlint\.ya?ml$' <<<"$changed" || wf=$?
+          if [ "$wf" -eq 1 ]; then workflows=false; fi
+          dc=0; grep -qE '^docs/|\.md$' <<<"$changed" || dc=$?
+          if [ "$dc" -eq 1 ]; then docs=false; fi
+          out code "$code"; out web "$web"; out workflows "$workflows"; out docs "$docs"; out release false
+          echo "INFO: code=$code web=$web workflows=$workflows docs=$docs release=false"
+          # R11-DETECTOR-END
+
+  # Tier 1 — always runs (no `needs:` edge, no rust-cache). Hosts every
+  # non-compiling check whose input no single detector key contains.
+  hygiene:
+    name: hygiene
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # R14: large-file guard walks every commit in the range.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain
+        id: toolchain
+        run: rustc --version
+      - name: Install pinned hygiene binaries via install-action
+        id: install-action-tools
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: dprint@0.57.4,typos@1.50.3,zizmor@1.30.1
+      - name: Install checksum-verified hygiene binaries (ast-grep, ryl, editorconfig-checker, shellcheck)
+        id: tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          install_dir="${HOME}/.local/bin"
+          mkdir -p "$install_dir"
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+
+          # ast-grep 0.45.3 (R31)
+          curl -fsSL "https://github.com/ast-grep/ast-grep/releases/download/0.45.3/app-x86_64-unknown-linux-gnu.zip" \
+            -o "$tmpdir/ast-grep.zip"
+          printf 'f8ac830881339d1edee6b2652f54798c0f4da5a827f2db38a08ee31117783ce8  %s\n' "$tmpdir/ast-grep.zip" | sha256sum -c -
+          unzip -q "$tmpdir/ast-grep.zip" -d "$tmpdir/ast-grep"
+          install -m 755 "$tmpdir/ast-grep/ast-grep" "$install_dir/ast-grep"
+
+          # ryl 0.22.0 (R40)
+          curl -fsSL "https://github.com/owenlamont/ryl/releases/download/v0.22.0/ryl-x86_64-unknown-linux-gnu.tar.gz" \
+            -o "$tmpdir/ryl.tar.gz"
+          printf 'e51be237168ff44c8e28caca87db35c15ac5c943bba5edba0e72465b51add524  %s\n' "$tmpdir/ryl.tar.gz" | sha256sum -c -
+          mkdir -p "$tmpdir/ryl"
+          tar -xzf "$tmpdir/ryl.tar.gz" -C "$tmpdir/ryl"
+          install -m 755 "$(find "$tmpdir/ryl" -type f -name ryl | head -n 1)" "$install_dir/ryl"
+
+          # editorconfig-checker 4.0.2 (R40)
+          curl -fsSL "https://github.com/editorconfig-checker/editorconfig-checker/releases/download/v4.0.2/editorconfig-checker-linux-amd64.tar.gz" \
+            -o "$tmpdir/ec.tar.gz"
+          printf '44efaef3ed14c6ab52eb87481d78e5e5c204796dccf26e2f4598a61ba17f8003  %s\n' "$tmpdir/ec.tar.gz" | sha256sum -c -
+          mkdir -p "$tmpdir/ec"
+          tar -xzf "$tmpdir/ec.tar.gz" -C "$tmpdir/ec"
+          install -m 755 "$(find "$tmpdir/ec" -type f -name 'ec-linux-amd64' | head -n 1)" "$install_dir/editorconfig-checker"
+
+          # ShellCheck 0.11.0 (pinned verifier script)
+          bash scripts/install-shellcheck.sh
+          echo "$install_dir" >> "$GITHUB_PATH"
+      - name: Rust formatting check (R27)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rc=0
+          out=$(cargo fmt --all -- --check --verbose 2>&1) || rc=$?
+          grep -v -e '^Formatting ' -e '^Using rustfmt config file ' -e '^Spent ' <<<"$out" || true
+          if [ "$rc" -ne 0 ]; then exit "$rc"; fi
+          if grep -q "can't set" <<<"$out"; then
+            echo "error: rustfmt.toml sets a key this toolchain ignores" >&2
+            exit 1
+          fi
+          root=$(pwd -P)
+          unreached=$(LC_ALL=C comm -23 \
+            <(git ls-files -- '*.rs' ':!research/' | LC_ALL=C sort) \
+            <(sed -n "s|^Formatting $root/||p" <<<"$out" | LC_ALL=C sort -u))
+          if [ -n "$unreached" ]; then
+            printf 'error: tracked .rs files that cargo fmt does not reach:\n%s\n' "$unreached" >&2
+            exit 1
+          fi
+      - name: Non-code formatting check (R29)
+        if: ${{ !cancelled() && steps.install-action-tools.outcome == 'success' }}
+        run: dprint check
+      - name: Security rules self-test and scan (R31)
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ast-grep test --skip-snapshot-tests
+          summary=$(ast-grep scan --error --inspect summary 2>&1 >/dev/null) || { ast-grep scan --error; exit 1; }
+          files=$(printf '%s\n' "$summary" | sed -n 's/.*scannedFileCount=\([0-9]*\).*/\1/p')
+          rules=$(printf '%s\n' "$summary" | sed -n 's/.*effectiveRuleCount=\([0-9]*\).*/\1/p')
+          if [ "${files:-0}" -eq 0 ] || [ "${rules:-0}" -eq 0 ]; then
+            echo "security: scanned ${files:-0} files with ${rules:-0} rules" >&2
+            exit 1
+          fi
+          echo "security: ${files} files, ${rules} rules, 0 findings"
+      - name: Auxiliary hygiene checks (editorconfig, ryl, typos) (R40)
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.install-action-tools.outcome == 'success' }}
+        run: |
+          editorconfig-checker
+          ryl .
+          typos
+      - name: Shell scripts and research-tree validation
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        run: |
+          bash scripts/check-shell.sh
+          bash scripts/test-check-shell.sh
+          bash scripts/test-chain-next.sh
+          bash scripts/check-research-tree.sh --require-owner-review
+          bash scripts/test-check-research-tree.sh
+      - name: Workflow permissions policy check (R08)
+        if: ${{ !cancelled() }}
+        run: bash scripts/check-workflow-permissions.sh
+      - name: Action-pin comment grammar check (R20)
+        if: ${{ !cancelled() }}
+        run: bash scripts/check-action-pin-comments.sh
+      - name: Zizmor static workflow security audit (R08, R20)
+        if: ${{ !cancelled() && steps.install-action-tools.outcome == 'success' }}
+        run: zizmor .github/
+      - name: Large-file guard (R14)
+        if: ${{ !cancelled() }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+        run: sh scripts/check-large-files.sh --range "${BASE_SHA}" HEAD
+        # Docs link-check slot (R82): wired in P13 (`lychee` internal link check).
+        #
+        # Always-on SCA gate scaffold (R13 F049): RustSec check of Cargo.lock. No secret,
+        # no service account. Advisories can appear at any time, so enabling this makes
+        # unrelated PRs fail on new advisories; to report without gating, add
+        # `continue-on-error: true` to the audit step. The live equivalent is weekly-audit
+        # (dep-audit.yml). Uncomment to enforce. Dependabot never refreshes pins inside
+        # comments: copy the current install-action pin and tool version from dep-audit.yml.
+        # - name: Install cargo-audit
+        #   uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        #   with:
+        #     tool: cargo-audit@0.22.2
+        # - name: Audit dependencies (SCA)
+        #   run: cargo audit
+
+  # Tier 1 — path-gated on `workflows`, no compilation. Hosts only checks whose
+  # whole input is contained by the `workflows` detector key.
+  workflow-lint:
+    name: workflow-lint
+    needs: plan
+    if: ${{ needs.plan.outputs.workflows == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install actionlint 1.7.12 (checksum-verified)
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          curl -fsSL "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz" \
+            -o "$tmpdir/actionlint.tar.gz"
+          printf '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  %s\n' "$tmpdir/actionlint.tar.gz" | sha256sum -c -
+          tar -xzf "$tmpdir/actionlint.tar.gz" -C "$tmpdir"
+          mkdir -p "${HOME}/.local/bin"
+          install -m 755 "$tmpdir/actionlint" "${HOME}/.local/bin/actionlint"
+          echo "${HOME}/.local/bin" >> "$GITHUB_PATH"
+      - name: Install zizmor 1.30.1
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: zizmor@1.30.1
+      - name: Lint workflows with actionlint (R09)
+        run: actionlint
+      - name: Audit workflows with zizmor (R20)
+        run: zizmor .github/workflows/
+      - name: Enforce ci-ok completeness over all ci.yml jobs (R12)
+        shell: bash
+        run: |
+          set -euo pipefail
+          yq -o=json '.jobs' .github/workflows/ci.yml | jq -e '
+            (keys - ["ci-ok"]) as $jobs
+            | (.["ci-ok"].needs | if type == "string" then [.] else . end) as $needs
+            | if ($jobs - $needs) == [] and ($needs - $jobs) == [] then true
+              else ("missing from ci-ok needs: \($jobs - $needs); unknown in needs: \($needs - $jobs)\n" | halt_error(1)) end' > /dev/null
+      - name: Enforce literal GitHub-hosted runner labels (R09)
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=$(grep -rnE '^[[:space:]]*runs-on:' .github/workflows/ \
+            | grep -vE 'runs-on:[[:space:]]*(ubuntu-latest|macos-latest|\$\{\{[[:space:]]*matrix\.os[[:space:]]*\}\})[[:space:]]*(#.*)?$' || true)
+          if [ -n "$bad" ]; then
+            printf 'FAIL [R09 runner labels]:\n%s\n' "$bad" >&2
+            exit 1
+          fi
+
+  # Tier 2 — single compiling job per OS matrix runner sharing one target/ cache.
+  check:
+    name: check (${{ matrix.os }})
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    # Escape hatch (R09): substitute larger GitHub-hosted SKU literals here if ever funded.
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain
+        id: toolchain
+        run: rustc --version
+      # Rust-aware CI cache for $CARGO_HOME and target/ (R10).
+      # env-vars ImageOS keys the cache to the runner image generation (Swatinem/rust-cache#341).
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          cache-on-failure: "true"
+          prefix-key: "v1-rslbp"
+      - name: Install pinned test and dependency tools
+        id: tools
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: cargo-nextest@0.9.146,cargo-deny@0.20.2,just@1.58.0
+      - name: Install lefthook 2.1.14 for repo-hygiene integration test
+        id: lefthook
+        shell: bash
+        run: |
+          set -euo pipefail
+          os=$(uname -s)
+          arch=$(uname -m)
+          case "${os}.${arch}" in
+            Linux.x86_64)
+              asset="lefthook_2.1.14_Linux_x86_64.gz"
+              sha="2be3187101b3a2edd5edf8b546aa2e3820531c517b4cd0216601a9c06f07c42d" ;;
+            Darwin.arm64)
+              asset="lefthook_2.1.14_MacOS_arm64.gz"
+              sha="398e6a23dfe2de3fc113e091dd4b592795cc8f1665acf5501856858b8056d686" ;;
+            Darwin.x86_64)
+              asset="lefthook_2.1.14_MacOS_x86_64.gz"
+              sha="9e304cad12b3785bf45ba6085fa6a91ed45f6ff6e7dabd50cb6834959caef06a" ;;
+            *) echo "unsupported runner: ${os}.${arch}" >&2; exit 1 ;;
+          esac
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          curl -fsSL "https://github.com/evilmartians/lefthook/releases/download/v2.1.14/${asset}" -o "$tmpdir/$asset"
+          if command -v sha256sum >/dev/null 2>&1; then
+            printf '%s  %s\n' "$sha" "$tmpdir/$asset" | sha256sum -c -
+          else
+            printf '%s  %s\n' "$sha" "$tmpdir/$asset" | shasum -a 256 -c -
+          fi
+          gunzip -c "$tmpdir/$asset" > "$tmpdir/lefthook"
+          mkdir -p "${HOME}/.local/bin"
+          install -m 755 "$tmpdir/lefthook" "${HOME}/.local/bin/lefthook"
+          echo "${HOME}/.local/bin" >> "$GITHUB_PATH"
+      - name: Record runner image generation (R10 criterion A7)
+        if: ${{ !cancelled() }}
+        run: echo "ImageOS=${ImageOS:-unknown}"
+      - name: Enforce workspace bans, advisories, licenses, and sources (R02)
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        run: cargo deny --all-features check
+      - name: Clippy, default features (R28)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Clippy, web feature on (R28)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo clippy --locked --workspace --all-targets --features web -- -D warnings
+      - name: Clippy, all features (web, otel, metrics, keychain, mock)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+      - name: Facade builds with no default features (R69)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo check --locked --no-default-features -p rs-launch-blueprint
+      - name: Type-check strict across all features (R30)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        env:
+          CARGO_BUILD_WARNINGS: deny
+        run: cargo check --workspace --all-targets --all-features --locked --keep-going
+      - name: Test, feature-off (non-web packages, proven not assumed) (R11, R32)
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
+        run: cargo nextest run --locked --profile ci -p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli
+      - name: Test, web feature only (without otel/metrics) (py P10)
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
+        run: cargo nextest run --locked --profile ci --workspace --features web
+      - name: Test, all features (web, otel, metrics, keychain, mock) (R32, py P10)
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
+        run: cargo nextest run --locked --profile ci --workspace --all-features
+      - name: Doc tests, all features (R32)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo test --doc --locked --workspace --all-features
+      - name: Build rslbp-serve binary
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        run: cargo build --locked --features web --bin rslbp-serve
+      - name: Rustdoc build (warnings denied) (R82)
+        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --locked --workspace --no-deps --all-features
+
+  # Tier 2 — declared `rust-version` MSRV floor job (R11, F033).
+  msrv-floor:
+    name: msrv-floor
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install declared rust-version toolchain
+        id: msrv
+        shell: bash
+        run: |
+          set -euo pipefail
+          msrv=$(sed -n 's/^rust-version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' Cargo.toml | head -n 1)
+          test -n "$msrv"
+          rustup toolchain install "$msrv" --profile minimal --no-self-update
+          echo "version=${msrv}" >> "$GITHUB_OUTPUT"
+          RUSTUP_TOOLCHAIN="$msrv" rustc --version
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Verify declared MSRV floor across workspace targets
+        env:
+          RUSTUP_TOOLCHAIN: ${{ steps.msrv.outputs.version }}
+        run: |
+          cargo check --locked --workspace --all-targets
+          cargo check --locked --workspace --all-targets --all-features
+
+  # Tier 2 — pack -> extract -> install -> run smoke check (R50).
+  # Also runs on the release-please fast-path because the bumped version is a packaging input.
+  install-smoke:
+    name: install-smoke
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' || needs.plan.outputs.release == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain
+        run: rustc --version
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Install just
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: just@1.58.0
+      - name: Install smoke, default surface
+        run: just install-check
+      - name: Install smoke, web surface
+        if: ${{ needs.plan.outputs.web == 'true' || needs.plan.outputs.release == 'true' }}
+        run: just install-check web
+
+  # Tier 2 — LLVM source-based coverage gate and artifact upload (R35).
+  coverage:
+    name: coverage
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CARGO_LLVM_COV_SETUP: "no"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain and llvm-tools-preview
+        run: |
+          rustc --version
+          rustup component add llvm-tools-preview
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Install cargo-llvm-cov and just
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: cargo-llvm-cov@0.9.1,just@1.58.0
+      - name: Install lefthook 2.1.14 for repo-hygiene integration test
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          curl -fsSL "https://github.com/evilmartians/lefthook/releases/download/v2.1.14/lefthook_2.1.14_Linux_x86_64.gz" \
+            -o "$tmpdir/lefthook.gz"
+          printf '2be3187101b3a2edd5edf8b546aa2e3820531c517b4cd0216601a9c06f07c42d  %s\n' "$tmpdir/lefthook.gz" | sha256sum -c -
+          gunzip -c "$tmpdir/lefthook.gz" > "$tmpdir/lefthook"
+          mkdir -p "${HOME}/.local/bin"
+          install -m 755 "$tmpdir/lefthook" "${HOME}/.local/bin/lefthook"
+          echo "${HOME}/.local/bin" >> "$GITHUB_PATH"
+      - name: Run coverage suite and enforce in-repo floors
+        run: just coverage
+      - name: Upload coverage reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: target/llvm-cov/
+          if-no-files-found: warn
+
+  # Always-on aggregate required status check (R12).
+  # Configure branch protection / repository ruleset to require ONLY `ci-ok`
+  # (expected source: GitHub Actions app, integration_id 15368).
+  ci-ok:
+    name: ci-ok
+    needs:
+      - plan
+      - hygiene
+      - workflow-lint
+      - check
+      - msrv-floor
+      - install-smoke
+      - coverage
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Fold every needed job result into one required check
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          jq -r 'to_entries[] | "\(.key): \(.value.result)"' <<< "$NEEDS_JSON"
+          if ! jq -e 'length > 0 and all(.[]; .result == "success" or .result == "skipped")' <<< "$NEEDS_JSON" > /dev/null; then
+            echo "::error::ci-ok: a needed job ended failure or cancelled (or needs is empty)"
+            exit 1
+          fi

@@ -1,0 +1,198 @@
+# Scheduled audit triage via Meta Muse Spark (owner decision 1b-A, R08, R09, R20).
+#
+# Trusted default-branch tooling freezes a failed `weekly-audit` commit and
+# bounded log bundle. Muse edits files under `docs/` only; trusted validation
+# inspects every change before deterministic commit, push, and PR creation.
+# Ordinary PR CI and humans review the PR without the Muse credential.
+#
+# Credential-presence gating:
+# - `credential-preflight` checks `META_MUSE_CI_API_KEY`; when absent, skips
+#   cleanly without failing and emits an actionable notice.
+# - To opt out permanently, delete `.github/workflows/audit-triage.yml`.
+name: audit-triage
+
+on:
+  workflow_run:
+    workflows: [weekly-audit]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Failed weekly-audit run id to triage (replay for pilot/testing)
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: audit-triage
+  cancel-in-progress: false
+
+jobs:
+  credential-preflight:
+    if: >-
+      github.event.repository.owner.type == 'Organization' &&
+      ((github.event_name == 'workflow_dispatch' &&
+        github.ref == format('refs/heads/{0}', github.event.repository.default_branch)) ||
+        (github.event.workflow_run.conclusion == 'failure' &&
+          github.event.workflow_run.event == 'schedule' &&
+          github.event.workflow_run.head_branch == github.event.repository.default_branch))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      credential: ${{ steps.detect.outputs.credential }}
+    steps:
+      - name: Detect Meta Muse credential presence
+        id: detect
+        shell: bash
+        env:
+          META_MUSE_CI_API_KEY: ${{ secrets.META_MUSE_CI_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -n "${META_MUSE_CI_API_KEY}" ]; then
+            shape=present
+          else
+            shape=none
+          fi
+          echo "credential=${shape}" >> "${GITHUB_OUTPUT}"
+          if [ "${shape}" = none ]; then
+            echo "::notice title=Muse audit triage not configured::Set the repository secret META_MUSE_CI_API_KEY to enable scheduled Muse triage, or delete .github/workflows/audit-triage.yml to remove it."
+            {
+              echo "### Muse audit triage skipped — no credential configured"
+              echo
+              echo "No \`META_MUSE_CI_API_KEY\` repository secret is configured, so Muse audit triage was skipped."
+              echo "It did not fail."
+              echo
+              echo "* To enable it: add a repository secret named \`META_MUSE_CI_API_KEY\`."
+              echo "* To remove it: delete \`.github/workflows/audit-triage.yml\`."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "META_MUSE_CI_API_KEY is configured, so Muse audit triage will proceed."
+            echo "Delete .github/workflows/audit-triage.yml to remove this lane."
+          fi
+
+  triage:
+    needs: credential-preflight
+    if: needs.credential-preflight.outputs.credential == 'present'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write # Push validated docs-only triage repair branch
+      pull-requests: write # Open triage PR and post URL verification summary
+      actions: read # Read failed weekly-audit job metadata and logs
+    steps:
+      - name: Check out trusted triage configuration
+        id: checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Authorize trigger and prepare frozen failure bundle
+        id: prepare
+        run: python3 .github/scripts/muse_audit_triage.py prepare triage
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MUSE_TRIAGE_TRUSTED_SHA: ${{ steps.checkout.outputs.commit }}
+
+      - name: Create triage branch
+        if: steps.prepare.outputs.should_run == 'true'
+        run: git checkout -b "$BRANCH"
+        env:
+          BRANCH: ${{ steps.prepare.outputs.branch }}
+
+      - name: Diagnose and repair with Muse Spark
+        id: muse
+        if: steps.prepare.outputs.should_run == 'true'
+        uses: anthropics/claude-code-action@f3b070c88125d33dbae5653df5f143101d4ea9dc # v1.0.276
+        env:
+          ANTHROPIC_BASE_URL: https://api.meta.ai
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.META_MUSE_CI_API_KEY }}
+          ANTHROPIC_MODEL: ${{ steps.prepare.outputs.model }}
+          ANTHROPIC_DEFAULT_OPUS_MODEL: ${{ steps.prepare.outputs.model }}
+          ANTHROPIC_DEFAULT_SONNET_MODEL: ${{ steps.prepare.outputs.model }}
+          ANTHROPIC_DEFAULT_HAIKU_MODEL: ${{ steps.prepare.outputs.model }}
+          ANTHROPIC_SMALL_FAST_MODEL: ${{ steps.prepare.outputs.model }}
+          CLAUDE_CODE_SUBAGENT_MODEL: ${{ steps.prepare.outputs.model }}
+          ENABLE_TOOL_SEARCH: "true"
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+        with:
+          github_token: ${{ github.token }}
+          anthropic_api_key: ${{ secrets.META_MUSE_CI_API_KEY }}
+          prompt: ${{ steps.prepare.outputs.prompt }}
+          settings: ${{ steps.prepare.outputs.settings }}
+          track_progress: "false"
+          use_sticky_comment: "false"
+          classify_inline_comments: "false"
+          include_fix_links: "false"
+          use_commit_signing: "false"
+          additional_permissions: "actions: read"
+          claude_args: >-
+            --restricted
+            --disable-slash-commands
+            --setting-sources user
+            --strict-mcp-config
+            --settings "${{ steps.prepare.outputs.settings }}"
+            --add-dir "${{ steps.prepare.outputs.ci_logs }}"
+            --model "${{ steps.prepare.outputs.model }}"
+            --tools "Read,Glob,Grep,WebFetch,WebSearch,ToolSearch,ListMcpResourcesTool,ReadMcpResourceTool,LSP,WaitForMcpServers,CronList,ListAgents,TaskGet,TaskList,Edit,Write"
+            --permission-mode dontAsk
+            --allowedTools "Read,Glob,Grep,WebFetch,WebSearch,ToolSearch,ListMcpResourcesTool,ReadMcpResourceTool,LSP,WaitForMcpServers,CronList,ListAgents,TaskGet,TaskList,mcp__github_ci__get_ci_status,mcp__github_ci__get_workflow_run_details,mcp__github_ci__download_job_log"
+            --disallowedTools "Bash,PowerShell,MultiEdit,NotebookEdit,Agent,Task,Skill,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
+            --max-turns 20
+
+      - name: Validate repair before publication
+        id: validate
+        if: always() && steps.prepare.outputs.should_run == 'true'
+        run: python3 "$MUSE_TRIAGE_HELPER" validate triage
+        env:
+          MUSE_ACTION_OUTCOME: ${{ steps.muse.outcome }}
+          MUSE_ACTION_CONCLUSION: ${{ steps.muse.outputs.conclusion }}
+          MUSE_EXECUTION_FILE: ${{ steps.muse.outputs.execution_file }}
+
+      - name: Commit repair
+        id: commit
+        if: steps.validate.outcome == 'success' && steps.validate.outputs.has_changes == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.prepare.outputs.branch }}
+        run: |
+          set -euo pipefail
+          run_id="${BRANCH#bot/weekly-audit-}"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "fix(docs): triage weekly-audit run ${run_id}"
+          git push -u origin "$BRANCH"
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create triage PR
+        id: create-pr
+        if: steps.commit.outcome == 'success' && steps.commit.outputs.committed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ steps.prepare.outputs.branch }}
+        run: |
+          set -euo pipefail
+          run_id="${BRANCH#bot/weekly-audit-}"
+          base="$(gh api "repos/$GH_REPO" --jq .default_branch)"
+          body="$(printf 'Triage of weekly-audit run %s.\n\nAutomated docs repair; verification table follows from the finish step.\nAudit run: https://github.com/%s/actions/runs/%s\n' "$run_id" "$GITHUB_REPOSITORY" "$run_id")"
+          number="$(gh api --method POST "repos/$GH_REPO/pulls" \
+            --raw-field head="$BRANCH" --raw-field base="$base" \
+            --raw-field title="fix(docs): triage weekly-audit run ${run_id}" \
+            --raw-field body="$body" --jq .number)"
+          if [[ ! "$number" =~ ^[1-9][0-9]*$ ]]; then
+            echo "PR creation did not return a positive PR number." >&2
+            exit 1
+          fi
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      - name: Verify scope and touched URLs
+        if: always() && steps.create-pr.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MUSE_CI_PR: ${{ steps.create-pr.outputs.number }}
+        run: python3 "$MUSE_TRIAGE_HELPER" finish triage

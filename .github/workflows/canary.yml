@@ -1,0 +1,134 @@
+# Weekly upstream freshness canary (R34 F126/F127).
+# Schedule + manual dispatch only — never triggers on PRs or pushes, never gates
+# merges, no dependency cache, and no continue-on-error so scheduled failures
+# surface cleanly and trigger the single-issue `report` job.
+name: canary
+
+on:
+  schedule:
+    - cron: "17 5 * * 2" # Tuesday 05:17 UTC (off the top of the hour)
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: canary
+  cancel-in-progress: true
+
+jobs:
+  canary:
+    name: canary (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    permissions:
+      contents: read # Check out workspace for freshness test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: latest-deps-linux
+            os: ubuntu-latest
+            toolchain: stable
+            lane: latest-deps
+          - name: latest-deps-macos
+            os: macos-latest
+            toolchain: stable
+            lane: latest-deps
+          - name: next-toolchain-linux
+            os: ubuntu-latest
+            toolchain: beta
+            lane: next-toolchain
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install Rust toolchain (${{ matrix.toolchain }})
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - name: Install cargo-nextest and just
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: cargo-nextest@0.9.146,just@1.58.0
+      - name: Install lefthook 2.1.14 for repo-hygiene integration test
+        shell: bash
+        run: |
+          set -euo pipefail
+          os=$(uname -s)
+          arch=$(uname -m)
+          case "${os}.${arch}" in
+            Linux.x86_64)
+              asset="lefthook_2.1.14_Linux_x86_64.gz"
+              sha="2be3187101b3a2edd5edf8b546aa2e3820531c517b4cd0216601a9c06f07c42d" ;;
+            Darwin.arm64)
+              asset="lefthook_2.1.14_MacOS_arm64.gz"
+              sha="398e6a23dfe2de3fc113e091dd4b592795cc8f1665acf5501856858b8056d686" ;;
+            Darwin.x86_64)
+              asset="lefthook_2.1.14_MacOS_x86_64.gz"
+              sha="9e304cad12b3785bf45ba6085fa6a91ed45f6ff6e7dabd50cb6834959caef06a" ;;
+            *) echo "unsupported runner: ${os}.${arch}" >&2; exit 1 ;;
+          esac
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          curl -fsSL "https://github.com/evilmartians/lefthook/releases/download/v2.1.14/${asset}" -o "${tmpdir}/${asset}"
+          if command -v sha256sum >/dev/null 2>&1; then
+            printf '%s  %s\n' "$sha" "${tmpdir}/${asset}" | sha256sum -c -
+          else
+            printf '%s  %s\n' "$sha" "${tmpdir}/${asset}" | shasum -a 256 -c -
+          fi
+          gunzip -c "${tmpdir}/${asset}" > "${tmpdir}/lefthook"
+          mkdir -p "${HOME}/.local/bin"
+          install -m 755 "${tmpdir}/lefthook" "${HOME}/.local/bin/lefthook"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+      - name: Re-resolve dependency graph to latest compatible versions
+        if: matrix.lane == 'latest-deps'
+        env:
+          RUSTUP_TOOLCHAIN: ${{ matrix.toolchain }}
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: allow
+        run: cargo update --verbose
+      - name: Run full workspace test suite (latest-deps)
+        if: matrix.lane == 'latest-deps'
+        env:
+          RUSTUP_TOOLCHAIN: ${{ matrix.toolchain }}
+        run: |
+          rustc --version
+          cargo nextest run --profile ci --workspace --all-features
+          cargo test --doc --workspace --all-features
+      - name: Run full workspace test suite against locked graph (next-toolchain)
+        if: matrix.lane == 'next-toolchain'
+        env:
+          RUSTUP_TOOLCHAIN: ${{ matrix.toolchain }}
+        run: |
+          rustc --version
+          cargo nextest run --locked --profile ci --workspace --all-features
+          cargo test --doc --locked --workspace --all-features
+
+  report:
+    name: report scheduled failure
+    needs: [canary]
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read # Required for gh CLI repository context
+      issues: write # Open or comment on the single canary tracking issue
+    steps:
+      - name: Open or update canary failure issue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          gh label create canary --description "Scheduled freshness canary failure" --color D93F0B --force
+          existing=$(gh issue list --label canary --state open --limit 1 --json number --jq '.[0].number // empty')
+          body=$(printf 'Scheduled freshness canary failed.\n\nRun: %s\n' "${RUN_URL}")
+          if [ -n "${existing}" ]; then
+            gh issue comment "${existing}" --body "${body}"
+          else
+            gh issue create \
+              --title "ci(canary): scheduled freshness run failed" \
+              --label canary \
+              --body "${body}"
+          fi

@@ -1,0 +1,89 @@
+# Manual, environment-gated PR security scan (R13 F047/F048).
+# Human-dispatched against a named PR head; posts an attributed, unfenced
+# OSV-Scanner Markdown report as a PR comment with no secrets required.
+name: Manual PR Security Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull Request Number"
+        required: true
+        type: string
+      reviewer:
+        description: "Security Reviewer GitHub Handle"
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  security-review:
+    name: osv-security-review
+    runs-on: ubuntu-latest
+    environment: security-review
+    timeout-minutes: 15
+    permissions:
+      contents: read # Check out requested PR head commit
+      pull-requests: write # Post security review report comment on the PR
+    steps:
+      - name: Validate dispatch inputs
+        id: validate
+        shell: bash
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          if [[ ! "${PR_NUMBER}" =~ ^[1-9][0-9]*$ ]]; then
+            echo "error: pr_number must be a positive integer" >&2
+            exit 1
+          fi
+          echo "pr_ref=refs/pull/${PR_NUMBER}/head" >> "${GITHUB_OUTPUT}"
+
+      - name: Checkout PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.validate.outputs.pr_ref }}
+          persist-credentials: false
+
+      - name: Run OSV-Scanner (Markdown report)
+        id: osv
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@a345acffa64b0eaede81a3d9aae6141214d9c8fc # v2.6.0
+        with:
+          scan-args: --format=markdown --output=osv-results.md --recursive ./
+
+      - name: Post security scan report on PR
+        uses: actions/github-script@v9
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+          REVIEWER: ${{ inputs.reviewer }}
+          OSV_OUTCOME: ${{ steps.osv.outcome }}
+        with:
+          script: |
+            const fs = require("node:fs");
+            const prNumber = Number(process.env.PR_NUMBER);
+            const reviewer = (process.env.REVIEWER || "").replace(/^@+/, "");
+            const outcome = process.env.OSV_OUTCOME || "unknown";
+            const status = outcome === "success" ? "PASSED" : "FINDINGS OR ERROR";
+            let report = "_No OSV-Scanner markdown report was produced._";
+            if (fs.existsSync("osv-results.md")) {
+              const raw = fs.readFileSync("osv-results.md", "utf8").trim();
+              if (raw.length > 0) {
+                report = raw.length > 60000 ? `${raw.slice(0, 60000)}\n\n_(report truncated)_` : raw;
+              }
+            }
+            const body = [
+              "## Manual PR Security Review",
+              "",
+              `- Reviewer: @${reviewer}`,
+              `- OSV-Scanner status: **${status}** (\`${outcome}\`)`,
+              "",
+              report,
+            ].join("\n");
+            await github.rest.issues.createComment({
+              issue_number: prNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });

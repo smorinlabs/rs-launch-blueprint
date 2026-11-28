@@ -1,0 +1,83 @@
+# OpenAPI 3.1 contract drift and breaking-change gate (R71 F332/F333).
+# No trigger-level paths: filter (R11/R12) so branch protection never hangs.
+name: api-contract
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: api-contract-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  oasdiff-breaking:
+    name: oasdiff-breaking
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read # Check out repository and fetch base OpenAPI snapshot
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install checksum-verified oasdiff 1.32.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          curl -fsSL "https://github.com/oasdiff/oasdiff/releases/download/v1.32.1/oasdiff_1.32.1_linux_amd64.tar.gz" \
+            -o "${tmpdir}/oasdiff.tar.gz"
+          printf '7c8939fc49b75ee11fec66a5b83b37a2fca6aee109fed85013b1ba2ac2a1ee7f  %s\n' "${tmpdir}/oasdiff.tar.gz" | sha256sum -c -
+          tar -xzf "${tmpdir}/oasdiff.tar.gz" -C "${tmpdir}" oasdiff
+          mkdir -p "${HOME}/.local/bin"
+          install -m 755 "${tmpdir}/oasdiff" "${HOME}/.local/bin/oasdiff"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+      - name: Diff openapi/openapi.json against base branch
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref || 'main' }}
+          MG_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT_NAME}" = "merge_group" ] && [ -n "${MG_BASE_SHA}" ]; then
+            git fetch --no-tags --depth=1 origin "${MG_BASE_SHA}"
+            base_ref="${MG_BASE_SHA}"
+          else
+            git fetch --no-tags --depth=1 origin "${BASE_REF}"
+            base_ref="origin/${BASE_REF}"
+          fi
+          if ! git cat-file -e "${base_ref}:openapi/openapi.json" 2>/dev/null; then
+            echo "Base ref ${base_ref} has no openapi/openapi.json; this branch introduces the contract."
+            exit 0
+          fi
+          git show "${base_ref}:openapi/openapi.json" > "${RUNNER_TEMP}/openapi.base.json"
+          oasdiff breaking "${RUNNER_TEMP}/openapi.base.json" openapi/openapi.json \
+            --allow-external-refs=false \
+            --fail-on ERR \
+            --severity-levels openapi/oasdiff-levels.txt \
+            --err-ignore openapi/breaking-accepted.txt
+
+  openapi-drift:
+    name: openapi-drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read # Check out workspace to verify committed OpenAPI snapshot
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain
+        run: rustc --version
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Verify committed openapi/openapi.json has zero drift
+        run: cargo test --locked --workspace --features web --test openapi

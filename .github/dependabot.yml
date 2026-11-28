@@ -1,0 +1,36 @@
+version: 2
+updates:
+  # Rust dependencies: the workspace-root Cargo.toml and Cargo.lock.
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      default-days: 5
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    versioning-strategy: "increase-if-necessary"
+    groups:
+      cargo:
+        applies-to: version-updates
+        patterns: ["*"]
+
+  # Actions referenced by .github/workflows/*.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      default-days: 5
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      github-actions:
+        applies-to: version-updates
+        patterns: ["*"]
