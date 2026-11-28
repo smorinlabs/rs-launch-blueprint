@@ -1,33 +1,31 @@
+# R51 revision 6 empirical re-run audit
+
 actor: codex
-model: GPT-6
+model: gpt-6
 family: openai
-decision-sha256: 6cc29e7badb1dbd8ad2c6434764706402f50843b2d577ba01b50e022e3c5bb47
+decision-sha256: bbe83b8caba89078138ed6fc591bb7f1b25e463709cf14298ccfe6aa6e7b2465
+execution-pin-sha256: fd746cb86e545023aed589b9d0c4db7125673a62849181ac898db56a5fa3545c
 verdict: approve
 unresolved-findings: none
 
-# R51 revision 5 empirical re-run
+## Re-execution and byte comparison
 
-The target hash matched before any other read. I ran all four `review/evidence/r51-*.sh` scripts from the repository root with `CARGO_HOME=/tmp/cargo-s61-R51-evr` and `CARGO_TARGET_DIR=/tmp/cargo-s61-R51-evr-target`, after removing and recreating both directories. Fresh logs are under `/tmp/r51-codex-r5/`. Each command had a 1,100-second alarm. `cmp` found that every fresh log differs bytewise from its committed counterpart.
+I verified the decision hash before reading it. Every evidence script ran with its output directed to `/tmp/r51-codex-r6-*.log`; the scripts wrote their own scratch data under `/tmp`. I also ran `shellcheck -S warning` on all four scripts. No run evidence or input was edited.
 
-| Script and fresh log | Fresh result | Committed result | Comparison |
-|---|---|---|---|
-| `r51-container.sh` → `/tmp/r51-codex-r5/r51-container.log` | exit 0; `PASS=14 FAIL=0 SKIP=14 TOTAL=28` | `PASS=54 FAIL=0 SKIP=0 TOTAL=54` | Docker daemon unavailable. The 14 fixture and grammar checks pass; the Docker-dependent `C1`–`C14` groups skip. The decision discloses this host case at `DECISION.md:1457`–`:1469` and the earlier revision-3 attempt at `:1250`–`:1253`. |
-| `r51-registries.sh` → `/tmp/r51-codex-r5/r51-registries.log` | exit 0; `PASS=0 FAIL=0 SKIP=32 TOTAL=32` | `PASS=32 FAIL=0 SKIP=0 TOTAL=32` | No network reach to the documented endpoints and no authenticated `gh`; all 32 checks skip. The decision discloses the no-network attempt at `:1250`–`:1253` and SKIP behavior at `:1457`–`:1469`. The committed digest and registry claims were not freshly exercised here. |
-| `r51-sources.sh` → `/tmp/r51-codex-r5/r51-sources.log` | exit 1; `PASS=160 FAIL=2 SKIP=0 TOTAL=162` | `PASS=162 FAIL=0 SKIP=0 TOTAL=162` | Apart from timestamp and observed R68/R77 working-file lines, only `S10t` and `S10u` change verdict. Both pin R02 revision 2's live title and line 22; see OBS-2. |
-| `r51-reproduce.sh` → `/tmp/r51-codex-r5/reproduction.log` | exit 1; both script comparisons differ; container check IDs and verdicts agree between the committed revision-1 and revision-2 logs | Committed `reproduction.log` ran `r51-sources` alone and ended `reproduction-exit: 0` | The no-argument run reports the environment skips, `S10t`/`S10u`, and a declared volatile R77 line; see OBS-1 to OBS-3. A separate invocation with `r51-sources` alone, `/tmp/r51-codex-r5/reproduction-sources.log`, also exits 1 and was byte-compared with the committed `reproduction.log`. |
+| Evidence | Fresh result | Byte comparison with committed log |
+|---|---|---|
+| `r51-sources.sh` | exit 1; `PASS=156 FAIL=6 SKIP=0 TOTAL=162` | Same byte length; only `date-utc` differs from `r51-sources.log`. All check results and messages match. |
+| `r51-reproduce.sh r51-sources` | exit 0; `RESULT r51-sources: identical outside the volatile classes`; `reproduction-exit: 0` | Only the record's `date-utc` and its echoed fresh timestamp differ from `reproduction.log`. |
+| `r51-container.sh` | exit 0; `PASS=14 FAIL=0 SKIP=14 TOTAL=28` | Differs from `r51-container.log` because the Docker-dependent checks skipped. All 14 static fixture checks passed. |
+| `r51-registries.sh` | exit 0; `PASS=0 FAIL=0 SKIP=32 TOTAL=32` | Differs from `r51-registries.log` because 22 HTTP checks and 10 GitHub checks skipped. |
+| `shellcheck -S warning` | exit 0; no diagnostics | The committed `shellcheck.log` wraps the command and exit code with a date and version; the fresh diagnostic output is empty. |
 
-`/opt/homebrew/bin/shellcheck -S warning` over all four scripts exited 0; its fresh output is `/tmp/r51-codex-r5/shellcheck.log`.
+The revision-note repairs hold at lines read in this audit. `review/DECISION.md:1` has the revision 6 title. `review/evidence/r51-sources.sh:117` checks that title; `:206` includes the revision 5 snapshot in the sweep; and `:373`–`:384` plus `:670`–`:671` read R69 revision 11 at line 1885. Those checks passed (`S3a`, `S6a`, `S6b`, `S10a`–`S10c`, `S18g`). The value at `research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1885` equals `review/DECISION.md:1203` byte for byte after changing only `- owns` to `- assumes`. It contains `crates/web/src/` and the serve binary's "nothing beyond it" clause. R69's hash is `2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`; `review/R51-r5-snapshot.md` matches the revision-note hash `6cc29e7badb1dbd8ad2c6434764706402f50843b2d577ba01b50e022e3c5bb47`. The live `research/EXECUTION.json` hash matches the point-in-time pin above.
 
 ## Findings
 
-- **OBS-1 — environment skips.** The Docker and registry reruns do not contradict a measured value or a check verdict: their dependent checks did not execute. `r51-container.log` records `SKIP C1`–`C14`; `r51-registries.log` records 32 SKIPs. The decision explicitly discloses both classes of unavailable-host result at `DECISION.md:1457`–`:1469`. Its earlier committed full runs and revision-4 empirical reruns remain the execution evidence; this seat could not independently repeat those Docker or network measurements.
-- **OBS-2 — R02 live title and line drift.** The committed sources log says `PASS S10t` for R02 revision 2 at line 1 and `PASS S10u` for its four-package topology at line 22. Fresh output says `FAIL S10t` and `FAIL S10u` because R02's live `DECISION.md` is now revision 3 and line 22 is in its revision note. R02 revision 3 states at its lines 3–5 that the topology does not move, and its `## Decision` still recommends the four-package root-package workspace at line 36. R51's selected topology therefore still holds. This is title/line re-baselining under RUNBOOK §7.1 and §7.7, not a change to R51's recommendation.
-- **OBS-3 — declared volatile R77 line escapes the reproduction filter.** `DECISION.md:1397`–`:1402` declares `observed-r77-live-*` volatile, but `r51-reproduce.sh:42` matches suffixes with `[a-z-]+`. It does not match `observed-r77-live-ov04-heading`, so the revision-4-to-5 line move (`959` → `989`) appears in the reproduction diff. The R77 observation is not asserted by a check and does not change the selected container mechanism. The other declared live R77 and R68 lines are filtered. This scoping defect explains one extra difference in the reproduction output and is recorded under the Q23 no-repin rule.
+- **OBS-1:** The six source failures are the six disclosed at `review/DECISION.md:36`–`:48`: `S2c`, `S9a`, `S10t`, `S10u`, `S14e`, and `S18f`. Direct reads confirm the `web-extra-surface` registry lag (`review/DECISION.md:1203`, `docs/port/PARAMETERS.md`), the published run state (`manifest.json`), R02 revision 3's four-package sentence at `research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:36`, and R69's serve-binary row at `research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1702`. The older evidence table at `review/DECISION.md:1637` still says `S2c` had a "diff empty" result, while the rerun says `FAIL  S2c` and `review/DECISION.md:1216`–`:1218` explicitly says it is red. That stale table row does not alter the disclosed result or recommendation.
+- **OBS-2:** Docker-dependent checks could not rerun: the script reports `SKIP  C1` through `C14` because this host has no usable Docker daemon. `r51-container.log` retains the earlier `PASS=54 FAIL=0` run, and the fresh static checks and `r51-reproduce.sh`'s committed container verdict comparison pass. I read the committed log, fixture, script, and pinned Python Dockerfile through read-only `git show`; the current image runtime behavior remains unmeasured here.
+- **OBS-3:** Live registry checks could not rerun: the script reports no network reach for its 22 HTTP checks and no authenticated `gh` for its 10 GitHub checks. `r51-registries.log` retains the earlier `PASS=32 FAIL=0` run. I read that committed log and the registry script; current endpoint values remain unmeasured here.
 
-## Revision-note line checks
-
-- Revision 5's volatile class 4 now names `measured-size-main`, the `C2g` message, and the under-40-MB range at `DECISION.md:1403`–`:1409`. Its quoted rerun distinction and the committed-run status of 12,302,310 B hold at `:1410`–`:1422`; the same correction is in the `r51-reproduce.sh` header. The current seat could not test new layer-size variation without Docker.
-- The member-4 gap is explicit at `DECISION.md:747`–`:764`; the adopter qualification is at `:365`–`:369`, E4 at `:1543`, and the Engines gap at `:1666`–`:1675`. `raw/muse.md:220` and `raw/opus.md:894`–`:895` support the attributed gaps. The committed container log records `PASS C3c`–`C3f` and `PASS C13a`–`C13c`; this seat's Docker checks skipped.
-- The revision-4 fail-closed gate repair still passes `S18a`–`S18h` and `S18l`. The revision-3 R68 binding and cache-alternative repairs pass `S10w`–`S10z` and `S17a`–`S17e`. The revision-2 evidence and decision-shape checks pass, including `S3a`, `S6a` and `S6b`. The only fresh source failures are OBS-2's `S10t` and `S10u`.
-
-Q23 outcome check: zero BLOCKING findings. The frozen `research/EXECUTION.json` hash is `55f51017f3aba8c15d8e5dbb014aba012fb993246cf137034f46ba5ab4923c54` at this audit's read; no live-policy re-pin is requested.
+No BLOCKING finding changes the recommendation, a load-bearing claim, or the evidence sufficiency for either under `research/RUNBOOK.md` §7.1.

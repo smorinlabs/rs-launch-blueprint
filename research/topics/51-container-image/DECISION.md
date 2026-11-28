@@ -1,4 +1,53 @@
-# 2026-09-27 — R51 — container-image (bundle, Focused) — decision (revision 5)
+# 2026-09-27 — R51 — container-image (bundle, Focused) — decision (revision 6)
+
+**Revision note, revision 6.** This is a flag-day touch-up, not a fix round,
+against revision 5 (sha256
+`6cc29e7badb1dbd8ad2c6434764706402f50843b2d577ba01b50e022e3c5bb47`, preserved
+byte-identical at `review/R51-r5-snapshot.md`). Owner ruling W1-R02
+(`docs/planning/p02/execution-ledger.md:972`) specified the six substitutions
+that moved R69's `web-extra-surface` to the `crates/web` member form, the
+owner accepted that value at R69 revision 10 by re-bind W0-R69c
+(`docs/planning/p02/owner-decisions.md:398`), and R69 revision 11 carries it
+unchanged
+(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, sha256
+`2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`, its
+`- owns web-extra-surface` line at `:1885`). Owner decision Q3.A (ledger
+heading dated 2026-09-28, `execution-ledger.md:1382`–`:1389`) lands R69
+revision 11 together with all of its consumers in one flag day, so this
+revision adopts that value now. **The recommendation does not move.**
+
+| What changed | Where | Why |
+|---|---|---|
+| the `- assumes web-extra-surface` line | `## Parameters` | replaced by R69 revision 11's `:1885` owned value, copied byte for byte with only the `- owns` prefix swapped for `- assumes` |
+| the paragraphs about that line | `## Parameters` | they now say the line is R69 revision 11's value, not the live registry row, and that `S2c` is red on this one line until the registry republishes at pack |
+| citations of R69's owned line | the contingency sentence, the option-C paragraph, member 5's gate sentence, the re-verify line, `## Engines`' source list | `revision 10` / `:1791` become `revision 11` / `:1885`; the owned value is the same, only its revision and line moved |
+
+The design already used the `crates/web` form, so the
+swap renames the assumed value to match the design and breaks no claim:
+`crates/web/src/` (`S10b`) and the serve binary's "nothing beyond it" clause
+(`S10c`) still hold at `:1885`. The live `docs/port/PARAMETERS.md` row is
+still revision 9's (`S10d` passes), and it is not touched here.
+
+**Evidence in revision 6.** `r51-sources.sh` changed in five count-neutral
+places: `S3a` reads the new title, the `S6a`/`S6b` sweep covers the
+revision-5 snapshot, and `S10a`, `S10b`/`S10c` (the line they read) and
+`S18g` read R69 revision 11 at `:1885`. The suite was rerun as in revision
+5; revision 5's logs are kept as `r51-sources.r5.log`, `reproduction.r5.log`
+and `shellcheck.r5.log`. `r51-sources.sh` now records 156 passed, 6 failed and
+0 skipped of 162. `S2c` is the expected registry-lag red named above. The
+other five were red before this revision's edits, come from inputs that moved
+after revision 5, and are disclosed here, not repaired, under the no-repin
+rule (RUNBOOK §7.7):
+
+| Check | Observed | Cause |
+|---|---|---|
+| `S9a` | one other file declares `OVERRIDE (OV-14)` | `research/topics/51-container-image/DECISION.md`, this item's own published copy of revision 5 |
+| `S14e` | run manifest `state` is `published`, not `collected` | the same publication of revision 5 |
+| `S10t` | R02's run decision is at revision 3 | R02 moved past revision 2 after revision 5 |
+| `S10u` | R02's four-package sentence is at `:36`, not `:22` | the same R02 revision; the topology is unchanged |
+| `S18f` | R69's serve-binary source row is at `:1702`, not `:1608` | R69's revision-11 note shifted its lines; this row is not the owned line, so `S18f`, the `S18h` literal and the prose citations of R69 `:1608` (member 5's gate sentence and `## Parameters`) keep revision 10's line and are left for the controller |
+The revision-5 audits (`review/audit-codex.r5.md`, `review/audit-fable.r5.md`)
+are not dispositioned here.
 
 **Revision note, revision 5.** This is fix round 4, against revision 4 (sha256
 `35620b8ed243da9dff00b7f236521093e71a59209f435b7fd2790b9e33d37cfe`, preserved
@@ -156,8 +205,9 @@ multi-stage build) and **F337** (`:341`, the container's own liveness
 healthcheck), all three `DIVERGENT` and all three this item's.
 
 This answer is contingent, as the prompt says, on R69 adopting a web surface at
-all. It has: R69 is `resolved`, and its accepted revision 10 declares the `web`
-feature and the `<app>-serve` binary (R69 revision 10, line 1791), which this
+all. It has: R69 is `resolved`, and its revision 11, which carries the W1-R02 value
+owner-accepted at revision 10 by re-bind W0-R69c, declares the `web`
+feature and the `<app>-serve` binary (R69 revision 11, line 1885), which this
 template instantiates as `rslbp-serve`, the binary the image runs.
 
 ### The recommendation — one stack
@@ -712,7 +762,7 @@ values (`C2c`).
 **Why option C is rejected rather than raised as a `CONFLICT:`, and why this
 decision keeps that line unraised.** A `CONFLICT:` line is for a consumed value
 the recommendation *genuinely needs* changed. This recommendation does not need
-it. R69's accepted revision 10 still says the `rslbp-serve` binary carries the
+it. R69 revision 11 still says the `rslbp-serve` binary carries the
 org CLI Design Standard's required global core "and nothing beyond it" — verified
 at the owned line itself (`S10c`), not carried from the Opus raw report — and option A
 supplies the same capability for 812,604 bytes with no change to any other item's
@@ -845,7 +895,7 @@ The gate is therefore:
   rule names none of them (a search of R11's decision, evidence, prompts and raw
   reports finds neither `Dockerfile` nor `.dockerignore`, `S18e`).
 
-That covers all three of R69 revision 10's skip-gating keys — `crates/web/**`,
+That covers all three of R69 revision 11's skip-gating keys — `crates/web/**`,
 the serve binary's source file at `src/bin/<app>-serve.rs` in the root package
 (R69 `:1608`, `S18f`), and the web tests under `crates/web/tests/` — and every
 input R11 records beside them, including `Cargo.lock`, the input a Dependabot
@@ -1139,7 +1189,7 @@ artifact there are exactly two doors, and they belong to two different items:
 **hand-off to R68**, not a `CONFLICT:` line, because this recommendation needs no
 value of R68's changed — it needs the owner to know which door to open.
 
-re-verify: when R69 republishes `web-extra-surface` and the registry row moves from revision 9's `src/web/` bytes to revision 10's `crates/web` form (check `S10d` fails the moment it does, and the `- assumes` line and every path here must then be re-checked); when R80 is audited, accepted or publishes, or any R80 revision moves the liveness path off `/healthz` (check `S10s` reads R80's preserved revision 3, whose bytes `S10-r80sha` asserts; the live file's `/healthz` count is logged as `observed-r80-live-healthz-lines`); when R77 accepts or publishes any revision, or its preserved `R77-r3-snapshot.md` changes (check `S10j` fails on any byte change) — R77's live move to an unaudited revision 4, which fired this trigger once already, was re-checked in revision 4 and is logged as `observed-r77-live-*` lines, not a trigger on its own — or R77 changes `RSLBP_WEB_HOST`, `RSLBP_WEB_PORT` or the `8000` default, any of which changes the `HEALTHCHECK` literal and `EXPOSE`; when the owner rules on R77's `OV-04`, which `OV-14` accompanies, or R69 adopts an in-process TLS terminator, which withdraws both; when R11 republishes `ci-job-structure` off revision 7 (checks `S10g`, `S10m`) or R12 decides whether the image job is a required status; when R19 adds the `docker` ecosystem, which is this item's own hand-off landing; when R08 publishes its permission model, which prices the publish-on-release alternative properly; when the owner accepts an R68 revision other than revision 1 (check `S10x` fails when ledger line 981 no longer records the acceptance this decision binds; the live file's movement alone is logged as `observed-r68-live-*`, not a trigger), or when R68 publishes, changes `[profile.release]` or its follower-mode release flow, or drops the premise that the web surface's delivery vehicle is this item's image; when the owner rules on `OVERRIDE (OV-14)`, or on whether fitness gate 2 reaches non-linked developer tools, or when `cargo-chef` ships a release declaring `rust-version` — either of the last two readmits member 1's runner-up (checks `D5b`, `G1b`); when any of the three pinned digests stops resolving (checks `D1a`, `D2a`, `D3a` fail on the spot) — a re-pushed tag alone is not a trigger, it is logged as an `observed-tag-digest` line; when `rust:1.98.1-slim` stops sharing the trixie tag's digest (check `D1b`); when distroless publishes `cc-debian14` or retires `cc-debian13` (check `D3-nonroot`); when Rust stable advances far enough that the `msrv-policy` floor passes 1.96 (check `D4b`); when the org REST API Design Standard moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9`, which invalidates every `:<line>` citation in `### Conformance with the REST API Design Standard v2.0.0` (check `S8a` fails immediately); or by **2027-03-18**, six months from the original research date, whichever comes first
+re-verify: when R69 republishes `web-extra-surface` and the registry row moves from revision 9's `src/web/` bytes to revision 11's `crates/web` form (check `S10d` fails the moment it does, and the `- assumes` line and every path here must then be re-checked); when R80 is audited, accepted or publishes, or any R80 revision moves the liveness path off `/healthz` (check `S10s` reads R80's preserved revision 3, whose bytes `S10-r80sha` asserts; the live file's `/healthz` count is logged as `observed-r80-live-healthz-lines`); when R77 accepts or publishes any revision, or its preserved `R77-r3-snapshot.md` changes (check `S10j` fails on any byte change) — R77's live move to an unaudited revision 4, which fired this trigger once already, was re-checked in revision 4 and is logged as `observed-r77-live-*` lines, not a trigger on its own — or R77 changes `RSLBP_WEB_HOST`, `RSLBP_WEB_PORT` or the `8000` default, any of which changes the `HEALTHCHECK` literal and `EXPOSE`; when the owner rules on R77's `OV-04`, which `OV-14` accompanies, or R69 adopts an in-process TLS terminator, which withdraws both; when R11 republishes `ci-job-structure` off revision 7 (checks `S10g`, `S10m`) or R12 decides whether the image job is a required status; when R19 adds the `docker` ecosystem, which is this item's own hand-off landing; when R08 publishes its permission model, which prices the publish-on-release alternative properly; when the owner accepts an R68 revision other than revision 1 (check `S10x` fails when ledger line 981 no longer records the acceptance this decision binds; the live file's movement alone is logged as `observed-r68-live-*`, not a trigger), or when R68 publishes, changes `[profile.release]` or its follower-mode release flow, or drops the premise that the web surface's delivery vehicle is this item's image; when the owner rules on `OVERRIDE (OV-14)`, or on whether fitness gate 2 reaches non-linked developer tools, or when `cargo-chef` ships a release declaring `rust-version` — either of the last two readmits member 1's runner-up (checks `D5b`, `G1b`); when any of the three pinned digests stops resolving (checks `D1a`, `D2a`, `D3a` fail on the spot) — a re-pushed tag alone is not a trigger, it is logged as an `observed-tag-digest` line; when `rust:1.98.1-slim` stops sharing the trixie tag's digest (check `D1b`); when distroless publishes `cc-debian14` or retires `cc-debian13` (check `D3-nonroot`); when Rust stable advances far enough that the `msrv-policy` floor passes 1.96 (check `D4b`); when the org REST API Design Standard moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9`, which invalidates every `:<line>` citation in `### Conformance with the REST API Design Standard v2.0.0` (check `S8a` fails immediately); or by **2027-03-18**, six months from the original research date, whichever comes first
 
 ## Parameters
 
@@ -1150,7 +1200,7 @@ row in `docs/port/PARAMETERS.md` names R51 as owner (`S2e`, with R69's
 `web-extra-surface` row as the positive control at `S2f`). So no `- owns` line
 appears below (`S2d`).
 
-- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on the root package rs-launch-blueprint; web = ["dep:rs-launch-blueprint-web"], with axum 0.8.9 declared non-optionally in crates/web/Cargo.toml and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 declared non-optionally in crates/web/Cargo.toml with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is crates/web's dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module crates/web/src/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests in crates/web/tests/, with no file-level #![cfg(feature = "web")] because the whole member is optional, and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated crates/web/src/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on crates/web/**, the serve binary's source file and the web test files
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
@@ -1162,32 +1212,40 @@ appears below (`S2d`).
 `fixed` rows are `msrv-policy`, `rust-edition`, `target-os-matrix` and `license`;
 the one consumed row is `web-extra-surface`, which the prompt's `- consumes:` line
 names and nothing else does (`S13b`). All five values are extracted from the live
-`docs/port/PARAMETERS.md` table by script and diffed against the lines above; the
-diff is **empty** (`S2a`, `S2b`, `S2c`).
+`docs/port/PARAMETERS.md` table by script and diffed against the lines above
+(`S2a`, `S2b`, `S2c`). The four `fixed` values diff empty; `web-extra-surface`
+differs by design until the registry republishes, as the next paragraph says,
+and `S2c` is red on that one line until then.
 
-**The `web-extra-surface` line above is the live registry row byte for byte,
-which is revision 9's `src/web/` form — and this decision's design is not written
-against it.** R69 **revision 10** is owner-accepted and unpublished
-(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, its
-`- owns web-extra-surface` line at **1791**, read at that line by `S10a`). It
+**The `web-extra-surface` line above is R69 revision 11's owned value, not
+the live registry row.** R69 **revision 11**
+(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, sha256
+`2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`, its
+`- owns web-extra-surface` line at **1885**, read at that line by `S10a`)
+carries the W1-R02 value, owner-accepted at revision 10 by re-bind W0-R69c. Under owner
+decision Q3.A this item adopts it in the same flag day as R69's other
+consumers, and the line above is that value with only its `- owns` prefix
+swapped for `- assumes`. It
 moves the gated tree to **`crates/web/src/`**, the web tests to
 `crates/web/tests/`, and the feature declaration to `web =
 ["dep:rs-launch-blueprint-web"]` on the root package with `axum` 0.8.9 and
 `tokio` 1.53.1 declared non-optionally inside `crates/web/Cargo.toml`
 (`S10b`). Its path-based skip-gating keys are **three**: `crates/web/**`, the
-serve binary's source file, and the web test files (R69 `:1791`, `S18g`), with
+serve binary's source file, and the web test files (R69 `:1885`, `S18g`), with
 the serve binary's source at `src/bin/<app>-serve.rs` in the root package
 (R69 `:1608`, `S18f`). This decision's CI gate does not enumerate those keys;
 it is R11's fail-closed rule plus the three container files (member 5), which
 contains all three keys and every other compile input. Every path this
 decision does name — the `.dockerignore` and the stand-in workspace the
-container checks were executed against — uses **revision 10's `crates/web`
+container checks were executed against — uses **revision 11's `crates/web`
 form**, together with the
 four-package topology of R02's revision 2
 (`research/runs/R02/…/review/DECISION.md:22`, `S10t`, `S10u`; R02 is `open` in
-`research/CLAUDE.md`, so this is a coupling to a proposal). The registry bytes are preserved
-above because the row has not republished (`S10d` asserts that it still carries
-`src/web/`), and **R69's republication is a re-verify trigger for this item**. No
+`research/CLAUDE.md`, so this is a coupling to a proposal). The live registry
+row has not republished and is still revision 9's `src/web/` form (`S10d`
+asserts that it still carries `src/web/`), so `S2c` stays red on this one line
+until the registry republishes at pack, and **R69's republication is a
+re-verify trigger for this item**. No
 `CONFLICT:` line is raised for those paths, and none is raised at all.
 
 **`target-os-matrix` deserves a sentence rather than a silent pass.** It is
@@ -1763,8 +1821,10 @@ at blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9`, lines 271, 1019, 1271, 1317,
 `research/topics/25-semver-bump-strategy/DECISION.md` and
 `research/topics/26-packed-artifact-content-guard/DECISION.md` (the last two read
 for consistency; this item creates no obligation on either). Unpublished
-decisions, each at the revision named: R69 revision 10, owner-accepted
-(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1791`);
+decisions, each at the revision named: R69 revision 11, which carries the
+W1-R02 value, owner-accepted at revision 10 by re-bind W0-R69c
+(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1885`,
+sha256 `2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`);
 R68 revision 1, owner-accepted (ledger `:981`), read from its preserved
 byte-identical copy
 (`research/runs/R68/2026-09-17T033528Z-e504b7806e0c/review/R68-r1-snapshot.md:1,27,32,52,53,77`,

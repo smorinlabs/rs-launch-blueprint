@@ -1,0 +1,52 @@
+== R69 revision 11 — supersession and carried-run check ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+shasum: 6.02
+decision: research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md
+
+-- 1. the published bytes this revision supersedes --
+PASS S1: sha256 of the published topic decision == d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d
+
+-- 2. exactly one section heading, and nothing above it --
+PASS S2a: lines equal to the section heading == 1
+PASS S2b: occurrences of the heading text above the heading (any form) == 0
+PASS S2c: occurrences in the whole file (the heading plus 7 preserved mentions) == 8
+
+-- 3. the dated current entry check_history requires --
+PASS S3a: date-first headings above the section: 1
+PASS S3b: the title line == # 2026-09-17 — R69 — web-framework-stack — decision (revision 11)
+
+-- 4. H2 order of the current entry --
+PASS S4: the H2 headings of the current entry, in order == ## Decision/## Parameters/## Empirical check/## Engines/
+
+-- 5. the tail is the published bytes, verbatim --
+PASS S5a: sha256 of the decision's last 228667 bytes == d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d
+PASS S5b: cmp of that tail against the published topic decision reports no difference
+
+-- 6. control: the tail comparison must be able to fail --
+PASS S6a: control: a one-byte mutation changes the digest, so S5a can fail
+PASS S6b: control: cmp rejects the mutated copy, so S5b can fail
+
+-- 7. the raw reports match the bytes published for revision 9 --
+PASS S7a: research/runs/R69/2026-09-18T020601Z-f304731ab06f/raw/codex.md == research/topics/69-web-framework-stack/raw/codex-2026-09-17T014646Z-d5b96f477092.md
+PASS S7b: research/runs/R69/2026-09-18T020601Z-f304731ab06f/raw/opus.md == research/topics/69-web-framework-stack/raw/opus-2026-09-17T014646Z-d5b96f477092.md
+PASS S7c: research/runs/R69/2026-09-18T020601Z-f304731ab06f/raw/doxa.normalized.md == research/topics/69-web-framework-stack/raw/doxa-2026-09-17T014646Z-d5b96f477092.md
+PASS S7d: the collected doxa.md is carried beside its normalized twin
+
+-- 8. every carried byte is identical to the publishing run copy --
+  carried files compared: 309
+PASS S8a: rows of review/CARRIED-FROM.md == 309
+PASS S8b: carried rows with no file in this run or in the publishing run == 0
+PASS S8c: carried files differing from the publishing run == 0
+
+-- 9. the round-9 audits are NOT carried --
+PASS S9-audit-codex.md: review/audit-codex.md is absent; nothing from round 9 is carried
+PASS S9-audit-fable.md: review/audit-fable.md is present and differs from the round-9 copy; it is a fresh audit
+
+-- 10. the carried evidence scripts are unmoved in git --
+  carried evidence scripts compared: 7
+PASS S10a: carried evidence scripts == 7
+PASS S10b: carried scripts with no blob at HEAD's source path == 0
+PASS S10c: carried scripts whose bytes differ from HEAD's blob == 0
+
+== SUMMARY ==
+CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0

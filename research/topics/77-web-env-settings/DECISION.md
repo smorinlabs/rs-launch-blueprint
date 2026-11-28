@@ -1,4 +1,41 @@
-# 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 5)
+# 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 6)
+
+**Revision 6 is a flag-day re-copy of one `assumes` line. The recommendation does not
+move: no crate, template code over `std::env::vars_os` and `str::FromStr`.** Revision 5
+(sha256 `a3c2dc6ca904b80f8e565f9ad0999cb3a0ab3f78f5d0f9e8d53c1b9d97765b55`) is kept byte
+for byte as `review/R77-r5-snapshot.md`. Owner ruling W1-R02 (a four-package workspace
+with `crates/web` as the optional web member) changed R69's owned `web-extra-surface` at
+R69 revision 10. R69 revision 11 carries that value unchanged and is approved for
+re-accept. Under owner decision Q3.A (flag day now), every consumer re-copies it at once
+rather than waiting for the registry row to be republished. This revision copies the
+`- owns web-extra-surface = ` line of R69 revision 11 (`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`,
+sha256 `2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`, line 1885) verbatim, with the
+prefix changed to `- assumes web-extra-surface = `. The value after the prefix is
+byte-identical to R69's (`cmp`; 2,783 bytes after the prefix).
+
+| What | Revision 5 | Revision 6 |
+|---|---|---|
+| `- assumes web-extra-surface = ` | the revision-9 registry bytes: `web` declared "on whichever crate hosts the binary targets (R02 decides which)", `web = ["dep:axum", "dep:tokio"]` with both crates optional, the tree at `src/web/`, file-level `#![cfg(feature = "web")]` on the tests, skip-gating on `src/web/**` | R69 revision 11's bytes: `web` declared on the root package `rs-launch-blueprint`, `web = ["dep:rs-launch-blueprint-web"]`, `axum` and `tokio` declared non-optionally in `crates/web/Cargo.toml`, the tree at `crates/web/src/`, the tests in `crates/web/tests/` with no file-level `cfg`, skip-gating on `crates/web/**` |
+| `## Parameters`: provenance sentence, the `web-extra-surface` paragraph, and the second expected-`CONFLICT:` case | explained why the line carried revision-9 bytes while the design used revision 10's paths | state that the line is R69 revision 11's value; the path mismatch they explained no longer exists |
+| `re-verify:` clause on R69 | "when R69 republishes and the registry bytes move from `src/web/` to `crates/web`" | when the registry row is republished, or R69 revises the owned value again |
+| `review/evidence/sources.sh` | compared all six `assumes` lines with the live registry; pinned R69's owned line at revision 10's `:1791` | compares `web-extra-surface` with R69 revision 11's `:1885` (sha pinned) and the other five with the registry; the R69 pin moves to `:1885`. Recorded to `review/evidence/sources-r6.log` |
+
+No design claim changed. Every path in this decision was already revision 10's
+(`crates/web/src/settings.rs`, `crates/web/Cargo.toml`, `crates/web/tests/`), and those are
+revision 11's paths too. The service knobs this item names (host, port, log format, drain
+deadline and the rest) are the environment variables the revision-11 value says R77
+names; that clause is unchanged from revision 9.
+
+**Evidence after this revision.** `sources.sh` was edited as tabulated, passes
+`shellcheck`, and was rerun into the new `review/evidence/sources-r6.log`:
+**PASS=85 FAIL=0 SKIP=0**, exit **0**. `review/evidence/sources.log` (2026-09-18) is kept
+unchanged. Before the edit, the unmodified script reported PASS=83 FAIL=1: its one failure
+was the R69 pin at revision 10's `:1791`, which R69 revision 11 moved to `:1885`.
+`r4-checks.sh` was not edited or re-recorded. Rerun against this file, it reports
+PASS=172 FAIL=13. Three failures follow from this revision by design: `H1 names revision 4`,
+the F5 `this file` label check (which expects revision 5), and the sha pin on the carried
+`sources.sh`. The other ten are drift in files other sessions own (the live prompt's
+sha256, R74 and R58 re-pins and line checks); drift is not repaired here.
 
 **Revision 5 is a directed repair of revision 4 (sha256
 `7e0cc569d88f884e4eb0829048536cf460962553f49dcded76bbe936ad92f884`, kept as
@@ -94,7 +131,12 @@ plainly rather than recording the two moves as deviations: R77 has no owner acce
 bound to it, so revision 2 states the new, standard-conformant naming rule as the
 recommendation rather than shipping revision 1's rule with two exceptions attached.
 
-Revision history: **Revision 5** (2026-09-27, this file) — the directed repair of revision 4
+Revision history: **Revision 6** (2026-09-27, this file) — the flag-day re-copy of
+`web-extra-surface` tabulated at the top; the revision-5 text is preserved at
+`review/R77-r5-snapshot.md` (sha256
+`a3c2dc6ca904b80f8e565f9ad0999cb3a0ab3f78f5d0f9e8d53c1b9d97765b55`).
+**Revision 5** (2026-09-27, sha256
+`a3c2dc6ca904b80f8e565f9ad0999cb3a0ab3f78f5d0f9e8d53c1b9d97765b55`) — the directed repair of revision 4
 tabulated at the top; the revision-4 text is preserved at `review/R77-r4-snapshot.md`
 (sha256 `7e0cc569d88f884e4eb0829048536cf460962553f49dcded76bbe936ad92f884`).
 **Revision 4** (2026-09-27, sha256
@@ -1121,7 +1163,7 @@ changes, in R69 revision 10's tree.
 | `Dockerfile` (R51) | sets `RSLBP_WEB_HOST=0.0.0.0` explicitly, because the default is loopback — the same note py carries at `settings.py`. |
 | `docs/port/COMMONALITY.md` | **untouched by this decision.** F324's row is the owner's to update when R77 publishes. |
 
-re-verify: if the controller reallocates `OV-04` away from this item or the owner rules on it (the allocation table in `docs/planning/p02/execution-ledger.md` is the register, and a later override for this item is asked of the controller rather than searched for), when the org REST API Design Standard moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9` or amends any of R1.5, R1.6, R1.7, R7.1, R7.2, R7.3, R8.1, R8.2, R8.5, R8.10, R8.12, R9.1, R10.1, R10.6 or R11.2, when R74 publishes the membership and defaults of the `RSLBP_WEB_RATE_LIMIT_*` family (then AC14's member list and the field count are re-checked against the published members; R74's working-tree revision 2 names three), when R69 adopts an in-process TLS terminator (which withdraws `OVERRIDE (OV-04)` and brings certificate and key settings under this naming rule), when any later item turns an applicability switch on and so brings its published values under this naming rule, when R69 republishes and `web-extra-surface`'s registry bytes move from `src/web/` to `crates/web` (the `assumes` line below must then be re-copied and this decision's paths re-checked against the published value), when R58 publishes `logging-pipeline-contract` and fixes the value sets for `RSLBP_WEB_LOG_LEVEL` and `RSLBP_WEB_LOG_FORMAT`, or publishes a serve-binary start that does not take those two values from `WebSettings::from_env()` as AC16 requests, when R80 lands or publishes a revision that changes the readiness-pause mechanism, declines the value this item fixes for `RSLBP_WEB_READINESS_PAUSE_SECONDS`, or needs the pause on a signal this item did not consider, when R76 publishes an origins encoding that a comma cannot survive or any later item adds a web knob whose value may contain a comma, when R67 revises `RSLB203` or the error envelope, when R54 and R56 publish so the namespace-disjointness claim can be checked against a published curated set rather than an accepted-but-unpublished one, when the owner revisits the gate-2 strict reading (which would readmit `envy` and `figment`), when `envy` or `figment` publishes a new release (in particular one declaring a `rust-version`), when `config` publishes a new 0.15.x release (the runner-up range admits it unmeasured) or 0.16, when R53 is revised to adopt `config` (the reuse premium the Muse report argued from), at the next `msrv-policy` floor advance past 1.96 (which neither `config` 0.15.26's 1.88.0 nor `confique`'s 1.68.2 is near), or by 2027-03-18, whichever comes first
+re-verify: if the controller reallocates `OV-04` away from this item or the owner rules on it (the allocation table in `docs/planning/p02/execution-ledger.md` is the register, and a later override for this item is asked of the controller rather than searched for), when the org REST API Design Standard moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9` or amends any of R1.5, R1.6, R1.7, R7.1, R7.2, R7.3, R8.1, R8.2, R8.5, R8.10, R8.12, R9.1, R10.1, R10.6 or R11.2, when R74 publishes the membership and defaults of the `RSLBP_WEB_RATE_LIMIT_*` family (then AC14's member list and the field count are re-checked against the published members; R74's working-tree revision 2 names three), when R69 adopts an in-process TLS terminator (which withdraws `OVERRIDE (OV-04)` and brings certificate and key settings under this naming rule), when any later item turns an applicability switch on and so brings its published values under this naming rule, when `docs/port/PARAMETERS.md`'s `web-extra-surface` row is republished (its bytes must then equal R69 revision 11's value carried in the `assumes` line below) or R69 revises that owned value again (the `assumes` line must then be re-copied and this decision's paths re-checked against it), when R58 publishes `logging-pipeline-contract` and fixes the value sets for `RSLBP_WEB_LOG_LEVEL` and `RSLBP_WEB_LOG_FORMAT`, or publishes a serve-binary start that does not take those two values from `WebSettings::from_env()` as AC16 requests, when R80 lands or publishes a revision that changes the readiness-pause mechanism, declines the value this item fixes for `RSLBP_WEB_READINESS_PAUSE_SECONDS`, or needs the pause on a signal this item did not consider, when R76 publishes an origins encoding that a comma cannot survive or any later item adds a web knob whose value may contain a comma, when R67 revises `RSLB203` or the error envelope, when R54 and R56 publish so the namespace-disjointness claim can be checked against a published curated set rather than an accepted-but-unpublished one, when the owner revisits the gate-2 strict reading (which would readmit `envy` and `figment`), when `envy` or `figment` publishes a new release (in particular one declaring a `rust-version`), when `config` publishes a new 0.15.x release (the runner-up range admits it unmeasured) or 0.16, when R53 is revised to adopt `config` (the reuse premium the Muse report argued from), at the next `msrv-policy` floor advance past 1.96 (which neither `config` 0.15.26's 1.88.0 nor `confique`'s 1.68.2 is near), or by 2027-03-18, whichever comes first
 
 ## Parameters
 
@@ -1129,15 +1171,17 @@ R77 owns no registry parameter: the binding prompt's `## Couplings` block carrie
 empty `- owns:` line, `research/CLAUDE.md`'s R77 row carries `—` in its `owns` column,
 and `docs/port/PARAMETERS.md` lists no parameter owned by R77. Its `- consumes:` line is
 empty too, so no parameter is a registry dependency of this item. The `assumes` lines
-below are declared because the recommendation genuinely rests on those values; each was
-extracted programmatically from the live `docs/port/PARAMETERS.md` row and is re-compared
-byte-for-byte by `review/evidence/sources.sh`.
+below are declared because the recommendation genuinely rests on those values. Five were
+extracted programmatically from the live `docs/port/PARAMETERS.md` row. The sixth,
+`web-extra-surface`, is R69 revision 11's owned value at line 1885, copied verbatim under
+owner decision Q3.A. `review/evidence/sources.sh` re-compares each byte for byte with its
+source.
 
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
 - assumes license = MIT OR Apache-2.0
-- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on the root package rs-launch-blueprint; web = ["dep:rs-launch-blueprint-web"], with axum 0.8.9 declared non-optionally in crates/web/Cargo.toml and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 declared non-optionally in crates/web/Cargo.toml with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is crates/web's dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module crates/web/src/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests in crates/web/tests/, with no file-level #![cfg(feature = "web")] because the whole member is optional, and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated crates/web/src/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on crates/web/**, the serve binary's source file and the web test files
 - assumes error-taxonomy-exit-codes = `error-contract/v1`: **Catalog** — `RSLB` + three digits, stable and append-only, sourced from an explicit `const fn ErrorCode::as_str(&self) -> &'static str` match on a `#[non_exhaustive]` enum in the library crate, never derived from a variant name, `Debug`, `Display`, `type_name`, a discriminant or a `strum` derive; a `pub const ErrorCode::ALL` lists every member and a pinned-row test enforces append-only. **Exit taxonomy** (`#[repr(u8)] enum Exit` → `std::process::ExitCode`, per the org CLI Design Standard R6.1, org-locked, unchanged from ts D-016(2)): `0` success, `1` generic runtime error, `2` usage/parse error, `3` not found, `4` auth required, `5` conflict, `130` SIGINT, `143` SIGTERM; unlisted failures collapse to `1`. **Initial catalog rows** (hundreds digit = exit code for the `1xx`–`5xx` blocks; `RSLB000` is the UNEXPECTED sentinel): `RSLB000` unexpected → 1; `RSLB101` I/O → 1; `RSLB102` transport (DNS/connect/timeout/TLS) → 1; `RSLB103` remote-API failure → 1; `RSLB104` config layer unreadable → 1; `RSLB201` usage/parse (including the CLI parser's own errors) → 2; `RSLB202` config document unparsable → 2; `RSLB203` config value invalid → 2 (**this template's choice, not derived from the standard — see `## Engines`, Disagreement 4**); `RSLB204` secret supplied through a prohibited channel → 2 (**likewise this template's choice; the standard assigns secrets no exit code**); `RSLB205` required non-auth input or consent missing because prompting is disabled or unavailable — `--no-input`, no TTY, or closed stdin — → 2; `RSLB301` resource not found → 3; `RSLB401` credentials absent → 4; `RSLB402` credentials rejected → 4; `RSLB501` conflict/precondition failed → 5; `RSLB901` SIGINT → 130; `RSLB902` SIGTERM → 143; `RSLB903` prompt interrupted by Ctrl-C → 130 (a closed prompt stdin is **not** this code: it is required input that prompting cannot supply, so it is `RSLB205`/2 — see `## Engines`, Disagreement 4). **Envelope** — a single stderr JSON object `{"error":{"code","message","hint"?}}`; `hint` is an optional structured string field carried beside `code` and `message`, omitted (not `null`) when absent and rendered as its own line in human output — its Rust return type is P03's choice and must be able to name the offending input per R7.6, so a borrowed-or-owned string is expected rather than a `&'static str`; stdout stays byte-empty on the error path. This item defines exactly those three keys and defines no trace, cause-array or diagnostic field; R7.8 permits further documented fields, and any such field is a separate addition owned by the item that needs it. What a *stack trace* may do is deliberately absent from this contract: it is F301's, and F301's acceptance criteria are an open owner question (see `## Decision`). **Broken pipe** — a `BrokenPipe` result on the *result* stream ends the process at `0`, silently, with no envelope; a `BrokenPipe` while writing an already-selected error envelope to stderr retains the original application exit status rather than overriding it; a `BrokenPipe` on any other application stream is `RSLB101`/1; no `SIGPIPE` handler is installed and `println!`/`print!` are lint-denied in binary crates. **Boundary precedence** — signal → broken pipe → domain downcast → unexpected; `main` returns `ExitCode` and does not call `process::exit` on the error path; all streams are flushed before exit on every path including signal. **Crash record** — CLI surface only, UNEXPECTED class only, an injected best-effort sink writing `0600` newline-delimited JSON with timestamp, version, PID, code and sanitized cause chain and never argv, environment, headers, tokens or config contents; a write failure never changes the envelope or the exit code; **the location is not decided here and the default sink is a no-op until R57 answers**. **Layering** — `thiserror` in the library crate, `anyhow` (`>= 1.0.103`) in binary crates only; the library crate must not depend on `anyhow`, must install no signal handler or panic hook, and must write to no process stream or file.
 
 **How the assumed parameters bear on the decision.** `rust-edition = 2024` is the single
@@ -1156,18 +1200,19 @@ that `hint` be able to name the offending input — which is what makes the vari
 the value and the expectation load-bearing rather than cosmetic — as well as the
 `thiserror`-in-the-library rule `SettingsError` follows.
 
-**`web-extra-surface` — the bytes above are revision 9's, and the design uses revision
-10's paths. That is deliberate, and it is not a `CONFLICT:`.** The `assumes` line
-reproduces the live registry row, which still reads "the library module `src/web/`…" and
-"path-based skip-gating keys on `src/web/**`". R69 **revision 10 is owner-accepted and
-unpublished** (`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`,
-owned value at line 1791) and moves the gated tree to the optional workspace member
-`crates/web`: `web = ["dep:rs-launch-blueprint-web"]` on the root package, the library
-module at `crates/web/src/`, the web tests at `crates/web/tests/` with no file-level
-`#![cfg(feature = "web")]`, and skip-gating on `crates/web/**`. **Every path in this
-decision is revision 10's.** The substance of the two revisions is identical for this
-item — only the manifest the crates are declared in moves — so the registry bytes are
-carried unchanged and R69's republication is recorded above as a re-verify trigger.
+**`web-extra-surface` — the bytes above are R69 revision 11's, not the registry's.**
+The live registry row still reads "the library module `src/web/`…" and "path-based
+skip-gating keys on `src/web/**`", which are revision 9's bytes. Owner ruling W1-R02 moved
+the gated tree to the optional workspace member `crates/web` at R69 revision 10, and R69
+revision 11 carries that value unchanged
+(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, sha256
+`2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`, owned value at line 1885):
+`web = ["dep:rs-launch-blueprint-web"]` on the root package, the library module at
+`crates/web/src/`, the web tests at `crates/web/tests/` with no file-level
+`#![cfg(feature = "web")]`, and skip-gating on `crates/web/**`. Under owner decision Q3.A
+(flag day now), the `assumes` line carries those bytes verbatim, so the line and every path
+in this decision now agree. This is not a `CONFLICT:`: the registry row is expected to be
+republished to the same bytes, which is recorded above as a re-verify trigger.
 
 **Two parameters a reader might expect on this list, and why neither is there.**
 `build-tool-output-shape` (R49) bears on the decision only through where the serve binary
@@ -1180,8 +1225,9 @@ published nothing, which is precisely why `RSLBP_WEB_LOG_LEVEL` and
 **No `CONFLICT:` line is raised, and the raw report raised none.** Two places a reader
 might expect one: R69's exit-code enumeration does not list a settings failure, but a
 malformed `RSLBP_WEB_*` variable is `RSLB203` at exit `2` under R67's published catalog —
-an answer R67 already supplies, not a change R69's value needs. And R69's value says the
-web tree is `src/web/`, which is the accepted-but-unpublished revision addressed above.
+an answer R67 already supplies, not a change R69's value needs. The other, a web tree at
+`src/web/` in R69's value, no longer arises: the revision-11 value above places it at
+`crates/web/src/`, where this decision puts the settings module.
 
 ## Empirical check
 

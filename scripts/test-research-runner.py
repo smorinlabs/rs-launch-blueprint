@@ -88,6 +88,71 @@ def substitute_muse(root, key):
     assert validator.validate_execution_policy(root) == []
 
 
+def reset_to_open(root, seed_items, clear_auditor_overrides=()):
+    """Reset seed_items (and any resolved transitive dependents) to open in a temp copy."""
+    topics_dir = root / "research/topics"
+    by_item = {}
+    for d in sorted(topics_dir.iterdir()):
+        if d.is_dir() and len(d.name) >= 3 and d.name[:2].isdigit() and d.name[2] == "-":
+            by_item[f"R{d.name[:2]}"] = d
+    to_reset = set(seed_items)
+    changed = True
+    while changed:
+        changed = False
+        for item, tdir in by_item.items():
+            if item in to_reset:
+                continue
+            acc_path = tdir / "acceptance.json"
+            if not acc_path.is_file():
+                continue
+            acc = json.loads(acc_path.read_text())
+            prereqs = set(acc.get("prerequisites", {}).get("research", {})) | set(acc.get("prerequisites", {}).get("acceptance_after", {}))
+            if prereqs & to_reset:
+                to_reset.add(item)
+                changed = True
+    # Reset owned researched parameters for any reset item back to placeholder "—"
+    params_path = root / "docs/port/PARAMETERS.md"
+    param_lines = []
+    for line in params_path.read_text().splitlines():
+        if line.startswith("|"):
+            cells = line.split("|")
+            if len(cells) >= 6 and cells[2].strip() == "researched" and cells[3].strip() in to_reset:
+                cells[4] = " — "
+                line = "|".join(cells)
+        param_lines.append(line)
+    write(params_path, "\n".join(param_lines) + "\n")
+    # Remove published topic artifacts for reset items
+    for item in to_reset:
+        tdir = by_item[item]
+        for name in ("DECISION.md", "acceptance.json"):
+            p = tdir / name
+            if p.exists():
+                p.unlink()
+        for p in tdir.glob("audit-*.md"):
+            p.unlink()
+        for sub in ("raw", "evidence"):
+            d = tdir / sub
+            if d.exists():
+                shutil.rmtree(d)
+    # Flip index rows back to open
+    index_path = root / "research/CLAUDE.md"
+    index_lines = []
+    for line in index_path.read_text().splitlines():
+        for item in to_reset:
+            if line.startswith(f"| {item} |"):
+                line = line.replace("| resolved |", "| open |").replace("| in-progress |", "| open |")
+                break
+        index_lines.append(line)
+    write(index_path, "\n".join(index_lines) + "\n")
+    if clear_auditor_overrides:
+        exec_path = root / "research/EXECUTION.json"
+        data = json.loads(exec_path.read_text())
+        overrides = data.get("empirical_auditor_overrides", {})
+        for item in clear_auditor_overrides:
+            overrides.pop(item, None)
+        jswrite(exec_path, data)
+
+
 def accept_fixture(root, key, kind="pattern", consumed=None, fixed=None, prereqs=None, revision=False):
     """Build a complete, real-validator GREEN bundle in a temporary tree."""
     directory = topic(root, key)
@@ -351,6 +416,7 @@ class RunnerTests(unittest.TestCase):
     def test_full_production_tree_r38_first_acceptance(self):
         production = self.root / "production"
         shutil.copytree(REPO, production, ignore=shutil.ignore_patterns(".git", "runs", "__pycache__"))
+        reset_to_open(production, {"R38"}, clear_auditor_overrides={"R38"})
         self.root = production; self.prepare("R38")
         staged = self.root / "staged"
         shutil.copytree(self.root, staged, ignore=shutil.ignore_patterns("staged", "runs", "__pycache__"))
