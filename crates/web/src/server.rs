@@ -9,6 +9,12 @@ use rs_launch_blueprint_core::WorkspaceInfo;
 ///
 /// Full HTTP routing, middleware, and OpenAPI support land in `P08`–`P09`.
 pub fn serve_stub(info: WorkspaceInfo, args: &[String]) -> ExitCode {
+    tracing::debug!(
+        argc = args.len(),
+        package = info.package,
+        web_enabled = info.web_enabled,
+        "dispatching web stub"
+    );
     let mut stdout = io::stdout().lock();
     let result = match args.first().map(String::as_str) {
         Some("-V" | "--version") => writeln!(stdout, "rslbp-serve {}", info.version),

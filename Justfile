@@ -404,9 +404,10 @@ blaze-status:
         exit 1
     fi
     echo ""
-    echo "Optional feature policy:"
+    echo "Optional feature & test policy:"
     echo "  --features web            : Cargo-authoritative while indexable-inc/blaze#598 (utoipa-gen) is open (re-probed in P09)"
     echo "  --features metrics        : Cargo-authoritative while indexable-inc/blaze#1826 (metrics-util) is open (re-probed in P09)"
+    echo "  http_adapter_boundary     : Cargo-authoritative while blaze hits async-lock easy_wrapper! macro resolution (use \`just blaze-test -- --skip http_\`)"
 
 # Print official Blaze installer instructions and caveats (pass `apply` to run the installer)
 [group('blaze'), group('install')]

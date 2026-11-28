@@ -9,6 +9,7 @@ use rs_launch_blueprint_core::WorkspaceInfo;
 ///
 /// Supports `-V`/`--version` and `-h`/`--help`; full CLI commands land in `P07`.
 pub fn run(info: WorkspaceInfo, args: &[String]) -> ExitCode {
+    tracing::debug!(argc = args.len(), package = info.package, "dispatching cli");
     let mut stdout = io::stdout().lock();
     let result = match args.first().map(String::as_str) {
         Some("-V" | "--version") => writeln!(stdout, "rslbp {}", info.version),

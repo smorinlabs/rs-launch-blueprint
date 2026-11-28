@@ -71,11 +71,37 @@ required-features = ["web"]
 [features]
 default = []
 web = ["dep:rs-launch-blueprint-web"]
+mock = ["rs-launch-blueprint-core/mock"]
+keychain = [
+    "dep:keyring-core",
+    "dep:apple-native-keyring-store",
+    "dep:zbus-secret-service-keyring-store",
+]
 
 [dependencies]
+keyring-core = { version = "1.0.0", optional = true }
 rs-launch-blueprint-cli = { version = "0.1.0", path = "crates/cli" }
 rs-launch-blueprint-core = { version = "0.1.0", path = "crates/core" }
 rs-launch-blueprint-web = { version = "0.1.0", path = "crates/web", optional = true }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+ureq = { version = "3.4.2", features = ["json"] }
+zeroize = { version = "1.9.0", default-features = false, features = ["alloc"] }
+
+[target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
+apple-native-keyring-store = { version = "1.0.2", features = ["keychain"], optional = true }
+
+[target.'cfg(all(unix, not(any(target_os = "macos", target_os = "ios", target_os = "android"))))'.dependencies]
+zbus-secret-service-keyring-store = { version = "1.0.1", features = [
+    "rt-async-io-crypto-rust",
+], optional = true }
+
+[dev-dependencies]
+httpmock = { version = "0.8.3", default-features = false }
+secrecy = "0.10.3"
+toml = "1.1.6"
 
 [lints]
 workspace = true
