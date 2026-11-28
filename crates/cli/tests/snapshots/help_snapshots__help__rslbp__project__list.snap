@@ -1,0 +1,20 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+List project records, optionally filtered by workspace
+
+Usage: rslbp project list [OPTIONS]
+
+Options:
+      --workspace <WORKSPACE>
+          Filter records by workspace name
+
+      --limit <LIMIT>
+          Maximum number of records to retrieve
+
+      --select
+          Interactively narrow the fetched records via multi-select when on a TTY
+
+  -h, --help
+          Print help

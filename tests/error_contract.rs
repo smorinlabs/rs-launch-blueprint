@@ -215,3 +215,82 @@ fn error_envelope_omits_null_hint_and_serializes_exact_r67_keys() {
         })
     );
 }
+
+#[test]
+fn domain_error_to_envelope_and_clipboard_error_variants() {
+    use rs_launch_blueprint_core::{ClipboardError, ClipboardPort, FailingClipboard};
+
+    let usage = DomainError::Usage {
+        message: "bad arg".to_owned(),
+        hint: Some("try --help".to_owned()),
+    };
+    let env_usage = usage.to_envelope();
+    assert_eq!(env_usage.error.code, "RSLB201");
+    assert_eq!(env_usage.error.hint.as_deref(), Some("try --help"));
+
+    let conflict = DomainError::Conflict {
+        message: "file exists".to_owned(),
+        hint: None,
+    };
+    assert_eq!(conflict.to_envelope().error.code, "RSLB501");
+    assert_eq!(conflict.exit(), Exit::Conflict);
+
+    let interrupted = DomainError::PromptInterrupted;
+    assert_eq!(interrupted.to_envelope().error.code, "RSLB903");
+    assert_eq!(interrupted.exit(), Exit::SigInt);
+
+    let clip_src = ClipboardError::with_source(
+        "clipboard failed",
+        Some("pipe instead".to_owned()),
+        Box::new(io::Error::other("x11 down")),
+    );
+    assert!(clip_src.source().is_some());
+    assert_eq!(clip_src.hint().as_deref(), Some("pipe instead"));
+    let clip_dom = DomainError::Clipboard(clip_src);
+    assert_eq!(clip_dom.to_envelope().error.code, "RSLB101");
+    assert_eq!(clip_dom.exit(), Exit::Runtime);
+
+    let failing_default = FailingClipboard::default();
+    let err = failing_default.set_text("hello").unwrap_err();
+    assert!(err.hint().is_some());
+
+    // Exercise remaining DomainError::hint & ConfigError/AuthError/PortError branches.
+    let port_transport = DomainError::from(PortError::Transport {
+        source: Box::new(io::Error::other("timeout")),
+    });
+    assert!(port_transport.hint().is_some());
+
+    let cfg_write = DomainError::from(ConfigError::WriteFailed {
+        path: "/tmp/c.toml".into(),
+        source: io::Error::other("rofs"),
+    });
+    assert_eq!(cfg_write.error_code(), ErrorCode::Io);
+    assert!(cfg_write.hint().is_none());
+
+    let cfg_unknown = DomainError::from(ConfigError::UnknownKey {
+        key: "bad.key".to_owned(),
+        valid_keys: vec!["output.format"],
+    });
+    assert_eq!(cfg_unknown.error_code(), ErrorCode::ConfigInvalid);
+    assert!(cfg_unknown.hint().unwrap().contains("output.format"));
+
+    let cfg_unparsable = DomainError::from(ConfigError::Unparsable {
+        path: "/tmp/bad.toml".into(),
+        detail: "bad".to_owned(),
+        span: None,
+    });
+    assert!(cfg_unparsable.hint().unwrap().contains("bad.toml"));
+
+    let auth_unavail = DomainError::from(AuthError::StoreUnavailable {
+        detail: "locked".to_owned(),
+    });
+    assert_eq!(auth_unavail.error_code(), ErrorCode::Io);
+    assert!(auth_unavail.hint().is_none());
+
+    let auth_io = DomainError::from(AuthError::Io {
+        path: "/tmp/c".into(),
+        source: io::Error::other("io"),
+    });
+    assert_eq!(auth_io.error_code(), ErrorCode::Io);
+    assert!(auth_io.hint().is_none());
+}

@@ -647,3 +647,184 @@ fn init_telemetry_never_panics_when_called_twice_and_renders_sample_lines() {
     });
     assert!(matches!(second, TelemetryInit::HostOwned));
 }
+
+#[test]
+fn telemetry_formats_visitors_span_updates_and_handle_controls() {
+    // LogFormat & ServiceLogFormat Display / as_str / FromStr coverage.
+    for (raw, expected) in [
+        ("auto", LogFormat::Auto),
+        ("console", LogFormat::Console),
+        ("json", LogFormat::Json),
+    ] {
+        assert_eq!(LogFormat::from_str(raw).unwrap(), expected);
+        assert_eq!(expected.as_str(), raw);
+        assert_eq!(expected.to_string(), raw);
+    }
+    assert!(LogFormat::from_str("xml").is_err());
+
+    assert_eq!(ServiceLogFormat::Json.as_str(), "json");
+    assert_eq!(ServiceLogFormat::Json.to_string(), "json");
+    assert_eq!(ServiceLogFormat::Console.as_str(), "console");
+    assert_eq!(ServiceLogFormat::Console.to_string(), "console");
+    assert_eq!(
+        ServiceLogFormat::Console.resolved(),
+        ResolvedLogFormat::Console
+    );
+    assert_eq!(ServiceLogFormat::Json.resolved(), ResolvedLogFormat::Json);
+
+    let sample_err = std::io::Error::other("sample-io-err");
+
+    // Exercise every Visit scalar type (f64, NaN, i64, u64, i128, u128, bool, error)
+    // and span record updates (`add_fields`) under both Console and JSON profiles.
+    for (profile, expect_json) in [
+        (
+            Profile::Service {
+                level: LogLevel::Trace,
+                format: ServiceLogFormat::Json,
+            },
+            true,
+        ),
+        (
+            Profile::Service {
+                level: LogLevel::Trace,
+                format: ServiceLogFormat::Console,
+            },
+            false,
+        ),
+    ] {
+        let buf = CaptureBuf::default();
+        let writer_buf = buf.clone();
+        let (subscriber, handles) = build_scoped_subscriber(profile, move || writer_buf.clone());
+
+        // Debug, reload_filter, disable_file_sink, log_bridge_refused.
+        let dbg = format!("{handles:?}");
+        assert!(dbg.contains("TelemetryHandles"));
+        let _ = handles.log_bridge_refused();
+        handles.reload_filter("info".into()).expect("reload_filter");
+        handles.reload_level(LogLevel::Trace).expect("reload_level");
+        handles.disable_file_sink().expect("disable_file_sink");
+
+        // Unwritable file sink path returns Err cleanly.
+        let tmp = TempDir::new("bad-sink");
+        let blocker = tmp.path().join("blocker");
+        fs::write(&blocker, b"file").unwrap();
+        assert!(
+            handles
+                .attach_file_sink(
+                    blocker.join("nested.log"),
+                    LogLevel::Info,
+                    FileLogFormat::Text,
+                )
+                .is_err()
+        );
+
+        let _guard = tracing::subscriber::set_default(subscriber);
+        let span = info_span!(
+            "typed_span",
+            req = tracing::field::Empty,
+            secret_key = tracing::field::Empty
+        );
+        let _enter = span.enter();
+        span.record("req", "r-99");
+        span.record("secret_key", "TOP_SECRET_SPAN_REC");
+
+        info!(
+            f = 1.5_f64,
+            f_nan = f64::NAN,
+            i = -42_i64,
+            u = 42_u64,
+            i128v = -100_i128,
+            u128v = 100_u128,
+            flag = true,
+            err = &sample_err as &dyn std::error::Error,
+            token_f64 = 9.9_f64,
+            token_i64 = -1_i64,
+            token_u64 = 1_u64,
+            token_i128 = -2_i128,
+            token_u128 = 2_u128,
+            token_bool = false,
+            token_err = &sample_err as &dyn std::error::Error,
+            "all typed fields"
+        );
+        drop(_enter);
+        drop(_guard);
+
+        let output = buf.text();
+        assert!(!output.contains("TOP_SECRET_SPAN_REC"), "{output}");
+        assert!(output.contains("all typed fields"), "{output}");
+        if expect_json {
+            let parsed: serde_json::Value =
+                serde_json::from_str(output.trim()).expect("valid json line");
+            assert_eq!(parsed["i"], -42);
+            assert_eq!(parsed["u"], 42);
+            assert_eq!(parsed["flag"], true);
+            assert_eq!(parsed["token_u64"], "[REDACTED]");
+        }
+    }
+
+    // Exercise ANSI + debug console levels (ERROR, WARN, INFO, DEBUG, TRACE) and rotating
+    // file sink with tiny max_bytes triggering rotation in both Text and Json formats.
+    let tmp_rot = TempDir::new("rot-sink");
+    for (file_fmt, name) in [
+        (FileLogFormat::Text, "rot-text.log"),
+        (FileLogFormat::Json, "rot-json.log"),
+    ] {
+        let log_path = tmp_rot.path().join(name);
+        let buf = CaptureBuf::default();
+        let writer_buf = buf.clone();
+        let (subscriber, handles) = build_scoped_subscriber(
+            Profile::Cli {
+                format: LogFormat::Console,
+                level: LogLevel::Trace,
+                ansi: true,
+                debug: true,
+            },
+            move || writer_buf.clone(),
+        );
+        handles
+            .attach_file_sink_with_limits(&log_path, LogLevel::Trace, file_fmt, 64, 2)
+            .expect("attach rotating sink");
+        let _guard = tracing::subscriber::set_default(subscriber);
+        tracing::error!(detail = "e", "level-error");
+        tracing::warn!(detail = "w", "level-warn");
+        tracing::info!(detail = "i", "level-info");
+        tracing::debug!(detail = "d", "level-debug");
+        tracing::trace!(detail = "t", "level-trace");
+        drop(_guard);
+        assert!(log_path.exists());
+    }
+
+    // Exercise reserved-key collision (`timestamp`/`level`/`target`/`span`) under JsonEvent
+    // and attach_file_sink_with_limits error after subscriber is dropped.
+    let buf_res = CaptureBuf::default();
+    let w_res = buf_res.clone();
+    let (sub_res, handles_res) = build_scoped_subscriber(
+        Profile::Service {
+            level: LogLevel::Info,
+            format: ServiceLogFormat::Json,
+        },
+        move || w_res.clone(),
+    );
+    let _g = tracing::subscriber::set_default(sub_res);
+    info!(timestamp = "t1", level = "l1", "reserved collision");
+    drop(_g);
+    let txt = buf_res.text();
+    assert!(txt.contains("field_timestamp") && txt.contains("field_level"));
+    // Subscriber is now dropped; reloading file_body returns an error cleanly.
+    let drop_log = tmp_rot.path().join("dropped.log");
+    assert!(
+        handles_res
+            .attach_file_sink_with_limits(&drop_log, LogLevel::Info, FileLogFormat::Text, 1024, 1)
+            .is_err()
+    );
+
+    // Exercise ServiceLogFormat invalid value, empty RotatingFile path, and backup_count=0 truncate rotation.
+    assert!(ServiceLogFormat::from_str("xml").is_err());
+    assert!(RotatingFile::open("", 1024, 1).is_err());
+    let zero_backup_log = tmp_rot.path().join("zero-backup.log");
+    let mut rot0 = RotatingFile::open(&zero_backup_log, 10, 0).expect("open zero-backup log");
+    use std::io::Write as _;
+    rot0.write_all(b"0123456789abcdef").expect("write 1");
+    rot0.write_all(b"after-truncate\n").expect("write 2");
+    rot0.flush().expect("flush");
+}

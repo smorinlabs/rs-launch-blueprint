@@ -327,28 +327,28 @@ impl InMemoryCredentialStore {
             token: Mutex::new(Some(token)),
         }
     }
+
+    fn lock_token(&self) -> Result<std::sync::MutexGuard<'_, Option<Token>>, AuthError> {
+        self.token.lock().map_err(|_| AuthError::StoreUnavailable {
+            detail: "in-memory credential lock poisoned".to_owned(),
+        })
+    }
 }
 
 impl CredentialStore for InMemoryCredentialStore {
     fn load(&self) -> Result<(Option<Token>, Vec<CredentialWarning>), AuthError> {
-        let guard = self.token.lock().map_err(|_| AuthError::StoreUnavailable {
-            detail: "in-memory credential lock poisoned".to_owned(),
-        })?;
+        let guard = self.lock_token()?;
         Ok((guard.clone(), Vec::new()))
     }
 
     fn save(&self, token: &Token) -> Result<(), AuthError> {
-        let mut guard = self.token.lock().map_err(|_| AuthError::StoreUnavailable {
-            detail: "in-memory credential lock poisoned".to_owned(),
-        })?;
+        let mut guard = self.lock_token()?;
         *guard = Some(token.clone());
         Ok(())
     }
 
     fn delete(&self) -> Result<bool, AuthError> {
-        let mut guard = self.token.lock().map_err(|_| AuthError::StoreUnavailable {
-            detail: "in-memory credential lock poisoned".to_owned(),
-        })?;
+        let mut guard = self.lock_token()?;
         Ok(guard.take().is_some())
     }
 }

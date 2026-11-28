@@ -1,0 +1,21 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Create a new project record
+
+Usage: rslbp project create [OPTIONS] <NAME>
+
+Arguments:
+  <NAME>
+          Human-readable project name
+
+Options:
+      --workspace <WORKSPACE>
+          Optional workspace owning the new record
+
+      --dry-run
+          Preview the creation without calling the remote API
+
+  -h, --help
+          Print help

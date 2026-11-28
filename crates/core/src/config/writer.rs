@@ -49,6 +49,57 @@ pub fn get_config_value(config: &ValidConfig, key: &str) -> Result<Option<String
     }
 }
 
+/// Validate and canonicalize one dotted `(key, raw_value)` assignment without touching disk.
+///
+/// Refuses prohibited secret keys with [`ConfigError::ProhibitedSecretChannel`] (`RSLB204`) and
+/// unknown/invalid keys with `RSLB203`.
+pub fn validate_config_assignment(key: &str, raw_value: &str) -> Result<String, ConfigError> {
+    if is_prohibited_secret_key(key) {
+        return Err(ConfigError::ProhibitedSecretChannel {
+            key: key.to_owned(),
+        });
+    }
+    let (_, _, _, canonical) = coerce_key_value(key, raw_value)?;
+    Ok(canonical)
+}
+
+/// Read the raw value currently stored for dotted `key` in a single TOML file at `path`.
+///
+/// Returns `Ok(None)` when `path` does not exist or does not explicitly set `key`.
+pub fn read_config_file_key(path: &Path, key: &str) -> Result<Option<String>, ConfigError> {
+    let raw = match fs::read_to_string(path) {
+        Ok(content) => content,
+        Err(err) if err.kind() == io::ErrorKind::NotFound => return Ok(None),
+        Err(source) => {
+            return Err(ConfigError::Unreadable {
+                path: path.to_path_buf(),
+                source,
+            });
+        }
+    };
+    let table: toml::Table = toml::from_str(&raw).map_err(|err| ConfigError::Unparsable {
+        path: path.to_path_buf(),
+        detail: err.message().to_owned(),
+        span: err.span(),
+    })?;
+    let Some((section, field)) = key.split_once('.') else {
+        return Ok(None);
+    };
+    let Some(val) = table
+        .get(section)
+        .and_then(toml::Value::as_table)
+        .and_then(|t| t.get(field))
+    else {
+        return Ok(None);
+    };
+    let rendered = match val {
+        toml::Value::String(s) => s.clone(),
+        toml::Value::Integer(n) => n.to_string(),
+        other => other.to_string(),
+    };
+    Ok(Some(rendered))
+}
+
 /// Update one dotted configuration key in `path` while preserving all comments, whitespace, and
 /// key ordering (`R52` AC3), writing atomically at mode `0600` (`R52` AC5).
 ///

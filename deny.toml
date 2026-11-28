@@ -17,7 +17,8 @@ ignore = [
 [licenses]
 # Permissive licenses covering our MIT/Apache-2.0 workspace and audited transitive deps
 # (ring/rustls-webpki: ISC, subtle: BSD-3-Clause, unicode-ident: Unicode-3.0,
-# webpki-roots Mozilla CA bundle: CDLA-Permissive-2.0).
+# webpki-roots Mozilla CA bundle: CDLA-Permissive-2.0,
+# clipboard-win/error-code via arboard: BSL-1.0, foldhash via wl-clipboard-rs: Zlib).
 allow = [
     "MIT",
     "Apache-2.0",
@@ -25,12 +26,14 @@ allow = [
     "BSD-3-Clause",
     "Unicode-3.0",
     "CDLA-Permissive-2.0",
+    "BSL-1.0",
+    "Zlib",
 ]
 
 [bans]
 multiple-versions = "warn"
 wildcards = "deny"
-# Wrapper entries stay pre-armed for crates introduced in P06–P08 (`axum`, `clap`, `tracing-subscriber`, `anyhow`).
+# Wrapper entries enforce workspace boundaries (`axum`, `clap`, `clap_complete`, `tracing-subscriber`, `anyhow`).
 deny = [
     { crate = "axum", wrappers = [
         "rs-launch-blueprint-web",
@@ -38,7 +41,11 @@ deny = [
     { crate = "clap", wrappers = [
         "rs-launch-blueprint-cli",
         "rs-launch-blueprint",
+        "clap_complete",
     ], reason = "argument parsing belongs to the CLI layer and to the serve binary's required global core (F008)" },
+    { crate = "clap_complete", wrappers = [
+        "rs-launch-blueprint-cli",
+    ], reason = "shell completion generation belongs to the CLI crate only (R60)" },
     { crate = "tracing-subscriber", wrappers = [
         "rs-launch-blueprint",
     ], reason = "subscriber initialization belongs to the root composition package only (R58)" },

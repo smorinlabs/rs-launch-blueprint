@@ -303,4 +303,64 @@ fn http_adapter_boundary_maps_statuses_and_rejects_schema_drift() {
         .expect_err("closed port must return Transport error");
     assert_eq!(transport.error_code(), ErrorCode::Transport);
     assert_eq!(DomainError::from(transport).exit(), Exit::Runtime);
+    assert_eq!(
+        broken_port
+            .list(&ProjectQuery::default())
+            .unwrap_err()
+            .error_code(),
+        ErrorCode::Transport
+    );
+    assert_eq!(
+        broken_port
+            .create(&CreateProjectInput {
+                name: "x".to_owned(),
+                workspace: None,
+            })
+            .unwrap_err()
+            .error_code(),
+        ErrorCode::Transport
+    );
+    assert_eq!(
+        broken_port.delete("any").unwrap_err().error_code(),
+        ErrorCode::Transport
+    );
+
+    // Debug (redacts token), base_url(), malformed list/create, 500 delete, empty gid wire error.
+    let dbg_port = HttpProjectsPort::new(server.base_url(), Token::new("sk_live_NEVER_LEAK_HTTP"));
+    let dbg = format!("{dbg_port:?}");
+    assert!(dbg.contains("HttpProjectsPort") && !dbg.contains("sk_live_NEVER_LEAK_HTTP"));
+    assert_eq!(port.base_url(), server.base_url());
+
+    let s2 = MockServer::start();
+    s2.mock(|when, then| {
+        when.method(GET).path("/projects");
+        then.status(200)
+            .body(r#"{"data":[{"gid":"","name":"Bad"}]}"#);
+    });
+    s2.mock(|when, then| {
+        when.method(POST).path("/projects");
+        then.status(200).body("not-json");
+    });
+    s2.mock(|when, then| {
+        when.method(DELETE).path("/projects/err500");
+        then.status(500);
+    });
+    let p2 = HttpProjectsPort::new(s2.base_url(), Token::new("tok2"));
+    assert_eq!(
+        p2.list(&ProjectQuery::default()).unwrap_err().error_code(),
+        ErrorCode::RemoteApi
+    );
+    assert_eq!(
+        p2.create(&CreateProjectInput {
+            name: "x".to_owned(),
+            workspace: None,
+        })
+        .unwrap_err()
+        .error_code(),
+        ErrorCode::RemoteApi
+    );
+    assert_eq!(
+        p2.delete("err500").unwrap_err().error_code(),
+        ErrorCode::RemoteApi
+    );
 }

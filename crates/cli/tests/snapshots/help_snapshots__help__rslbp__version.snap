@@ -1,0 +1,11 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Print version and build metadata
+
+Usage: rslbp version
+
+Options:
+  -h, --help
+          Print help

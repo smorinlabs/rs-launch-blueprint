@@ -10,7 +10,7 @@
 - **Prior art:** [R60 cli-parsing-framework](../research/topics/60-cli-parsing-framework/DECISION.md)
 - **Prior art:** [R66 output-format-surface](../research/topics/66-output-format-surface/DECISION.md)
 
-**Status:** `[ ]` scoped, not started.
+**Status:** `[x]` completed (2026-11-27).
 
 ### Scope
 Build the full `rslbp` CLI in `crates/cli` + `src/main.rs` matching `py-launch-blueprint`'s `plbp` contract and org CLI Design Standard, and establish the full Rust test & coverage harness:
@@ -25,12 +25,18 @@ Build the full `rslbp` CLI in `crates/cli` + `src/main.rs` matching `py-launch-b
 - GitHub Actions CI & release workflows (`P10`–`P11`)
 
 ### Tests & Tasks
-- [ ] [P07-TS01] Add `.config/nextest.toml`, `assert_cmd` built-binary tests (exit codes, JSON/text/markdown/name outputs, broken pipe, error envelopes, `--no-input` prompts), `proptest` config/format properties, and `insta` CLI `--help` snapshots (`R32`, `R33`, `R66`, `R67`)
-- [ ] [P07-T01] Implement `clap` derive CLI parser, noun-verb subcommands, global flags, and `clap_complete` generation (`R60`)
-- [ ] [P07-T02] Implement output renderers (`table`/`json`/`markdown`/`name` with `tabled =0.22.0`, `--output-file`), `anstream`/`anstyle` color chain, and capability-gated OSC-8/relative-time rich rows (`R65`, `R66`, `R85`)
-- [ ] [P07-T03] Implement `Prompter` (`inquire`, `OV-02`), `indicatif` spinner, `shlex` pager, and default-on `clipboard` (`arboard`) integration (`R61`–`R64`)
-- [ ] [P07-T04] Implement `src/main.rs` `anyhow` error boundary, signal/broken-pipe handling, crash record sink (`R67`), and wire `just test`, `just coverage` (`R35`), and `just install-check` (`R50`)
-- [ ] [P07-T05] Verify full suite green via `just test`, `cargo test --doc`, `just coverage`, `just install-check`, and `just blaze-test` on default workspace
+- [x] [P07-TS01] Add `.config/nextest.toml`, `assert_cmd` built-binary tests (exit codes, JSON/text/markdown/name outputs, broken pipe, error envelopes, `--no-input` prompts), `proptest` config/format properties, and `insta` CLI `--help` snapshots (`R32`, `R33`, `R66`, `R67`)
+      2026-11-27: added `.config/nextest.toml`, `tests/cli/{main,support,binary,in_process,slow,live}.rs`, `tests/properties.rs`, `crates/cli/tests/contracts.rs`, `crates/cli/tests/help_snapshots.rs` + 15 committed snapshots, and `crates/web/tests/web/main.rs`
+- [x] [P07-T01] Implement `clap` derive CLI parser, noun-verb subcommands, global flags, and `clap_complete` generation (`R60`)
+      2026-11-27: implemented `crates/cli/src/args.rs` and `crates/cli/build.rs` with single-source `clap` derive grammar, singular `project` canonical noun (`projects` hidden alias), `diagnostics` (`doctor` hidden alias), curated env vars, explicit flag provenance, and `clap_complete` AOT generation
+- [x] [P07-T02] Implement output renderers (`table`/`json`/`markdown`/`name` with `tabled =0.22.0`, `--output-file`), `anstream`/`anstyle` color chain, and capability-gated OSC-8/relative-time rich rows (`R65`, `R66`, `R85`)
+      2026-11-27: implemented `crates/cli/src/{output,color,rich}.rs` with `CliView` renderers (`tabled =0.22.0`, atomic `--output-file`/`--no-clobber`), 7-tier `anstream`/`anstyle` color ladder, and capability-gated OSC-8 hyperlinks + relative timestamps
+- [x] [P07-T03] Implement `Prompter` (`inquire`, `OV-02`), `indicatif` spinner, `shlex` pager, and default-on `clipboard` (`arboard`) integration (`R61`–`R64`)
+      2026-11-27: implemented `crates/core/src/clipboard.rs`, `crates/cli/src/{prompter,spinner,pager}.rs`, and root `src/clipboard_adapter.rs` (`arboard` behind default-on `clipboard` feature) with `InquirePrompter`/`ScriptedPrompter` (`OV-02`), 3-clause `SpinnerGuard`, and 2-tier `PagerWriter`
+- [x] [P07-T04] Implement `src/main.rs` `anyhow` error boundary, signal/broken-pipe handling, crash record sink (`R67`), and wire `just test`, `just coverage` (`R35`), and `just install-check` (`R50`)
+      2026-11-27: implemented `crates/cli/src/app.rs`, `src/crash_sink.rs` (`0600` NDJSON), `src/main.rs` (`signal-hook` + `resolve_binary_boundary` precedence), and wired `Justfile` `test`/`test-slow`/`test-live`/`test-all`, `coverage` (`95/95/90`), and `install-check [web]`
+- [x] [P07-T05] Verify full suite green via `just test`, `cargo test --doc`, `just coverage`, `just install-check`, and `just blaze-test` on default workspace
+      2026-11-27: verified `just check` (all 9 parallel gates + doctests), `cargo check --no-default-features --locked`, `just test-slow`/`test-live`/`test-all`, `just coverage` (95.30% lines / 95.87% functions / 93.19% regions), `just install-check` + `just install-check web`, all shell/research checks, `just blaze-check` (54 files, 0 errors), and `just blaze-test` pure-Rust subset (Cargo-authoritative for `http_`/binary/insta/proptest harnesses documented in `just blaze-status`)
 
 ### Deliverable
 ```bash

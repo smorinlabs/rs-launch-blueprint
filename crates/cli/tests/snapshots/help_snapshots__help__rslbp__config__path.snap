@@ -1,0 +1,11 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Show the active configuration file path and whether it exists
+
+Usage: rslbp config path
+
+Options:
+  -h, --help
+          Print help

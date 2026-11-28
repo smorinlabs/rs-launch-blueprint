@@ -1,0 +1,108 @@
+---
+source: crates/cli/tests/help_snapshots.rs
+expression: help
+---
+Command-line interface for rs-launch-blueprint.
+
+Commands follow a noun-verb structure (for example `rslbp project list`). Results are written to
+stdout; diagnostics, progress, prompts, and errors go to stderr.
+
+Usage: rslbp [OPTIONS] [COMMAND]
+
+Commands:
+  project      Manage project resources
+  config       Inspect and edit layered configuration
+  version      Print version and build metadata
+  diagnostics  Inspect environment, configuration, and credential readiness
+  completion   Print a shell completion script to stdout
+  help         Print this message or the help of the given subcommand(s)
+
+Options:
+  -V, --version
+          Print version information and exit
+
+  -o, --output <OUTPUT>
+          Output format
+
+          Possible values:
+          - table:    Human-readable aligned table
+          - json:     Machine-readable JSON document
+          - markdown: GitHub-Flavored Markdown table
+          - name:     Bare identifiers, one per line
+          
+          [env: RSLBP_OUTPUT]
+
+      --json
+          Shorthand for `--output json`
+
+      --output-file <PATH>
+          Write result output to a file path (`-` selects stdout)
+
+      --no-clobber
+          Refuse to overwrite an existing `--output-file` target
+
+      --copy
+          Copy rendered output to the system clipboard after writing primary output
+
+      --no-pager
+          Disable automatic terminal paging for table output
+
+      --no-input
+          Never prompt interactively; fail when required input or consent is missing
+
+      --color <COLOR>
+          Control terminal ANSI color emission
+
+          Possible values:
+          - auto:   Enable color automatically when the stream is a terminal
+          - always: Force ANSI color sequences even when redirected
+          - never:  Disable ANSI color sequences
+
+      --no-color
+          Disable terminal ANSI color emission (alias for `--color never`)
+
+  -v, --verbose...
+          Increase diagnostic log verbosity (`-v` info, `-vv` debug, `-vvv` trace)
+
+  -q, --quiet
+          Suppress progress indicators and non-essential stderr output
+
+      --debug
+          Enable trace-level diagnostics with source file, line, and thread metadata
+
+      --log-level <LOG_LEVEL>
+          Explicit console diagnostic log level
+
+          Possible values:
+          - off:   Disable diagnostic logging
+          - error: Errors only
+          - warn:  Warnings and errors
+          - info:  Operational info and above
+          - debug: Debug diagnostics and above
+          - trace: Trace diagnostics and above
+          
+          [env: RSLBP_LOG_LEVEL]
+
+      --log-format <LOG_FORMAT>
+          Console diagnostic log format
+
+          Possible values:
+          - auto:    Console when stderr is a terminal, JSON otherwise
+          - console: Human-readable console lines
+          - json:    Newline-delimited JSON events
+          
+          [env: RSLBP_LOG_FORMAT]
+
+      --log-file[=<PATH>]
+          Write rotating diagnostic logs to a file (omit value for default XDG state path)
+
+      --config <PATH>
+          Path to an explicit TOML configuration file (replaces layered discovery)
+          
+          [env: RSLBP_CONFIG]
+
+      --token-file <PATH>
+          Read API token from a file path (`-` reads from stdin)
+
+  -h, --help
+          Print help (see a summary with '-h')

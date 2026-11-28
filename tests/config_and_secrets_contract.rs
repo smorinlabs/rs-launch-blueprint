@@ -738,4 +738,386 @@ fn keychain_credential_store_round_trips_using_keyring_core_mock() {
     );
     assert!(store.delete().expect("delete keychain"));
     assert!(store.load().expect("after delete").0.is_none());
+    assert!(!store.delete().expect("delete absent keychain"));
+    assert!(format!("{store:?}").contains("KeychainCredentialStore"));
+}
+
+#[test]
+fn schema_display_validation_writer_all_keys_and_in_memory_credential_store() {
+    use rs_launch_blueprint::{
+        FileLogFormat, InMemoryCredentialStore, ValidConfig, get_config_value,
+        read_config_file_key, validate_config_assignment,
+    };
+
+    // Display impls for config enums and TokenSource.
+    assert_eq!(OutputFormat::Markdown.to_string(), "markdown");
+    assert_eq!(ColorPreference::Always.to_string(), "always");
+    assert_eq!(LogLevel::Trace.to_string(), "trace");
+    assert_eq!(FileLogFormat::Json.to_string(), "json");
+    assert_eq!(TokenSource::Env.to_string(), "env");
+    assert_eq!(TokenSource::Stdin.to_string(), "stdin");
+    assert_eq!(TokenSource::TokenFile.to_string(), "token-file");
+    assert_eq!(TokenSource::Stored.to_string(), "stored");
+
+    // UnvalidatedConfig::parse_str, as_table, ValidConfig::defaults, into_inner, is_clean.
+    let parsed = UnvalidatedConfig::parse_str("[output]\nformat = \"json\"\n").expect("parse");
+    assert!(parsed.as_table().contains_key("output"));
+    assert!(UnvalidatedConfig::parse_str("[broken").is_err());
+
+    let clean_report = parsed.validate();
+    assert!(clean_report.is_clean());
+    let valid_def = ValidConfig::defaults();
+    assert_eq!(valid_def.into_inner().output.format, OutputFormat::Table);
+
+    // Exhaustive invalid type & section validation cases + ValidationIssue::Display.
+    let bad_toml = r#"
+extra_root = 1
+[output]
+format = 123
+color = 456
+limit = "not-int"
+[logging]
+level = "bogus"
+file = 789
+file-format = "xml"
+file-level = "nope"
+unknown_log = 1
+[nested]
+api_key = "forbidden"
+"#;
+    let rep = UnvalidatedConfig::parse_str(bad_toml).unwrap().validate();
+    assert!(!rep.is_clean());
+    assert!(!rep.issues.is_empty());
+    assert!(rep.issues[0].to_string().contains(&rep.issues[0].path));
+    assert!(rep.unknown_keys.iter().any(|k| k == "extra_root"));
+    assert!(
+        rep.prohibited_secret_keys
+            .iter()
+            .any(|k| k == "nested.api_key")
+    );
+
+    let bad_types = r#"
+logging = "not-a-table"
+[output]
+limit = -5
+"#;
+    let rep2 = UnvalidatedConfig::parse_str(bad_types).unwrap().validate();
+    assert!(rep2.issues.iter().any(|i| i.path == "logging"));
+    assert!(rep2.issues.iter().any(|i| i.path == "output.limit"));
+
+    let bad_log_types = r#"
+[logging]
+level = 1
+file-format = 2
+file-level = 3
+"#;
+    let rep3 = UnvalidatedConfig::parse_str(bad_log_types)
+        .unwrap()
+        .validate();
+    assert_eq!(rep3.issues.len(), 3);
+
+    // Writer: every writable key get/set/validate/read_config_file_key + error paths.
+    let tmp = TempDir::new("writer-all");
+    let cfg_path = tmp.path().join("rslbp_config.toml");
+    assert_eq!(
+        read_config_file_key(&cfg_path, "output.format").unwrap(),
+        None
+    );
+
+    for (key, val) in [
+        ("output.format", "name"),
+        ("output.color", "always"),
+        ("output.limit", "25"),
+        ("logging.level", "debug"),
+        ("logging.file", "/tmp/rslbp.log"),
+        ("logging.file-format", "json"),
+        ("logging.file-level", "info"),
+    ] {
+        let canon = validate_config_assignment(key, val).expect(key);
+        let written = set_config_value(&cfg_path, key, val).expect(key);
+        assert_eq!(written, canon);
+        assert_eq!(
+            read_config_file_key(&cfg_path, key).unwrap().as_deref(),
+            Some(canon.as_str())
+        );
+    }
+
+    // Load back and read every key via get_config_value.
+    let paths = Paths::from_roots(
+        tmp.path().join("c"),
+        tmp.path().join("d"),
+        tmp.path().join("s"),
+        tmp.path().join("k"),
+    );
+    let loaded = load_config(&ConfigDiscoveryInputs {
+        explicit_flag: Some(&cfg_path),
+        explicit_env: None,
+        cwd: tmp.path(),
+        paths: &paths,
+        xdg_config_dirs: None,
+    })
+    .expect("load written config");
+    for key in [
+        "output.format",
+        "output.color",
+        "output.limit",
+        "logging.level",
+        "logging.file",
+        "logging.file-format",
+        "logging.file-level",
+    ] {
+        assert!(get_config_value(&loaded.config, key).unwrap().is_some());
+    }
+    assert!(get_config_value(&loaded.config, "unknown.key").is_err());
+
+    // Invalid assignments rejected cleanly.
+    for (key, bad) in [
+        ("output.format", "yaml"),
+        ("output.color", "neon"),
+        ("output.limit", "0"),
+        ("output.limit", "abc"),
+        ("logging.level", "verbose"),
+        ("logging.file-format", "yaml"),
+        ("logging.file-level", "verbose"),
+        ("unknown.key", "x"),
+        ("api_token", "sk_bad"),
+    ] {
+        assert!(
+            validate_config_assignment(key, bad).is_err(),
+            "{key}={bad} must fail"
+        );
+    }
+
+    // Corrupt TOML rejected by read_config_file_key.
+    fs::write(&cfg_path, "[broken").unwrap();
+    assert!(read_config_file_key(&cfg_path, "output.format").is_err());
+
+    // InMemoryCredentialStore full CRUD + short Token::masked().
+    let short_tok = Token::new("abc");
+    assert_eq!(short_tok.masked(), "***");
+    let mem_empty = InMemoryCredentialStore::new();
+    assert!(mem_empty.load().unwrap().0.is_none());
+    mem_empty.save(&Token::new("sk_mem_1234")).unwrap();
+    assert_eq!(
+        mem_empty.load().unwrap().0.unwrap().expose_secret(),
+        "sk_mem_1234"
+    );
+    assert!(mem_empty.delete().unwrap());
+    assert!(!mem_empty.delete().unwrap());
+
+    let mem_pre = InMemoryCredentialStore::with_token(Token::new("sk_pre_9876"));
+    assert_eq!(
+        mem_pre.load().unwrap().0.unwrap().expose_secret(),
+        "sk_pre_9876"
+    );
+
+    // Empty stdin token fails with CredentialsAbsent.
+    let res_empty_stdin = resolve_token(&TokenResolutionInputs {
+        token_file: Some(Path::new("-")),
+        stdin_token: Some("   \n"),
+        env_token: None,
+        store: None,
+    });
+    assert!(res_empty_stdin.is_err());
+
+    // ConfigOverrides covering all 7 fields cleanly.
+    let overridden = ValidConfig::defaults().apply_overrides(&ConfigOverrides {
+        output_format: Some(OutputFormat::Json),
+        output_color: Some(ColorPreference::Never),
+        output_limit: std::num::NonZeroU32::new(42),
+        logging_level: Some(LogLevel::Debug),
+        logging_file: Some(PathBuf::from("/tmp/ov.log")),
+        logging_file_format: Some(FileLogFormat::Json),
+        logging_file_level: Some(LogLevel::Trace),
+    });
+    let oc = overridden.as_config();
+    assert_eq!(oc.output.color, ColorPreference::Never);
+    assert_eq!(oc.output.limit, std::num::NonZeroU32::new(42));
+    assert_eq!(oc.logging.level, LogLevel::Debug);
+    assert_eq!(oc.logging.file.as_deref(), Some(Path::new("/tmp/ov.log")));
+    assert_eq!(oc.logging.file_format, FileLogFormat::Json);
+    assert_eq!(oc.logging.file_level, Some(LogLevel::Trace));
+
+    // Default optional keys return None via get_config_value; read_config_file_key handles integer & missing section.
+    let def_cfg = ValidConfig::defaults();
+    assert_eq!(get_config_value(&def_cfg, "output.limit").unwrap(), None);
+    assert_eq!(get_config_value(&def_cfg, "logging.file").unwrap(), None);
+    assert_eq!(
+        get_config_value(&def_cfg, "logging.file-level").unwrap(),
+        None
+    );
+    let partial_cfg = tmp.path().join("partial.toml");
+    fs::write(&partial_cfg, "[output]\nlimit = 15\n").unwrap();
+    assert_eq!(
+        read_config_file_key(&partial_cfg, "output.limit")
+            .unwrap()
+            .as_deref(),
+        Some("15")
+    );
+    assert_eq!(
+        read_config_file_key(&partial_cfg, "logging.level").unwrap(),
+        None
+    );
+    assert_eq!(
+        read_config_file_key(&partial_cfg, "no_dot_key").unwrap(),
+        None
+    );
+
+    // Explicit unreadable directory, explicit prohibited secret key, and explicit invalid value.
+    let dir_cfg = tmp.path().join("dir-as-cfg");
+    fs::create_dir_all(&dir_cfg).unwrap();
+    let err_unreadable = load_config(&ConfigDiscoveryInputs {
+        explicit_flag: Some(&dir_cfg),
+        explicit_env: None,
+        cwd: tmp.path(),
+        paths: &paths,
+        xdg_config_dirs: None,
+    })
+    .unwrap_err();
+    assert_eq!(err_unreadable.error_code(), ErrorCode::ConfigUnreadable);
+
+    let secret_cfg = tmp.path().join("explicit-secret.toml");
+    fs::write(&secret_cfg, "token = \"sk_bad\"\n").unwrap();
+    let loaded_sec = load_config(&ConfigDiscoveryInputs {
+        explicit_flag: Some(&secret_cfg),
+        explicit_env: None,
+        cwd: tmp.path(),
+        paths: &paths,
+        xdg_config_dirs: None,
+    })
+    .expect("secret leaf warns and strips");
+    assert!(
+        loaded_sec
+            .warnings
+            .iter()
+            .any(|w| matches!(w.kind, ConfigWarningKind::ProhibitedSecretKey))
+    );
+
+    let invalid_cfg = tmp.path().join("explicit-invalid.toml");
+    fs::write(&invalid_cfg, "[output]\nformat = \"xml\"\n").unwrap();
+    let loaded_inv = load_config(&ConfigDiscoveryInputs {
+        explicit_flag: Some(&invalid_cfg),
+        explicit_env: None,
+        cwd: tmp.path(),
+        paths: &paths,
+        xdg_config_dirs: None,
+    })
+    .expect("invalid leaf warns and defaults");
+    assert!(
+        loaded_inv
+            .warnings
+            .iter()
+            .any(|w| matches!(w.kind, ConfigWarningKind::InvalidValue { .. }))
+    );
+
+    // FileCredentialStore: nested `[auth] token`, invalid TOML, directory-as-file Io error, unwritable save.
+    let nested_creds = tmp.path().join("nested_creds.toml");
+    fs::write(&nested_creds, "[auth]\ntoken = \"sk_nested_77\"\n").unwrap();
+    let nested_store = FileCredentialStore::new(&nested_creds);
+    let (tok_nested, _) = nested_store.load().expect("load nested auth.token");
+    assert_eq!(tok_nested.unwrap().expose_secret(), "sk_nested_77");
+
+    let bad_creds = tmp.path().join("bad_creds.toml");
+    fs::write(&bad_creds, "[broken").unwrap();
+    assert!(FileCredentialStore::new(&bad_creds).load().is_err());
+
+    let dir_creds = tmp.path().join("dir_creds");
+    fs::create_dir_all(&dir_creds).unwrap();
+    let dir_store = FileCredentialStore::new(&dir_creds);
+    assert!(dir_store.load().is_err());
+    assert!(dir_store.delete().is_err());
+
+    let file_blocker = tmp.path().join("file_blocker");
+    fs::write(&file_blocker, b"x").unwrap();
+    assert!(
+        FileCredentialStore::new(file_blocker.join("creds.toml"))
+            .save(&Token::new("sk_fail"))
+            .is_err()
+    );
+    assert!(set_config_value(&file_blocker.join("cfg.toml"), "output.format", "json").is_err());
+
+    // set_config_value rejects corrupt existing TOML file & repairs non-table section header.
+    let corrupt_write = tmp.path().join("corrupt_write.toml");
+    fs::write(&corrupt_write, "[broken").unwrap();
+    assert!(set_config_value(&corrupt_write, "output.format", "json").is_err());
+
+    let non_table_sec = tmp.path().join("non_table_sec.toml");
+    fs::write(&non_table_sec, "output = 123\n").unwrap();
+    assert!(set_config_value(&non_table_sec, "output.format", "json").is_err());
+
+    // Discovered unreadable (non-UTF-8) config file warns cleanly instead of failing.
+    let bad_disc = tmp.path().join("bad-disc");
+    fs::create_dir_all(bad_disc.join(".git")).unwrap();
+    fs::create_dir_all(bad_disc.join(".rslbp")).unwrap();
+    let bad_disc_file = bad_disc.join(".rslbp/rslbp_config.toml");
+    fs::write(&bad_disc_file, [0xff_u8, 0xfe]).unwrap();
+    let loaded_disc = load_config(&ConfigDiscoveryInputs {
+        explicit_flag: None,
+        explicit_env: None,
+        cwd: &bad_disc,
+        paths: &paths,
+        xdg_config_dirs: None,
+    })
+    .expect("unreadable discovered layer warns");
+    assert!(!loaded_disc.warnings.is_empty());
+    assert!(
+        loaded_disc.warnings[0]
+            .to_string()
+            .contains("skipping unreadable config file")
+    );
+    let bad_parse_disc = tmp.path().join("bad-parse-disc");
+    fs::create_dir_all(bad_parse_disc.join(".git")).unwrap();
+    fs::create_dir_all(bad_parse_disc.join(".rslbp")).unwrap();
+    fs::write(bad_parse_disc.join(".rslbp/rslbp_config.toml"), "[broken").unwrap();
+    let loaded_bad_parse = load_config(&ConfigDiscoveryInputs {
+        explicit_flag: None,
+        explicit_env: None,
+        cwd: &bad_parse_disc,
+        paths: &paths,
+        xdg_config_dirs: None,
+    })
+    .expect("unparsable discovered layer warns");
+    assert!(
+        loaded_bad_parse.warnings[0]
+            .to_string()
+            .contains("skipping invalid TOML")
+    );
+
+    // Writer edge cases: get_config_value rejects secret keys, read_config_file_key handles
+    // unreadable files and non-string values, set_config_value replaces non-value items and reports
+    // atomic rename failures onto an existing directory.
+    assert!(matches!(
+        rs_launch_blueprint_core::get_config_value(&loaded_disc.config, "token"),
+        Err(ConfigError::ProhibitedSecretChannel { .. })
+    ));
+    assert!(matches!(
+        rs_launch_blueprint_core::read_config_file_key(&bad_disc_file, "output.format"),
+        Err(ConfigError::Unreadable { .. })
+    ));
+    let bool_cfg = tmp.path().join("bool-val.toml");
+    fs::write(&bool_cfg, "[output]\nflag = true\n").unwrap();
+    assert_eq!(
+        rs_launch_blueprint_core::read_config_file_key(&bool_cfg, "output.flag").unwrap(),
+        Some("true".to_owned())
+    );
+    let subtable_cfg = tmp.path().join("subtable-val.toml");
+    fs::write(&subtable_cfg, "[output.format]\nnested = 1\n").unwrap();
+    assert_eq!(
+        set_config_value(&subtable_cfg, "output.format", "json").unwrap(),
+        "json"
+    );
+    let dir_target = tmp.path().join("cfg-is-dir");
+    fs::create_dir_all(&dir_target).unwrap();
+    assert!(set_config_value(&dir_target, "output.format", "json").is_err());
+
+    // resolve_token with no file, no env, and no store returns Ok(None) cleanly.
+    let none_tok = resolve_token(&TokenResolutionInputs {
+        token_file: None,
+        stdin_token: None,
+        env_token: None,
+        store: None,
+    })
+    .expect("no token sources is not an error");
+    assert!(none_tok.resolved.is_none());
+    assert!(none_tok.warnings.is_empty());
 }

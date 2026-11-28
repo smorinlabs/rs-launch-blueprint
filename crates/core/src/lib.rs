@@ -49,6 +49,7 @@
 //! }
 //! ```
 
+mod clipboard;
 mod config;
 mod error;
 mod metadata;
@@ -58,13 +59,15 @@ mod ports;
 mod secrets;
 mod service;
 
+pub use clipboard::{ClipboardError, ClipboardPort, FailingClipboard, RecordingClipboard};
 pub use config::{
     ColorPreference, ConfigDiscoveryInputs, ConfigFile, ConfigOverrides, ConfigSource, ConfigTier,
     ConfigWarning, ConfigWarningKind, ExplicitOrigin, FileLogFormat, LoadedConfig, LogLevel,
     LoggingConfig, MERGE_STRATEGY_DOC, OutputConfig, OutputFormat, PRECEDENCE_CHAIN_DOC,
     UnvalidatedConfig, ValidConfig, ValidationIssue, ValidationReport, WRITABLE_KEYS,
     discover_config_sources, discover_project_config_file, discover_system_config_files,
-    get_config_value, load_config, merge_tables_recursive, set_config_value,
+    get_config_value, load_config, merge_tables_recursive, read_config_file_key, set_config_value,
+    validate_config_assignment,
 };
 pub use error::{
     AuthError, ConfigError, DomainError, ErrorBody, ErrorCode, ErrorEnvelope, Exit, PortError,

@@ -2,15 +2,40 @@
 name = "rs-launch-blueprint-cli"
 version.workspace = true
 edition.workspace = true
-include = ["/src"]
+include = [
+    "/src",
+    "/build.rs",
+]
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 description = "CLI front end for rs-launch-blueprint."
 
 [dependencies]
+anstream = "1.0.0"
+anstyle = "1.0.14"
+anstyle-hyperlink = { version = "1.0.2", features = ["file"] }
+clap = { version = "4.6.6", features = ["derive", "env", "wrap_help"] }
+clap_complete = "4.6.9"
+indicatif = "0.18"
+inquire = { version = "0.9.4", default-features = false, features = [
+    "crossterm",
+    "macros",
+] }
+percent-encoding = "2.3.2"
 rs-launch-blueprint-core = { version = "0.1.0", path = "../core" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+shlex = "2.0.1"
+supports-hyperlinks = "3.2.0"
+tabled = { version = "=0.22.0", default-features = false, features = ["ansi"] }
+tempfile = "3.27.0"
 tracing = "0.1.44"
+
+[dev-dependencies]
+anstream = { version = "1.0.0", features = ["test"] }
+indicatif = { version = "0.18", features = ["in_memory"] }
+insta = "1.48.0"
 
 [lints]
 workspace = true
