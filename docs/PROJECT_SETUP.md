@@ -78,17 +78,25 @@ Configure crates.io authentication:
    Trusted Publishing attaches to crates that already exist on crates.io. For a
    brand-new project, first publish all four workspace crates in dependency
    order (`<repo>-core`, `<repo>-cli`, `<repo>-web`, and `<repo>`) using a
-   publish-scoped crates.io API token (either manually with `cargo publish` or
-   via the `CRATES_IO_TOKEN` secret on the `crates-io` environment during the
-   initial `v0.1.0` release).
+   short-lived publish-scoped crates.io API token. Performing this one-time
+   bootstrap locally with `cargo publish --workspace --locked` avoids storing a
+   repository-level `CRATES_IO_TOKEN` secret. If you prefer CI to run the
+   initial `v0.1.0` publish instead, temporarily store `CRATES_IO_TOKEN` as a
+   **repository-level** Actions secret (note: `.github/workflows/publish.yml`'s
+   `credential-preflight` job runs outside the `crates-io` environment so
+   unprovisioned repositories skip without waiting on environment reviewers,
+   which means an environment-only secret is invisible to preflight and a
+   repository-level secret is exposed to all repository workflows until
+   removed).
 2. **Trusted Publishing via OIDC (recommended after initial publish):** on
    crates.io, register this repository, `.github/workflows/publish.yml`, and
    environment `crates-io` as a Trusted Publisher for each of the four crates,
-   then set repository variable `CRATES_IO_TRUSTED_PUBLISHING=true` (and remove
-   `CRATES_IO_TOKEN` if you no longer want the token fallback).
-3. **API token fallback:** if you prefer not to use OIDC, keep a publish-scoped
-   crates.io token stored as the `CRATES_IO_TOKEN` secret on the `crates-io`
-   environment.
+   then set repository variable `CRATES_IO_TRUSTED_PUBLISHING=true` and delete
+   any temporary repository-level `CRATES_IO_TOKEN` secret.
+3. **API token fallback:** if you prefer not to use OIDC, store a
+   publish-scoped crates.io token as a **repository-level** `CRATES_IO_TOKEN`
+   Actions secret so both `credential-preflight` and `publish-crates-io` can
+   read it (prefer Trusted Publishing to avoid repository-wide token exposure).
 
 See [RELEASE.md](RELEASE.md) for the full release and dry-run sequence.
 
