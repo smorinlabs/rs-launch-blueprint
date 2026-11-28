@@ -261,20 +261,29 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
         run: sh scripts/check-large-files.sh --range "${BASE_SHA}" HEAD
-        # Docs link-check slot (R82): wired in P13 (`lychee` internal link check).
-        #
-        # Always-on SCA gate scaffold (R13 F049): RustSec check of Cargo.lock. No secret,
-        # no service account. Advisories can appear at any time, so enabling this makes
-        # unrelated PRs fail on new advisories; to report without gating, add
-        # `continue-on-error: true` to the audit step. The live equivalent is weekly-audit
-        # (dep-audit.yml). Uncomment to enforce. Dependabot never refreshes pins inside
-        # comments: copy the current install-action pin and tool version from dep-audit.yml.
-        # - name: Install cargo-audit
-        #   uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
-        #   with:
-        #     tool: cargo-audit@0.22.2
-        # - name: Audit dependencies (SCA)
-        #   run: cargo audit
+      # Always-on SCA gate scaffold (R13 F049): RustSec check of Cargo.lock. No secret,
+      # no service account. Advisories can appear at any time, so enabling this makes
+      # unrelated PRs fail on new advisories; to report without gating, add
+      # `continue-on-error: true` to the audit step. The live equivalent is weekly-audit
+      # (dep-audit.yml). Uncomment to enforce. Dependabot never refreshes pins inside
+      # comments: copy the current install-action pin and tool version from dep-audit.yml.
+      # - name: Install cargo-audit
+      #   uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+      #   with:
+      #     tool: cargo-audit@0.22.2
+      # - name: Audit dependencies (SCA)
+      #   run: cargo audit
+      - name: Docs link check, offline (R82)
+        if: ${{ !cancelled() }}
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: >-
+            --offline
+            --no-progress
+            --root-dir "$(pwd)"
+            .
+          fail: true
 
   # Tier 1 — path-gated on `workflows`, no compilation. Hosts only checks whose
   # whole input is contained by the `workflows` detector key.
@@ -435,7 +444,7 @@ jobs:
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
         env:
           RUSTDOCFLAGS: -D warnings
-        run: cargo doc --locked --workspace --no-deps --all-features
+        run: cargo doc --locked --workspace --no-deps --all-features --document-private-items
 
   # Tier 2 — declared `rust-version` MSRV floor job (R11, F033).
   msrv-floor:

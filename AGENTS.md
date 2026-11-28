@@ -36,6 +36,8 @@ Two-level setup (`R42`): `Makefile` is Level 1 bootstrap (`rustup` + `just`);
 - `just check-hygiene` — run `editorconfig-checker`, `ryl`, `typos`, and `actionlint` (`R40`)
 - `just check-large-files` / `just check-lockfile` — run the 1 MiB blob guard (`R14`) / `Cargo.lock` freshness guard (`R41`)
 - `just hooks-install` / `just hooks-run` — wire `lefthook` hooks / run pre-commit suite over all files
+- `just docs-build` / `just docs-dev` / `just docs-clean` — build, live-serve, or clean the `mdBook` documentation site (`R81`)
+- `just docs-check` / `just docs-api` — verify offline Markdown links (`lychee`) and build strict rustdoc API docs across all features (`R82`)
 - `just blaze-check` / `just blaze-test` / `just blaze-status` — opt-in Blaze local edit-loop accelerator (automatic Cargo fallback)
 - `just debug-info` — print environment, toolchain, and workspace diagnostics
 - `just --list` — list every recipe and alias

@@ -1,0 +1,15 @@
+[book]
+title = "rs-launch-blueprint"
+authors = ["Steve Morin"]
+language = "en"
+src = "docs"
+
+[build]
+create-missing = false
+
+[rust]
+edition = "2024"
+
+[output.html]
+definition-lists = false
+git-repository-url = "https://github.com/smorinlabs/rs-launch-blueprint"

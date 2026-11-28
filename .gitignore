@@ -26,3 +26,5 @@ research/runs/**/*.tar.gz
 research/runs/**/*.tgz
 press/press-answers.toml
 .venv/
+/book/
+.lycheecache

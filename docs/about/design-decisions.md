@@ -1,0 +1,212 @@
+# Design Decisions
+
+This document is the complete thematic index of every architectural, tooling,
+security, CLI, web, release, template, and documentation decision in
+`rs-launch-blueprint` — covering all **85 audited research items (`R01`–`R86`,
+with `R36` vacated)**, every approved override (`OV-02`–`OV-17` and owner
+review-gate rulings `1a-A`, `1b-A`, `1c-A`), and local edit-loop acceleration
+with `Blaze` and `bacon`.
+
+## Governing Parameters
+
+Four repository-wide parameters are fixed at the root (`Cargo.toml`, `LICENSE`,
+`LICENSE-MIT`):
+
+| Parameter          | Value                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `rust-edition`     | `2024` across all four workspace packages                                          |
+| `msrv-policy`      | `stable - 2` minor versions (`rust-version = "1.98"`), enforced in CI `msrv-floor` |
+| `target-os-matrix` | `ubuntu-latest`, `macos-latest` (Windows intentionally excluded)                   |
+| `license`          | `MIT OR Apache-2.0` dual license (`LICENSE` + `LICENSE-MIT`, no per-file headers)  |
+
+Six cross-area contracts bind the implementation together:
+`http-transport-injection-seam` (`R01`), `ci-job-structure` (`R11`),
+`commit-message-convention` (`R38`), `package-manager-invocation` (`R42`),
+`build-tool-output-shape` (`R49`), `logging-pipeline-contract` (`R58`),
+`error-taxonomy-exit-codes` (`R67`), and `web-extra-surface` (`R69`).
+
+---
+
+## 1. Workspace Architecture (`R01`–`R06`)
+
+| ID    | Decision & Native Rust Design                                                                                                                                                                                                                                                | Primary Implementation Artifacts                                                 |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `R01` | Dyn-compatible `pub trait ProjectsPort: Send + Sync` with blanket `Arc<T>` impl; generic `ProjectsService<P>`; plain-function composition root erases to `Arc<dyn ProjectsPort>`; shipped `InMemoryProjectsPort`.                                                            | `crates/core/src/ports.rs`, `crates/core/src/service.rs`, `src/composition.rs`   |
+| `R02` | **4-package Cargo workspace** (`OV-03`): root facade `rs-launch-blueprint`, `crates/core`, `crates/cli`, and optional `crates/web`. Enforced mechanically by Cargo's crate DAG, `deny.toml` bans, `crates/core/clippy.toml` disallowed APIs, and `tests/workspace_edges.rs`. | `Cargo.toml`, `deny.toml`, `crates/core/clippy.toml`, `tests/workspace_edges.rs` |
+| `R03` | Port by-identity reads return `Result<Option<T>, PortError>` with **no** `NotFound` variant on `PortError`; HTTP `404` maps to `Ok(None)`; use cases translate `None` to `DomainError::NotFound` (`RSLB301`, exit `3`).                                                      | `crates/core/src/error.rs`, `crates/core/src/service.rs`, `src/http_adapter.rs`  |
+| `R04` | Private modules + explicit `pub use` barrel in `src/lib.rs`, `unreachable_pub`/`private_interfaces`/`private_bounds`/`missing_docs = "deny"`, `compile_fail` doctests, and `cargo-semver-checks` on release.                                                                 | `Cargo.toml`, `src/lib.rs`, `.github/workflows/publish.yml`                      |
+| `R05` | **Synchronous blocking core and CLI** (`ureq 3.4.2` shared `Agent`, zero Tokio in default tree); async confined strictly to optional `crates/web`, bridging sync ports via `tokio::task::spawn_blocking`.                                                                    | `src/http_adapter.rs`, `crates/web/src/routes/projects.rs`                       |
+| `R06` | Workspace-inherited `unsafe_code = "forbid"` plus pre-armed Clippy safety-comment lints (`undocumented_unsafe_blocks`, `multiple_unsafe_ops_per_block`, `unnecessary_safety_comment = "deny"`).                                                                              | `Cargo.toml` (`[workspace.lints]`)                                               |
+
+---
+
+## 2. Dev Toolchain, Formatting, Linting & Static Analysis (`R27`–`R31`, `R42`, `R49`)
+
+| ID    | Decision & Native Rust Design                                                                                                                                                                                                                                                                          | Primary Implementation Artifacts                                                 |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| `R27` | `rustfmt.toml` with 5 stable keys (`edition = "2024"`, `max_width = 100`, `newline_style = "Unix"`, `use_small_heuristics = "Default"`, `reorder_imports = true`); `just format-check` also fails on ignored keys or unreached tracked `.rs` files.                                                    | `rustfmt.toml`, `Justfile`, `rust-toolchain.toml`                                |
+| `R28` | `clippy` workspace lints (`allow_attributes_without_reason`, `dbg_macro`, `todo`, `unimplemented`, `unwrap_used = "warn"`), check-only `just lint` across default / `--features web` / `--all-features`, opt-in `just lint-fix`, and `.vscode/` (`rust-analyzer` + `vadimcn.vscode-lldb`).             | `Cargo.toml`, `clippy.toml`, `.vscode/*`, `Justfile`                             |
+| `R29` | `dprint 0.57.4` with 4 SHA-256 checksum-pinned Wasm plugins formatting TOML, JSON/JSONC, Markdown, and YAML.                                                                                                                                                                                           | `dprint.json`, `Justfile`, `lefthook.yml`, `.github/workflows/ci.yml`            |
+| `R30` | Explicit `just typecheck` gate running `CARGO_BUILD_WARNINGS=deny cargo check --workspace --all-targets --locked --keep-going` (default + `--all-features`) with `rust_2018_idioms = "warn"`.                                                                                                          | `Cargo.toml`, `Justfile`, `.github/workflows/ci.yml`                             |
+| `R31` | Standalone AST security analyzer `ast-grep 0.45.3` with 5 template-owned rules and self-tests (`just security`), guarded against zero-file / zero-rule runs.                                                                                                                                           | `sgconfig.yml`, `rules/*.yml`, `rules/tests/*`, `scripts/test-security-rules.sh` |
+| `R42` | Two-level native origin-routed setup (`Makefile` Level 1 for `rustup` + `just`; `Justfile` Level 2 with one authoritative tool table). Invoke `cargo-<sub>` as `cargo <sub>` and all other tools bare on `PATH`; zero provisioner prefixes (`mise`, `flox`, `uv run`) and zero Cargo `[alias]` tables. | `Makefile`, `Justfile`, `tests/justfile_contract.rs`                             |
+| `R49` | Cargo manifest as sole build surface (`autobins = false`, explicit `[lib]` + `[[bin]] rslbp`, explicit `[package] include` allow-list, never `exclude`).                                                                                                                                               | `Cargo.toml`, `crates/*/Cargo.toml`                                              |
+
+---
+
+## 3. Git Hooks, Commit Hygiene & Developer Experience (`R14`, `R37`–`R41`, `R43`–`R47`)
+
+| ID    | Decision & Native Rust Design                                                                                                                                                                                                                                 | Primary Implementation Artifacts                                                           |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `R14` | Single POSIX script `scripts/check-large-files.sh` enforcing a 1 MiB blob guard (`.gitattributes` `large-file-ok` opt-in), shared by pre-commit hook and CI.                                                                                                  | `scripts/check-large-files.sh`, `.gitattributes`, `.github/workflows/large-file-guard.yml` |
+| `R37` | `lefthook 2.1.14` (`min_version`, `assert_lefthook_installed`, parallel pre-commit, `tags: [compiles]` for compiling hooks, opt-in `RS_PROJECTS_PREPUSH_TESTS`).                                                                                              | `lefthook.yml`, `Justfile`, `tests/repo_hygiene.rs`                                        |
+| `R38` | `committed 1.1.11` enforcing 11 Conventional Commit types (`build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test`), 50/72/72 soft-line caps, and width-relaxed `committed.bot.toml` for `dependabot[bot]`; synchronized with `.gitmessage`. | `committed.toml`, `committed.bot.toml`, `.gitmessage`, `.github/workflows/commitlint.yml`  |
+| `R39` | `gitleaks 8.30.1` pre-commit staged scan + pre-push unpushed commit range scan with clean `.gitleaks.toml` / header-only `.gitleaksignore`.                                                                                                                   | `.gitleaks.toml`, `.gitleaksignore`, `lefthook.yml`                                        |
+| `R40` | Auxiliary hygiene stack: `.editorconfig` + `editorconfig-checker 4.0.2`, `.yamllint` + `ryl 0.22.0`, `typos 1.50.3`, `actionlint 1.7.12`, and ShellCheck.                                                                                                     | `.editorconfig`, `.editorconfig-checker.json`, `.yamllint`, `typos.toml`, `Justfile`       |
+| `R41` | Conditional unlocked `Cargo.lock` freshness verification (`scripts/check-cargo-lock.sh`) in pre-commit and `just check-lockfile`.                                                                                                                             | `scripts/check-cargo-lock.sh`, `lefthook.yml`, `Justfile`                                  |
+| `R43` | Single canonical `AGENTS.md` instruction hub imported via `@AGENTS.md` in `CLAUDE.md`; zero `.cursor/`/`.windsurf/`/`.devin/` rule dirs; single `.claude/settings.json` `companyAnnouncements` entry.                                                         | `AGENTS.md`, `CLAUDE.md`, `.claude/settings.json`, `tests/repo_hygiene.rs`                 |
+| `R44` | Digest-pinned image-only Debian Trixie Rust DevContainer (`mcr.microsoft.com/devcontainers/rust:2.1.1-trixie@sha256:...`), no custom Dockerfile, no `apt-get`.                                                                                                | `.devcontainer/devcontainer.json`, `.devcontainer/post-create.sh`                          |
+| `R45` | Pull request template carries a pre-flight checklist and zero bot `@`-mentions; manual re-review guidance lives in `.github/CONTRIBUTING.md`.                                                                                                                 | `.github/pull_request_template.md`, `.github/CONTRIBUTING.md`                              |
+| `R46` | No per-file embedded license headers; licensing is declared once in `Cargo.toml` and root `LICENSE` + `LICENSE-MIT`.                                                                                                                                          | `Cargo.toml`, `LICENSE`, `LICENSE-MIT`, `tests/community_contract.rs`                      |
+| `R47` | Guarded `just update-contributors` recipe (`render` when `.contributors.jsonl` exists, non-interactive `init` otherwise) via pinned `contributors-please`.                                                                                                    | `Justfile`, `tests/community_contract.rs`                                                  |
+
+---
+
+## 4. Config, Environment, Secrets & Logging (`R52`–`R59`)
+
+| ID    | Decision & Native Rust Design                                                                                                                                                                                                                                | Primary Implementation Artifacts                                           |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `R52` | `toml 1.1.6` for typed config reads + `toml_edit 0.25.15` for comment-preserving `config set` writes.                                                                                                                                                        | `crates/core/src/config/loader.rs`, `crates/core/src/config/writer.rs`     |
+| `R53` | `serde` derive with zero external validation crate; constrained types + `UnvalidatedConfig`/`ValidConfig` type-state and sorted aggregate issue reporting.                                                                                                   | `crates/core/src/config/schema.rs`, `crates/core/src/config/validate.rs`   |
+| `R54` | 6-rung CLI Design Standard R5.1 precedence (flags > `RSLBP_*` env > ancestor `.rslbp/rslbp_config.toml` > XDG user > `$XDG_CONFIG_DIRS` system > defaults).                                                                                                  | `crates/core/src/config/discovery.rs`, `crates/core/src/config/loader.rs`  |
+| `R55` | Provenance-aware two-phase tolerance: unreadable/unparsable explicit `--config` fails loudly (`RSLB104`/`RSLB202`), discovered layer defects degrade to warnings, invalid keys drop with warnings.                                                           | `crates/core/src/config/loader.rs`, `tests/config_and_secrets_contract.rs` |
+| `R56` | Layered config files never store or supply tokens (`RSLB204`); 3-tier resolution (`--token-file` / stdin > `RSLBP_TOKEN` > `0600 credentials.toml` / optional `keychain`), backed by `secrecy` + `zeroize`.                                                  | `crates/core/src/secrets.rs`, `src/keychain.rs`                            |
+| `R57` | Pure 4-directory `Paths` (`config`, `data`, `state`, `cache`) via `etcetera 0.11.0` XDG strategy on Linux and macOS, namespaced under `rslbp`.                                                                                                               | `crates/core/src/paths.rs`                                                 |
+| `R58` | Single `tracing 0.1.44` + `tracing-subscriber 0.3.23` (`env-filter`, no `json`/`local-time`) pipeline with template-owned redacting console/JSON formatters, `reload::Handle`, CLI vs Service profiles, and residual redaction boundary recorded as `OV-09`. | `src/telemetry.rs`, `tests/telemetry_contract.rs`                          |
+| `R59` | Opt-in std-only `0600` size-rotating `RotatingFile` CLI sink (10 MiB x 5 backups) with independent file level and `text`/`json` format.                                                                                                                      | `src/telemetry.rs`                                                         |
+
+---
+
+## 5. CLI Framework, UX & Testing (`R32`–`R35`, `R48`, `R60`–`R67`, `R85`)
+
+| ID    | Decision & Native Rust Design                                                                                                                                                                                                   | Primary Implementation Artifacts                                           |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `R32` | `cargo-nextest` (`.config/nextest.toml`, 60s timeout, CI profile, `slow::`/`live::` tier selectors) + `cargo test --doc` + `assert_cmd`/`predicates` built-binary CLI tests.                                                    | `.config/nextest.toml`, `Justfile`, `tests/cli/*`                          |
+| `R33` | Property-based testing with `proptest 1.11.0` and CLI golden snapshots with `insta 1.48.0`.                                                                                                                                     | `tests/properties.rs`, `tests/cli/*`                                       |
+| `R34` | Weekly Tuesday schedule-only `.github/workflows/canary.yml` (3 legs: latest deps on Linux + macOS, beta toolchain on Linux) with single-issue failure reporting.                                                                | `.github/workflows/canary.yml`                                             |
+| `R35` | `cargo-llvm-cov 0.9.1` + `llvm-tools-preview`; single coverage-floor source of truth in `Justfile` (`95%` lines, `95%` functions, `90%` regions).                                                                               | `Justfile`, `.github/workflows/ci.yml`                                     |
+| `R48` | Hand-written fakes (`InMemoryProjectsPort`) + `RecordingPort<P>` default; `mockall 0.15.0` behind off-by-default `mock` feature; `httpmock 0.8.3` dev-only.                                                                     | `crates/core/src/ports.rs`, `tests/http_adapter_boundary.rs`               |
+| `R60` | `clap 4.6.6` (`derive`, `env`, `wrap_help`) + `clap_complete` + dependency-free `crates/cli/build.rs` for build metadata (`OV-01` retired; `-V` prints single line `rslbp <semver>`).                                           | `crates/cli/src/args.rs`, `crates/cli/build.rs`                            |
+| `R61` | `inquire 0.9.4` behind template-owned `Prompter` trait with call-site interactivity gate (`OV-02`: declined confirmation prompt exits `0`).                                                                                     | `crates/cli/src/prompter.rs`                                               |
+| `R62` | `--copy` via `arboard 3.6.1` behind default-on `clipboard` feature + `ClipboardPort` + Linux selection-holder daemon re-exec.                                                                                                   | `crates/core/src/clipboard.rs`, `src/clipboard_adapter.rs`                 |
+| `R63` | `indicatif 0.18` stderr spinner gated on TTY, `!quiet`, and absence of `CI`.                                                                                                                                                    | `crates/cli/src/spinner.rs`                                                |
+| `R64` | `shlex 2.0.1` 2-tier pager (`RSLBP_PAGER` > `PAGER` > `less -FRX`) with spawn-and-pipe and clean fallback.                                                                                                                      | `crates/cli/src/pager.rs`                                                  |
+| `R65` | `anstream` / `anstyle` with template-owned 4-tier color precedence resolver.                                                                                                                                                    | `crates/cli/src/color.rs`                                                  |
+| `R66` | `-o table\|json\|markdown\|name`, `--json`, `--output-file`, `--no-clobber`; exact-pinned `tabled =0.22.0`.                                                                                                                     | `crates/cli/src/output.rs`, `crates/cli/Cargo.toml`                        |
+| `R67` | `error-contract/v1`: append-only `RSLB000`–`RSLB903` catalog, exit codes `0/1/2/3/4/5/130/143`, `{"error":{"code","message","hint"?}}`, broken-pipe exit `0`, `0600` NDJSON crash sink, `thiserror` in libs / `anyhow` in bins. | `crates/core/src/error.rs`, `src/crash_sink.rs`, `tests/error_contract.rs` |
+| `R85` | Capability-gated OSC-8 hyperlinks and relative timestamps in interactive `table` mode (`anstyle-hyperlink`, `supports-hyperlinks`).                                                                                             | `crates/cli/src/rich.rs`                                                   |
+
+---
+
+## 6. Optional Web Service, OpenAPI Contracts, Observability & Container (`R51`, `R69`–`R80`, `R83`, `R84`)
+
+| ID    | Decision & Native Rust Design                                                                                                                                                                                                                                 | Primary Implementation Artifacts                                                                             |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `R51` | Multi-stage distroless non-root `Dockerfile` (`nonroot:nonroot`, port `8000`, `OV-14` companion to `OV-04` plaintext listener), PR-verified by `docker-web.yml`, **plus owner review-gate `1a-A` override** adding GHCR publishing (`publish-container.yml`). | `Dockerfile`, `.dockerignore`, `.github/workflows/docker-web.yml`, `.github/workflows/publish-container.yml` |
+| `R69` | `axum 0.8.9` + `tokio 1.53.1` behind `web = ["dep:rs-launch-blueprint-web"]`, `[[bin]] rslbp-serve`, `State` + `FromRef`, `bacon 3.25.0` dev watcher.                                                                                                         | `crates/web/src/server.rs`, `src/bin/serve.rs`, `bacon.toml`                                                 |
+| `R70` | `problem_details` RFC 9457 `application/problem+json` envelope on every non-2xx path, `W5` 5xx redaction, generated `R5.16` error catalog (`OV-06` unused).                                                                                                   | `crates/web/src/problems.rs`                                                                                 |
+| `R71` | `utoipa 6.0.0` + `utoipa-axum 0.3.0` OpenAPI 3.1 snapshot (`openapi/openapi.json`), `expectorate` staleness test, and pinned `oasdiff v1.32.1` breaking-change CI.                                                                                            | `crates/web/src/openapi.rs`, `openapi/*`, `.github/workflows/api-contract.yml`                               |
+| `R72` | First-party opaque URL-safe base64 cursor pagination (`limit`, `cursor`, `items`, `next_cursor`, `has_more`; `OV-10` unused).                                                                                                                                 | `crates/web/src/pagination.rs`                                                                               |
+| `R73` | Compare-and-set in-memory `IdempotencyStore` with request-body hash checking, `409` in-flight conflict, `422` payload mismatch, and `Idempotency-Replayed: true` (`OV-16`).                                                                                   | `crates/core/src/idempotency.rs`, `crates/web/src/idempotency.rs`                                            |
+| `R74` | Owned bounded per-IP token-bucket rate limiter wired on by default with `429` + accurate `Retry-After` (`OV-17`).                                                                                                                                             | `crates/web/src/rate_limit.rs`                                                                               |
+| `R75` | Fixed-order `tower-http 0.7.1` middleware stack: panic catch, security headers, `request-id`, W3C `traceparent`, access logs (probes excluded), timeout, body cap.                                                                                            | `crates/web/src/middleware.rs`                                                                               |
+| `R76` | Conditional `tower_http::cors::CorsLayer` mounted only when `RSLBP_WEB_CORS_ORIGINS` is non-empty (`OV-08`).                                                                                                                                                  | `crates/web/src/cors.rs`                                                                                     |
+| `R77` | `std::env`-parsed `WebSettings` with 19 compile-time `RSLBP_WEB_*` variables (`OV-04` plaintext listener behind TLS terminator).                                                                                                                              | `crates/web/src/settings.rs`                                                                                 |
+| `R78` | Nested `--features otel` (`tracing-opentelemetry 0.34`, `opentelemetry 0.33`, OTLP HTTP exporter) gated at runtime by `RSLBP_WEB_OTEL_ENABLED`.                                                                                                               | `src/otel.rs`, `tests/otel_contract.rs`                                                                      |
+| `R79` | Nested `--features metrics` (`metrics 0.24.6` + `metrics-exporter-prometheus 0.18.3`) exposing RED metrics at `/metrics` (`OV-07`).                                                                                                                           | `crates/web/src/metrics.rs`                                                                                  |
+| `R80` | Stateless byte-stable `/healthz` + shutdown-latch & redacted-diagnostics `/readyz` (`OV-05`).                                                                                                                                                                 | `crates/web/src/routes/ops.rs`                                                                               |
+| `R83` | `proptest`-driven OpenAPI 3.1 contract fuzzing suite exercising documented operations (`just test-contract`, `OV-15` unused).                                                                                                                                 | `crates/web/tests/contract_fuzz.rs`                                                                          |
+| `R84` | Pinned `openapi-to-rust 0.17.0` async Rust client generator (`just generate-client`, `OV-11`; `OV-12` unused).                                                                                                                                                | `openapi-to-rust.toml`, `Justfile`                                                                           |
+
+---
+
+## 7. CI, Security, AI Workflows, Releases & Template Press (`R07`–`R26`, `R50`, `R68`, `R86`)
+
+| ID     | Decision & Native Rust Design                                                                                                                                                                                         | Primary Implementation Artifacts                                                                            |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `R07`  | `update-contributors.yml` triggered on `push` to `main` (ignoring `CONTRIBUTORS.md` / `.contributors.jsonl`) + `workflow_dispatch`; zero `schedule:`.                                                                 | `.github/workflows/update-contributors.yml`, `.contributors.yml`                                            |
+| `R08`  | Uniform top-level `permissions: {}`, least-privilege per-job grants, `persist-credentials: false`, enforced by `scripts/check-workflow-permissions.sh` and `zizmor`.                                                  | `scripts/check-workflow-permissions.sh`, `zizmor.yml`                                                       |
+| `R09`  | Literal GitHub-hosted runner labels (`ubuntu-latest`, `macos-latest`, `${{ matrix.os }}`); zero `vars.RUNNER_*` indirection.                                                                                          | `.github/workflows/*.yml`, `.github/actionlint.yaml`                                                        |
+| `R10`  | `Swatinem/rust-cache` (`v2.9.2`, SHA-pinned) keyed with `env-vars: "ImageOS"`, `cache-on-failure: "true"`, `prefix-key: "v1-rslbp"`.                                                                                  | `.github/workflows/ci.yml`                                                                                  |
+| `R11`  | Single plan-gated compile-tier `ci.yml` (`plan` fail-closed detector + release-please fast path -> `hygiene`, `workflow-lint`, OS-matrix `check`, `msrv-floor`, `install-smoke`, `coverage`); zero trigger `paths:`.  | `.github/workflows/ci.yml`, `tests/workflows_contract.rs`                                                   |
+| `R12`  | Single aggregate required status check `ci-ok` folding every `ci.yml` job via positive `jq` allow-list, guarded by `workflow-lint` completeness check.                                                                | `.github/workflows/ci.yml`                                                                                  |
+| `R13`  | Weekly Monday `dep-audit.yml` (`cargo-audit`, `cargo-deny`, `osv-scanner`), manual env-gated `manual-pr-security-scan.yml`, plus commented SCA scaffold in `ci.yml`.                                                  | `.github/workflows/dep-audit.yml`, `.github/workflows/manual-pr-security-scan.yml`, `.cargo/audit.toml`     |
+| `R15`  | `template-press 5.0.0` (hash-pinned `press/requirements.txt`), `press/press-rules.toml`, `press/stubs/*`, `press-verify.yml`, `template-receipt-guard.yml`, `bootstrap-acceptance.yml`, and `new-rust-project` skill. | `press/*`, `.github/workflows/press-verify.yml`, `.claude/skills/new-rust-project/*`                        |
+| `R16`  | Advanced CodeQL setup (`languages: rust`, `build-mode: none`, `security-extended`, test/bench/fuzz exclusions) with public + default-setup preflight guard.                                                           | `.github/workflows/codeql.yml`, `.github/codeql/codeql-config.yml`                                          |
+| `R17`  | Full-history TruffleHog OSS CLI (`v3.97.4`, cosign-verified) with `--only-verified --fail --fail-on-scan-errors`.                                                                                                     | `.github/workflows/secret-scan.yml`                                                                         |
+| `R18`  | `claude-code-review.yml` + `claude.yml` (`@claude` follow-ups) with positive credential preflight, bot guards, and static `.claude/commands/review-pr.md`.                                                            | `.github/workflows/claude*.yml`, `.claude/commands/review-pr.md`                                            |
+| `R19`  | Two-ecosystem `.github/dependabot.yml` (`cargo` + `github-actions`), catch-all grouping, and 5-day version-update cooldown.                                                                                           | `.github/dependabot.yml`, `zizmor.yml`                                                                      |
+| `R20`  | Full 40-hex SHA pinning + `# vX.Y.Z` release comments for every third-party action (`actions/*` and `github/*` ref-pinned), enforced by `zizmor` + script.                                                            | `zizmor.yml`, `scripts/check-action-pin-comments.sh`                                                        |
+| `R21`  | `update-contributors.yml` uses App credentials (`CONTRIBUTORS_PLEASE_CLIENT_ID`/`_PRIVATE_KEY`) with `CONTRIBUTORS_PLEASE_PAT` fallback; never `GITHUB_TOKEN`.                                                        | `.github/workflows/update-contributors.yml`                                                                 |
+| `R22`  | Single compile-time version constant `pub const VERSION: &str = env!("CARGO_PKG_VERSION")` shared by lib, CLI, diagnostics, and web `/healthz`.                                                                       | `crates/core/src/metadata.rs`, `src/lib.rs`                                                                 |
+| `R23`  | `release-please` `release-type: rust` atomically bumping all four literal member `Cargo.toml` versions, intra-workspace pins, and `Cargo.lock`.                                                                       | `release-please-config.json`, `.github/workflows/release-please.yml`                                        |
+| `R24`  | Ordered 11-type changelog section map matching `committed.toml` (`feat`, `fix`, `perf`, `revert`, `docs` visible; remaining 6 hidden unless breaking).                                                                | `release-please-config.json`, `tests/release_contract.rs`                                                   |
+| `R25`  | `0.1.0` launch with pre-major dampening (`bump-minor-pre-major` + `bump-patch-for-minor-pre-major`); human `Release-As: 1.0.0` gate for `v1.0.0`.                                                                     | `release-please-config.json`, `.release-please-manifest.json`                                               |
+| `R26`  | Four first-party `.crate` content/metadata guards (`scripts/check-packed-artifacts.sh` + `ci/expected-packed-*`) executed locally and in `publish.yml`.                                                               | `scripts/check-packed-artifacts.sh`, `ci/expected-packed-*`, `.github/workflows/publish.yml`                |
+| `R50`  | Throwaway-root pack -> extract -> `cargo install --locked --debug --no-track` -> `--version` smoke check (`just install-check` + CI `install-smoke`, `OV-13`).                                                        | `Justfile`, `.github/workflows/ci.yml`                                                                      |
+| `R68`  | `cargo-dist 0.33.0` follower mode (`create-release = false`) shipping `rslbp` archives + shell installer for Linux x86_64 and macOS x86_64/arm64; `[profile.release]` fat LTO + `codegen-units = 1`.                  | `dist-workspace.toml`, `Cargo.toml`, `.github/workflows/release.yml`                                        |
+| `R86`  | Three-job split `codex-code-review.yml` + `codex.yml` (`/codex`) with `:read-only`, `drop-sudo`, isolated poster job holding no model key, and credential preflight.                                                  | `.github/workflows/codex*.yml`, `.github/codex/*.md`                                                        |
+| `1b-A` | Owner-approved Meta Muse `audit-triage.yml` (`muse-spark-1.3-contributor`, credential-preflight gated on `META_MUSE_CI_API_KEY`, Organization-gated).                                                                 | `.github/workflows/audit-triage.yml`, `.github/muse-audit-triage/*`, `.github/scripts/muse_audit_triage.py` |
+| `1c-A` | Anthropic OSS Scanner (`.oss-scanner/`) explicitly deferred until post-`P13`.                                                                                                                                         | _(deferred by owner ruling 2026-11-27)_                                                                     |
+
+---
+
+## 8. Documentation System (`R81`, `R82`) & Shipped-Site Notice Rule
+
+| ID    | Decision & Native Rust Design                                                                                                                                                                                                                                                                                                                                                                               | Primary Implementation Artifacts                                                      |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `R81` | Single CommonMark/GFM `docs/` corpus rendered natively on GitHub **and** built with `mdbook 0.5.4` (`[rust] edition = "2024"`, `create-missing = false`, `definition-lists = false`) deployed to GitHub Pages via `.github/workflows/docs.yml`. `docs/SUMMARY.md` is the sole nav source; zero committed `theme/` directory; `GFM ∩ mdBook-0.5-default` dialect (no mermaid fences, no `{ #id }`, no MyST). | `book.toml`, `docs/SUMMARY.md`, `.github/workflows/docs.yml`, `Justfile`              |
+| `R82` | `lychee 0.24.2` offline internal link check in `ci.yml`'s `hygiene` job (`just docs-check`), scheduled external URL check in `canary.yml` (`docs-external-links`), and `RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps --all-features --document-private-items` (`just docs-api` + `ci.yml` `check`).                                                                                  | `lychee.toml`, `.github/workflows/ci.yml`, `.github/workflows/canary.yml`, `Justfile` |
+
+### Shipped-Site Asset Notice Rule (`R81` J1)
+
+Publishing the repository source (`MIT OR Apache-2.0`) carries zero third-party
+mdBook theme files because `theme/` is never committed. An empirical `mdbook
+0.5.4` build (`mdbook build`) was inspected to verify the exact third-party
+assets emitted into `book/` for GitHub Pages redistribution:
+
+- **Default theme stylesheets, scripts, and favicons** (`css/*.css`,
+  `book-*.js`, `toc-*.js`, `clipboard-*.min.js`, `favicon-*` — mdBook `MPL-2.0`
+  and `clipboard.js` `MIT`)
+- **Bundled web fonts with verbatim license files** (`fonts/open-sans-*.woff2`
+  with `fonts/OPEN-SANS-LICENSE.txt`, and `fonts/source-code-pro-*.woff2` with
+  `fonts/SOURCE-CODE-PRO-LICENSE.txt`)
+- **Client-side full-text search runtime** (`elasticlunr-*.min.js`,
+  `mark-*.min.js`, `searcher-*.js`, `searchindex-*.js` — `MIT`)
+- **Syntax highlighting runtime** (`highlight-*.js`, `highlight-*.css`,
+  `ayu-highlight-*.css`, `tomorrow-night-*.css` — `BSD-3-Clause`)
+- **Icons:** `mdbook 0.5.4` emits no separate `FontAwesome/` font tree into
+  `book/` (icons render via built-in SVGs).
+
+Because `mdbook build` emits those upstream license files and headers intact
+inside `book/`, GitHub Pages redistribution preserves every third-party notice
+without placing any non-`MIT OR Apache-2.0` file in the repository's own source
+tree.
+
+---
+
+## 9. Local Acceleration (`Blaze` & `bacon`)
+
+`indexable-inc/blaze` is integrated strictly as an **opt-in** local edit-loop
+accelerator (`just blaze-check`, `just blaze-test`, `just blaze-run`,
+`just blaze-status`, `just install-blaze`) with automatic Cargo fallback when
+absent, coexisting with `bacon 3.25.0` (`bacon.toml`, `just serve`):
+
+- **Empirical state (`blaze 0.20261127.0`):** `blaze test -p rs-launch-blueprint-core`
+  and `blaze build -p rs-launch-blueprint --bin rslbp` succeed and share `~/.blaze/v2`
+  across git worktrees. Workspace-wide `blaze check` is currently blocked by
+  `utoipa-axum 0.3.0`'s `routes!` proc-macro expansion in `crates/web`, and Blaze's
+  CLI does not accept `--features` (`just blaze-status` probes these live so
+  improvements surface immediately on future Blaze upgrades).
+- **Authority boundary:** Cargo remains authoritative for CI, MSRV, `clippy`,
+  `rustfmt`, `cargo-deny`, coverage, packaging, and releases.

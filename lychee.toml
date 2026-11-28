@@ -1,0 +1,18 @@
+# lychee 0.24.2 link-checker configuration (R82).
+# Excludes build outputs, template stubs (whose relative links target stamped destinations),
+# and archived P01/P02 research/port/planning history (removed in stamped child repos).
+exclude_path = [
+    "target",
+    "book",
+    "clients",
+    "press/stubs",
+    "research",
+    "docs/planning",
+    "docs/port",
+    "docs/superpowers",
+    "docs/handoffs",
+]
+
+# Hosts that reject automated checkers or rate-limit hard. Add one regex per host,
+# each with a comment naming the observed failure.
+exclude = []

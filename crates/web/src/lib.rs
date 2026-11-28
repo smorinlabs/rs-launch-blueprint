@@ -38,9 +38,9 @@ pub use metrics::{
     PROMETHEUS_CONTENT_TYPE, count_unmatched, metrics_recorder, run_metrics_upkeep,
 };
 pub use middleware::{
-    ACCESS_LOG_EXCLUDED_ROUTES, InboundTraceparent, REQUEST_ID, TRACEPARENT, access_log,
-    apply_middleware, echo_request_id, inbound_traceparent, install_panic_hook,
-    propagate_traceparent,
+    ACCESS_LOG_EXCLUDED_ROUTES, DEPRECATION_HEADER, InboundTraceparent, REQUEST_ID, SUNSET_HEADER,
+    TRACEPARENT, access_log, apply_middleware, deprecation_headers, echo_request_id,
+    inbound_traceparent, install_panic_hook, propagate_traceparent,
 };
 pub use openapi::{
     API_DOCUMENT_VERSION, CheckSchema, CheckStatusSchema, CreateProjectInputSchema,

@@ -40,6 +40,31 @@ pub const REQUEST_ID: HeaderName = HeaderName::from_static("request-id");
 /// W3C Trace Context inbound header name (`R75` L3b).
 pub const TRACEPARENT: HeaderName = HeaderName::from_static("traceparent");
 
+/// RFC 9745 route deprecation header name (`F309`).
+pub const DEPRECATION_HEADER: HeaderName = HeaderName::from_static("deprecation");
+
+/// RFC 8594 route sunset header name (`F309`).
+pub const SUNSET_HEADER: HeaderName = HeaderName::from_static("sunset");
+
+/// Build RFC 9745 `Deprecation` (`@<unix-timestamp>`) and optional RFC 8594 `Sunset` response
+/// headers for deprecated HTTP routes (`F309`).
+#[must_use]
+pub fn deprecation_headers(
+    deprecated_at_unix: i64,
+    sunset_http_date: Option<&str>,
+) -> Vec<(HeaderName, HeaderValue)> {
+    let mut headers = Vec::with_capacity(2);
+    if let Ok(val) = HeaderValue::from_str(&format!("@{deprecated_at_unix}")) {
+        headers.push((DEPRECATION_HEADER, val));
+    }
+    if let Some(sunset) = sunset_http_date
+        && let Ok(val) = HeaderValue::from_str(sunset)
+    {
+        headers.push((SUNSET_HEADER, val));
+    }
+    headers
+}
+
 /// Matched route templates excluded from routine access logs (`R75` F320).
 ///
 /// Unmatched paths such as `/healthz/` produce no `MatchedPath` and are therefore logged.
@@ -342,4 +367,28 @@ pub fn apply_middleware(
 
     // L1 (outermost): Generate or preserve request-id header on incoming requests.
     router.layer(SetRequestIdLayer::new(REQUEST_ID, MakeRequestUuid))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{DEPRECATION_HEADER, SUNSET_HEADER, deprecation_headers};
+
+    #[test]
+    fn deprecation_headers_emit_rfc9745_date_and_optional_sunset() {
+        let only_dep = deprecation_headers(1_767_225_600, None);
+        assert_eq!(only_dep.len(), 1);
+        assert_eq!(only_dep[0].0, DEPRECATION_HEADER);
+        assert_eq!(only_dep[0].1, "@1767225600");
+
+        let with_sunset = deprecation_headers(1_767_225_600, Some("Thu, 31 Dec 2026 23:59:59 GMT"));
+        assert_eq!(with_sunset.len(), 2);
+        assert_eq!(with_sunset[0].0, DEPRECATION_HEADER);
+        assert_eq!(with_sunset[0].1, "@1767225600");
+        assert_eq!(with_sunset[1].0, SUNSET_HEADER);
+        assert_eq!(with_sunset[1].1, "Thu, 31 Dec 2026 23:59:59 GMT");
+
+        let bad_sunset = deprecation_headers(1_767_225_600, Some("invalid\r\nheader"));
+        assert_eq!(bad_sunset.len(), 1);
+        assert_eq!(bad_sunset[0].0, DEPRECATION_HEADER);
+    }
 }

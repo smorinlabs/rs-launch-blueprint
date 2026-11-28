@@ -9,7 +9,7 @@
 - **Prior art:** [R81 docs-delivery-model](../research/topics/81-docs-delivery-model/DECISION.md)
 - **Prior art:** [R82 docs-correctness-gate](../research/topics/82-docs-correctness-gate/DECISION.md)
 
-**Status:** `[ ]` scoped, not started.
+**Status:** `[x]` completed.
 
 ### Scope
 Deliver the user-facing documentation corpus, `mdBook` + GitHub Pages publishing pipeline, link/rustdoc correctness gates, CLI/Web example guides, and final end-to-end parity audit:
@@ -23,11 +23,11 @@ Deliver the user-facing documentation corpus, `mdBook` + GitHub Pages publishing
 - Anthropic OSS Scanner enrollment (deferred per owner decision `1c-A`)
 
 ### Tests & Tasks
-- [ ] [P13-TS01] Add documentation verification checks (`mdbook build`, `lychee` internal links, `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features`, and automated parity-audit script checking all 360 `F###` rows are accounted for)
-- [ ] [P13-T01] Configure `book.toml`, `docs/SUMMARY.md`, `.github/workflows/docs.yml` (GitHub Pages deploy), and `lychee` internal/scheduled linkcheck jobs (`R81`, `R82`)
-- [ ] [P13-T02] Author `README.md`, `EXAMPLECLI.md`, `EXAMPLEWEB.md`, and `docs/about/design-decisions.md` (covering `R01`–`R86`, Blaze local accelerator, `bacon`, and approved overrides)
-- [ ] [P13-T03] Author core `docs/` reference and task pages (architecture, CLI reference, web API reference, config/secrets/logging, testing, CI/CD, Blaze local acceleration, troubleshooting)
-- [ ] [P13-T04] Run final 360-row `COMMONALITY.md` + post-`b08bccf` parity audit, write `docs/port/FINAL-PARITY-AUDIT.md`, re-verify `press verify` + stamped child `just check` + `just check` + `blaze test`
+- [x] [P13-TS01] Add documentation verification checks (`mdbook build`, `lychee` internal links, `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features`, and automated parity-audit script checking all 360 `F###` rows are accounted for)
+- [x] [P13-T01] Configure `book.toml`, `docs/SUMMARY.md`, `.github/workflows/docs.yml` (GitHub Pages deploy), and `lychee` internal/scheduled linkcheck jobs (`R81`, `R82`)
+- [x] [P13-T02] Author `README.md`, `EXAMPLECLI.md`, `EXAMPLEWEB.md`, and `docs/about/design-decisions.md` (covering `R01`–`R86`, Blaze local accelerator, `bacon`, and approved overrides)
+- [x] [P13-T03] Author core `docs/` reference and task pages (architecture, CLI reference, web API reference, config/secrets/logging, testing, CI/CD, Blaze local acceleration, troubleshooting)
+- [x] [P13-T04] Run final 360-row `COMMONALITY.md` + post-`b08bccf` parity audit, write `docs/port/FINAL-PARITY-AUDIT.md`, re-verify `press verify` + stamped child `just check` + `just check` + `blaze test`
 
 ### Deliverable
 ```bash
