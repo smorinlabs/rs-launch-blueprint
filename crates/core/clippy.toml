@@ -1,0 +1,14 @@
+# Per-member Clippy value configuration for crates/core (R02 F009 + R28).
+# Clippy resolves only the nearest clippy.toml per package, so test relaxations are repeated here.
+allow-unwrap-in-tests = true
+allow-dbg-in-tests = true
+
+disallowed-methods = [
+    { path = "std::process::exit", reason = "library crates return typed errors; only binary entrypoints exit the process (R67)" },
+]
+
+disallowed-types = [
+    { path = "axum::Router", reason = "core is framework-agnostic (R02 F009)" },
+    { path = "clap::Command", reason = "core is framework-agnostic (R02 F009)" },
+    { path = "tracing_subscriber::Registry", reason = "subscriber initialization belongs to the root composition package (R58)" },
+]
