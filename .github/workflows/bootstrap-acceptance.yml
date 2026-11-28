@@ -37,6 +37,8 @@ jobs:
     name: bootstrap-acceptance
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'release-please--')) }}
     runs-on: ubuntu-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
     permissions:
       contents: read
     steps:
@@ -45,11 +47,14 @@ jobs:
           persist-credentials: false
       - name: Activate pinned Rust toolchain
         run: rustc --version
+      # Read-only restore from ci.yml's `check` cache on `main` (matching CARGO_PROFILE_DEV_DEBUG)
+      # so both the acceptance harness and stamped child reuse compiled third-party crates.
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           env-vars: "ImageOS"
-          cache-on-failure: "true"
-          prefix-key: "v1-bootstrap-acceptance"
+          prefix-key: "v1-rslbp"
+          shared-key: "check"
+          save-if: "false"
       - name: Set up uv and Python 3.13
         uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
@@ -123,4 +128,15 @@ jobs:
           bash scripts/install-shellcheck.sh
           echo "$install_dir" >> "$GITHUB_PATH"
       - name: Run Template Press and stamped-child bootstrap acceptance suite
-        run: cargo test --locked --features web --test bootstrap_acceptance -- --ignored --nocapture
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RSLBP_BOOTSTRAP_TARGET_DIR: ${{ github.workspace }}/target
+        run: |
+          set -euo pipefail
+          EXTRA_ARGS=()
+          # Required press-verify.yml already verifies the template on every PR; keep full suite on schedule/dispatch.
+          if [ "${EVENT_NAME}" = "pull_request" ]; then
+            EXTRA_ARGS=(--skip press_verify_passes_hermetically_on_template)
+          fi
+          cargo test --locked --test bootstrap_acceptance -- --ignored --nocapture "${EXTRA_ARGS[@]}"

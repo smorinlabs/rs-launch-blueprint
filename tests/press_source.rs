@@ -109,7 +109,20 @@ fn press_source_agrees_with_cargo_metadata() {
          lib targets {lib_targets:?} do not include package_name `{package_name}`"
     );
 
-    let bin_targets: Vec<&str> = targets
+    let cli_pkg_name = format!("{repo_name}-cli");
+    let cli_pkg = packages
+        .iter()
+        .find(|pkg| pkg["name"].as_str() == Some(cli_pkg_name.as_str()))
+        .unwrap_or_else(|| {
+            let names: Vec<&str> = packages.iter().filter_map(|p| p["name"].as_str()).collect();
+            panic!(
+                "press-source.toml disagrees with cargo metadata:\n  \
+                 no workspace package matches CLI crate `{cli_pkg_name}` (found {names:?})"
+            )
+        });
+    let bin_targets: Vec<&str> = cli_pkg["targets"]
+        .as_array()
+        .expect("CLI package targets array")
         .iter()
         .filter(|t| {
             t["kind"]
@@ -121,7 +134,7 @@ fn press_source_agrees_with_cargo_metadata() {
     assert!(
         bin_targets.contains(&app_name.as_str()),
         "press-source.toml disagrees with cargo metadata:\n  \
-         bin targets {bin_targets:?} do not include app_name `{app_name}`"
+         CLI bin targets {bin_targets:?} do not include app_name `{app_name}`"
     );
 
     let authors: Vec<&str> = root_pkg["authors"]

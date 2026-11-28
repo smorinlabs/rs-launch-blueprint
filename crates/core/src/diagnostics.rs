@@ -141,7 +141,7 @@ pub fn run_diagnostics(ctx: &DiagnosticsContext<'_>) -> Diagnostics {
             name: "token",
             status: CheckStatus::Warn,
             detail: format!(
-                "not set (supply via --token-file or ${TOKEN_ENV_VAR}; never stored in config)"
+                "not set (supply via ${TOKEN_ENV_VAR} or a credential store; never stored in config)"
             ),
         }
     };

@@ -168,14 +168,20 @@ just format
 git add --all
 git diff --cached --check
 just check
+just lib-check
 just check-packaging
 .venv/bin/press verify --target .
 rm -rf .venv
 ```
 
-## Step 8 — Smoke-test the CLI and optional web service
+## Step 8 — Smoke-test the standalone library, CLI, and optional web service
 
-Verify both compiled entrypoints under the rebranded binary names:
+`just lib-check` (above) already verifies downstream consumption of the standalone
+library crate (`<repo_name>`) under default and `--no-default-features`. If the
+new repository is **library-only**, follow the opt-out steps in
+`docs/RELEASE.md` to drop `crates/cli` and/or `crates/web`.
+
+Verify both compiled binary entrypoints under the rebranded binary names:
 
 ```bash
 cargo run --locked --bin <app_name> -- --version
@@ -185,7 +191,7 @@ cargo run --locked --bin <app_name> -- --help
 Start the optional web service on an ephemeral local port and verify `/healthz`:
 
 ```bash
-cargo run --locked --features web --bin <app_name>-serve -- --bind 127.0.0.1:0
+cargo run --locked -p <repo_name>-web --bin <app_name>-serve
 ```
 
 In a separate check (or by binding an explicit free port such as

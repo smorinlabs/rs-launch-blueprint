@@ -11,16 +11,19 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use rs_launch_blueprint_cli::{CliError, emit_cli_error, render_error};
-use rs_launch_blueprint_core::{DomainError, ErrorCode, Exit, OutputFormat};
+use rs_launch_blueprint::{DomainError, ErrorCode, OutputFormat, VERSION};
 use serde::{Deserialize, Serialize};
+
+use crate::app::{CliError, emit_cli_error};
+use crate::exit::{Exit, cli_hint_for_domain_error};
+use crate::output::render_error;
 
 /// Single sanitized NDJSON crash record written for `RSLB000` unexpected failures (`R67`).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CrashRecord {
     /// UTC ISO-8601 timestamp (`YYYY-MM-DDTHH:MM:SSZ`).
     pub timestamp: String,
-    /// Package SemVer version (`crate::VERSION`).
+    /// Package SemVer version (`rs_launch_blueprint::VERSION`).
     pub version: String,
     /// Process identifier.
     pub pid: u32,
@@ -36,7 +39,7 @@ impl CrashRecord {
     pub fn unexpected(causes: Vec<String>) -> Self {
         Self {
             timestamp: format_utc_now(),
-            version: crate::VERSION.to_owned(),
+            version: VERSION.to_owned(),
             pid: std::process::id(),
             code: ErrorCode::Unexpected.as_str().to_owned(),
             causes: causes.into_iter().map(|c| sanitize_cause(&c)).collect(),
@@ -173,7 +176,7 @@ fn handle_anyhow_error(
     }
 
     if let Some(domain_err) = err.downcast_ref::<DomainError>() {
-        let hint = domain_err.hint();
+        let hint = cli_hint_for_domain_error(domain_err);
         let _ = render_error(
             domain_err.error_code(),
             &domain_err.to_string(),
@@ -182,7 +185,7 @@ fn handle_anyhow_error(
             false,
             stderr,
         );
-        return domain_err.exit();
+        return Exit::from_domain_error(domain_err);
     }
 
     // 4. Unexpected fallback (`RSLB000`, exit `1`) + best-effort crash record sink (R67).

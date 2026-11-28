@@ -13,7 +13,6 @@ use rs_launch_blueprint::{
     ColorPreference, ConfigDiscoveryInputs, ErrorCode, ErrorEnvelope, FileLogFormat, LogLevel,
     OutputFormat, Paths, Project, load_config, set_config_value,
 };
-use rs_launch_blueprint_cli::{ProjectListView, TermCaps, render_view};
 use tempfile::TempDir;
 
 /// Non-control Unicode text strategy matching py's alphabet narrowing so
@@ -158,56 +157,5 @@ proptest! {
         prop_assert_eq!(cfg.output.limit, NonZeroU32::new(limit));
         prop_assert_eq!(cfg.logging.level, level);
         prop_assert_eq!(cfg.logging.file_format, file_fmt);
-    }
-
-    #[test]
-    fn cli_output_renderers_preserve_machine_invariants_across_arbitrary_projects(
-        projects in proptest::collection::vec(
-            (
-                "[A-Za-z0-9_|\\\\ -]{1,20}",
-                "[A-Za-z0-9_|\\\\\",\\n\\x1b -]{0,32}",
-                prop::option::of("[A-Za-z0-9_|\\\\\",\\n -]{0,20}"),
-            )
-                .prop_map(|(id, name, workspace)| Project { id, name, workspace }),
-            0..8,
-        ),
-    ) {
-        let view = ProjectListView {
-            projects: projects.clone(),
-        };
-
-        // JSON: valid parse, zero raw 0x1b bytes, exact project list round-trip.
-        let mut json_buf = Vec::new();
-        render_view(&view, OutputFormat::Json, TermCaps::plain(), &mut json_buf)
-            .expect("render json");
-        prop_assert!(!json_buf.contains(&0x1b));
-        let parsed: serde_json::Value = serde_json::from_slice(&json_buf).expect("valid json");
-        prop_assert_eq!(parsed["projects"].as_array().unwrap().len(), projects.len());
-
-        // Markdown: zero raw 0x1b bytes, exact line count (1 empty-state line or title + blank + header + sep + N).
-        let mut md_buf = Vec::new();
-        render_view(&view, OutputFormat::Markdown, TermCaps::plain(), &mut md_buf)
-            .expect("render markdown");
-        prop_assert!(!md_buf.contains(&0x1b));
-        let md = String::from_utf8(md_buf).expect("utf-8 md");
-        if projects.is_empty() {
-            prop_assert_eq!(md.lines().count(), 1);
-        } else {
-            prop_assert_eq!(md.lines().count(), projects.len() + 4);
-        }
-
-        // Name: zero raw 0x1b bytes, exact N lines.
-        let mut name_buf = Vec::new();
-        render_view(&view, OutputFormat::Name, TermCaps::plain(), &mut name_buf)
-            .expect("render name");
-        prop_assert!(!name_buf.contains(&0x1b));
-        let names = String::from_utf8(name_buf).expect("utf-8 name");
-        prop_assert_eq!(names.lines().count(), projects.len());
-
-        // Table (plain): zero raw 0x1b bytes.
-        let mut table_buf = Vec::new();
-        render_view(&view, OutputFormat::Table, TermCaps::plain(), &mut table_buf)
-            .expect("render table");
-        prop_assert!(!table_buf.contains(&0x1b));
     }
 }

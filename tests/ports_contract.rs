@@ -35,12 +35,11 @@ fn service_translates_absence_to_not_found_and_empty_list_is_success() {
         .expect("empty list must succeed");
     assert!(listed.is_empty());
 
-    // Absent by-id lookup translates to DomainError::NotFound (RSLB301 / exit 3).
+    // Absent by-id lookup translates to DomainError::NotFound (RSLB301).
     let err = svc
         .get_project("missing-42")
         .expect_err("missing project must error at service layer");
     assert_eq!(err.error_code(), ErrorCode::NotFound);
-    assert_eq!(err.exit(), rs_launch_blueprint::Exit::NotFound);
     assert!(err.to_string().contains("missing-42"));
 
     // delete_project translates Ok(false) -> NotFound; delete_project_if_exists returns Ok(false).
@@ -117,8 +116,13 @@ fn mockall_automock_distinguishes_absence_from_failure() {
 fn port_doubles_service_helpers_and_composition_helpers_work() {
     use rs_launch_blueprint::{
         CreateProjectInput, Paths, ProjectsPort, default_credential_store, in_memory_service,
-        run_cli,
+        workspace_info,
     };
+
+    // workspace_info reports canonical standalone library metadata.
+    let info = workspace_info();
+    assert_eq!(info.package, "rs-launch-blueprint");
+    assert_eq!(info.version, rs_launch_blueprint::VERSION);
 
     // InMemoryProjectsPort::default & set_failure across all 4 port methods.
     let mem = InMemoryProjectsPort::default();
@@ -194,27 +198,7 @@ fn port_doubles_service_helpers_and_composition_helpers_work() {
         .is_err()
     );
 
-    // Exercise tracing::debug! spans in ProjectsService with an active TRACE subscriber.
-    let (sub, _) = rs_launch_blueprint::build_scoped_subscriber(
-        rs_launch_blueprint::Profile::Cli {
-            format: rs_launch_blueprint::LogFormat::Console,
-            level: rs_launch_blueprint::LogLevel::Trace,
-            ansi: false,
-            debug: false,
-        },
-        std::io::sink,
-    );
-    let _g = tracing::subscriber::set_default(sub);
-    let _ = svc.list_projects(&ProjectQuery::default()).unwrap();
-    let _ = svc
-        .create_project(&CreateProjectInput {
-            name: "Traced".to_owned(),
-            workspace: Some("eng".to_owned()),
-        })
-        .unwrap();
-    drop(_g);
-
-    // default_credential_store & run_cli facade helpers.
+    // default_credential_store composition helper.
     let paths = Paths::from_roots(
         "/tmp/c".into(),
         "/tmp/d".into(),
@@ -223,10 +207,6 @@ fn port_doubles_service_helpers_and_composition_helpers_work() {
     );
     let store = default_credential_store(&paths);
     assert_eq!(store.path(), paths.credentials_file());
-    assert_eq!(
-        run_cli(&["--version".to_owned()]),
-        std::process::ExitCode::SUCCESS
-    );
 
     #[cfg(feature = "keychain")]
     {
@@ -235,34 +215,4 @@ fn port_doubles_service_helpers_and_composition_helpers_work() {
             assert!(format!("{kc:?}").contains("KeychainCredentialStore"));
         }
     }
-
-    // Exercise tracing::debug! call-site fields in ProjectsService and web stub under TRACE subscriber.
-    let sub = tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::TRACE)
-        .with_writer(std::io::sink)
-        .finish();
-    tracing::subscriber::with_default(sub, || {
-        let svc = ProjectsService::new(InMemoryProjectsPort::new());
-        let _ = svc.list_projects(&ProjectQuery::default()).unwrap();
-        let created = svc
-            .create_project(&CreateProjectInput {
-                name: "traced".to_owned(),
-                workspace: Some("ws".to_owned()),
-            })
-            .unwrap();
-        let _ = svc.get_project(&created.id).unwrap();
-        svc.delete_project(&created.id).unwrap();
-        assert!(svc.delete_project(&created.id).is_err());
-
-        #[cfg(feature = "web")]
-        {
-            let web_svc = in_memory_service([]);
-            let settings = rs_launch_blueprint_web::WebSettings::default();
-            let diag: rs_launch_blueprint_web::DiagnosticsRunner =
-                Arc::new(|| rs_launch_blueprint::Diagnostics { checks: Vec::new() });
-            let state = rs_launch_blueprint::build_web_app_state(web_svc, settings, diag);
-            assert!(state.readiness.is_ready());
-            let _router = rs_launch_blueprint_web::build_router(state);
-        }
-    });
 }

@@ -1,4 +1,4 @@
-# Per-member Clippy value configuration for crates/core (R02 F009 + R28).
+# Per-member Clippy value configuration for crates/core (R02 F009 + R28 + OV-18).
 # Clippy resolves only the nearest clippy.toml per package, so test relaxations are repeated here.
 allow-unwrap-in-tests = true
 allow-dbg-in-tests = true
@@ -7,8 +7,11 @@ disallowed-methods = [
     { path = "std::process::exit", reason = "library crates return typed errors; only binary entrypoints exit the process (R67)" },
 ]
 
+# `std::process::ExitCode` is checked on `crates/core/src/` by `tests/workspace_edges.rs`
+# rather than `disallowed-types` because `rustc --test` synthesizes a `main() -> ExitCode` harness.
 disallowed-types = [
+    { path = "anyhow::Error", reason = "library crates return typed thiserror errors (R03, OV-18)" },
     { path = "axum::Router", reason = "core is framework-agnostic (R02 F009)" },
     { path = "clap::Command", reason = "core is framework-agnostic (R02 F009)" },
-    { path = "tracing_subscriber::Registry", reason = "subscriber initialization belongs to the root composition package (R58)" },
+    { path = "tracing_subscriber::Registry", reason = "subscriber initialization belongs to binary crates (R58, OV-18)" },
 ]

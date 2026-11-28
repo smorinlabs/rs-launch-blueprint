@@ -11,18 +11,18 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 
 use rs_launch_blueprint::{
-    ClipboardError, ClipboardPort, CrashRecord, CrashSink, DomainError, ErrorCode, Exit,
-    FailingClipboard, FileCrashSink, InMemoryProjectsPort, NoopCrashSink, OutputFormat, Paths,
-    Project, ProjectQuery, ProjectsPort, RecordingClipboard, resolve_binary_boundary,
-    workspace_info,
+    DomainError, ErrorCode, InMemoryProjectsPort, OutputFormat, Paths, Project, ProjectQuery,
+    ProjectsPort, workspace_info,
 };
 use rs_launch_blueprint_cli::{
-    CliError, CliRuntime, ConfigPathView, ConfigShowView, ConfigValueView, DEFAULT_PAGER,
-    DiagnosticCheck, DiagnosticsBundleView, DiagnosticsReportView, MapEnv, PagerWriter,
-    ProjectDeletedView, ProjectListView, PromptError, ScriptedAnswer, ScriptedPrompter, TermCaps,
-    TerminalState, VersionView, emit_cli_error, escape_label, escape_markdown_cell, execute_cli,
-    format_file_link, format_osc8_link, relative_time, render_error, render_view,
-    resolve_output_format, resolve_pager_argv, run, sanitize_url, write_output_file_atomic,
+    CliError, CliRuntime, ClipboardError, ClipboardPort, ConfigPathView, ConfigShowView,
+    ConfigValueView, CrashRecord, CrashSink, DEFAULT_PAGER, DiagnosticCheck, DiagnosticsBundleView,
+    DiagnosticsReportView, Exit, FailingClipboard, FileCrashSink, MapEnv, NoopCrashSink,
+    PagerWriter, ProjectDeletedView, ProjectListView, PromptError, RecordingClipboard,
+    ScriptedAnswer, ScriptedPrompter, TermCaps, TerminalState, VersionView, emit_cli_error,
+    escape_label, escape_markdown_cell, execute_cli, format_file_link, format_osc8_link,
+    relative_time, render_error, render_view, resolve_binary_boundary, resolve_output_format,
+    resolve_pager_argv, run, sanitize_url, write_output_file_atomic,
 };
 use tempfile::TempDir;
 
@@ -130,7 +130,7 @@ fn r61_prompts_are_never_constructed_when_gated_off() {
     match res {
         Err(CliError::Domain { error, .. }) => {
             assert_eq!(error.error_code(), ErrorCode::InputUnavailable);
-            assert_eq!(error.exit(), Exit::Usage);
+            assert_eq!(Exit::from_domain_error(&error), Exit::Usage);
         }
         other => panic!("expected InputUnavailable, got {other:?}"),
     }
@@ -234,9 +234,10 @@ fn r61_interactive_delete_confirm_decline_esc_ctrl_c_and_error_variants() {
     // Ctrl-C -> RSLB903 / exit 130.
     let (res, _, _, _) = run_delete(Err(PromptError::Interrupted), false);
     match res {
-        Err(CliError::Domain { error, .. }) => {
-            assert_eq!(error.error_code(), ErrorCode::PromptInterrupted);
-            assert_eq!(error.exit(), Exit::SigInt);
+        Err(err @ CliError::PromptInterrupted { .. }) => {
+            let mut ebuf = Vec::new();
+            assert_eq!(emit_cli_error(&err, &mut ebuf), Exit::SigInt);
+            assert!(String::from_utf8_lossy(&ebuf).contains("RSLB903"));
         }
         other => panic!("expected PromptInterrupted, got {other:?}"),
     }
@@ -246,7 +247,7 @@ fn r61_interactive_delete_confirm_decline_esc_ctrl_c_and_error_variants() {
     match res {
         Err(CliError::Domain { error, .. }) => {
             assert_eq!(error.error_code(), ErrorCode::InputUnavailable);
-            assert_eq!(error.exit(), Exit::Usage);
+            assert_eq!(Exit::from_domain_error(&error), Exit::Usage);
         }
         other => panic!("expected InputUnavailable, got {other:?}"),
     }
@@ -256,7 +257,7 @@ fn r61_interactive_delete_confirm_decline_esc_ctrl_c_and_error_variants() {
     match res {
         Err(CliError::Domain { error, .. }) => {
             assert_eq!(error.error_code(), ErrorCode::Io);
-            assert_eq!(error.exit(), Exit::Runtime);
+            assert_eq!(Exit::from_domain_error(&error), Exit::Runtime);
         }
         other => panic!("expected Io, got {other:?}"),
     }
@@ -431,13 +432,7 @@ fn r61_interactive_config_set_init_and_project_select_narrowing() {
     assert_eq!(out, "p1\np2\n");
 
     let (res, _, _) = run_select(Err(PromptError::Interrupted));
-    assert!(matches!(
-        res,
-        Err(CliError::Domain {
-            error: DomainError::PromptInterrupted,
-            ..
-        })
-    ));
+    assert!(matches!(res, Err(CliError::PromptInterrupted { .. })));
 }
 
 // =========================================================================
@@ -513,11 +508,12 @@ fn r62_copy_writes_after_primary_sink_and_failure_leaves_stdout_intact() {
         "R62: primary stdout must stay intact when clipboard fails"
     );
     match res {
-        Err(CliError::Domain { error, .. }) => {
-            assert_eq!(error.error_code(), ErrorCode::Io);
-            assert_eq!(error.exit(), Exit::Runtime);
+        Err(err @ CliError::Clipboard { .. }) => {
+            let mut ebuf = Vec::new();
+            assert_eq!(emit_cli_error(&err, &mut ebuf), Exit::Runtime);
+            assert!(String::from_utf8_lossy(&ebuf).contains("RSLB101"));
         }
-        other => panic!("expected Clipboard/Io DomainError, got {other:?}"),
+        other => panic!("expected CliError::Clipboard, got {other:?}"),
     }
 
     // Direct clipboard error helper check.
@@ -1046,18 +1042,34 @@ fn r67_binary_boundary_precedence_and_crash_sink_0600_contract() {
         })
     ));
 
-    // CliError Display & std::error::Error::source across all 3 variants.
+    // CliError Display & std::error::Error::source across all 5 variants.
     use std::error::Error as _;
     let bp = CliError::BrokenPipe;
     assert_eq!(bp.to_string(), "broken pipe");
     assert!(bp.source().is_none());
     let dom = CliError::Domain {
-        error: DomainError::PromptInterrupted,
+        error: DomainError::NotFound {
+            kind: "project",
+            id: "missing".to_owned(),
+        },
         format: OutputFormat::Table,
         stderr_color: false,
     };
     assert!(!dom.to_string().is_empty());
     assert!(dom.source().is_some());
+    let clip = CliError::Clipboard {
+        error: ClipboardError::unavailable("headless", Some("pipe instead".to_owned())),
+        format: OutputFormat::Table,
+        stderr_color: false,
+    };
+    assert!(!clip.to_string().is_empty());
+    assert!(clip.source().is_some());
+    let interrupted = CliError::PromptInterrupted {
+        format: OutputFormat::Table,
+        stderr_color: false,
+    };
+    assert_eq!(interrupted.to_string(), "prompt interrupted");
+    assert!(interrupted.source().is_none());
     let unexp = CliError::Unexpected {
         message: "oops".to_owned(),
         format: OutputFormat::Table,
@@ -1218,7 +1230,7 @@ fn r67_binary_boundary_precedence_and_crash_sink_0600_contract() {
         false,
         &["config", "set", "output.format", "table", "--config", cfg_s],
     );
-    assert!(matches!(r, Err(CliError::Domain { .. })));
+    assert!(matches!(r, Err(CliError::PromptInterrupted { .. })));
 
     // config init interrupted + interactive --dry-run.
     let p_init_int = ScriptedPrompter::new([ScriptedAnswer::Select(Err(PromptError::Interrupted))]);
@@ -1230,7 +1242,7 @@ fn r67_binary_boundary_precedence_and_crash_sink_0600_contract() {
         false,
         &["config", "init", "--config", cfg_s],
     );
-    assert!(matches!(r, Err(CliError::Domain { .. })));
+    assert!(matches!(r, Err(CliError::PromptInterrupted { .. })));
 
     // diagnostics with failing token-file (Exit::Runtime) and --bundle with MapEnv.
     let bad_tok_dir = tmp.path().join("tok-dir");

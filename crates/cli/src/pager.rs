@@ -9,7 +9,7 @@ use std::io::{self, Write};
 use std::path::Path;
 use std::process::{Child, ChildStdin, Command, Stdio};
 
-use rs_launch_blueprint_core::OutputFormat;
+use rs_launch_blueprint::OutputFormat;
 
 use crate::color::EnvLookup;
 

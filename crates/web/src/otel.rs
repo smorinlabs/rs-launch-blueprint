@@ -1,12 +1,13 @@
 //! Optional OpenTelemetry tracing bridge, self-redacting OTLP exporter, W3C Trace Context
-//! propagation, and three-gate degrade contract (`R78` rev 3, `R58` rev 4, `OV-09`).
+//! propagation, and three-gate degrade contract (`R78` rev 3, `R58` rev 4, `OV-09`, `OV-18`).
 //!
-//! Compiled only when the `otel` feature (`otel = ["web", ...]`) is enabled.
+//! Compiled only when `rs-launch-blueprint-web`'s `otel` feature is enabled.
 
 use std::env;
 use std::fmt;
 use std::time::Duration;
 
+use axum::http::HeaderMap;
 use opentelemetry::trace::{TraceContextExt as _, TracerProvider as _};
 use opentelemetry::{KeyValue, Value, global};
 use opentelemetry_http::HeaderInjector;
@@ -15,7 +16,7 @@ use opentelemetry_sdk::Resource;
 use opentelemetry_sdk::error::OTelSdkResult;
 use opentelemetry_sdk::propagation::TraceContextPropagator;
 use opentelemetry_sdk::trace::{SdkTracerProvider, SpanData, SpanExporter};
-use rs_launch_blueprint_core::TOOL_NAME;
+use rs_launch_blueprint::TOOL_NAME;
 use tracing::level_filters::LevelFilter;
 use tracing_opentelemetry::OpenTelemetrySpanExt as _;
 use tracing_subscriber::Registry;
@@ -29,9 +30,6 @@ pub type OtelLayer = Box<dyn Layer<Registry> + Send + Sync>;
 
 /// Wrapper around any [`SpanExporter`] that redacts sensitive span and event attribute keys
 /// before span data leaves the process (`R78` rev 3, `R58` rev 4, `OV-09`).
-///
-/// Uses the exact F252 key vocabulary ([`crate::SENSITIVE_KEY_PARTS`]) and `[REDACTED]` mask.
-/// Inherits `OV-09`: values under non-sensitive attribute keys are not regex-rewritten.
 #[derive(Debug, Clone)]
 pub struct RedactingSpanExporter<E> {
     inner: E,
@@ -94,7 +92,7 @@ where
 pub struct OtelConfig {
     /// Explicit runtime enable switch from `RSLBP_WEB_OTEL_ENABLED` (default `false`).
     pub enabled: bool,
-    /// Standard kill switch from `OTEL_SDK_DISABLED` (the OTel Rust SDK does not check it itself).
+    /// Standard kill switch from `OTEL_SDK_DISABLED`.
     pub sdk_disabled: bool,
     /// Resource `service.name` value (defaults to `<TOOL_NAME>-web`, i.e. `"rslbp-web"`).
     pub service_name: String,
@@ -139,10 +137,6 @@ impl fmt::Debug for OtelGuard {
 
 impl OtelGuard {
     /// Flush and shut down the tracer provider within its configured timeout budget.
-    ///
-    /// Call on a blocking/main OS thread (never directly on an async Tokio worker thread, per
-    /// `R78` S11/S12). Note that `Ok(())` reports bounded shutdown completion; export loss on an
-    /// unreachable collector is surfaced through `opentelemetry_sdk` internal logs.
     pub fn shutdown_blocking(self) -> Result<(), String> {
         self.provider
             .shutdown_with_timeout(self.shutdown_timeout)
@@ -152,8 +146,7 @@ impl OtelGuard {
 
 /// Outcome of initializing the optional OpenTelemetry pipeline (`R78` Gates 2 & 3).
 pub enum OtelInit {
-    /// OpenTelemetry tracing is active; attach `layer` to `init_telemetry_with_otel` and flush
-    /// `guard` during graceful shutdown.
+    /// OpenTelemetry tracing is active.
     Active {
         /// Per-layer filtered `tracing-opentelemetry` bridge layer.
         layer: OtelLayer,
@@ -161,10 +154,9 @@ pub enum OtelInit {
         guard: OtelGuard,
     },
     /// OpenTelemetry is compiled in but explicitly disabled via runtime flag or
-    /// `OTEL_SDK_DISABLED=true` (no export, no warning).
+    /// `OTEL_SDK_DISABLED=true`.
     Disabled,
-    /// OTLP exporter construction failed (e.g. malformed `OTEL_EXPORTER_OTLP_ENDPOINT`); emit one
-    /// `otel_unavailable` warning after subscriber initialization and continue serving.
+    /// OTLP exporter construction failed; emit one `otel_unavailable` warning and continue.
     Unavailable {
         /// Human-readable reason from the exporter builder.
         reason: String,
@@ -250,9 +242,6 @@ where
 }
 
 /// Initialize the production OTLP/HTTP tracing pipeline according to `config` (`R78` Gates 2 & 3).
-///
-/// Never panics: disabled flags return [`OtelInit::Disabled`] and malformed OTLP configuration
-/// returns [`OtelInit::Unavailable`].
 #[must_use]
 pub fn init_otel_from_config(config: &OtelConfig) -> OtelInit {
     if !config.enabled || config.sdk_disabled {
@@ -288,7 +277,7 @@ pub fn init_otel_from_config(config: &OtelConfig) -> OtelInit {
 
 /// Inject the current active tracing span's OpenTelemetry W3C Trace Context (`traceparent` /
 /// `tracestate`) into outbound HTTP `headers` (`R78` point 5).
-pub fn inject_trace_context(headers: &mut ureq::http::HeaderMap) {
+pub fn inject_trace_context(headers: &mut HeaderMap) {
     let cx = tracing::Span::current().context();
     if !cx.span().span_context().is_valid() {
         return;
@@ -296,4 +285,20 @@ pub fn inject_trace_context(headers: &mut ureq::http::HeaderMap) {
     global::get_text_map_propagator(|prop| {
         prop.inject_context(&cx, &mut HeaderInjector(headers));
     });
+}
+
+/// Collect outbound W3C Trace Context headers (`traceparent` / `tracestate`) from the active
+/// tracing span for injection into [`rs_launch_blueprint::HttpProjectsPort::with_header_injector`].
+#[must_use]
+pub fn outbound_trace_headers() -> Vec<(String, String)> {
+    let mut map = HeaderMap::new();
+    inject_trace_context(&mut map);
+    map.iter()
+        .filter_map(|(name, value)| {
+            value
+                .to_str()
+                .ok()
+                .map(|v| (name.as_str().to_owned(), v.to_owned()))
+        })
+        .collect()
 }

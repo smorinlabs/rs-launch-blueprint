@@ -9,7 +9,7 @@ use clap::error::ErrorKind;
 use clap::parser::ValueSource;
 use clap::{ArgAction, Args, CommandFactory, FromArgMatches, Parser, Subcommand, ValueEnum};
 use clap_complete::Shell;
-use rs_launch_blueprint_core::{ColorPreference, LogLevel, OutputFormat};
+use rs_launch_blueprint::{ColorPreference, LogLevel, OutputFormat};
 use serde::Serialize;
 
 /// Static build metadata embedded at compile time by `build.rs` (`R60` F267).

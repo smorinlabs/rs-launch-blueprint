@@ -272,6 +272,7 @@ fn workspace_manifests_and_release_manifest_versions_stay_consistent_f133_r22_r2
     // R23 S7c: every workspace manifest declares a literal string `[package] version`
     // matching `rs_launch_blueprint::VERSION`, and every intra-workspace path dep matches it.
     let workspace_pkgs = [
+        "rs-launch-blueprint",
         "rs-launch-blueprint-core",
         "rs-launch-blueprint-cli",
         "rs-launch-blueprint-web",
@@ -511,7 +512,8 @@ fn release_profile_and_dist_workspace_match_r68() {
 fn packed_artifact_guards_pass_and_discriminate_faults_r26() {
     let root = repo_root();
 
-    // Element 4: every publishable manifest declares `include` and never `exclude`.
+    // Element 4: every publishable manifest declares `include` (including README & licenses)
+    // and never `exclude`; internal web crate explicitly sets `publish = false` and `dist = false`.
     for (rel, required_entries) in [
         (
             "Cargo.toml",
@@ -523,9 +525,20 @@ fn packed_artifact_guards_pass_and_discriminate_faults_r26() {
                 "/LICENSE-MIT",
             ][..],
         ),
-        ("crates/core/Cargo.toml", &["/src"][..]),
-        ("crates/cli/Cargo.toml", &["/src", "/build.rs"][..]),
-        ("crates/web/Cargo.toml", &["/src"][..]),
+        (
+            "crates/core/Cargo.toml",
+            &["/src", "/README.md", "/LICENSE", "/LICENSE-MIT"][..],
+        ),
+        (
+            "crates/cli/Cargo.toml",
+            &[
+                "/src",
+                "/build.rs",
+                "/README.md",
+                "/LICENSE",
+                "/LICENSE-MIT",
+            ][..],
+        ),
     ] {
         let doc: toml::Value =
             toml::from_str(&read_repo_file(&root, rel)).expect("parse package manifest");
@@ -547,14 +560,47 @@ fn packed_artifact_guards_pass_and_discriminate_faults_r26() {
                 "{rel} [package] include missing required allow-list entry `{entry}`"
             );
         }
+        assert!(
+            pkg.get("metadata")
+                .and_then(|m| m.get("docs"))
+                .and_then(|d| d.get("rs"))
+                .and_then(|r| r.get("all-features"))
+                .and_then(toml::Value::as_bool)
+                == Some(true),
+            "{rel} must configure [package.metadata.docs.rs] all-features = true"
+        );
     }
 
-    // Expectation files exist for all 4 crates and file lists are byte-sorted (LC_ALL=C).
-    for pkg in [
-        "rs-launch-blueprint-core",
-        "rs-launch-blueprint-cli",
-        "rs-launch-blueprint-web",
-        "rs-launch-blueprint",
+    let web_doc: toml::Value = toml::from_str(&read_repo_file(&root, "crates/web/Cargo.toml"))
+        .expect("parse web manifest");
+    assert_eq!(
+        web_doc["package"]
+            .get("publish")
+            .and_then(toml::Value::as_bool),
+        Some(false),
+        "crates/web must declare publish = false (internal service crate, OV-18)"
+    );
+    assert_eq!(
+        web_doc["package"]
+            .get("metadata")
+            .and_then(|m| m.get("dist"))
+            .and_then(|d| d.get("dist"))
+            .and_then(toml::Value::as_bool),
+        Some(false),
+        "crates/web must declare [package.metadata.dist] dist = false"
+    );
+    assert!(
+        !root
+            .join("ci/expected-packed-files/rs-launch-blueprint-web.txt")
+            .exists(),
+        "unpublishable crates/web must not have a packed-files baseline"
+    );
+
+    // Expectation files exist for all 3 publishable crates and file lists are byte-sorted (LC_ALL=C).
+    for (pkg, expect_cargo_lock) in [
+        ("rs-launch-blueprint-core", false),
+        ("rs-launch-blueprint", false),
+        ("rs-launch-blueprint-cli", true),
     ] {
         let files_rel = format!("ci/expected-packed-files/{pkg}.txt");
         let files_txt = read_repo_file(&root, &files_rel);
@@ -566,10 +612,22 @@ fn packed_artifact_guards_pass_and_discriminate_faults_r26() {
             lines, sorted,
             "R26 requires {files_rel} to be sorted in byte order (LC_ALL=C)"
         );
-        for synthesized in ["Cargo.toml", "Cargo.toml.orig", "Cargo.lock"] {
+        for synthesized in [
+            "Cargo.toml",
+            "Cargo.toml.orig",
+            "LICENSE",
+            "LICENSE-MIT",
+            "README.md",
+        ] {
             assert!(
                 lines.contains(&synthesized),
-                "{files_rel} must list Cargo-synthesized `{synthesized}`"
+                "{files_rel} must list `{synthesized}`"
+            );
+        }
+        if expect_cargo_lock {
+            assert!(
+                lines.contains(&"Cargo.lock"),
+                "{files_rel} (binary crate) must list Cargo-synthesized `Cargo.lock`"
             );
         }
 
@@ -659,16 +717,18 @@ fn packed_artifact_guards_pass_and_discriminate_faults_r26() {
     let root_cargo = fault_ws.path().join("Cargo.toml");
     let orig_cargo = fs::read_to_string(&root_cargo).expect("read copied Cargo.toml");
 
-    // Fault A: narrow `include` so `src/bin/serve.rs` is omitted (pruned binary hazard, F078).
-    let fault_a_cargo = orig_cargo.replace(
+    // Fault A: narrow `crates/cli/Cargo.toml` `include` so `src/main.rs` is omitted (pruned binary hazard, F078).
+    let cli_cargo = fault_ws.path().join("crates/cli/Cargo.toml");
+    let orig_cli_cargo = fs::read_to_string(&cli_cargo).expect("read copied crates/cli/Cargo.toml");
+    let fault_a_cargo = orig_cli_cargo.replace(
         "\"/src\",",
-        "\"/src/lib.rs\", \"/src/main.rs\", \"/src/clipboard_adapter.rs\", \"/src/composition.rs\", \"/src/crash_sink.rs\", \"/src/http_adapter.rs\", \"/src/internal.rs\", \"/src/keychain.rs\", \"/src/otel.rs\", \"/src/telemetry.rs\",",
+        "\"/src/lib.rs\", \"/src/app.rs\", \"/src/args.rs\", \"/src/clipboard.rs\", \"/src/color.rs\", \"/src/crash_sink.rs\", \"/src/exit.rs\", \"/src/output.rs\", \"/src/pager.rs\", \"/src/prompter.rs\", \"/src/rich.rs\", \"/src/spinner.rs\", \"/src/telemetry.rs\",",
     );
     assert_ne!(
-        fault_a_cargo, orig_cargo,
-        "fault A edit must modify Cargo.toml"
+        fault_a_cargo, orig_cli_cargo,
+        "fault A edit must modify crates/cli/Cargo.toml"
     );
-    fs::write(&root_cargo, &fault_a_cargo).expect("write fault A Cargo.toml");
+    fs::write(&cli_cargo, &fault_a_cargo).expect("write fault A crates/cli/Cargo.toml");
     let out_a = Command::new("bash")
         .args([
             fault_script.to_str().expect("utf8 path"),
@@ -676,7 +736,7 @@ fn packed_artifact_guards_pass_and_discriminate_faults_r26() {
             "--no-verify",
             "--offline",
             "-p",
-            "rs-launch-blueprint",
+            "rs-launch-blueprint-cli",
         ])
         .current_dir(fault_ws.path())
         .env("CARGO_TARGET_DIR", fault_target.path())
@@ -684,8 +744,9 @@ fn packed_artifact_guards_pass_and_discriminate_faults_r26() {
         .expect("run guard on fault A");
     assert!(
         !out_a.status.success(),
-        "R26 Fault A (pruned rslbp-serve binary) must fail check-packed-artifacts.sh"
+        "R26 Fault A (pruned rslbp binary) must fail check-packed-artifacts.sh"
     );
+    fs::write(&cli_cargo, &orig_cli_cargo).expect("restore crates/cli/Cargo.toml");
 
     // Fault B: stray root file added to `include` (file-set addition hazard, F039).
     fs::write(fault_ws.path().join("STRAY.txt"), "stray\n").expect("write stray file");
@@ -802,7 +863,7 @@ fn release_publish_and_container_workflows_and_docs_match_p11_contract() {
         "release.yml must verify cargo-dist tarball SHA-256 rather than piping curl to sh"
     );
 
-    // 3. publish.yml (R04 cargo-semver-checks + R26 4 guards + gated crates.io publish)
+    // 3. publish.yml (R04 cargo-semver-checks for both library crates + R26 guards + gated crates.io publish)
     let pub_wf = read_repo_file(&root, ".github/workflows/publish.yml");
     for required in [
         "permissions: {}",
@@ -810,8 +871,9 @@ fn release_publish_and_container_workflows_and_docs_match_p11_contract() {
         "git merge-base --is-ancestor",
         "scripts/check-packed-artifacts.sh",
         "obi1kenobi/cargo-semver-checks-action@6b69fcf40e9b5fb17adeb57e4b6ecd020649a239 # v2.9",
-        "feature-group: only-explicit-features",
-        "features: web",
+        "package: rs-launch-blueprint-core",
+        "package: rs-launch-blueprint",
+        "feature-group: all-features",
         "cargo publish --workspace --dry-run --locked",
         "credential-preflight:",
         "environment: crates-io",
@@ -898,8 +960,9 @@ fn release_publish_and_container_workflows_and_docs_match_p11_contract() {
         "RELEASE_PLEASE_APP_TOKEN",
         "CRATES_IO_TOKEN",
         "crates-io",
-        "cargo binstall rs-launch-blueprint",
-        "cargo install --locked rs-launch-blueprint",
+        "cargo add rs-launch-blueprint",
+        "cargo binstall rs-launch-blueprint-cli",
+        "cargo install --locked rs-launch-blueprint-cli",
         "@sha256:",
     ] {
         assert!(

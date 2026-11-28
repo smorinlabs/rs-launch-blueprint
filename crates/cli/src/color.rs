@@ -13,7 +13,7 @@ use std::env;
 use std::ffi::OsString;
 
 use anstream::ColorChoice;
-use rs_launch_blueprint_core::ColorPreference;
+use rs_launch_blueprint::ColorPreference;
 
 /// Read-only environment lookup seam keeping color, pager, spinner, and diagnostics pure.
 pub trait EnvLookup: Send + Sync {

@@ -351,7 +351,7 @@
       },
       "CreateProjectInput": {
         "type": "object",
-        "description": "OpenAPI schema representation of a core `CreateProjectInput` (`R01`, `R71`).\n\nMirrors [`rs_launch_blueprint_core::CreateProjectInput`] without adding `utoipa` to `crates/core`.",
+        "description": "OpenAPI schema representation of a core `CreateProjectInput` (`R01`, `R71`).\n\nMirrors [`rs_launch_blueprint::CreateProjectInput`] without adding `utoipa` to `crates/core`.",
         "required": [
           "name"
         ],
@@ -523,7 +523,7 @@
       },
       "Project": {
         "type": "object",
-        "description": "OpenAPI schema representation of a core `Project` (`R01`, `R71`).\n\nMirrors [`rs_launch_blueprint_core::Project`] without adding `utoipa` to `crates/core`.",
+        "description": "OpenAPI schema representation of a core `Project` (`R01`, `R71`).\n\nMirrors [`rs_launch_blueprint::Project`] without adding `utoipa` to `crates/core`.",
         "required": [
           "id",
           "name"

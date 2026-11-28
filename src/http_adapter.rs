@@ -1,9 +1,13 @@
-//! Synchronous HTTP adapter for [`ProjectsPort`] backed by `ureq` (`R01`, `R03`, `R05`, `R48`).
+//! Synchronous HTTP adapter for [`ProjectsPort`] backed by `ureq` (`R01`, `R03`, `R05`, `R48`,
+//! `OV-18`).
 //!
-//! Lives in the root package so `crates/core` stays completely free of HTTP client crates and
-//! TLS stacks. Every HTTP status and schema-drift condition is mapped explicitly per operation.
+//! Gated behind the root library's default-on `http` feature so `crates/core` stays completely
+//! free of HTTP client crates and TLS stacks, and minimal library consumers can opt out with
+//! `default-features = false`. Every HTTP status and schema-drift condition is mapped explicitly
+//! per operation.
 
 use std::fmt;
+use std::sync::Arc;
 use std::time::Duration;
 
 use rs_launch_blueprint_core::{
@@ -15,11 +19,24 @@ use zeroize::Zeroize;
 /// Default global request timeout applied by [`HttpProjectsPort::new`].
 pub const DEFAULT_HTTP_TIMEOUT: Duration = Duration::from_secs(30);
 
+/// Optional callback invoked on every outbound HTTP request to supply additional headers (for
+/// example, W3C Trace Context `traceparent` / `tracestate` headers when used from an
+/// OpenTelemetry-instrumented web service) without coupling the standalone library to
+/// `opentelemetry` crates (`OV-18`, `R78`).
+pub type HeaderInjector = Arc<dyn Fn() -> Vec<(String, String)> + Send + Sync>;
+
 /// Concrete HTTP [`ProjectsPort`] adapter using blocking `ureq` (`R05`).
+///
+/// The internal module cannot be deep-imported by external consumers (`R04`):
+///
+/// ```compile_fail,E0603
+/// use rs_launch_blueprint::http_adapter::HttpProjectsPort;
+/// ```
 pub struct HttpProjectsPort {
     base_url: String,
     token: Token,
     agent: ureq::Agent,
+    header_injector: Option<HeaderInjector>,
 }
 
 impl fmt::Debug for HttpProjectsPort {
@@ -27,6 +44,7 @@ impl fmt::Debug for HttpProjectsPort {
         f.debug_struct("HttpProjectsPort")
             .field("base_url", &self.base_url)
             .field("token", &self.token)
+            .field("has_header_injector", &self.header_injector.is_some())
             .finish_non_exhaustive()
     }
 }
@@ -51,7 +69,15 @@ impl HttpProjectsPort {
             base_url,
             token,
             agent,
+            header_injector: None,
         }
+    }
+
+    /// Attach an optional [`HeaderInjector`] called on every outbound HTTP request.
+    #[must_use]
+    pub fn with_header_injector(mut self, injector: HeaderInjector) -> Self {
+        self.header_injector = Some(injector);
+        self
     }
 
     /// Return the normalized base URL (without trailing slash).
@@ -63,27 +89,12 @@ impl HttpProjectsPort {
     fn bearer_header(&self) -> String {
         format!("Bearer {}", self.token.expose_secret())
     }
-}
 
-/// Collect outbound W3C Trace Context headers (`traceparent` / `tracestate`) from the active
-/// tracing span when `otel` is enabled (`R78` point 5).
-#[cfg(feature = "otel")]
-fn outbound_trace_headers() -> Vec<(String, String)> {
-    let mut map = ureq::http::HeaderMap::new();
-    crate::otel::inject_trace_context(&mut map);
-    map.iter()
-        .filter_map(|(name, value)| {
-            value
-                .to_str()
-                .ok()
-                .map(|v| (name.as_str().to_owned(), v.to_owned()))
-        })
-        .collect()
-}
-
-#[cfg(not(feature = "otel"))]
-const fn outbound_trace_headers() -> Vec<(String, String)> {
-    Vec::new()
+    fn outbound_headers(&self) -> Vec<(String, String)> {
+        self.header_injector
+            .as_ref()
+            .map_or_else(Vec::new, |inject| inject())
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -238,7 +249,7 @@ impl ProjectsPort for HttpProjectsPort {
             .get(&url)
             .header("Authorization", &auth)
             .header("Accept", "application/json");
-        for (name, val) in outbound_trace_headers() {
+        for (name, val) in self.outbound_headers() {
             req = req.header(&name, &val);
         }
         let result = req.call();
@@ -275,7 +286,7 @@ impl ProjectsPort for HttpProjectsPort {
             .get(&url)
             .header("Authorization", &auth)
             .header("Accept", "application/json");
-        for (name, val) in outbound_trace_headers() {
+        for (name, val) in self.outbound_headers() {
             req = req.header(&name, &val);
         }
         let result = req.call();
@@ -316,7 +327,7 @@ impl ProjectsPort for HttpProjectsPort {
             .post(&url)
             .header("Authorization", &auth)
             .header("Accept", "application/json");
-        for (name, val) in outbound_trace_headers() {
+        for (name, val) in self.outbound_headers() {
             req = req.header(&name, &val);
         }
         let result = req.send_json(&payload);
@@ -349,7 +360,7 @@ impl ProjectsPort for HttpProjectsPort {
             .delete(&url)
             .header("Authorization", &auth)
             .header("Accept", "application/json");
-        for (name, val) in outbound_trace_headers() {
+        for (name, val) in self.outbound_headers() {
             req = req.header(&name, &val);
         }
         let result = req.call();

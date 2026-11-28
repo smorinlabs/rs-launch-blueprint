@@ -656,7 +656,10 @@ mod live {
         let scratch = TempDir::new("p12-bootstrap-acceptance");
         let press = provision_press_bin(&root, scratch.path());
         let child = scratch.path().join("harbor-sample");
-        let child_target = scratch.path().join("cargo-target");
+        let child_target = env::var_os("RSLBP_BOOTSTRAP_TARGET_DIR")
+            .filter(|v| !v.is_empty())
+            .map(PathBuf::from)
+            .unwrap_or_else(|| scratch.path().join("cargo-target"));
         fs::create_dir_all(&child).expect("create child dir");
 
         copy_tracked_tree(&root, &child);
@@ -841,6 +844,7 @@ mod live {
         run_checked(&child, &just, &["check"], &target_env);
         run_checked(&child, &press, &["verify", "--target", "."], &[]);
         run_checked(&child, &just, &["check-packaging"], &target_env);
+        run_checked(&child, &just, &["lib-check"], &target_env);
 
         // CLI binary & web serve binary smoke tests.
         let cli_ver = run_checked(
@@ -857,8 +861,8 @@ mod live {
             &[
                 "run",
                 "--locked",
-                "--features",
-                "web",
+                "-p",
+                "harbor-sample-web",
                 "--bin",
                 "harborctl-serve",
                 "--",

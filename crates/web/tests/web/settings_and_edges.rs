@@ -14,19 +14,18 @@ use axum::extract::FromRef;
 use axum::http::{HeaderValue, Method, Request, StatusCode, header};
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
-use rs_launch_blueprint_core::{
-    AlwaysFreshIdempotencyStore, ClaimToken, CompletedOutcome, Diagnostics, DomainError,
-    ErasedProjectsService, ErrorCode, IdempotencyBegin, IdempotencyCacheKey, IdempotencyStore,
-    InMemoryIdempotencyStore, InMemoryProjectsPort, LogLevel, PayloadFingerprint, PortError,
-    Project, ProjectsPort, ProjectsService, ServiceLogFormat,
+use rs_launch_blueprint::{
+    Diagnostics, DomainError, ErasedProjectsService, ErrorCode, InMemoryProjectsPort, LogLevel,
+    PortError, Project, ProjectsPort, ProjectsService,
 };
 use rs_launch_blueprint_web::{
-    AppState, DEFAULT_PROBLEM_BASE_URI, DiagnosticsRunner, IDEMPOTENCY_KEY_HEADER,
-    IdempotencyConfig, InMemoryRateLimitStore, PaginationLimits, ProblemJson, ProblemPath,
-    ProblemQuery, ProblemSource, RateLimitKey, RateLimitPolicy, RateLimitStore, Readiness,
-    ServeError, ShutdownSignal, StoreDispatch, WebError, WebSettings, apply_idempotency,
-    build_router, decode_cursor, encode_cursor, install_rate_limit, run_server_blocking,
-    serve_until,
+    AlwaysFreshIdempotencyStore, AppState, ClaimToken, CompletedOutcome, DEFAULT_PROBLEM_BASE_URI,
+    DiagnosticsRunner, IDEMPOTENCY_KEY_HEADER, IdempotencyBegin, IdempotencyCacheKey,
+    IdempotencyConfig, IdempotencyStore, InMemoryIdempotencyStore, InMemoryRateLimitStore,
+    PaginationLimits, PayloadFingerprint, ProblemJson, ProblemPath, ProblemQuery, ProblemSource,
+    RateLimitKey, RateLimitPolicy, RateLimitStore, Readiness, ServeError, ServiceLogFormat,
+    ShutdownSignal, StoreDispatch, WebError, WebSettings, apply_idempotency, build_router,
+    decode_cursor, encode_cursor, install_rate_limit, run_server_blocking, serve_until,
 };
 use serde::Deserialize;
 use tokio::net::TcpListener;
@@ -758,11 +757,11 @@ async fn rate_limit_ops_and_server_state_builder_edges() {
     // ShutdownSignal::exit mappings & run_server_blocking bind error when port is occupied.
     assert_eq!(
         ShutdownSignal::SigInt.exit(),
-        rs_launch_blueprint_core::Exit::SigInt
+        rs_launch_blueprint_web::Exit::SigInt
     );
     assert_eq!(
         ShutdownSignal::SigTerm.exit(),
-        rs_launch_blueprint_core::Exit::SigTerm
+        rs_launch_blueprint_web::Exit::SigTerm
     );
 
     let occupied = TcpListener::bind("127.0.0.1:0").await.unwrap();

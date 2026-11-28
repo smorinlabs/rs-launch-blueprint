@@ -6,19 +6,22 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
+use rs_launch_blueprint::LogLevel;
 #[cfg(not(feature = "otel"))]
-use rs_launch_blueprint::build_scoped_subscriber;
-use rs_launch_blueprint::{LogLevel, Profile, ServiceLogFormat};
+use rs_launch_blueprint_web::build_service_subscriber;
+use rs_launch_blueprint_web::{ServiceLogFormat, ServiceTelemetryProfile};
 use tracing::{info, info_span};
 
 fn repo_root() -> PathBuf {
-    if let Some(dir) = std::env::var_os("CARGO_MANIFEST_DIR") {
-        let candidate = PathBuf::from(dir);
-        if candidate.join("Cargo.toml").is_file() {
-            return candidate;
-        }
+    let manifest_dir = std::env::var_os("CARGO_MANIFEST_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")));
+    if let Some(root) = manifest_dir.parent().and_then(|p| p.parent())
+        && root.join("Dockerfile").is_file()
+    {
+        return root.to_path_buf();
     }
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    manifest_dir
 }
 
 #[derive(Clone, Default)]
@@ -147,8 +150,8 @@ mod otel_disabled {
         let out = Command::new(cargo)
             .args([
                 "tree",
-                "--features",
-                "web",
+                "-p",
+                "rs-launch-blueprint-web",
                 "--edges",
                 "normal",
                 "--prefix",
@@ -156,7 +159,7 @@ mod otel_disabled {
             ])
             .current_dir(repo_root())
             .output()
-            .expect("cargo tree --features web must run");
+            .expect("cargo tree -p rs-launch-blueprint-web must run");
         assert!(
             out.status.success(),
             "cargo tree failed: {}",
@@ -174,12 +177,12 @@ mod otel_disabled {
             );
         }
 
-        // 2. JsonEvent omits trace_id/span_id cleanly when otel feature is not compiled in,
+        // 2. ServiceJsonEvent omits trace_id/span_id cleanly when otel feature is not compiled in,
         //    and warn_if_otlp_env_ignored emits one diagnostic warning when OTLP env is set.
         let buf = CaptureBuf::default();
         let writer = buf.clone();
-        let (sub, _handles) = build_scoped_subscriber(
-            Profile::Service {
+        let (sub, _handles) = build_service_subscriber(
+            ServiceTelemetryProfile {
                 level: LogLevel::Info,
                 format: ServiceLogFormat::Json,
             },
@@ -191,8 +194,8 @@ mod otel_disabled {
             let _e = span.enter();
             info!(status = 200u16, "handled without otel");
         }
-        rs_launch_blueprint::warn_if_otlp_env_ignored(false, None);
-        rs_launch_blueprint::warn_if_otlp_env_ignored(true, Some("http://127.0.0.1:4318"));
+        rs_launch_blueprint_web::warn_if_otlp_env_ignored(false, None);
+        rs_launch_blueprint_web::warn_if_otlp_env_ignored(true, Some("http://127.0.0.1:4318"));
         drop(_guard);
 
         let text = buf.text();
@@ -223,15 +226,17 @@ mod otel_enabled {
     use std::collections::BTreeMap;
     use std::time::Duration;
 
+    use axum::http::{HeaderMap, HeaderValue};
     use httpmock::prelude::*;
     use opentelemetry::global;
     use opentelemetry_http::HeaderExtractor;
     use opentelemetry_sdk::error::OTelSdkResult;
     use opentelemetry_sdk::trace::{SpanData, SpanExporter};
-    use rs_launch_blueprint::{
-        HttpProjectsPort, OtelConfig, OtelInit, ProjectQuery, ProjectsPort, RedactingSpanExporter,
-        Token, build_otel_layer_with_exporter, build_scoped_subscriber_with_otel,
-        init_otel_from_config, inject_trace_context,
+    use rs_launch_blueprint::{ProjectQuery, ProjectsPort, Token};
+    use rs_launch_blueprint_web::{
+        OtelConfig, OtelInit, RedactingSpanExporter, build_otel_layer_with_exporter,
+        build_service_subscriber_with_otel, init_otel_from_config, inject_trace_context,
+        web_http_projects_port,
     };
     use tracing_opentelemetry::OpenTelemetrySpanExt as _;
 
@@ -297,8 +302,8 @@ mod otel_enabled {
 
         let log_buf = CaptureBuf::default();
         let writer = log_buf.clone();
-        let (subscriber, _handles) = build_scoped_subscriber_with_otel(
-            Profile::Service {
+        let (subscriber, _handles) = build_service_subscriber_with_otel(
+            ServiceTelemetryProfile {
                 level: LogLevel::Info,
                 format: ServiceLogFormat::Json,
             },
@@ -306,16 +311,13 @@ mod otel_enabled {
             Some(otel_layer),
         );
 
-        let mut outbound_headers = ureq::http::HeaderMap::new();
+        let mut outbound_headers = HeaderMap::new();
         {
             let _sub_guard = tracing::subscriber::set_default(subscriber);
 
             // Simulate incoming HTTP server span with remote W3C traceparent parent.
-            let mut inbound = ureq::http::HeaderMap::new();
-            inbound.insert(
-                "traceparent",
-                ureq::http::HeaderValue::from_str(&traceparent).unwrap(),
-            );
+            let mut inbound = HeaderMap::new();
+            inbound.insert("traceparent", HeaderValue::from_str(&traceparent).unwrap());
             let parent_cx =
                 global::get_text_map_propagator(|p| p.extract(&HeaderExtractor(&inbound)));
 
@@ -345,8 +347,8 @@ mod otel_enabled {
             );
             inject_trace_context(&mut outbound_headers);
 
-            // Execute a real outbound HTTP call via HttpProjectsPort inside the traced request.
-            let port = HttpProjectsPort::new(
+            // Execute a real outbound HTTP call via web_http_projects_port inside the traced request.
+            let port = web_http_projects_port(
                 mock_server.base_url(),
                 Token::new("sk_test_outbound_secret".to_owned()),
             );
@@ -485,11 +487,11 @@ mod otel_enabled {
             "expected Unavailable for invalid endpoint, got {bad_ep:?}"
         );
 
-        // When OTel layer is None even under `--features otel`, JsonEvent omits trace_id/span_id.
+        // When OTel layer is None even under `--features otel`, ServiceJsonEvent omits trace_id/span_id.
         let buf = CaptureBuf::default();
         let writer = buf.clone();
-        let (sub, _handles) = build_scoped_subscriber_with_otel(
-            Profile::Service {
+        let (sub, _handles) = build_service_subscriber_with_otel(
+            ServiceTelemetryProfile {
                 level: LogLevel::Info,
                 format: ServiceLogFormat::Json,
             },
@@ -511,7 +513,7 @@ mod otel_enabled {
         // Direct RedactingSpanExporter wrapper compiles cleanly on arbitrary SpanExporter.
         let _wrapped = RedactingSpanExporter::new(InMemoryExporter::default());
         let _cfg = OtelConfig::from_process_env(false, Duration::from_secs(2));
-        rs_launch_blueprint::warn_if_otlp_env_ignored(true, Some("http://127.0.0.1:4318"));
+        rs_launch_blueprint_web::warn_if_otlp_env_ignored(true, Some("http://127.0.0.1:4318"));
     }
 
     #[derive(Debug)]
@@ -549,8 +551,8 @@ mod otel_enabled {
 
         let log_buf = CaptureBuf::default();
         let writer = log_buf.clone();
-        let (subscriber, _handles) = build_scoped_subscriber_with_otel(
-            Profile::Service {
+        let (subscriber, _handles) = build_service_subscriber_with_otel(
+            ServiceTelemetryProfile {
                 level: LogLevel::Info,
                 format: ServiceLogFormat::Json,
             },

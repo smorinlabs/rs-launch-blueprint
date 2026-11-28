@@ -18,6 +18,12 @@ if [ ! -d "$dir" ]; then
   exit 2
 fi
 
+# Rule 2 regexes (bash built-in `[[ =~ ]]` avoids ~6,800 per-line grep forks).
+comment_re='^[[:space:]]*#'
+pc_re='(^|[[:space:]{,])persist-credentials[[:space:]]*:'
+flow_re='\{[^#]*persist-credentials[[:space:]]*:'
+reason_re='#[[:space:]]*[^[:space:]]'
+
 status=0
 found_any=0
 
@@ -40,21 +46,24 @@ for file in "$dir"/*.yml "$dir"/*.yaml; do
   while IFS= read -r line || [ -n "$line" ]; do
     lineno=$((lineno + 1))
     # Skip comment-only lines.
-    if printf '%s\n' "$line" | grep -Eq '^[[:space:]]*#'; then
+    if [[ "$line" =~ $comment_re ]]; then
       continue
     fi
-    if ! printf '%s\n' "$line" | grep -Eq '(^|[[:space:]{,])persist-credentials[[:space:]]*:'; then
+    if ! [[ "$line" =~ $pc_re ]]; then
       continue
     fi
     # Reject flow-style mappings containing persist-credentials.
-    if printf '%s\n' "$line" | grep -Eq '\{[^#]*persist-credentials[[:space:]]*:'; then
+    if [[ "$line" =~ $flow_re ]]; then
       printf 'FAIL [R08 flow-style persist-credentials]: %s:%d: use block style for persist-credentials\n' "$file" "$lineno" >&2
       status=1
       continue
     fi
     # Extract value and optional trailing comment.
-    rhs=$(printf '%s\n' "$line" | sed -E 's/^.*persist-credentials[[:space:]]*:[[:space:]]*//')
-    val=$(printf '%s\n' "$rhs" | sed -E 's/[[:space:]]*#.*$//' | sed -E 's/[[:space:]]+$//')
+    rhs="${line#*persist-credentials}"
+    rhs="${rhs#*:}"
+    rhs="${rhs#"${rhs%%[![:space:]]*}"}"
+    val="${rhs%%#*}"
+    val="${val%"${val##*[![:space:]]}"}"
     # Accept false / 'false' / "false" (case-insensitive) unconditionally.
     lower_val=$(printf '%s\n' "$val" | tr '[:upper:]' '[:lower:]')
     case "$lower_val" in
@@ -63,7 +72,7 @@ for file in "$dir"/*.yml "$dir"/*.yaml; do
         ;;
     esac
     # Any other explicit value requires a non-empty trailing `# ...` reason comment.
-    if ! printf '%s\n' "$rhs" | grep -Eq '#[[:space:]]*[^[:space:]]'; then
+    if ! [[ "$rhs" =~ $reason_re ]]; then
       printf 'FAIL [R08 persist-credentials exception]: %s:%d: non-false persist-credentials (%s) requires a trailing reason comment\n' "$file" "$lineno" "$val" >&2
       status=1
     fi

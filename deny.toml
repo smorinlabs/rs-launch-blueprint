@@ -1,4 +1,4 @@
-# Workspace dependency and crate-boundary policy (R02 F008, R58, R67).
+# Workspace dependency and crate-boundary policy (R02 F008, R58, R67, OV-18).
 # Invoke with global `--all-features` first: `cargo deny --all-features check`
 
 [graph]
@@ -33,33 +33,65 @@ allow = [
 [bans]
 multiple-versions = "warn"
 wildcards = "deny"
-# Wrapper entries enforce workspace boundaries (`axum`, `clap`, `clap_complete`, `tracing-subscriber`, `anyhow`).
+# Wrapper entries strictly enforce standalone-library isolation (OV-18, R02 F008, R58, R67):
+# neither `rs-launch-blueprint-core` nor the standalone root library `rs-launch-blueprint` may
+# ever depend on CLI, web, OTel, subscriber, or `anyhow` crates.
 deny = [
     { crate = "axum", wrappers = [
         "rs-launch-blueprint-web",
         "problem_details",
         "utoipa-axum",
-    ], reason = "core and the CLI are framework-agnostic (F008)" },
+    ], reason = "web framework crates belong exclusively to crates/web (R02 F008, OV-18)" },
     { crate = "problem_details", wrappers = [
         "rs-launch-blueprint-web",
     ], reason = "RFC 9457 problem_details is contained to crates/web/src/problems.rs (R70)" },
+    { crate = "utoipa", wrappers = [
+        "rs-launch-blueprint-web",
+        "utoipa-axum",
+    ], reason = "OpenAPI generation belongs exclusively to crates/web (R71, OV-18)" },
     { crate = "clap", wrappers = [
         "rs-launch-blueprint-cli",
-        "rs-launch-blueprint",
+        "rs-launch-blueprint-web",
         "clap_complete",
-    ], reason = "argument parsing belongs to the CLI layer and to the serve binary's required global core (F008)" },
+    ], reason = "CLI argument parsing belongs exclusively to binary crates (R02 F008, OV-18)" },
     { crate = "clap_complete", wrappers = [
         "rs-launch-blueprint-cli",
-    ], reason = "shell completion generation belongs to the CLI crate only (R60)" },
+    ], reason = "shell completion generation belongs to crates/cli only (R60)" },
+    { crate = "inquire", wrappers = [
+        "rs-launch-blueprint-cli",
+    ], reason = "interactive terminal prompting belongs to crates/cli only (R61, OV-18)" },
+    { crate = "indicatif", wrappers = [
+        "rs-launch-blueprint-cli",
+    ], reason = "terminal progress spinners belong to crates/cli only (R63, OV-18)" },
+    { crate = "tabled", wrappers = [
+        "rs-launch-blueprint-cli",
+    ], reason = "terminal table rendering belongs to crates/cli only (R66, OV-18)" },
+    { crate = "arboard", wrappers = [
+        "rs-launch-blueprint-cli",
+    ], reason = "desktop clipboard access belongs to crates/cli only (R62, OV-18)" },
+    { crate = "signal-hook", wrappers = [
+        "rs-launch-blueprint-cli",
+        "crossterm",
+        "signal-hook-mio",
+    ], reason = "OS signal handling belongs to binary entrypoints (and CLI terminal backend crossterm) only (R67, OV-18)" },
     { crate = "tracing-subscriber", wrappers = [
-        "rs-launch-blueprint",
+        "rs-launch-blueprint-cli",
+        "rs-launch-blueprint-web",
         "tracing-opentelemetry",
         "loom",
-    ], reason = "subscriber initialization belongs to the root composition package only (R58); tracing-opentelemetry depends on it for Layer bridging (R78); loom is an inactive cfg(loom) target dep of left-right via metrics-exporter-prometheus (R79)" },
+    ], reason = "subscriber initialization belongs to binary crates only (R58, OV-18); tracing-opentelemetry bridges layers (R78); loom is an inactive cfg(loom) dep of left-right" },
     { crate = "anyhow", wrappers = [
-        "rs-launch-blueprint",
+        "rs-launch-blueprint-cli",
         "prost-derive",
-    ], reason = "library crates return typed errors; anyhow is confined to binary entrypoints (R67); prost-derive uses it at proc-macro compile time under otel (R78)" },
+    ], reason = "library crates return typed thiserror errors; anyhow is confined to binary entrypoints (R67, OV-18); prost-derive uses it at proc-macro compile time under otel" },
+    { crate = "opentelemetry", wrappers = [
+        "rs-launch-blueprint-web",
+        "opentelemetry_sdk",
+        "opentelemetry-otlp",
+        "opentelemetry-http",
+        "opentelemetry-proto",
+        "tracing-opentelemetry",
+    ], reason = "OpenTelemetry SDK belongs exclusively to crates/web (R78, OV-18)" },
 ]
 
 [sources]

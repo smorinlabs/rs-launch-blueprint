@@ -10,7 +10,7 @@ ARG RUNTIME_IMAGE=gcr.io/distroless/cc-debian13:nonroot@sha256:29ee70762214fe819
 FROM ${PROBE_IMAGE} AS probe
 
 FROM ${RUST_IMAGE} AS builder
-ARG CARGO_FEATURES=web
+ARG CARGO_FEATURES=""
 WORKDIR /src
 ENV CARGO_TERM_COLOR=never \
     CARGO_INCREMENTAL=0 \
@@ -18,7 +18,7 @@ ENV CARGO_TERM_COLOR=never \
 COPY . .
 RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
     --mount=type=cache,target=/src/target,sharing=locked \
-    cargo build --release --locked --features "${CARGO_FEATURES}" --bin rslbp-serve \
+    cargo build --release --locked -p rs-launch-blueprint-web --features "${CARGO_FEATURES}" --bin rslbp-serve \
  && install -D -m 0755 target/release/rslbp-serve /out/rslbp-serve
 
 FROM ${RUNTIME_IMAGE}

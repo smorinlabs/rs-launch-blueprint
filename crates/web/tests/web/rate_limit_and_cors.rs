@@ -10,7 +10,7 @@ use std::time::{Duration, Instant};
 use axum::body::Body;
 use axum::extract::ConnectInfo;
 use axum::http::{HeaderValue, Method, Request, StatusCode, header};
-use rs_launch_blueprint_core::{InMemoryProjectsPort, ProjectsPort, ProjectsService};
+use rs_launch_blueprint::{InMemoryProjectsPort, ProjectsPort, ProjectsService};
 use rs_launch_blueprint_web::{
     AppState, InMemoryRateLimitStore, RATE_LIMIT_HEADER, RATE_LIMIT_POLICY_HEADER, REQUEST_ID,
     RETRY_AFTER_HEADER, RateLimitKey, RateLimitPolicy, RateLimitStore, WebSettings, build_router,

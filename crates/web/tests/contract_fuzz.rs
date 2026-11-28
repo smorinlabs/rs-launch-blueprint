@@ -18,7 +18,7 @@ use std::sync::Arc;
 use axum::body::{Body, to_bytes};
 use axum::http::{Method, Request, header};
 use proptest::test_runner::{Config, TestRunner};
-use rs_launch_blueprint_core::{InMemoryProjectsPort, Project, ProjectsPort, ProjectsService};
+use rs_launch_blueprint::{InMemoryProjectsPort, Project, ProjectsPort, ProjectsService};
 use rs_launch_blueprint_web::{
     AppState, OPENAPI_PATH, PROBLEM_CONTENT_TYPE, RateLimitPolicy, WebSettings, build_router,
 };

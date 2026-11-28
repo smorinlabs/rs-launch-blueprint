@@ -12,21 +12,22 @@ use std::sync::Arc;
 
 use anstream::{AutoStream, ColorChoice};
 
-use rs_launch_blueprint_core::{
-    AuthError, ClipboardPort, ColorPreference, ConfigDiscoveryInputs, CreateProjectInput,
-    CredentialStore, DiagnosticsContext, DomainError, ErasedProjectsService, ErrorCode, Exit,
-    FileCredentialStore, LogLevel, OutputFormat, Paths, PortError, ProjectQuery, ProjectsPort,
-    ProjectsService, RecordingClipboard, ResolvedToken, TOKEN_ENV_VAR, Token,
-    TokenResolutionInputs, WRITABLE_KEYS, WorkspaceInfo, get_config_value, load_config,
-    read_config_file_key, resolve_token, run_diagnostics, set_config_value,
-    validate_config_assignment,
+use rs_launch_blueprint::{
+    AuthError, ColorPreference, ConfigDiscoveryInputs, CreateProjectInput, CredentialStore,
+    DiagnosticsContext, DomainError, ErasedProjectsService, ErrorCode, FileCredentialStore,
+    FileLogFormat, LoadedConfig, LogLevel, OutputFormat, Paths, PortError, Project, ProjectQuery,
+    ProjectsPort, ProjectsService, ResolvedToken, TOKEN_ENV_VAR, Token, TokenResolutionInputs,
+    WRITABLE_KEYS, WorkspaceInfo, get_config_value, load_config, read_config_file_key,
+    resolve_token, run_diagnostics, set_config_value, validate_config_assignment,
 };
 
 use crate::args::{
     Cli, Command, ConfigAction, GlobalArgs, ParseShortCircuit, ProjectAction, build_info,
     generate_completion, parse_cli,
 };
+use crate::clipboard::{ClipboardError, ClipboardPort, RecordingClipboard};
 use crate::color::{EnvLookup, ProcessEnv, resolve_color, resolve_stream_color};
+use crate::exit::{Exit, cli_hint_for_domain_error};
 use crate::output::{
     CliView, ConfigPathView, ConfigShowView, ConfigValueView, DiagnosticCheck,
     DiagnosticsBundleView, DiagnosticsReportView, ProjectDeletedView, ProjectListView,
@@ -92,7 +93,7 @@ pub struct ResolvedTelemetryConfig {
     /// Merged `[logging].file` from config files.
     pub config_log_file: Option<PathBuf>,
     /// Merged `[logging].file-format`.
-    pub file_format: rs_launch_blueprint_core::FileLogFormat,
+    pub file_format: FileLogFormat,
     /// Merged `[logging].file-level`.
     pub file_level: Option<LogLevel>,
     /// Resolved `Paths` for default state log file location.
@@ -134,15 +135,31 @@ pub struct CliRuntime<'a> {
     pub allow_spawn_pager: bool,
 }
 
-/// Typed CLI failure returned to the root binary boundary (`R67`: no `anyhow` in `crates/cli`).
+/// Typed CLI failure returned to the binary boundary (`R67`, `OV-18`).
 #[derive(Debug)]
 pub enum CliError {
     /// Benign `BrokenPipe` on the result output stream -> exit `0` silently (`R67` AC5).
     BrokenPipe,
-    /// Typed domain error carrying its own stable `RSLB###` code and `Exit` status.
+    /// Typed domain error carrying its own stable `RSLB###` code.
     Domain {
         /// Underlying domain error.
         error: DomainError,
+        /// Active output format controlling JSON vs human error formatting.
+        format: OutputFormat,
+        /// Resolved stderr color enablement.
+        stderr_color: bool,
+    },
+    /// Clipboard backend failure after primary output succeeded (`RSLB101`, exit `1`, `R62`).
+    Clipboard {
+        /// Underlying clipboard error.
+        error: ClipboardError,
+        /// Active output format controlling JSON vs human error formatting.
+        format: OutputFormat,
+        /// Resolved stderr color enablement.
+        stderr_color: bool,
+    },
+    /// Interactive prompt interrupted by Ctrl-C (`RSLB903`, exit `130`, `R61`, `R67`).
+    PromptInterrupted {
         /// Active output format controlling JSON vs human error formatting.
         format: OutputFormat,
         /// Resolved stderr color enablement.
@@ -166,6 +183,8 @@ impl fmt::Display for CliError {
         match self {
             Self::BrokenPipe => f.write_str("broken pipe"),
             Self::Domain { error, .. } => fmt::Display::fmt(error, f),
+            Self::Clipboard { error, .. } => fmt::Display::fmt(error, f),
+            Self::PromptInterrupted { .. } => f.write_str("prompt interrupted"),
             Self::Unexpected { message, .. } => f.write_str(message),
         }
     }
@@ -175,7 +194,8 @@ impl std::error::Error for CliError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Self::Domain { error, .. } => Some(error),
-            Self::BrokenPipe | Self::Unexpected { .. } => None,
+            Self::Clipboard { error, .. } => Some(error),
+            Self::BrokenPipe | Self::PromptInterrupted { .. } | Self::Unexpected { .. } => None,
         }
     }
 }
@@ -464,7 +484,7 @@ pub fn execute_cli(rt: &mut CliRuntime<'_>, argv: &[OsString]) -> Result<Exit, C
 }
 
 struct DispatchCtx<'a> {
-    loaded: &'a rs_launch_blueprint_core::LoadedConfig,
+    loaded: &'a LoadedConfig,
     active_config_path: &'a Path,
     format: OutputFormat,
     caps: TermCaps,
@@ -538,7 +558,10 @@ fn handle_project(
                     // Defence-in-depth narrowing fallback (R61 table): NotTty proceeds with all rows.
                     Err(PromptError::NotTty) => {}
                     Err(PromptError::Interrupted) => {
-                        return Err(map_domain(DomainError::PromptInterrupted));
+                        return Err(CliError::PromptInterrupted {
+                            format,
+                            stderr_color,
+                        });
                     }
                     Err(PromptError::Io(source)) => {
                         return Err(map_domain(DomainError::Port(PortError::Io { source })));
@@ -584,7 +607,7 @@ fn handle_project(
                         name.trim()
                     );
                 }
-                let preview = rs_launch_blueprint_core::Project {
+                let preview = Project {
                     id: "<dry-run>".to_owned(),
                     name: name.trim().to_owned(),
                     workspace,
@@ -1100,8 +1123,8 @@ fn deliver_output(
         let text = String::from_utf8_lossy(bytes);
         rt.clipboard
             .set_text(&text)
-            .map_err(|err| CliError::Domain {
-                error: DomainError::Clipboard(err),
+            .map_err(|error| CliError::Clipboard {
+                error,
                 format,
                 stderr_color,
             })?;
@@ -1161,8 +1184,12 @@ fn map_prompt_err(
     stderr_color: bool,
 ) -> CliError {
     match err.into_required_domain_error(missing_hint) {
-        Ok(error) => CliError::Domain {
+        Ok(Some(error)) => CliError::Domain {
             error,
+            format,
+            stderr_color,
+        },
+        Ok(None) => CliError::PromptInterrupted {
             format,
             stderr_color,
         },
@@ -1246,6 +1273,23 @@ pub fn emit_cli_error(error: &CliError, stderr: &mut dyn Write) -> Exit {
             format,
             stderr_color,
         } => {
+            let hint = cli_hint_for_domain_error(error);
+            let _ = render_error(
+                error.error_code(),
+                &error.to_string(),
+                hint.as_deref(),
+                *format,
+                *stderr_color,
+                stderr,
+            );
+            let _ = stderr.flush();
+            Exit::from_domain_error(error)
+        }
+        CliError::Clipboard {
+            error,
+            format,
+            stderr_color,
+        } => {
             let hint = error.hint();
             let _ = render_error(
                 error.error_code(),
@@ -1256,7 +1300,22 @@ pub fn emit_cli_error(error: &CliError, stderr: &mut dyn Write) -> Exit {
                 stderr,
             );
             let _ = stderr.flush();
-            error.exit()
+            Exit::from_error_code(error.error_code())
+        }
+        CliError::PromptInterrupted {
+            format,
+            stderr_color,
+        } => {
+            let _ = render_error(
+                ErrorCode::PromptInterrupted,
+                "prompt interrupted",
+                None,
+                *format,
+                *stderr_color,
+                stderr,
+            );
+            let _ = stderr.flush();
+            Exit::SigInt
         }
         CliError::Unexpected {
             message,

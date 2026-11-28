@@ -10,7 +10,7 @@ use axum::http::StatusCode;
 use axum::http::request::Parts;
 use base64::Engine as _;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use rs_launch_blueprint_core::ErrorCode;
+use rs_launch_blueprint::ErrorCode;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 

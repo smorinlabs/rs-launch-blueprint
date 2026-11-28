@@ -5,8 +5,10 @@
 # environment publish job:
 #   1. Tag ancestry on `origin/main` and exact version match across all 4 workspace
 #      `Cargo.toml` manifests and `.release-please-manifest.json` (F074).
-#   2. All 4 first-party R26 packed `.crate` content guards (`scripts/check-packed-artifacts.sh`).
-#   3. `cargo-semver-checks` on the curated library surface including `--features web` (R04).
+#   2. All 3 publishable R26 packed `.crate` content guards (`scripts/check-packed-artifacts.sh`)
+#      plus verification that internal `rs-launch-blueprint-web` stays `publish = false`.
+#   3. `cargo-semver-checks` on both published library crates (`rs-launch-blueprint-core` and
+#      `rs-launch-blueprint`) across all features (R04, OV-18).
 #   4. `cargo publish --workspace --dry-run --locked` (R26 element 3).
 #   5. Credential-preflight gated crates.io publication supporting OIDC Trusted Publishing
 #      (`vars.CRATES_IO_TRUSTED_PUBLISHING == 'true'` + `rust-lang/crates-io-auth-action`)
@@ -99,6 +101,7 @@ jobs:
             [ -n "${tag}" ] || continue
             [ "${tag}" = "${CURRENT_TAG}" ] && continue
             if git cat-file -e "${tag}:Cargo.toml" 2>/dev/null \
+              && git cat-file -e "${tag}:crates/core/Cargo.toml" 2>/dev/null \
               && git cat-file -e "${tag}:src/lib.rs" 2>/dev/null; then
               baseline="${tag}"
               break
@@ -111,14 +114,21 @@ jobs:
             echo "rev=" >> "${GITHUB_OUTPUT}"
             echo "::notice title=cargo-semver-checks baseline::No prior Rust crate release tag found before ${CURRENT_TAG}; skipping baseline comparison for initial crate publication."
           fi
-      - name: Check curated library public API with cargo-semver-checks (R04)
+      - name: Check rs-launch-blueprint-core public API with cargo-semver-checks (R04)
+        if: ${{ steps.semver-baseline.outputs.rev != '' }}
+        uses: obi1kenobi/cargo-semver-checks-action@6b69fcf40e9b5fb17adeb57e4b6ecd020649a239 # v2.9
+        with:
+          package: rs-launch-blueprint-core
+          baseline-rev: ${{ steps.semver-baseline.outputs.rev }}
+          feature-group: all-features
+          rust-toolchain: stable
+      - name: Check rs-launch-blueprint standalone library public API with cargo-semver-checks (R04)
         if: ${{ steps.semver-baseline.outputs.rev != '' }}
         uses: obi1kenobi/cargo-semver-checks-action@6b69fcf40e9b5fb17adeb57e4b6ecd020649a239 # v2.9
         with:
           package: rs-launch-blueprint
           baseline-rev: ${{ steps.semver-baseline.outputs.rev }}
-          feature-group: only-explicit-features
-          features: web
+          feature-group: all-features
           rust-toolchain: stable
       - name: Dry-run workspace crates.io publication (R26 element 3)
         run: cargo publish --workspace --dry-run --locked

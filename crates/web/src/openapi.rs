@@ -28,7 +28,7 @@ pub const OPENAPI_PATH: &str = "/openapi.json";
 
 /// OpenAPI schema representation of a core `Project` (`R01`, `R71`).
 ///
-/// Mirrors [`rs_launch_blueprint_core::Project`] without adding `utoipa` to `crates/core`.
+/// Mirrors [`rs_launch_blueprint::Project`] without adding `utoipa` to `crates/core`.
 #[derive(Debug, Clone, Serialize, ToSchema)]
 #[schema(as = Project)]
 pub struct ProjectSchema {
@@ -42,7 +42,7 @@ pub struct ProjectSchema {
 
 /// OpenAPI schema representation of a core `CreateProjectInput` (`R01`, `R71`).
 ///
-/// Mirrors [`rs_launch_blueprint_core::CreateProjectInput`] without adding `utoipa` to `crates/core`.
+/// Mirrors [`rs_launch_blueprint::CreateProjectInput`] without adding `utoipa` to `crates/core`.
 #[derive(Debug, Clone, Serialize, ToSchema)]
 #[schema(as = CreateProjectInput)]
 pub struct CreateProjectInputSchema {

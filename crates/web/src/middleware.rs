@@ -21,7 +21,7 @@ use axum::http::header::{self, HeaderName, HeaderValue};
 use axum::http::{Response as HttpResponse, StatusCode};
 use axum::middleware::{self, Next};
 use axum::response::{IntoResponse, Response};
-use rs_launch_blueprint_core::ErrorCode;
+use rs_launch_blueprint::ErrorCode;
 use tower_http::catch_panic::{CatchPanicLayer, ResponseForPanic};
 use tower_http::limit::RequestBodyLimitLayer;
 use tower_http::request_id::{MakeRequestUuid, SetRequestIdLayer};

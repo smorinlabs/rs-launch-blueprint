@@ -83,7 +83,7 @@ impl<P: ProjectsPort> ProjectsService<P> {
         if trimmed.is_empty() {
             return Err(DomainError::Usage {
                 message: "project name must not be empty".to_owned(),
-                hint: Some("provide a non-empty --name value".to_owned()),
+                hint: Some("provide a non-empty project name".to_owned()),
             });
         }
         let normalized = CreateProjectInput {

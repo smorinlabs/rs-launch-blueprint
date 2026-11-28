@@ -1,0 +1,12 @@
+# Per-member Clippy value configuration for crates/web (R02 + R28 + OV-18).
+allow-unwrap-in-tests = true
+allow-dbg-in-tests = true
+
+disallowed-methods = [
+    { path = "std::process::exit", reason = "return Exit / ExitCode from main so shutdown flushes cleanly (R67)" },
+]
+
+disallowed-types = [
+    { path = "arboard::Clipboard", reason = "web service must not access desktop clipboard crates (OV-18)" },
+    { path = "inquire::Text", reason = "web service must not run interactive terminal prompts (OV-18)" },
+]

@@ -389,27 +389,203 @@ fn workspace_intra_edges_match_declared_topology() {
     let expected: BTreeMap<String, Vec<String>> = BTreeMap::from([
         (
             "rs-launch-blueprint".to_owned(),
-            vec![
-                "rs-launch-blueprint-cli".to_owned(),
-                "rs-launch-blueprint-core".to_owned(),
-                "rs-launch-blueprint-web[opt]".to_owned(),
-            ],
+            vec!["rs-launch-blueprint-core".to_owned()],
         ),
         (
             "rs-launch-blueprint-cli".to_owned(),
-            vec!["rs-launch-blueprint-core".to_owned()],
+            vec!["rs-launch-blueprint".to_owned()],
         ),
         ("rs-launch-blueprint-core".to_owned(), Vec::new()),
         (
             "rs-launch-blueprint-web".to_owned(),
-            vec!["rs-launch-blueprint-core".to_owned()],
+            vec!["rs-launch-blueprint".to_owned()],
         ),
     ]);
 
     assert_eq!(
         observed, expected,
-        "intra-workspace edge set drifted from R02 contract"
+        "intra-workspace edge set drifted from OV-18 library-first workspace topology"
     );
+}
+
+#[test]
+fn root_external_dependencies_within_allowlist() {
+    // Standalone root library normal dependencies only (OV-18): zero CLI, web, or OTel crates.
+    const ROOT_NORMAL_ALLOWLIST: &[&str] = &[
+        "apple-native-keyring-store",
+        "keyring-core",
+        "linux-keyutils-keyring-store",
+        "rs-launch-blueprint-core",
+        "serde",
+        "serde_json",
+        "tracing",
+        "ureq",
+        "windows-native-keyring-store",
+        "zbus-secret-service-keyring-store",
+        "zeroize",
+    ];
+    const FORBIDDEN_CRATES: &[&str] = &[
+        "anyhow",
+        "arboard",
+        "axum",
+        "clap",
+        "clap_complete",
+        "indicatif",
+        "inquire",
+        "metrics",
+        "opentelemetry",
+        "opentelemetry_sdk",
+        "problem_details",
+        "rs-launch-blueprint-cli",
+        "rs-launch-blueprint-web",
+        "signal-hook",
+        "tabled",
+        "tokio",
+        "tower",
+        "tower-http",
+        "tracing-opentelemetry",
+        "tracing-subscriber",
+        "utoipa",
+    ];
+
+    let meta = cargo_metadata_no_deps().expect("cargo metadata must succeed");
+    let packages = meta
+        .get("packages")
+        .and_then(Json::as_array)
+        .expect("packages array");
+    let root_pkg = packages
+        .iter()
+        .find(|p| p.get("name").and_then(Json::as_str).ok() == Some("rs-launch-blueprint"))
+        .expect("root package must exist");
+    let deps = root_pkg
+        .get("dependencies")
+        .and_then(Json::as_array)
+        .expect("root dependencies array");
+
+    for dep in deps {
+        let name = dep.get("name").and_then(Json::as_str).unwrap();
+        let is_normal = matches!(dep.get("kind"), Ok(Json::Null) | Err(_))
+            || dep.get("kind").and_then(Json::as_str).ok() == Some("normal");
+        assert!(
+            !FORBIDDEN_CRATES.contains(&name),
+            "forbidden CLI/web/OTel dependency `{name}` found in standalone root library rs-launch-blueprint"
+        );
+        if is_normal {
+            assert!(
+                ROOT_NORMAL_ALLOWLIST.contains(&name),
+                "unapproved normal dependency `{name}` in standalone root library rs-launch-blueprint"
+            );
+        }
+    }
+}
+
+#[test]
+fn standalone_library_dependency_trees_contain_zero_cli_or_web_crates() {
+    let cargo = option_env!("CARGO").unwrap_or("cargo");
+    let root = repo_root();
+
+    let forbidden_always = [
+        "anyhow ",
+        "arboard ",
+        "axum ",
+        "clap ",
+        "clap_complete ",
+        "indicatif ",
+        "inquire ",
+        "metrics ",
+        "opentelemetry ",
+        "problem_details ",
+        "rs-launch-blueprint-cli ",
+        "rs-launch-blueprint-web ",
+        "signal-hook ",
+        "tabled ",
+        "tokio ",
+        "tower-http ",
+        "tracing-subscriber ",
+        "utoipa ",
+    ];
+
+    for extra_args in [
+        &["--no-default-features"][..],
+        &[][..],
+        &["--all-features"][..],
+    ] {
+        let mut args = vec![
+            "tree",
+            "-p",
+            "rs-launch-blueprint",
+            "--edges",
+            "normal",
+            "--prefix",
+            "none",
+            "--offline",
+        ];
+        args.extend_from_slice(extra_args);
+        let output = Command::new(cargo)
+            .args(&args)
+            .current_dir(&root)
+            .output()
+            .expect("cargo tree must execute");
+        assert!(
+            output.status.success(),
+            "cargo {args:?} failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let tree = String::from_utf8_lossy(&output.stdout);
+        for crate_prefix in forbidden_always {
+            assert!(
+                !tree.contains(crate_prefix),
+                "standalone library tree ({extra_args:?}) must not contain `{crate_prefix}`:\n{tree}"
+            );
+        }
+        if extra_args == ["--no-default-features"] {
+            for opt_crate in ["ureq ", "toml ", "toml_edit ", "etcetera ", "keyring-core "] {
+                assert!(
+                    !tree.contains(opt_crate),
+                    "--no-default-features library tree must omit optional `{opt_crate}`:\n{tree}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn core_and_root_library_sources_contain_zero_cli_or_web_leaks() {
+    let root = repo_root();
+    let mut files = Vec::new();
+    collect_rs_files(&root.join("crates/core/src"), &mut files).expect("collect core src");
+    collect_rs_files(&root.join("src"), &mut files).expect("collect root src");
+    assert!(!files.is_empty());
+
+    let forbidden_tokens = [
+        "Clipboard",
+        "Idempotency",
+        "ServiceLogFormat",
+        "web_enabled",
+        "run_cli",
+        "rslbp auth login",
+        "--token-file",
+        "std::process::ExitCode",
+        "std::process::exit",
+        "pub enum Exit",
+        "DomainError::PromptInterrupted",
+        "axum::",
+        "clap::",
+        "arboard::",
+        "inquire::",
+        "anyhow::",
+    ];
+
+    for file in files {
+        let content = fs::read_to_string(&file).expect("read library source");
+        for token in forbidden_tokens {
+            assert!(
+                !content.contains(token),
+                "{} contains forbidden CLI/web token `{token}` (OV-18 library isolation)",
+                file.display()
+            );
+        }
+    }
 }
 
 #[test]
@@ -500,31 +676,34 @@ fn workspace_packages_share_fixed_parameters() {
 }
 
 #[test]
-fn root_package_targets_match_r49_and_r69() {
+fn workspace_package_targets_and_publish_settings_match_ov18() {
     let meta = cargo_metadata_no_deps().expect("cargo metadata must succeed");
     let packages = meta
         .get("packages")
         .and_then(Json::as_array)
         .expect("packages array");
-    let root_pkg = packages
-        .iter()
-        .find(|p| p.get("name").and_then(Json::as_str).ok() == Some("rs-launch-blueprint"))
-        .expect("root package must exist");
 
+    let find_pkg = |name: &str| {
+        packages
+            .iter()
+            .find(|p| p.get("name").and_then(Json::as_str).ok() == Some(name))
+            .unwrap_or_else(|| panic!("package `{name}` must exist"))
+    };
+
+    // 1. Root package: standalone [lib] ONLY (zero [[bin]], no default_run, no web/cli features).
+    let root_pkg = find_pkg("rs-launch-blueprint");
     assert_eq!(
-        root_pkg.get("default_run").and_then(Json::as_str).unwrap(),
-        "rslbp",
-        "root package must set default-run = \"rslbp\" alongside rslbp-serve"
+        root_pkg.get("default_run").ok(),
+        Some(&Json::Null),
+        "standalone library root package must not declare default-run"
     );
 
     let targets = root_pkg
         .get("targets")
         .and_then(Json::as_array)
-        .expect("targets array");
-
+        .expect("root targets array");
     let mut lib_targets = Vec::new();
-    let mut bin_targets = BTreeMap::new();
-
+    let mut root_bins = Vec::new();
     for target in targets {
         let name = target.get("name").and_then(Json::as_str).unwrap();
         let src_path = target.get("src_path").and_then(Json::as_str).unwrap();
@@ -539,12 +718,7 @@ fn root_package_targets_match_r49_and_r69() {
             lib_targets.push((name.to_owned(), src_path.to_owned()));
         }
         if kinds.contains(&"bin") {
-            let req: Vec<String> = target
-                .get("required-features")
-                .and_then(Json::as_array)
-                .map(|arr| arr.iter().map(|f| f.as_str().unwrap().to_owned()).collect())
-                .unwrap_or_default();
-            bin_targets.insert(name.to_owned(), (src_path.to_owned(), req));
+            root_bins.push(name.to_owned());
         }
     }
 
@@ -555,29 +729,76 @@ fn root_package_targets_match_r49_and_r69() {
         "lib target path must end with /src/lib.rs, got {}",
         lib_targets[0].1
     );
-
-    assert_eq!(
-        bin_targets.keys().cloned().collect::<Vec<_>>(),
-        vec!["rslbp", "rslbp-serve"],
-        "expected exactly rslbp and rslbp-serve binary targets"
+    assert!(
+        root_bins.is_empty(),
+        "standalone root library must declare zero [[bin]] targets, found {root_bins:?}"
     );
-    assert!(bin_targets["rslbp"].0.ends_with("/src/main.rs"));
-    assert!(bin_targets["rslbp"].1.is_empty());
-    assert!(bin_targets["rslbp-serve"].0.ends_with("/src/bin/serve.rs"));
-    assert_eq!(bin_targets["rslbp-serve"].1, vec!["web"]);
 
     let features = root_pkg
         .get("features")
         .and_then(Json::as_object)
         .expect("features map");
-    let web_feature: Vec<&str> = features
-        .get("web")
-        .and_then(|v| v.as_array().ok())
-        .expect("web feature must be defined")
+    for required_feat in ["default", "http", "config", "mock", "keychain"] {
+        assert!(
+            features.contains_key(required_feat),
+            "root library missing expected feature `{required_feat}`"
+        );
+    }
+    for forbidden_feat in ["web", "metrics", "otel", "clipboard"] {
+        assert!(
+            !features.contains_key(forbidden_feat),
+            "standalone root library must not expose CLI/web feature `{forbidden_feat}`"
+        );
+    }
+
+    // 2. CLI crate owns `rslbp` binary and `default-run = "rslbp"`.
+    let cli_pkg = find_pkg("rs-launch-blueprint-cli");
+    assert_eq!(
+        cli_pkg.get("default_run").and_then(Json::as_str).unwrap(),
+        "rslbp",
+        "CLI crate must set default-run = \"rslbp\""
+    );
+    let cli_bins: Vec<&str> = cli_pkg
+        .get("targets")
+        .and_then(Json::as_array)
+        .unwrap()
         .iter()
-        .map(|v| v.as_str().unwrap())
+        .filter(|t| {
+            t.get("kind")
+                .and_then(Json::as_array)
+                .unwrap()
+                .iter()
+                .any(|k| k.as_str().ok() == Some("bin"))
+        })
+        .map(|t| t.get("name").and_then(Json::as_str).unwrap())
         .collect();
-    assert_eq!(web_feature, vec!["dep:rs-launch-blueprint-web"]);
+    assert_eq!(cli_bins, vec!["rslbp"]);
+
+    // 3. Web crate owns `rslbp-serve` binary and is explicitly `publish = false` (publish == []).
+    let web_pkg = find_pkg("rs-launch-blueprint-web");
+    let web_publish = web_pkg
+        .get("publish")
+        .and_then(Json::as_array)
+        .expect("rs-launch-blueprint-web must set publish = false (empty array in metadata)");
+    assert!(
+        web_publish.is_empty(),
+        "rs-launch-blueprint-web must be unpublishable (publish = false), got {web_publish:?}"
+    );
+    let web_bins: Vec<&str> = web_pkg
+        .get("targets")
+        .and_then(Json::as_array)
+        .unwrap()
+        .iter()
+        .filter(|t| {
+            t.get("kind")
+                .and_then(Json::as_array)
+                .unwrap()
+                .iter()
+                .any(|k| k.as_str().ok() == Some("bin"))
+        })
+        .map(|t| t.get("name").and_then(Json::as_str).unwrap())
+        .collect();
+    assert_eq!(web_bins, vec!["rslbp-serve"]);
 }
 
 #[test]
@@ -646,12 +867,22 @@ fn root_license_files_present_and_no_per_file_license_headers() {
     let root = repo_root();
     for file_name in ["LICENSE", "LICENSE-MIT"] {
         let path = root.join(file_name);
-        let metadata = fs::metadata(&path)
+        let root_bytes = fs::read(&path)
             .unwrap_or_else(|err| panic!("missing root license file {file_name}: {err}"));
         assert!(
-            metadata.len() > 0,
+            !root_bytes.is_empty(),
             "root license file {file_name} must be non-empty"
         );
+        for pkg_dir in ["crates/core", "crates/cli"] {
+            let member_path = root.join(pkg_dir).join(file_name);
+            let member_bytes = fs::read(&member_path).unwrap_or_else(|err| {
+                panic!("missing published crate license file {pkg_dir}/{file_name}: {err}")
+            });
+            assert_eq!(
+                member_bytes, root_bytes,
+                "{pkg_dir}/{file_name} must stay byte-identical to root {file_name}"
+            );
+        }
     }
 
     // Assemble checked phrases so this test file does not contain literal boilerplate lines.
@@ -711,26 +942,6 @@ fn root_license_files_present_and_no_per_file_license_headers() {
             }
         }
     }
-}
-
-#[test]
-fn rslbp_binary_reports_version() {
-    let bin = env!("CARGO_BIN_EXE_rslbp");
-    let output = Command::new(bin)
-        .arg("--version")
-        .output()
-        .expect("rslbp --version must execute");
-    assert!(
-        output.status.success(),
-        "rslbp --version exited with {:?}",
-        output.status
-    );
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    assert_eq!(
-        stdout.trim(),
-        format!("rslbp {}", rs_launch_blueprint::VERSION),
-        "rslbp --version must print `rslbp <VERSION>`"
-    );
 }
 
 #[test]

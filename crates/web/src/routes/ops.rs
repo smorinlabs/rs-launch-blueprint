@@ -13,7 +13,7 @@ use axum::Json;
 use axum::extract::State;
 use axum::http::{HeaderValue, StatusCode, header};
 use axum::response::{IntoResponse, Response};
-use rs_launch_blueprint_core::{Diagnostics, VERSION, draining_diagnostics};
+use rs_launch_blueprint::{Diagnostics, VERSION, draining_diagnostics};
 use serde::Serialize;
 use utoipa::ToSchema;
 use utoipa_axum::router::OpenApiRouter;

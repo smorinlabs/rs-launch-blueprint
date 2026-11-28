@@ -4,15 +4,16 @@
 use std::future::{Future, IntoFuture as _};
 use std::io;
 use std::net::SocketAddr;
+use std::process::ExitCode;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use axum::Router;
 use axum::extract::FromRef;
 use axum::routing::get;
-use rs_launch_blueprint_core::{
-    Diagnostics, ErasedProjectsService, Exit, IdempotencyStore, InMemoryIdempotencyStore,
-    InMemoryProjectsPort, ProjectsPort, ProjectsService,
+use rs_launch_blueprint::{
+    Diagnostics, ErasedProjectsService, ErrorCode, InMemoryProjectsPort, ProjectsPort,
+    ProjectsService,
 };
 use thiserror::Error;
 use tokio::net::TcpListener;
@@ -20,6 +21,7 @@ use tokio::sync::Notify;
 use utoipa::OpenApi as _;
 use utoipa_axum::router::OpenApiRouter;
 
+use crate::idempotency_store::{IdempotencyStore, InMemoryIdempotencyStore};
 use crate::middleware::apply_middleware;
 use crate::openapi::{
     API_DOCUMENT_VERSION, ApiDoc, OPENAPI_PATH, declare_problem_responses, serialize_openapi,
@@ -263,6 +265,51 @@ pub fn openapi_document() -> utoipa::openapi::OpenApi {
 #[must_use]
 pub fn openapi_json() -> String {
     serialize_openapi(&openapi_document())
+}
+
+/// Process exit-code taxonomy for `rslbp-serve` (`R67`, `R69`, `OV-18`).
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Exit {
+    /// Successful completion (`0`).
+    Success = 0,
+    /// Generic runtime, I/O, or startup failure (`1`).
+    Runtime = 1,
+    /// Usage or configuration error (`2`).
+    Usage = 2,
+    /// Interrupted by `SIGINT` (`130`).
+    SigInt = 130,
+    /// Terminated by `SIGTERM` (`143`).
+    SigTerm = 143,
+}
+
+impl Exit {
+    /// Return the numeric POSIX exit code.
+    #[must_use]
+    pub const fn code(self) -> u8 {
+        self as u8
+    }
+
+    /// Map a stable [`ErrorCode`] to its service [`Exit`] status (`R67`).
+    #[must_use]
+    pub const fn from_error_code(code: ErrorCode) -> Self {
+        match code {
+            ErrorCode::Usage
+            | ErrorCode::ConfigUnparsable
+            | ErrorCode::ConfigInvalid
+            | ErrorCode::ProhibitedSecretChannel
+            | ErrorCode::InputUnavailable => Self::Usage,
+            ErrorCode::SigInt | ErrorCode::PromptInterrupted => Self::SigInt,
+            ErrorCode::SigTerm => Self::SigTerm,
+            _ => Self::Runtime,
+        }
+    }
+}
+
+impl From<Exit> for ExitCode {
+    fn from(value: Exit) -> Self {
+        Self::from(value.code())
+    }
 }
 
 /// OS termination signal observed by [`shutdown_signal`] (`R69`, `R67`).

@@ -8,7 +8,9 @@ use axum::extract::State;
 use axum::http::{HeaderValue, StatusCode, Uri, header};
 use axum::middleware;
 use axum::response::{IntoResponse, Response};
-use rs_launch_blueprint_core::{CreateProjectInput, ErasedProjectsService, ProjectQuery};
+use rs_launch_blueprint::{
+    CreateProjectInput, DomainError, ErasedProjectsService, ErrorCode, ProjectQuery,
+};
 use utoipa_axum::router::{OpenApiRouter, UtoipaMethodRouter};
 use utoipa_axum::routes;
 
@@ -34,7 +36,7 @@ fn extract_workspace_filter(uri: &Uri, base_uri: &str) -> Result<Option<String>,
                 return Err(WebError::framework(
                     StatusCode::BAD_REQUEST,
                     "invalid_query_parameter",
-                    rs_launch_blueprint_core::ErrorCode::Usage,
+                    ErrorCode::Usage,
                     "Duplicate 'workspace' query parameter.",
                     base_uri,
                     Some(uri.path()),
@@ -53,7 +55,7 @@ fn extract_workspace_filter(uri: &Uri, base_uri: &str) -> Result<Option<String>,
 async fn run_blocking<T, F>(base_uri: &str, path: &str, op: F) -> Result<T, WebError>
 where
     T: Send + 'static,
-    F: FnOnce() -> Result<T, rs_launch_blueprint_core::DomainError> + Send + 'static,
+    F: FnOnce() -> Result<T, DomainError> + Send + 'static,
 {
     let current_span = tracing::Span::current();
     tokio::task::spawn_blocking(move || current_span.in_scope(op))

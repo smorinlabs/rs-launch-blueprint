@@ -1,0 +1,11 @@
+# Per-member Clippy value configuration for crates/cli (R02 + R28 + OV-18).
+allow-unwrap-in-tests = true
+allow-dbg-in-tests = true
+
+disallowed-methods = [
+    { path = "std::process::exit", reason = "return Exit / ExitCode from main so buffers flush cleanly (R67)" },
+]
+
+disallowed-types = [
+    { path = "axum::Router", reason = "CLI crate must not depend on web framework types (R02, OV-18)" },
+]

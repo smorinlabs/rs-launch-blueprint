@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# check-packed-artifacts.sh — enforce all four R26 packed `.crate` content guards.
+# check-packed-artifacts.sh — enforce all four R26 packed `.crate` content guards plus OV-18
+# publish-boundary verification.
 #
-# For each publishable workspace package:
+# For each publishable workspace package (`rs-launch-blueprint-core`, `rs-launch-blueprint`,
+# `rs-launch-blueprint-cli`):
 #   Guard 4 (manifest allow-list): `[package] include` is declared and `exclude` is absent.
 #   Guard 1 (F039 file-set diff): `cargo package -p <pkg> --list --no-verify --offline --locked`
 #           matches byte-sorted `ci/expected-packed-files/<pkg>.txt`.
-#   Guard 2 (F078 packaged-metadata): `cargo package --workspace` aborts on nonzero exit
+#   Guard 2 (F078 packaged-metadata): `cargo package` aborts on nonzero exit
 #           (preventing stale-archive reads), then verifies:
 #           (a) scoped stderr grep detects pruned lib/bin/build targets or include+exclude;
 #           (b) extracted `.crate` target set `{name, kind}` matches
@@ -14,6 +16,9 @@
 #           (d) publish-facing metadata projection from source equals extracted archive.
 #   (Guard 3, `cargo publish --workspace --dry-run --locked`, runs as the final verify
 #    step in `.github/workflows/publish.yml`.)
+#
+# Also asserts that private deployment crates (`rs-launch-blueprint-web`) declare `publish = false`
+# (`publish == []` in `cargo metadata`).
 set -euo pipefail
 
 allow_dirty=0
@@ -50,15 +55,18 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-all_workspace_packages=(
+publishable_workspace_packages=(
   rs-launch-blueprint-core
-  rs-launch-blueprint-cli
-  rs-launch-blueprint-web
   rs-launch-blueprint
+  rs-launch-blueprint-cli
+)
+
+non_publishable_workspace_packages=(
+  rs-launch-blueprint-web
 )
 
 if [ "${#packages[@]}" -eq 0 ]; then
-  packages=("${all_workspace_packages[@]}")
+  packages=("${publishable_workspace_packages[@]}")
 fi
 
 if ! command -v jq >/dev/null 2>&1; then
@@ -68,6 +76,15 @@ fi
 
 meta_json=$(cargo metadata --no-deps --format-version 1 --offline --locked)
 target_dir=$(jq -r '.target_directory' <<<"$meta_json")
+
+# Verify private deployment crates declare `publish = false` (`publish == []` in cargo metadata).
+for private_pkg in "${non_publishable_workspace_packages[@]}"; do
+  pub_field=$(jq -c --arg pkg "$private_pkg" '.packages[] | select(.name == $pkg) | .publish' <<<"$meta_json")
+  if [ "$pub_field" != "[]" ]; then
+    echo "FAIL [OV-18]: private deployment crate '${private_pkg}' must declare publish = false (got publish=${pub_field})" >&2
+    exit 1
+  fi
+done
 
 workdir=$(mktemp -d)
 trap 'rm -rf "$workdir"' EXIT
@@ -140,16 +157,19 @@ PY
 done
 
 # Guard 2 (F078): remove any prior `.crate` archives so a failed pack can never leave a stale
-# archive behind (R26 row 10), then pack the workspace once so Cargo resolves sibling workspace
-# path+version dependencies locally even before first crates.io publication.
-for pkg in "${all_workspace_packages[@]}"; do
+# archive behind (R26 row 10), then pack all publishable workspace crates together so Cargo
+# resolves sibling workspace path+version dependencies locally even before first crates.io release.
+for pkg in "${publishable_workspace_packages[@]}"; do
   pkg_version=$(jq -r --arg pkg "$pkg" '.packages[] | select(.name == $pkg) | .version' <<<"$meta_json")
   if [ -n "$pkg_version" ]; then
     rm -f "${target_dir}/package/${pkg}-${pkg_version}.crate"
   fi
 done
 
-pack_args=(package --workspace --locked)
+pack_args=(package --locked)
+for pkg in "${publishable_workspace_packages[@]}"; do
+  pack_args+=(-p "$pkg")
+done
 if [ "$allow_dirty" -eq 1 ]; then
   pack_args+=(--allow-dirty)
 fi
@@ -163,7 +183,7 @@ fi
 stderr_log="${workdir}/workspace-package.stderr.log"
 if ! cargo "${pack_args[@]}" 2>"$stderr_log"; then
   cat "$stderr_log" >&2
-  echo "FAIL [R26]: cargo package --workspace failed; aborting before archive inspection" >&2
+  echo "FAIL [R26]: cargo package failed; aborting before archive inspection" >&2
   exit 1
 fi
 

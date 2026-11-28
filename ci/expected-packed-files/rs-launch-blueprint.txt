@@ -6,14 +6,8 @@ Cargo.toml.orig
 LICENSE
 LICENSE-MIT
 README.md
-src/bin/serve.rs
-src/clipboard_adapter.rs
 src/composition.rs
-src/crash_sink.rs
 src/http_adapter.rs
 src/internal.rs
 src/keychain.rs
 src/lib.rs
-src/main.rs
-src/otel.rs
-src/telemetry.rs

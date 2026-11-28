@@ -1,4 +1,5 @@
-//! CLI binary entrypoint (`rslbp`) for `rs-launch-blueprint` (`R58`, `R59`, `R62`, `R67`).
+//! CLI binary entrypoint (`rslbp`) for `rs-launch-blueprint` (`R58`, `R59`, `R62`, `R67`,
+//! `OV-18`).
 //!
 //! Owns process-wide signal registration (`SIGINT` -> 130, `SIGTERM` -> 143), telemetry
 //! initialization, the `anyhow` error boundary, and best-effort `0600` crash record persistence.
@@ -16,14 +17,14 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 
 use rs_launch_blueprint::{
-    ArboardClipboard, CrashSink, DEFAULT_API_BASE_URL, Exit, FileCrashSink, HttpProjectsPort,
-    LevelLadderInput, LogFormat, LogLevel, NoopCrashSink, Paths, Profile, ProjectsPort,
-    TelemetryInit, Token, init_telemetry, resolve_binary_boundary, resolve_console_level,
-    resolve_log_file, resolve_log_format, run_clipboard_daemon,
+    ColorPreference, DEFAULT_API_BASE_URL, HttpProjectsPort, LogLevel, Paths, ProjectsPort, Token,
 };
 use rs_launch_blueprint_cli::{
-    CliRuntime, EnvLookup, InquirePrompter, LogFormatArg, ProcessEnv, ResolvedTelemetryConfig,
-    TerminalState, execute_cli, is_clipboard_daemon_argv, resolve_color, resolve_stream_color,
+    ArboardClipboard, CliRuntime, CliTelemetryProfile, CrashSink, EnvLookup, Exit, FileCrashSink,
+    InquirePrompter, LevelLadderInput, LogFormat, LogFormatArg, NoopCrashSink, ProcessEnv,
+    ResolvedTelemetryConfig, TelemetryInit, TerminalState, execute_cli, init_telemetry,
+    is_clipboard_daemon_argv, resolve_binary_boundary, resolve_color, resolve_console_level,
+    resolve_log_file, resolve_log_format, resolve_stream_color, run_clipboard_daemon,
     sniff_initial_log_settings,
 };
 
@@ -61,14 +62,10 @@ fn main() -> ExitCode {
         LogFormatArg::Json => LogFormat::Json,
     });
     let initial_log_format = resolve_log_format(flag_log_fmt, env_log_fmt);
-    let initial_color_choice = resolve_color(
-        None,
-        rs_launch_blueprint::ColorPreference::Auto,
-        &env_lookup,
-    );
+    let initial_color_choice = resolve_color(None, ColorPreference::Auto, &env_lookup);
     let initial_stderr_color =
         resolve_stream_color(initial_color_choice, stderr_is_tty, &env_lookup);
-    let telemetry_handles = match init_telemetry(Profile::Cli {
+    let telemetry_handles = match init_telemetry(CliTelemetryProfile {
         format: initial_log_format,
         level: if debug_hint {
             LogLevel::Trace

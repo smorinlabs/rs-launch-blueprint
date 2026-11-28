@@ -10,12 +10,12 @@ emit structured, redacted diagnostics out of the box.
 The Cargo workspace separates domain logic from front-end adapters (`R01`,
 `R02`, `R05`):
 
-| Package / Path        | Crate Name                 | Role                                                                                        |
-| --------------------- | -------------------------- | ------------------------------------------------------------------------------------------- |
-| `crates/core/`        | `rs-launch-blueprint-core` | Pure synchronous domain models, `ProjectsPort`, `ProjectsService`, config, secrets, errors. |
-| `crates/cli/`         | `rs-launch-blueprint-cli`  | Thin presentation layer: `clap` grammar, output renderers, color, pager, prompter, spinner. |
-| `crates/web/`         | `rs-launch-blueprint-web`  | Optional Axum HTTP adapter (`--features web`). See [EXAMPLEWEB.md](EXAMPLEWEB.md).          |
-| `Cargo.toml` / `src/` | `rs-launch-blueprint`      | Root library facade, composition root, `ureq` HTTP adapter, `tracing` init, `rslbp` binary. |
+| Package / Path        | Crate Name                 | Role                                                                                                        |
+| --------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `crates/core/`        | `rs-launch-blueprint-core` | Pure synchronous domain models, `ProjectsPort`, `ProjectsService`, config (`config`), secrets, errors.      |
+| `Cargo.toml` / `src/` | `rs-launch-blueprint`      | Standalone `[lib]`-only Rust library: `HttpProjectsPort` (`http`), optional `keychain`, curated facade.     |
+| `crates/cli/`         | `rs-launch-blueprint-cli`  | Published CLI binary (`rslbp`): `clap`, renderers, color, pager, prompter, clipboard, crash sink, logs.     |
+| `crates/web/`         | `rs-launch-blueprint-web`  | Optional internal Axum HTTP service (`publish = false`, `rslbp-serve`). See [EXAMPLEWEB.md](EXAMPLEWEB.md). |
 
 Every command operates on typed `crates/core` models (`Project`, `Diagnostics`,
 `ValidConfig`) that serialize directly to JSON and render through `crates/cli`

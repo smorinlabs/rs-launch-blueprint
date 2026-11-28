@@ -2,7 +2,9 @@
 Cargo.lock
 Cargo.toml
 Cargo.toml.orig
-src/clipboard.rs
+LICENSE
+LICENSE-MIT
+README.md
 src/config/discovery.rs
 src/config/loader.rs
 src/config/mod.rs
@@ -11,7 +13,6 @@ src/config/validate.rs
 src/config/writer.rs
 src/diagnostics.rs
 src/error.rs
-src/idempotency.rs
 src/lib.rs
 src/metadata.rs
 src/models.rs

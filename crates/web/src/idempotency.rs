@@ -18,12 +18,13 @@ use axum::http::{Method, StatusCode};
 use axum::middleware::{self, Next};
 use axum::response::{IntoResponse, Response};
 use http_body::{Body as HttpBody, Frame};
-use rs_launch_blueprint_core::{
-    CachedResponse, ClaimToken, CompletedOutcome, ErrorCode, IdempotencyBegin, IdempotencyCacheKey,
-    IdempotencyStore, PayloadFingerprint, PortError,
-};
+use rs_launch_blueprint::{ErrorCode, PortError};
 use sha2::{Digest, Sha256};
 
+use crate::idempotency_store::{
+    CachedResponse, ClaimToken, CompletedOutcome, IdempotencyBegin, IdempotencyCacheKey,
+    IdempotencyStore, PayloadFingerprint,
+};
 use crate::problems::{WebError, parse_query_pairs};
 
 /// Request header carrying the caller-supplied idempotency token (`R73`).

@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use axum::body::Body;
 use axum::http::{Request, StatusCode, header};
-use rs_launch_blueprint_core::{InMemoryProjectsPort, Project, ProjectsPort, ProjectsService};
+use rs_launch_blueprint::{InMemoryProjectsPort, Project, ProjectsPort, ProjectsService};
 use rs_launch_blueprint_web::{AppState, WebSettings, build_router};
 use tower::ServiceExt;
 
