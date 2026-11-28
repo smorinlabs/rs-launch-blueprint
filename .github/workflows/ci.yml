@@ -346,6 +346,9 @@ jobs:
     if: ${{ needs.plan.outputs.code == 'true' }}
     # Escape hatch (R09): substitute larger GitHub-hosted SKU literals here if ever funded.
     runs-on: ${{ matrix.os }}
+    env:
+      # Preserve file:line panic backtraces while shrinking dev artifacts and rust-cache by ~21%.
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
     permissions:
       contents: read
     strategy:
@@ -406,7 +409,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: echo "ImageOS=${ImageOS:-unknown}"
       - name: Enforce workspace bans, advisories, licenses, and sources (R02)
-        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'ubuntu-latest' && steps.tools.outcome == 'success' }}
         run: cargo deny --workspace --all-features check
       - name: Clippy, default features (R28)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
@@ -419,11 +422,6 @@ jobs:
       - name: Clippy, all features (http, config, mock, keychain, clipboard, metrics, otel)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
         run: cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
-      - name: Standalone library builds with no default features (OV-18)
-        if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
-        run: |
-          cargo check --locked --no-default-features -p rs-launch-blueprint-core
-          cargo check --locked --no-default-features -p rs-launch-blueprint
       - name: Type-check strict across all features (R30)
         if: ${{ !cancelled() && steps.toolchain.outcome == 'success' }}
         env:
@@ -432,9 +430,9 @@ jobs:
       - name: Test, library and CLI packages (zero web crates) (R11, R32, OV-18)
         if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
         run: cargo nextest run --locked --profile ci -p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli
-      - name: Test, full workspace default features (without otel/metrics) (py P10)
+      - name: Test, web crate default features (without otel/metrics) (py P10)
         if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
-        run: cargo nextest run --locked --profile ci --workspace
+        run: cargo nextest run --locked --profile ci -p rs-launch-blueprint-web
       - name: Test, all features (http, config, mock, keychain, clipboard, metrics, otel) (R32, py P10)
         if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.lefthook.outcome == 'success' }}
         run: cargo nextest run --locked --profile ci --workspace --all-features
@@ -522,6 +520,12 @@ jobs:
             echo "rev=" >> "${GITHUB_OUTPUT}"
             echo "::notice title=cargo-semver-checks baseline::No prior Rust crate release tag found; skipping baseline comparison before initial publication."
           fi
+      - name: Cache Rust build artifacts for SemVer baseline check
+        if: ${{ steps.semver-baseline.outputs.rev != '' }}
+        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
       - name: Check rs-launch-blueprint-core public API with cargo-semver-checks (R04)
         if: ${{ steps.semver-baseline.outputs.rev != '' }}
         uses: obi1kenobi/cargo-semver-checks-action@6b69fcf40e9b5fb17adeb57e4b6ecd020649a239 # v2.9

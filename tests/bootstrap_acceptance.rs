@@ -656,7 +656,10 @@ mod live {
         let scratch = TempDir::new("p12-bootstrap-acceptance");
         let press = provision_press_bin(&root, scratch.path());
         let child = scratch.path().join("harbor-sample");
-        let child_target = scratch.path().join("cargo-target");
+        let child_target = env::var_os("RSLBP_BOOTSTRAP_TARGET_DIR")
+            .filter(|v| !v.is_empty())
+            .map(PathBuf::from)
+            .unwrap_or_else(|| scratch.path().join("cargo-target"));
         fs::create_dir_all(&child).expect("create child dir");
 
         copy_tracked_tree(&root, &child);

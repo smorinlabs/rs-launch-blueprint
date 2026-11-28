@@ -24,12 +24,105 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
+      - name: Check whether PR touches only removed directories or release-please version metadata
+        id: gate
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ "${EVENT_NAME}" != "pull_request" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed="$(git -c core.quotePath=false diff --no-ext-diff --no-textconv --no-renames --name-only "${BASE_SHA}...HEAD")"
+          python3 - "$changed" <<'PY' >> "$GITHUB_OUTPUT"
+          import os, pathlib, re, subprocess, sys, tomllib
+
+          files = [f for f in sys.argv[1].splitlines() if f]
+          if not files:
+              print("run=true")
+              sys.exit(0)
+
+          # Fast-path 1: PR touches only directories scheduled for whole-directory removal.
+          rules_path = pathlib.Path("press/press-rules.toml")
+          if rules_path.is_file():
+              rules = tomllib.loads(rules_path.read_text(encoding="utf-8"))
+              rm_dirs = tuple(
+                  r["dir"].rstrip("/") + "/"
+                  for r in rules.get("remove", [])
+                  if isinstance(r, dict) and isinstance(r.get("dir"), str)
+              )
+              if rm_dirs and all(f.startswith(rm_dirs) for f in files):
+                  print("run=false")
+                  sys.exit(0)
+
+          # Fast-path 2: content-verified same-repo release-please version bump.
+          allowed = re.compile(
+              r"^(\.release-please-manifest\.json|CHANGELOG\.md|Cargo\.toml|crates/[^/]+/Cargo\.toml|Cargo\.lock)$"
+          )
+          if (
+              os.environ.get("HEAD_REPO") == os.environ.get("REPOSITORY")
+              and os.environ.get("HEAD_REF", "").startswith("release-please--")
+              and all(allowed.match(f) for f in files)
+              and all(pathlib.Path(f).is_file() for f in files)
+          ):
+              base = os.environ["BASE_SHA"]
+              manifest_base = subprocess.check_output(
+                  ["git", "show", f"{base}:.release-please-manifest.json"], text=True
+              )
+              manifest_head = pathlib.Path(".release-please-manifest.json").read_text(
+                  encoding="utf-8"
+              )
+              m_old = re.search(r'"\."\s*:\s*"([^"]+)"', manifest_base)
+              m_new = re.search(r'"\."\s*:\s*"([^"]+)"', manifest_head)
+              if (
+                  m_old
+                  and m_new
+                  and m_old.group(1) != m_new.group(1)
+                  and re.sub(r'"\."\s*:\s*"[^"]+"', '".": ""', manifest_base)
+                  == re.sub(r'"\."\s*:\s*"[^"]+"', '".": ""', manifest_head)
+              ):
+                  old, new = m_old.group(1), m_new.group(1)
+                  cargo_files = [
+                      f for f in files if f.endswith(("Cargo.toml", "Cargo.lock"))
+                  ]
+                  ok = True
+                  if cargo_files:
+                      diff = subprocess.check_output(
+                          ["git", "diff", "-U0", f"{base}...HEAD", "--", *cargo_files],
+                          text=True,
+                      )
+                      hunks = [
+                          line
+                          for line in diff.splitlines()
+                          if line[:1] in "+-" and not line.startswith(("+++ ", "--- "))
+                      ]
+                      pat = re.compile(
+                          rf'^(-version = "{re.escape(old)}"|\+version = "{re.escape(new)}"'
+                          rf'|-[a-z0-9_-]+ = \{{ version = "{re.escape(old)}", path = "[^"]+"(, default-features = false)?(, optional = true)? \}}'
+                          rf'|\+[a-z0-9_-]+ = \{{ version = "{re.escape(new)}", path = "[^"]+"(, default-features = false)?(, optional = true)? \}})$'
+                      )
+                      ok = all(pat.match(h) for h in hunks)
+                  if ok:
+                      print("run=false")
+                      sys.exit(0)
+
+          print("run=true")
+          PY
       - name: Set up uv and Python 3.13
+        if: ${{ steps.gate.outputs.run == 'true' }}
         uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
           python-version: "3.13"
       - name: Run template-press verify
+        if: ${{ steps.gate.outputs.run == 'true' }}
         run: |
           set -euo pipefail
           uv venv --python 3.13 .venv

@@ -12,6 +12,8 @@ if [ ! -d "$dir" ]; then
   exit 2
 fi
 
+comment_re='^[[:space:]]*#'
+sha_uses_re='^[[:space:]]*(-[[:space:]]+)?uses:[[:space:]]*[^#]*@[0-9a-f]{40}([[:space:]]|$|#)'
 pin_re='@[0-9a-f]{40}[[:space:]]+#[[:space:]]v?[0-9]+(\.[0-9]+)*[[:space:]]*$'
 status=0
 found_any=0
@@ -24,12 +26,12 @@ for file in "$dir"/*.yml "$dir"/*.yaml; do
   while IFS= read -r line || [ -n "$line" ]; do
     lineno=$((lineno + 1))
     # Skip comment-only lines.
-    if printf '%s\n' "$line" | grep -Eq '^[[:space:]]*#'; then
+    if [[ "$line" =~ $comment_re ]]; then
       continue
     fi
     # Match active `uses:` clauses that carry a 40-hex SHA pin.
-    if printf '%s\n' "$line" | grep -Eq '^[[:space:]]*(-[[:space:]]+)?uses:[[:space:]]*[^#]*@[0-9a-f]{40}([[:space:]]|$|#)'; then
-      if ! printf '%s\n' "$line" | grep -Eq "$pin_re"; then
+    if [[ "$line" =~ $sha_uses_re ]]; then
+      if ! [[ "$line" =~ $pin_re ]]; then
         printf 'FAIL [R20 pin comment]: %s:%d: SHA-pinned uses clause must end with "# vX.Y.Z" (matching %s): %s\n' \
           "$file" "$lineno" "$pin_re" "$line" >&2
         status=1
