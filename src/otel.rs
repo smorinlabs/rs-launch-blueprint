@@ -225,6 +225,11 @@ fn build_layer_from_provider(
 
 /// Build an OpenTelemetry bridge layer and guard backed by a custom [`SpanExporter`] wrapped in
 /// [`RedactingSpanExporter`] using a synchronous simple processor for hermetic tests (`R78`).
+///
+/// When tests install scoped subscribers with `tracing::subscriber::set_default` in a single
+/// multi-threaded `cargo test` process (such as under `cargo-llvm-cov`), serialize those tests
+/// with a mutex (or run under process-isolated `cargo-nextest`) so `tracing-core` cannot drop an
+/// `OpenTelemetryLayer`'s `SdkTracerProvider` while holding `LOCKED_DISPATCHERS`.
 #[must_use]
 pub fn build_otel_layer_with_exporter<E>(
     service_name: &str,

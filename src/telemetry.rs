@@ -1166,6 +1166,11 @@ where
 
 /// Build an isolated subscriber with an optional OpenTelemetry layer attached to the R58/R78
 /// extension slot (`otel` feature required).
+///
+/// When attaching an OpenTelemetry layer inside a multi-threaded `cargo test` binary, serialize
+/// tests that call `tracing::subscriber::set_default` (or run under process-isolated
+/// `cargo-nextest`) to avoid a `tracing-core` / `opentelemetry_sdk` re-entrant drop deadlock on
+/// `LOCKED_DISPATCHERS`.
 #[cfg(feature = "otel")]
 #[must_use]
 pub fn build_scoped_subscriber_with_otel<M>(
