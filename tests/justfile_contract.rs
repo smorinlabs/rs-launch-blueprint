@@ -121,6 +121,12 @@ fn justfile_lists_required_p04_recipes() {
         "install-blaze",
         "serve",
         "serve-once",
+        "export-openapi",
+        "check-openapi",
+        "api-breaking",
+        "test-contract",
+        "generate-client",
+        "docker-web",
     ] {
         assert!(
             recipes.contains(&required),

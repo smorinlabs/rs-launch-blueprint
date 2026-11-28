@@ -14,6 +14,8 @@ cargo_binstall_version := "1.23.0"
 ubi_cli_version := "0.12.0"
 lefthook_version := "2.1.14"
 committed_version := "1.1.11"
+openapi_to_rust_version := "0.17.0"
+oasdiff_version := "v1.32.1"
 rustup_components := "rustfmt clippy llvm-tools-preview"
 cargo_tools := "cargo-deny:cargo-deny@0.20.2 cargo-nextest:cargo-nextest@0.9.146 cargo-insta:cargo-insta@1.48.0 cargo-llvm-cov:cargo-llvm-cov@0.9.1 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0"
 ubi_tools := "lefthook:ubi:evilmartians/lefthook@v2.1.14 gitleaks:ubi:gitleaks/gitleaks@v8.30.1 editorconfig-checker:ubi:editorconfig-checker/editorconfig-checker@v4.0.2 actionlint:ubi:rhysd/actionlint@v1.7.12"
@@ -287,11 +289,12 @@ check-large-files:
 check-lockfile:
     bash scripts/check-cargo-lock.sh --all
 
-# Run Clippy check-only across workspace targets with feature off and --features web (R28)
+# Run Clippy check-only across workspace targets with default, --features web, and --all-features (R28)
 [group('dev')]
 lint:
     cargo clippy --workspace --all-targets --locked -- -D warnings
     cargo clippy --workspace --all-targets --locked --features web -- -D warnings
+    cargo clippy --workspace --all-targets --locked --all-features -- -D warnings
 
 alias l := lint
 
@@ -308,11 +311,12 @@ typecheck:
 
 alias tc := typecheck
 
-# Run workspace unit, integration, and doc tests with cargo-nextest (R32 rev 3)
+# Run workspace unit, integration, and doc tests with cargo-nextest (R32 rev 3; covers web-only and all-features)
 [group('test'), group('dev')]
 test *options:
     cargo nextest run --locked --workspace --features web {{options}}
-    cargo test --doc --locked --workspace --features web
+    cargo nextest run --locked --workspace --all-features {{options}}
+    cargo test --doc --locked --workspace --all-features
 
 alias t := test
 
@@ -320,6 +324,11 @@ alias t := test
 [group('test')]
 test-slow:
     cargo nextest run --locked --workspace --features web --run-ignored only -E 'test(/(^|::)slow::/)'
+
+# Run R83 OpenAPI 3.1 contract-fuzzing proptest suite (excluded from default fast run)
+[group('test'), group('web')]
+test-contract:
+    cargo nextest run --locked --workspace --features web --test contract_fuzz --run-ignored all
 
 # Run ignored live tests only (R32 M5)
 [group('test')]
@@ -329,8 +338,8 @@ test-live:
 # Run all workspace tests including slow, live, and doc tests (R32 rev 3)
 [group('test')]
 test-all:
-    cargo nextest run --locked --workspace --features web --run-ignored all
-    cargo test --doc --locked --workspace --features web
+    cargo nextest run --locked --workspace --all-features --run-ignored all
+    cargo test --doc --locked --workspace --all-features
 
 # One instrumented run, three reports, gate last so the reports exist when it fails (R35).
 # Every report line carries --workspace: without it, report measures the root package only.
@@ -451,6 +460,83 @@ serve-once *args:
     exec cargo run --features web --bin {{app_name}}-serve
 
 # ================================
+# OPENAPI CONTRACTS, CLIENT GEN & CONTAINER IMAGE (R51, R71, R84)
+# ================================
+
+# Regenerate the committed OpenAPI 3.1 contract snapshot at openapi/openapi.json (R71 F332)
+[group('web'), group('build')]
+export-openapi:
+    mkdir -p openapi
+    EXPECTORATE=overwrite cargo test --locked --workspace --features web --test openapi openapi_snapshot_is_current
+
+# Verify zero drift between code and committed openapi/openapi.json plus F307/F312 invariants (R71)
+[group('web'), group('test')]
+check-openapi:
+    cargo nextest run --locked --workspace --features web --test openapi
+
+# Compare working openapi/openapi.json against a base ref with oasdiff (R71 F333)
+[group('web'), group('test')]
+api-breaking base="origin/main":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v oasdiff >/dev/null 2>&1; then
+        echo "oasdiff {{oasdiff_version}} not found on PATH — install from https://github.com/oasdiff/oasdiff/releases/tag/{{oasdiff_version}}" >&2
+        exit 1
+    fi
+    if ! git cat-file -e "{{base}}:openapi/openapi.json" 2>/dev/null; then
+        echo "base ref {{base}} has no openapi/openapi.json; this branch introduces the contract"
+        exit 0
+    fi
+    mkdir -p target
+    git show "{{base}}:openapi/openapi.json" > target/openapi.base.json
+    oasdiff breaking target/openapi.base.json openapi/openapi.json \
+        --allow-external-refs=false \
+        --fail-on ERR \
+        --severity-levels openapi/oasdiff-levels.txt \
+        --err-ignore openapi/breaking-accepted.txt
+
+# Generate a standalone typed async Rust client from openapi/openapi.json using pinned openapi-to-rust (R84, OV-11)
+[group('web'), group('build')]
+generate-client:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v openapi-to-rust >/dev/null 2>&1; then
+        echo "openapi-to-rust {{openapi_to_rust_version}} not found on PATH — install with: just install-tool openapi-to-rust@{{openapi_to_rust_version}}" >&2
+        exit 1
+    fi
+    rm -rf clients/rust
+    openapi-to-rust generate --config openapi-to-rust.toml --quiet
+    printf '%s\n' \
+        '[package]' \
+        'name = "rs-launch-blueprint-client"' \
+        'version = "0.0.0"' \
+        'edition = "2024"' \
+        'rust-version = "1.98"' \
+        'license = "MIT OR Apache-2.0"' \
+        'publish = false' \
+        '' \
+        '[lib]' \
+        'path = "src/mod.rs"' \
+        '' \
+        '[workspace]' \
+        '' > clients/rust/Cargo.toml
+    sed -n '/^\[dependencies\]/,$p' clients/rust/src/REQUIRED_DEPS.toml >> clients/rust/Cargo.toml
+    echo "client written to clients/rust"
+
+alias client-rust := generate-client
+
+# Build the production multi-stage container image for rslbp-serve (R51; GHCR publish via owner 1a-A override in P11)
+[group('web'), group('build')]
+docker-web tag="rslbp-web:dev":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v docker >/dev/null 2>&1; then
+        echo "docker not found on PATH — install Docker or OrbStack/Colima to build {{tag}}" >&2
+        exit 1
+    fi
+    docker build -t "{{tag}}" .
+
+# ================================
 # BLAZE LOCAL ACCELERATOR (OPT-IN)
 # ================================
 
@@ -501,7 +587,7 @@ blaze-run *args:
     fi
     exec cargo run --bin {{app_name}}
 
-# Show Blaze version vs. rust-toolchain.toml and probe default workspace compatibility
+# Show Blaze version vs. rust-toolchain.toml and probe default + optional feature compatibility (P09)
 [group('blaze'), group('debug')]
 blaze-status:
     #!/usr/bin/env bash
@@ -516,19 +602,37 @@ blaze-status:
     blaze_ver=$(blaze --version 2>&1 || echo "unknown")
     echo "blaze                       : ${blaze_ver}"
     echo ""
-    echo "Probing default workspace (\`blaze check\`)..."
-    if blaze check; then
-        echo "  default workspace         : PASS"
-    else
-        echo "  default workspace         : FAIL (fall back to Cargo)" >&2
-        exit 1
-    fi
+    probe_blaze() {
+        local label="$1"
+        shift
+        local out rc
+        rc=0
+        out=$(blaze "$@" 2>&1) || rc=$?
+        if [ "$rc" -eq 0 ]; then
+            printf '  %-25s : PASS\n' "$label"
+        elif grep -q "unknown flag \`--features\`" <<<"$out"; then
+            printf '  %-25s : UNSUPPORTED BY CLI (blaze rejects --features; Cargo-authoritative)\n' "$label"
+        elif grep -q "crate :: routes" <<<"$out"; then
+            printf '  %-25s : BLOCKED (utoipa-axum routes! macro-call-failed in crates/web; Cargo-authoritative)\n' "$label"
+        else
+            local first_err
+            first_err=$(grep -m1 "error" <<<"$out" || printf 'exit %d' "$rc")
+            printf '  %-25s : FAIL (%s; fall back to Cargo)\n' "$label" "$first_err"
+        fi
+    }
+    echo "Live compatibility probes:"
+    probe_blaze "default workspace" check
+    probe_blaze "--features web" check --features web
+    probe_blaze "--features metrics" check --features metrics
+    probe_blaze "--features otel" check --features otel
     echo ""
-    echo "Optional feature & test policy:"
-    echo "  --features web            : Cargo-authoritative while indexable-inc/blaze#598 (utoipa-gen) is open (re-probed in P09)"
-    echo "  --features metrics        : Cargo-authoritative while indexable-inc/blaze#1826 (metrics-util) is open (re-probed in P09)"
-    echo "  http_adapter_boundary     : Cargo-authoritative while blaze hits async-lock easy_wrapper! macro resolution (use \`just blaze-test -- --skip http_\`)"
-    echo "  cli binary/insta/proptest : Cargo-authoritative while blaze skips ring C objs, virtualizes CARGO_MANIFEST_DIR, and hits neon/proptest front2 limits"
+    echo "Upstream issue & feature policy (re-probed in P09 on blaze 0.20261127.0):"
+    echo "  #598 (utoipa-gen 6.0.1)   : RESOLVED in isolated probe; workspace check still blocked by utoipa-axum 0.3.0 routes! macro"
+    echo "  #1826 (metrics-util/prom) : RESOLVED in isolated probe (metrics 0.24.6 + metrics-exporter-prometheus 0.18.3 pass)"
+    echo "  otel (0.33 / t-otel 0.34) : PASS in isolated probe; CLI lacks --features so Cargo remains authoritative"
+    echo "  core package loop         : \`blaze test -p rs-launch-blueprint-core\` and \`blaze build -p rs-launch-blueprint --bin rslbp\` pass"
+    echo "  http_adapter_boundary     : Cargo-authoritative while blaze hits async-lock easy_wrapper! macro resolution"
+    echo "  cli binary/insta/proptest : Cargo-authoritative while blaze skips ring C objs and virtualizes CARGO_MANIFEST_DIR"
 
 # Print official Blaze installer instructions and caveats (pass `apply` to run the installer)
 [group('blaze'), group('install')]

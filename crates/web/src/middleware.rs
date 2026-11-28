@@ -97,6 +97,48 @@ pub async fn propagate_traceparent(mut req: Request, next: Next) -> Response {
     INBOUND_TRACEPARENT.scope(tp, next.run(req)).await
 }
 
+/// Create the HTTP server `tracing` span for each request, attaching the extracted W3C Trace
+/// Context parent when the `otel` feature is compiled in (`R78` point 4).
+async fn http_server_span(req: Request, next: Next) -> Response {
+    let method = req.method().as_str().to_owned();
+    let request_id = req
+        .headers()
+        .get(REQUEST_ID)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("-")
+        .to_owned();
+
+    let span = tracing::info_span!(
+        "http.server.request",
+        otel.kind = "server",
+        http.request.method = %method,
+        http.route = tracing::field::Empty,
+        http.response.status_code = tracing::field::Empty,
+        request_id = %request_id,
+    );
+
+    #[cfg(feature = "otel")]
+    {
+        use opentelemetry::global;
+        use opentelemetry::trace::TraceContextExt as _;
+        use opentelemetry_http::HeaderExtractor;
+        use tracing_opentelemetry::OpenTelemetrySpanExt as _;
+
+        let parent_cx =
+            global::get_text_map_propagator(|prop| prop.extract(&HeaderExtractor(req.headers())));
+        if parent_cx.span().span_context().is_valid() {
+            let _ = span.set_parent(parent_cx);
+        }
+    }
+
+    let res = tracing::Instrument::instrument(next.run(req), span.clone()).await;
+    span.record("http.response.status_code", res.status().as_u16());
+    if let Some(MatchedRoute(route)) = res.extensions().get::<MatchedRoute>() {
+        span.record("http.route", route.as_str());
+    }
+    res
+}
+
 /// Emit one structured `rs_launch_blueprint::http_access` log event per request, skipping matched
 /// operational probe routes in [`ACCESS_LOG_EXCLUDED_ROUTES`] (`R75` L5).
 pub async fn access_log(req: Request, next: Next) -> Response {
@@ -285,6 +327,9 @@ pub fn apply_middleware(
             sensitive_headers,
         ))
         .layer(middleware::from_fn(access_log));
+
+    // L4: HTTP server tracing span (with W3C parent extraction under `otel`, R78).
+    let router = router.layer(middleware::from_fn(http_server_span));
 
     // L3b: Opaque inbound traceparent propagation.
     let router = router.layer(middleware::from_fn(propagate_traceparent));

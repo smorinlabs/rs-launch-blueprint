@@ -1,0 +1,20 @@
+# Generator input for `just generate-client` / `just client-rust` (R84 F335, OV-11).
+# The committed snapshot is owned by R71 (`openapi/openapi.json`); the generated
+# output under `clients/rust/` is never committed.
+[generator]
+spec_path = "openapi/openapi.json"
+output_dir = "clients/rust/src"
+module_name = "api"
+
+[features]
+enable_async_client = true
+
+# Outbound-request tracing belongs to R58/R78, not the generated client:
+# switched off so the generated crate carries no reqwest-tracing.
+[http_client.tracing]
+enabled = false
+
+# REST API Design Standard R12.4 / R4.9: list open enums here so unknown values
+# deserialize into `Custom(String)` rather than failing deserialization.
+[extensible_enums]
+CheckStatus = true

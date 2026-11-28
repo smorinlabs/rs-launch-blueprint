@@ -9,15 +9,18 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
+use axum::Json;
 use axum::extract::State;
 use axum::http::{HeaderValue, StatusCode, header};
 use axum::response::{IntoResponse, Response};
-use axum::routing::get;
-use axum::{Json, Router};
 use rs_launch_blueprint_core::{Diagnostics, VERSION, draining_diagnostics};
 use serde::Serialize;
+use utoipa::ToSchema;
+use utoipa_axum::router::OpenApiRouter;
+use utoipa_axum::routes;
 
-use crate::problems::{WebError, join_error_to_web_error};
+use crate::openapi::{DiagnosticsSchema, Problem};
+use crate::problems::{PROBLEM_CONTENT_TYPE, WebError, join_error_to_web_error};
 use crate::server::AppState;
 use crate::settings::WebSettings;
 
@@ -54,7 +57,7 @@ impl Readiness {
 pub type DiagnosticsRunner = Arc<dyn Fn() -> Diagnostics + Send + Sync>;
 
 /// Static liveness status token emitted by `/healthz` (`R80`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, ToSchema)]
 #[serde(rename_all = "lowercase")]
 pub enum LiveStatus {
     /// Process event loop is alive.
@@ -62,7 +65,7 @@ pub enum LiveStatus {
 }
 
 /// Exact four-field byte-stable payload emitted by `GET /healthz` (`R80` AC1, AC2).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, ToSchema)]
 pub struct LivenessReport {
     /// Always `"ok"`.
     pub status: LiveStatus,
@@ -82,6 +85,15 @@ pub const LIVENESS_REPORT: LivenessReport = LivenessReport {
     arch: std::env::consts::ARCH,
 };
 
+#[utoipa::path(
+    get,
+    path = "/healthz",
+    tag = "ops",
+    operation_id = "ops-healthz",
+    responses(
+        (status = 200, description = "Process liveness report", body = LivenessReport)
+    )
+)]
 async fn healthz() -> Response {
     (
         StatusCode::OK,
@@ -91,6 +103,21 @@ async fn healthz() -> Response {
         .into_response()
 }
 
+#[utoipa::path(
+    get,
+    path = "/readyz",
+    tag = "ops",
+    operation_id = "ops-readyz",
+    responses(
+        (status = 200, description = "Service readiness diagnostics", body = DiagnosticsSchema),
+        (
+            status = 503,
+            description = "Service draining or readiness check failed",
+            body = Problem,
+            content_type = PROBLEM_CONTENT_TYPE
+        )
+    )
+)]
 async fn readyz(
     State(readiness): State<Readiness>,
     State(diagnostics): State<DiagnosticsRunner>,
@@ -137,8 +164,8 @@ async fn readyz(
         .into_response()
 }
 
-pub(crate) fn router() -> Router<AppState> {
-    Router::new()
-        .route("/healthz", get(healthz))
-        .route("/readyz", get(readyz))
+pub(crate) fn router() -> OpenApiRouter<AppState> {
+    OpenApiRouter::new()
+        .routes(routes!(healthz))
+        .routes(routes!(readyz))
 }

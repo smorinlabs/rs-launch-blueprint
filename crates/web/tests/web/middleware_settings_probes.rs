@@ -708,3 +708,23 @@ async fn serve_until_real_listener_connect_info_readiness_pause_and_drain() {
     let err = handle2.await.unwrap().unwrap_err();
     assert!(matches!(err, ServeError::GracefulShutdownTimedOut(_)));
 }
+
+#[cfg(feature = "otel")]
+#[tokio::test]
+async fn otel_middleware_extracts_w3c_traceparent_and_runs_blocking_handlers_cleanly() {
+    let app = build_router(empty_state());
+    let req = Request::builder()
+        .uri("/v1/projects")
+        .header(
+            TRACEPARENT,
+            "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ca902b7-01",
+        )
+        .body(Body::empty())
+        .unwrap();
+    let res = app.oneshot(req).await.unwrap();
+    assert_eq!(res.status(), StatusCode::OK);
+    assert!(
+        !res.headers().contains_key(TRACEPARENT),
+        "R75: traceparent must never be echoed on responses"
+    );
+}

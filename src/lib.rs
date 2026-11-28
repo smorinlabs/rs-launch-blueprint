@@ -45,6 +45,8 @@ mod http_adapter;
 mod internal;
 #[cfg(feature = "keychain")]
 mod keychain;
+#[cfg(feature = "otel")]
+mod otel;
 mod telemetry;
 
 /// The version of this package, from `Cargo.toml` (`R22`).
@@ -67,6 +69,12 @@ pub use crash_sink::{
 pub use http_adapter::{DEFAULT_HTTP_TIMEOUT, HttpProjectsPort};
 #[cfg(feature = "keychain")]
 pub use keychain::KeychainCredentialStore;
+#[cfg(feature = "otel")]
+pub use otel::{
+    OtelConfig, OtelGuard, OtelInit, OtelLayer, RedactingSpanExporter,
+    build_otel_layer_with_exporter, init_otel_from_config, inject_trace_context,
+    otel_feedback_filter,
+};
 #[cfg(feature = "mock")]
 pub use rs_launch_blueprint_core::MockProjectsPort;
 pub use rs_launch_blueprint_core::{
@@ -96,5 +104,7 @@ pub use telemetry::{
     ROTATE_BACKUP_COUNT, ROTATE_MAX_BYTES, ResolvedLogFormat, RotatingFile, SENSITIVE_KEY_PARTS,
     ServiceLogFormat, TelemetryHandles, TelemetryInit, build_scoped_subscriber, init_telemetry,
     is_sensitive_key, level_to_env_filter, level_to_filter, resolve_console_level,
-    resolve_log_file, resolve_log_format,
+    resolve_log_file, resolve_log_format, warn_if_otlp_env_ignored,
 };
+#[cfg(feature = "otel")]
+pub use telemetry::{build_scoped_subscriber_with_otel, init_telemetry_with_otel};

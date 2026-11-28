@@ -72,6 +72,16 @@ required-features = ["web"]
 default = ["clipboard"]
 clipboard = ["dep:arboard"]
 web = ["dep:rs-launch-blueprint-web"]
+otel = [
+    "web",
+    "rs-launch-blueprint-web/otel",
+    "dep:opentelemetry",
+    "dep:opentelemetry_sdk",
+    "dep:opentelemetry-otlp",
+    "dep:opentelemetry-http",
+    "dep:tracing-opentelemetry",
+]
+metrics = ["web", "rs-launch-blueprint-web/metrics"]
 mock = ["rs-launch-blueprint-core/mock"]
 keychain = [
     "dep:keyring-core",
@@ -86,12 +96,26 @@ arboard = { version = "3.6.1", default-features = false, features = [
 ], optional = true }
 clap = { version = "4.6.6", features = ["derive", "env", "wrap_help"] }
 keyring-core = { version = "1.0.0", optional = true }
+opentelemetry = { version = ">=0.33.0, <0.34.0", optional = true, default-features = false, features = [
+    "trace",
+] }
+opentelemetry-http = { version = ">=0.33.0, <0.34.0", optional = true, default-features = false }
+opentelemetry-otlp = { version = ">=0.33.0, <0.34.0", optional = true, default-features = false, features = [
+    "trace",
+    "http-proto",
+    "reqwest-blocking-client",
+    "internal-logs",
+] }
+opentelemetry_sdk = { version = ">=0.33.0, <0.34.0", optional = true, default-features = false, features = [
+    "trace",
+] }
 rs-launch-blueprint-cli = { version = "0.1.0", path = "crates/cli" }
 rs-launch-blueprint-core = { version = "0.1.0", path = "crates/core" }
 rs-launch-blueprint-web = { version = "0.1.0", path = "crates/web", optional = true }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 tracing = "0.1.44"
+tracing-opentelemetry = { version = ">=0.34.0, <0.35.0", optional = true, default-features = false }
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 ureq = { version = "3.4.2", features = ["json"] }
 zeroize = { version = "1.9.0", default-features = false, features = ["alloc"] }

@@ -10,7 +10,7 @@
 - **Prior art:** [R78 opentelemetry-integration](../research/topics/78-opentelemetry-integration/DECISION.md)
 - **Prior art:** [R79 prometheus-metrics](../research/topics/79-prometheus-metrics/DECISION.md)
 
-**Status:** `[ ]` scoped, not started.
+**Status:** `[x]` completed (2026-11-27).
 
 ### Scope
 Complete the web service's API contract pipeline, nested observability features (`otel` and `metrics`), production `Dockerfile`, and Blaze re-probe:
@@ -24,12 +24,13 @@ Complete the web service's API contract pipeline, nested observability features 
 - GitHub Actions CI workflows (`api-contract.yml`, `docker-web.yml`, `P10`) and GHCR release workflow (`publish-container.yml`, `P11`)
 
 ### Tests & Tasks
-- [ ] [P09-TS01] Add OpenAPI committed-snapshot drift test (`R71`), R83 contract/proptest suite, `otel`-enabled & `otel`-disabled trace-correlation tests (py `P10`), and `/metrics` Prometheus exposition tests (`R79`)
-- [ ] [P09-T01] Annotate `/v1` models and handlers with `utoipa`/`utoipa-axum`, commit `openapi.json`, and wire `just export-openapi`, `just check-openapi`, and `just generate-client` (`openapi-to-rust`, `R71`, `R84`)
-- [ ] [P09-T02] Implement nested `otel` feature (`tracing-opentelemetry` + self-redacting exporter, `R78`) and update `deny.toml` with the named `tracing-opentelemetry` exception
-- [ ] [P09-T03] Implement nested `metrics` feature (`metrics` + `metrics-exporter-prometheus`, `/metrics` route, `R79`, `OV-07`)
-- [ ] [P09-T04] Add production multi-stage `Dockerfile`, `.dockerignore`, and `just docker-web` recipe (`R51`, noting owner `1a-A` GHCR publishing override)
-- [ ] [P09-T05] Re-run `just blaze-status` against default, `--features web`, and `--features metrics` to record live `#598`/`#1826` status, and verify `--all-features` tests, OpenAPI snapshot, and Docker build pass
+- [x] [P09-TS01] Add OpenAPI committed-snapshot drift test (`R71`), R83 contract/proptest suite, `otel`-enabled & `otel`-disabled trace-correlation tests (py `P10`), and `/metrics` Prometheus exposition tests (`R79`)
+- [x] [P09-T01] Annotate `/v1` models and handlers with `utoipa`/`utoipa-axum`, commit `openapi.json`, and wire `just export-openapi`, `just check-openapi`, and `just generate-client` (`openapi-to-rust`, `R71`, `R84`)
+- [x] [P09-T02] Implement nested `otel` feature (`tracing-opentelemetry` + self-redacting exporter, `R78`) and update `deny.toml` with the named `tracing-opentelemetry` exception
+- [x] [P09-T03] Implement nested `metrics` feature (`metrics` + `metrics-exporter-prometheus`, `/metrics` route, `R79`, `OV-07`)
+- [x] [P09-T04] Add production multi-stage `Dockerfile`, `.dockerignore`, and `just docker-web` recipe (`R51`, noting owner `1a-A` GHCR publishing override)
+- [x] [P09-T05] Re-run `just blaze-status` against default, `--features web`, and `--features metrics` to record live `#598`/`#1826` status, and verify `--all-features` tests, OpenAPI snapshot, and Docker build pass
+      2026-11-27: verified `just check`, `just check-openapi`, `just test-contract`, `cargo nextest run --workspace --all-features`, `cargo deny --all-features check`, live `/metrics` exposition + SIGTERM exit 143 on `rslbp-serve`, and `just blaze-status` on `blaze 0.20261127.0` (`#598` `utoipa-gen` and `#1826` `metrics-exporter-prometheus` resolved in isolated probes, `otel` crates pass isolated probe; workspace `blaze check` blocked by `utoipa-axum 0.3.0` `routes!` macro and CLI lacks `--features` so Cargo stays authoritative; Docker daemon unavailable locally, `Dockerfile`/`.dockerignore` verified by R51/1a-A static contract tests)
 
 ### Deliverable
 ```bash
