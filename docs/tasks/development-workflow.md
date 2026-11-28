@@ -30,15 +30,19 @@ subcommands.
 `just setup` wires `lefthook.yml` and sets `git config commit.template .gitmessage`:
 
 - **`pre-commit` (parallel):** `cargo fmt --all --check`, `dprint check`,
-  `ast-grep scan --error`, `scripts/check-large-files.sh --staged` (`1 MiB`),
-  `scripts/check-cargo-lock.sh`, `gitleaks` staged scan, `editorconfig-checker`,
-  `ryl`, `typos`, `actionlint`, ShellCheck, and OpenAPI staleness check when web
-  files are staged.
+  `cargo clippy --workspace --all-targets --locked -- -D warnings` (tagged
+  `compiles`, when `.rs` or `.toml` files are staged), `ast-grep scan --error`,
+  ShellCheck (`scripts/check-shell.sh`), `gitleaks` staged scan,
+  `scripts/check-large-files.sh --staged` (`1 MiB`),
+  `scripts/check-cargo-lock.sh`, `editorconfig-checker`, `ryl`, `typos`, and
+  `actionlint`. Run `just check-openapi` separately after changing web routes or
+  schemas to verify `openapi/openapi.json` has not drifted.
 - **`commit-msg`:** `committed --fixup --wip --commit-file {1}` enforcing
   Conventional Commits (11 allowed types, 50/72/72 soft-line caps).
-- **`pre-push`:** `gitleaks` unpushed commit-range scan plus compiling checks
-  (`tags: [compiles]`), and opt-in full test suite when
-  `RS_PROJECTS_PREPUSH_TESTS=1` is set.
+- **`pre-push`:** `gitleaks` unpushed commit-range scan, plus an opt-in
+  `just test` run when `RS_PROJECTS_PREPUSH_TESTS=1` is set (skipped by default
+  so pushes remain fast; `cargo clippy` runs in `pre-commit` under
+  `tags: [compiles]`).
 
 Run the entire pre-commit suite across all tracked files at any time:
 

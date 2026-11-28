@@ -15,11 +15,12 @@ just test-contract        # R83 OpenAPI 3.1 proptest contract fuzzing (`contract
 just test-all             # Full suite including slow, live, and doc tests
 ```
 
-Filter a single test file or case by passing nextest arguments through `just test`:
+Filter a single test file via `just test`, or invoke `cargo nextest` directly
+for filter expressions containing parentheses (so the shell preserves quotes):
 
 ```bash
 just test --test error_contract
-just test -E 'test(idempotency)'
+cargo nextest run --locked --workspace --features web -E 'test(idempotency)'
 ```
 
 ## Test Tiers & Doubles (`R32`, `R33`, `R48`)

@@ -175,6 +175,7 @@ fn book_toml_summary_and_dialect_satisfy_r81() {
         "contributing/README.md",
         "contributing/contributing-guide.md",
         "adr/README.md",
+        "adr/template.md",
         "design/README.md",
         "research/README.md",
     ] {
@@ -219,6 +220,11 @@ fn book_toml_summary_and_dialect_satisfy_r81() {
                 assert!(
                     !line.contains("{toctree}") && !trimmed.starts_with(":::{"),
                     "docs/{rel}:{} uses forbidden MyST directive (R81 F343)",
+                    idx + 1
+                );
+                assert!(
+                    !line.contains("](SUMMARY.md)") && !line.contains("](../SUMMARY.md)"),
+                    "docs/{rel}:{} links to unrendered SUMMARY.md (mdBook does not generate SUMMARY.html)",
                     idx + 1
                 );
                 if trimmed.starts_with('#') {
@@ -458,6 +464,29 @@ fn mdbook_and_lychee_execute_cleanly_when_installed() {
             dest.join("index.html").is_file(),
             "mdbook build must generate index.html from docs/README.md (R81 F345)"
         );
+        assert!(
+            dest.join("adr/template.html").is_file(),
+            "mdbook build must render adr/template.html so adr/README.md template link resolves"
+        );
+        if let Some(lychee) = find_on_path("lychee") {
+            let html_out = Command::new(&lychee)
+                .args([
+                    "--offline",
+                    "--no-progress",
+                    "--root-dir",
+                    dest.to_str().unwrap(),
+                    dest.to_str().unwrap(),
+                ])
+                .current_dir(scratch.path())
+                .output()
+                .expect("run lychee --offline on rendered mdbook HTML");
+            assert!(
+                html_out.status.success(),
+                "lychee --offline failed on rendered mdBook HTML:\nstdout={}\nstderr={}",
+                String::from_utf8_lossy(&html_out.stdout),
+                String::from_utf8_lossy(&html_out.stderr)
+            );
+        }
     }
 
     if let Some(lychee) = find_on_path("lychee") {

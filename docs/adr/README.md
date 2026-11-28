@@ -14,7 +14,7 @@ consequences — so key choices remain auditable and are not re-litigated.
   accepted history.
 
 Start new records from [template.md](template.md) and register them in
-[SUMMARY.md](../SUMMARY.md) and the index table below.
+`docs/SUMMARY.md` and the index table below.
 
 ## Index
 

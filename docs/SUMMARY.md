@@ -53,5 +53,6 @@
 # Engineering Records
 
 - [Architecture Decision Records](adr/README.md)
+  - [ADR Template](adr/template.md)
 - [Design Specifications](design/README.md)
 - [Research Notes](research/README.md)

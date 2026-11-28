@@ -5,8 +5,8 @@ CommonMark/GFM source tree under `docs/` renders natively on GitHub **and**
 builds with `mdbook 0.5.4` (`book.toml`) into the hosted GitHub Pages site
 (`R81`).
 
-Use [SUMMARY.md](SUMMARY.md) as the single authoritative table of contents for
-every section and page.
+Use the navigation sidebar (defined in `docs/SUMMARY.md`) as the single
+authoritative table of contents for every section and page.
 
 ## Corpus Organization (`F342`)
 
@@ -34,7 +34,7 @@ Operational guides at the top of `docs/` support day-one setup and releases:
 
 Because `book.toml` sets `[book] src = "docs"`, the three engineering-record
 buckets live under `docs/` and are explicitly listed in the **Engineering
-Records** suffix section of [SUMMARY.md](SUMMARY.md) so they build and link-check
+Records** suffix section of `docs/SUMMARY.md` so they build and link-check
 alongside the narrative documentation:
 
 | Directory   | Holds                                                                | Normative?       |

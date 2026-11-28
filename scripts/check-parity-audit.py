@@ -75,6 +75,69 @@ def parse_research_items(path: pathlib.Path) -> list[str]:
     return items
 
 
+def extract_section(text: str, heading: str) -> str:
+    """Return the body of the H2 section starting at `heading` up to the next `## ` heading."""
+    lines = text.splitlines()
+    start = None
+    for idx, line in enumerate(lines):
+        if line.strip() == heading:
+            start = idx + 1
+            break
+    if start is None:
+        return ""
+    body: list[str] = []
+    for line in lines[start:]:
+        if line.startswith("## "):
+            break
+        body.append(line)
+    return "\n".join(body)
+
+
+def parse_research_coverage_rows(section_text: str) -> tuple[dict[str, dict[str, str]], list[str]]:
+    rows: dict[str, dict[str, str]] = {}
+    duplicates: list[str] = []
+    for line in section_text.splitlines():
+        m = re.match(r"^\|\s*(R\d{2})\s*\|", line)
+        if not m:
+            continue
+        parts = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(parts) < 4:
+            continue
+        rid = parts[0]
+        if rid in rows:
+            duplicates.append(rid)
+            continue
+        rows[rid] = {
+            "slug": parts[1],
+            "phase": parts[2],
+            "evidence": parts[3],
+        }
+    return rows, duplicates
+
+
+def parse_delta_rows(section_text: str) -> tuple[dict[int, dict[str, str]], list[int]]:
+    rows: dict[int, dict[str, str]] = {}
+    duplicates: list[int] = []
+    for line in section_text.splitlines():
+        m = re.match(r"^\|\s*(\d+)\s*\|", line)
+        if not m:
+            continue
+        parts = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(parts) < 5:
+            continue
+        idx = int(parts[0])
+        if idx in rows:
+            duplicates.append(idx)
+            continue
+        rows[idx] = {
+            "addition": parts[1],
+            "ruling": parts[2],
+            "status": parts[3].strip("* "),
+            "evidence": parts[4],
+        }
+    return rows, duplicates
+
+
 def parse_audit_feature_rows(text: str) -> tuple[dict[str, dict[str, str]], list[str]]:
     rows: dict[str, dict[str, str]] = {}
     duplicates: list[str] = []
@@ -144,6 +207,10 @@ def main() -> int:
         aud = audit_rows[fid]
         if aud["area"] != src["area"]:
             errors.append(f"{fid}: area mismatch (audit={aud['area']!r}, source={src['area']!r})")
+        if aud["verdict"] != src["verdict"]:
+            errors.append(
+                f"{fid}: verdict mismatch (audit={aud['verdict']!r}, source={src['verdict']!r})"
+            )
         if aud["item"] != src["item"]:
             errors.append(f"{fid}: item mismatch (audit={aud['item']!r}, source={src['item']!r})")
         if aud["status"] not in VALID_STATUSES:
@@ -168,17 +235,63 @@ def main() -> int:
     if implemented_count != 350:
         errors.append(f"expected 350 IMPLEMENTED rows, counted {implemented_count}")
 
-    for rid in research_items:
-        if not re.search(rf"\b{re.escape(rid)}\b", audit_text):
-            errors.append(f"research item {rid} not referenced in FINAL-PARITY-AUDIT.md")
-
     for section in REQUIRED_SECTIONS:
         if section not in audit_text:
             errors.append(f"missing required section heading: {section}")
 
+    research_section = extract_section(audit_text, "## Research Program Coverage (`R01`–`R86`)")
+    research_rows, research_dups = parse_research_coverage_rows(research_section)
+    if research_dups:
+        errors.append(
+            f"duplicate R## rows in research coverage table: {', '.join(research_dups)}"
+        )
+    expected_rids = set(research_items)
+    actual_rids = set(research_rows.keys())
+    missing_rids = sorted(expected_rids - actual_rids)
+    extra_rids = sorted(actual_rids - expected_rids)
+    if missing_rids:
+        errors.append(
+            f"missing R## rows from research coverage table: {', '.join(missing_rids)}"
+        )
+    if extra_rids:
+        errors.append(
+            f"unexpected R## rows in research coverage table: {', '.join(extra_rids)}"
+        )
+    for rid in sorted(expected_rids & actual_rids):
+        row = research_rows[rid]
+        if not row["evidence"] or row["evidence"] in {"-", "—", "TBD", "TODO"}:
+            errors.append(f"{rid}: missing implementation evidence in research coverage table")
+
+    delta_section = extract_section(
+        audit_text, "## Post-`b08bccf` `py-launch-blueprint` `v4.2.0` Delta Audit"
+    )
+    delta_rows, delta_dups = parse_delta_rows(delta_section)
+    if delta_dups:
+        errors.append(f"duplicate delta row numbers: {delta_dups}")
+    expected_delta_nums = set(range(1, len(REQUIRED_DELTA_MARKERS) + 1))
+    actual_delta_nums = set(delta_rows.keys())
+    if actual_delta_nums != expected_delta_nums:
+        errors.append(
+            f"delta audit table must list rows 1..{len(REQUIRED_DELTA_MARKERS)}, found {sorted(actual_delta_nums)}"
+        )
+    for idx in sorted(expected_delta_nums & actual_delta_nums):
+        row = delta_rows[idx]
+        if not row["ruling"] or row["ruling"] in {"-", "—", "TBD", "TODO"}:
+            errors.append(f"delta row {idx}: missing ruling/phase")
+        if row["status"] not in {"IMPLEMENTED", "DEFERRED"}:
+            errors.append(f"delta row {idx}: unexpected status {row['status']!r}")
+        if row["status"] == "DEFERRED" and "OSS Scanner" not in row["addition"]:
+            errors.append(
+                f"delta row {idx}: only the Anthropic OSS Scanner entry may be DEFERRED"
+            )
+        if not row["evidence"] or row["evidence"] in {"-", "—", "TBD", "TODO"}:
+            errors.append(f"delta row {idx}: missing evidence")
+
     for marker in REQUIRED_DELTA_MARKERS:
-        if marker not in audit_text:
-            errors.append(f"missing required post-b08bccf delta coverage marker: {marker}")
+        if marker not in delta_section:
+            errors.append(
+                f"missing required post-b08bccf delta marker in delta audit section: {marker}"
+            )
 
     if "docs/PROJECT_SETUP.md" not in audit_text and "PROJECT_SETUP.md" not in audit_text:
         errors.append("FINAL-PARITY-AUDIT.md must reference PROJECT_SETUP.md")
@@ -192,8 +305,8 @@ def main() -> int:
     print(
         "OK: FINAL-PARITY-AUDIT.md verified "
         f"({len(audit_rows)}/360 F### rows: {implemented_count} IMPLEMENTED, "
-        f"{omit_count} OMITTED; {len(research_items)}/85 R## items; "
-        f"{len(REQUIRED_DELTA_MARKERS)}/{len(REQUIRED_DELTA_MARKERS)} post-b08bccf delta items)"
+        f"{omit_count} OMITTED; {len(research_rows)}/85 R## items; "
+        f"{len(delta_rows)}/{len(REQUIRED_DELTA_MARKERS)} post-b08bccf delta items)"
     )
     return 0
 

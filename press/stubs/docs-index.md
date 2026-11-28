@@ -1,7 +1,7 @@
 # Documentation
 
-Welcome to the project documentation. Browse the complete table of contents in
-[SUMMARY.md](SUMMARY.md) or jump directly to the operational guides below:
+Welcome to the project documentation. Browse the navigation sidebar (defined in
+`docs/SUMMARY.md`) or jump directly to the operational guides below:
 
 - [Project Setup Checklist](PROJECT_SETUP.md) — secrets, environments, branch protection, and publishing setup
 - [Post-Initialization Notes](POST_INIT.md) — next steps after template stamping

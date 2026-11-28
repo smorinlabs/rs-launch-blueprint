@@ -6,7 +6,7 @@ exclude_path = [
     "book",
     "clients",
     "press/stubs",
-    "research",
+    "^(?:\\./)?research(?:/|$)",
     "docs/planning",
     "docs/port",
     "docs/superpowers",

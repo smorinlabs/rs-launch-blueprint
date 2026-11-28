@@ -14,9 +14,16 @@ If `just check` or a git hook fails because a tool is missing or pinned to a
 different version:
 
 ```bash
-just check-deps                 # Lists every missing tool or version mismatch with fix command
+just check-deps                 # Checks PATH presence for all tools and exact pins for lefthook/committed
 just setup                      # Installs missing pinned tools and re-wires lefthook hooks
 ```
+
+`just check-deps` enforces exact version pins for `lefthook` and `committed` and
+checks `PATH` presence for the rest of the declared tool table. If another tool
+(such as `dprint`, `typos`, `ryl`, `mdbook`, or `lychee`) is already on `PATH`
+with a mismatched version, compare `just debug-info` against the pinned specs at
+the top of `Justfile` and reinstall it explicitly with
+`just install-tool <spec>` (for example, `just install-tool dprint@0.57.4`).
 
 Ensure `~/.local/bin` and `~/.cargo/bin` appear on your `PATH`.
 

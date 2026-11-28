@@ -5,4 +5,5 @@ Task guides are goal-oriented recipes for day-to-day engineering work in
 TOML settings and secrets, executing the test and coverage suites, working with
 CI/CD and security workflows, and diagnosing common problems.
 
-Use [SUMMARY.md](../SUMMARY.md) to jump directly to the task you need.
+Use the navigation sidebar (defined in `docs/SUMMARY.md`) to jump directly to
+the task you need.

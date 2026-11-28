@@ -61,6 +61,10 @@ file = "CONTRIBUTORS.md"
 reason = "template contributor roster; stamped projects start their own"
 
 [[remove]]
+file = ".github/FUNDING.yml"
+reason = "template funding target; stamped projects declare their own"
+
+[[remove]]
 file = ".claude/skills/new-rust-project/SKILL.md"
 reason = "template bootstrap skill retired after stamping; README explains provenance"
 

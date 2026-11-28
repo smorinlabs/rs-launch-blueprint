@@ -10,8 +10,7 @@ how a subsystem must behave before or during implementation (`F355`).
 - **Status lifecycle:** `Draft` -> `Proposed` -> `Accepted` ->
   (`Implemented` | `Superseded` | `Withdrawn`).
 - Cross-link motivating explorations in `docs/research/` and resulting decisions
-  in `docs/adr/`. Register new specs in [SUMMARY.md](../SUMMARY.md) and the
-  index below.
+  in `docs/adr/`. Register new specs in `docs/SUMMARY.md` and the index below.
 
 ## Index
 

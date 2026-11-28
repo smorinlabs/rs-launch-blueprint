@@ -9,7 +9,7 @@ leads to a binding choice, record the outcome in `docs/design/` or `docs/adr/`.
 - **Filename:** `NNNN-kebab-title.md` or `YYYY-MM-topic.md`.
 - **Structure:** state the question up front, record empirical evidence and
   reproducible commands, and summarize the recommendation at the end.
-- Register new notes in [SUMMARY.md](../SUMMARY.md) and the index below.
+- Register new notes in `docs/SUMMARY.md` and the index below.
 
 ## Index
 

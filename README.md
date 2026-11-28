@@ -105,9 +105,10 @@ for public-package visibility setup):
 
 ```bash
 docker pull --platform linux/amd64 ghcr.io/smorinlabs/rs-launch-blueprint:latest
-docker run --rm --platform linux/amd64 -p 127.0.0.1:8000:8000 \
+docker run -d --rm --name rslbp-web --platform linux/amd64 -p 127.0.0.1:8000:8000 \
   ghcr.io/smorinlabs/rs-launch-blueprint:latest
 curl -s http://127.0.0.1:8000/healthz
+docker stop rslbp-web
 ```
 
 ## Opt-In Local Acceleration (`Blaze` & `bacon`)
