@@ -7,6 +7,7 @@
     "**/target",
     "CHANGELOG.md",
     ".release-please-manifest.json",
+    "openapi/openapi.json",
     "research/**",
     "docs/planning/p02/**",
     "docs/port/**",

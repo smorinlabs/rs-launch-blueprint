@@ -11,10 +11,12 @@ use std::sync::Arc;
 
 use clap::Parser;
 use clap::error::ErrorKind;
+#[cfg(not(feature = "otel"))]
+use rs_launch_blueprint::init_telemetry;
 use rs_launch_blueprint::{
     ConfigDiscoveryInputs, DEFAULT_API_BASE_URL, DiagnosticsContext, ErrorCode, ErrorEnvelope,
     Exit, LogLevel, Paths, Profile, TOKEN_ENV_VAR, TokenResolutionInputs, VERSION,
-    build_web_app_state, default_credential_store, in_memory_service, init_telemetry, load_config,
+    build_web_app_state, default_credential_store, in_memory_service, load_config,
     production_service, resolve_token, run_diagnostics,
 };
 use rs_launch_blueprint_web::{
@@ -116,12 +118,50 @@ fn main() -> ExitCode {
         }
     };
 
-    // 2. Initialize service telemetry on stderr (never stdout) and install process panic hook (R58, R75).
+    // 2. Initialize service telemetry on stderr (never stdout), optional OTel bridge, and process
+    //    panic hook (R58, R75, R78).
     let level = effective_log_level(&args, &settings);
-    let _telemetry = init_telemetry(Profile::Service {
+    let profile = Profile::Service {
         level,
         format: settings.log_format,
-    });
+    };
+
+    #[cfg(feature = "otel")]
+    let otel_guard = {
+        let otel_cfg = rs_launch_blueprint::OtelConfig::from_process_env(
+            settings.otel_enabled,
+            settings.drain_budget(),
+        );
+        match rs_launch_blueprint::init_otel_from_config(&otel_cfg) {
+            rs_launch_blueprint::OtelInit::Active { layer, guard } => {
+                let _telemetry =
+                    rs_launch_blueprint::init_telemetry_with_otel(profile, Some(layer));
+                Some(guard)
+            }
+            rs_launch_blueprint::OtelInit::Disabled => {
+                let _telemetry = rs_launch_blueprint::init_telemetry_with_otel(profile, None);
+                None
+            }
+            rs_launch_blueprint::OtelInit::Unavailable { reason } => {
+                let _telemetry = rs_launch_blueprint::init_telemetry_with_otel(profile, None);
+                tracing::warn!(error = %reason, "otel_unavailable");
+                None
+            }
+        }
+    };
+
+    #[cfg(not(feature = "otel"))]
+    {
+        let _telemetry = init_telemetry(profile);
+        let otlp_endpoint = env::var("OTEL_EXPORTER_OTLP_ENDPOINT")
+            .ok()
+            .or_else(|| env::var("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT").ok());
+        rs_launch_blueprint::warn_if_otlp_env_ignored(
+            settings.otel_enabled,
+            otlp_endpoint.as_deref(),
+        );
+    }
+
     install_panic_hook();
 
     // 3. Resolve XDG paths and load layered config (honoring --config / RSLBP_CONFIG).
@@ -194,13 +234,23 @@ fn main() -> ExitCode {
 
     let state = build_web_app_state(service, settings, diagnostics);
 
-    // 5. Run the multi-threaded Tokio server inside crates/web until SIGINT/SIGTERM.
-    match run_server_blocking(state) {
+    // 5. Run the multi-threaded Tokio server inside crates/web until SIGINT/SIGTERM, then flush
+    //    buffered OTel spans within the bounded shutdown budget while preserving the exit code.
+    let exit_code = match run_server_blocking(state) {
         Ok(exit) => exit.into(),
         Err(err) => {
             tracing::error!(error = %err, "web service exited with error");
             write_stderr_error(ErrorCode::Io, &err.to_string(), None);
             Exit::Runtime.into()
         }
+    };
+
+    #[cfg(feature = "otel")]
+    if let Some(guard) = otel_guard
+        && let Err(err) = guard.shutdown_blocking()
+    {
+        tracing::warn!(error = %err, "otel tracer provider shutdown returned an error");
     }
+
+    exit_code
 }

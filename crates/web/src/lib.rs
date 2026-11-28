@@ -15,7 +15,10 @@
 
 mod cors;
 mod idempotency;
+#[cfg(feature = "metrics")]
+mod metrics;
 mod middleware;
+mod openapi;
 mod pagination;
 mod problems;
 mod rate_limit;
@@ -29,10 +32,20 @@ pub use idempotency::{
     IdempotencyConfig, MAX_IDEMPOTENCY_KEY_BYTES, StoreDispatch, apply_idempotency,
     compute_fingerprint, idempotency_middleware,
 };
+#[cfg(feature = "metrics")]
+pub use metrics::{
+    DURATION_BUCKETS, HTTP_REQUEST_DURATION_SECONDS, HTTP_UNMATCHED_REQUESTS_TOTAL,
+    PROMETHEUS_CONTENT_TYPE, count_unmatched, metrics_recorder, run_metrics_upkeep,
+};
 pub use middleware::{
     ACCESS_LOG_EXCLUDED_ROUTES, InboundTraceparent, REQUEST_ID, TRACEPARENT, access_log,
     apply_middleware, echo_request_id, inbound_traceparent, install_panic_hook,
     propagate_traceparent,
+};
+pub use openapi::{
+    API_DOCUMENT_VERSION, CheckSchema, CheckStatusSchema, CreateProjectInputSchema,
+    DiagnosticsSchema, OPENAPI_PATH, Problem, ProjectListResponseSchema, ProjectSchema,
+    declare_problem_responses, serialize_openapi,
 };
 pub use pagination::{
     CursorError, DEFAULT_PAGE_LIMIT, Limit, ListResponse, MAX_PAGE_LIMIT, PageRequest, Pagination,
@@ -52,8 +65,8 @@ pub use rate_limit::{
 };
 pub use routes::ops::{DiagnosticsRunner, LIVENESS_REPORT, LiveStatus, LivenessReport, Readiness};
 pub use server::{
-    AppState, ServeError, ShutdownSignal, build_router, run_server_blocking, serve_until,
-    shutdown_signal,
+    AppState, ServeError, ShutdownSignal, build_router, build_router_and_openapi, openapi_document,
+    openapi_json, run_server_blocking, serve_until, shutdown_signal,
 };
 pub use settings::{
     DEFAULT_GRACEFUL_SHUTDOWN_SECONDS, DEFAULT_MAX_BODY_BYTES, DEFAULT_PROBLEM_BASE_URI,

@@ -523,14 +523,34 @@ impl<'writer> FormatFields<'writer> for JsonFields {
     }
 }
 
+#[cfg(feature = "otel")]
+type OtelDispatchSlot = std::sync::Arc<std::sync::OnceLock<tracing::dispatcher::WeakDispatch>>;
+
+#[cfg(feature = "otel")]
+struct DispatchCaptureLayer {
+    slot: Option<OtelDispatchSlot>,
+}
+
+#[cfg(feature = "otel")]
+impl<S: Subscriber> Layer<S> for DispatchCaptureLayer {
+    fn on_register_dispatch(&self, collector: &tracing::Dispatch) {
+        if let Some(slot) = &self.slot {
+            let _ = slot.set(collector.downgrade());
+        }
+    }
+}
+
 /// Custom single-line JSON event formatter built directly on `serde_json` (`R58`).
 ///
 /// Keeps `tracing-subscriber/json` disabled to avoid `serde_json`'s `raw_value` feature while
 /// guaranteeing UTC ISO-8601 timestamps, deterministic R58 key ordering (`timestamp`, `level`,
 /// `target`, event fields, `span`), and sensitive-key redaction across both events and spans.
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone)]
 pub struct JsonEvent {
     debug: bool,
+    otel_enabled: bool,
+    #[cfg(feature = "otel")]
+    otel_dispatch: Option<OtelDispatchSlot>,
 }
 
 impl JsonEvent {
@@ -538,7 +558,32 @@ impl JsonEvent {
     /// `thread` metadata.
     #[must_use]
     pub const fn new(debug: bool) -> Self {
-        Self { debug }
+        Self {
+            debug,
+            otel_enabled: false,
+            #[cfg(feature = "otel")]
+            otel_dispatch: None,
+        }
+    }
+
+    /// Construct a [`JsonEvent`] formatter with explicit OpenTelemetry trace-correlation control.
+    #[must_use]
+    pub const fn with_otel(debug: bool, otel_enabled: bool) -> Self {
+        Self {
+            debug,
+            otel_enabled,
+            #[cfg(feature = "otel")]
+            otel_dispatch: None,
+        }
+    }
+
+    #[cfg(feature = "otel")]
+    fn with_otel_dispatch(debug: bool, otel_dispatch: Option<OtelDispatchSlot>) -> Self {
+        Self {
+            debug,
+            otel_enabled: otel_dispatch.is_some(),
+            otel_dispatch,
+        }
     }
 }
 
@@ -615,7 +660,63 @@ where
             }
         }
 
-        // R78 trace slot: when OpenTelemetry is wired in P11+, emit "trace_id" / "span_id" here.
+        // R78 trace-correlation slot: emit "trace_id" and "span_id" right after `target`
+        // whenever an active OpenTelemetry layer provides a valid SpanContext for the event's
+        // effective parent span (R58 key order). Resolving from `ctx.event_scope()` honors
+        // explicit `parent: &other` overrides and omits correlation on `parent: None` events.
+        #[cfg(feature = "otel")]
+        let emitted_trace_slot = if self.otel_enabled {
+            use opentelemetry::trace::TraceContextExt as _;
+
+            let parent_span_id = ctx
+                .event_scope()
+                .and_then(|mut scope| scope.next().map(|span| span.id()));
+            let otel_cx = parent_span_id.and_then(|span_id| {
+                if let Some(dispatch) = self
+                    .otel_dispatch
+                    .as_ref()
+                    .and_then(|slot| slot.get())
+                    .and_then(tracing::dispatcher::WeakDispatch::upgrade)
+                {
+                    tracing_opentelemetry::get_otel_context(&span_id, &dispatch)
+                } else if ctx.lookup_current().is_some_and(|cur| cur.id() == span_id) {
+                    Some(opentelemetry::Context::current())
+                } else {
+                    None
+                }
+            });
+
+            if let Some(cx) = otel_cx {
+                let span_ref = cx.span();
+                let sc = span_ref.span_context();
+                if sc.is_valid() {
+                    push_json_kv(
+                        &mut out,
+                        false,
+                        "trace_id",
+                        &serde_json::Value::String(sc.trace_id().to_string()),
+                    )?;
+                    push_json_kv(
+                        &mut out,
+                        false,
+                        "span_id",
+                        &serde_json::Value::String(sc.span_id().to_string()),
+                    )?;
+                    true
+                } else {
+                    false
+                }
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+        #[cfg(not(feature = "otel"))]
+        let emitted_trace_slot = {
+            let _ = self.otel_enabled;
+            false
+        };
 
         // 3. Redacted event fields (`message` first if present, then remaining fields in order).
         let mut visitor = JsonObjVisitor::default();
@@ -625,11 +726,9 @@ where
             push_json_kv(&mut out, false, &k, &v)?;
         }
         for (k, v) in visitor.fields {
-            let safe_key = if matches!(k.as_str(), "timestamp" | "level" | "target" | "span") {
-                format!("field_{k}")
-            } else {
-                k
-            };
+            let is_reserved = matches!(k.as_str(), "timestamp" | "level" | "target" | "span")
+                || (emitted_trace_slot && matches!(k.as_str(), "trace_id" | "span_id"));
+            let safe_key = if is_reserved { format!("field_{k}") } else { k };
             push_json_kv(&mut out, false, &safe_key, &v)?;
         }
 
@@ -839,21 +938,27 @@ where
     None
 }
 
-type FileSinkLayer = Option<Box<dyn Layer<Registry> + Send + Sync>>;
+type OtelSlot = Option<Box<dyn Layer<Registry> + Send + Sync>>;
+type RootSubscriber = tracing_subscriber::layer::Layered<OtelSlot, Registry>;
+type FileSinkLayer = Option<Box<dyn Layer<RootSubscriber> + Send + Sync>>;
 type FileSinkSlot = tracing_subscriber::filter::Filtered<
-    reload::Layer<FileSinkLayer, Registry>,
-    reload::Layer<LevelFilter, Registry>,
-    Registry,
+    reload::Layer<FileSinkLayer, RootSubscriber>,
+    reload::Layer<LevelFilter, RootSubscriber>,
+    RootSubscriber,
 >;
-type BaseSubscriber = tracing_subscriber::layer::Layered<FileSinkSlot, Registry>;
+type BaseSubscriber = tracing_subscriber::layer::Layered<FileSinkSlot, RootSubscriber>;
 
 /// Reload handles returned by [`init_telemetry`] and [`build_scoped_subscriber`] (`R58`, `R59`).
 #[derive(Clone)]
 pub struct TelemetryHandles {
     console_filter: reload::Handle<EnvFilter, BaseSubscriber>,
-    file_body: reload::Handle<FileSinkLayer, Registry>,
-    file_filter: reload::Handle<LevelFilter, Registry>,
+    file_body: reload::Handle<FileSinkLayer, RootSubscriber>,
+    file_filter: reload::Handle<LevelFilter, RootSubscriber>,
     log_bridge_refused: bool,
+    #[cfg(not(feature = "otel"))]
+    otel_enabled: bool,
+    #[cfg(feature = "otel")]
+    otel_dispatch: Option<OtelDispatchSlot>,
 }
 
 impl fmt::Debug for TelemetryHandles {
@@ -902,20 +1007,26 @@ impl TelemetryHandles {
         backup_count: usize,
     ) -> io::Result<()> {
         let writer = RotatingFile::open(path, max_bytes, backup_count)?;
-        let layer: Box<dyn Layer<Registry> + Send + Sync> = match format {
+        let layer: Box<dyn Layer<RootSubscriber> + Send + Sync> = match format {
             FileLogFormat::Text => tracing_subscriber::fmt::layer()
                 .with_writer(Mutex::new(writer))
                 .with_ansi(false)
                 .fmt_fields(HumanFields)
                 .log_internal_errors(true)
                 .boxed(),
-            FileLogFormat::Json => tracing_subscriber::fmt::layer()
-                .with_writer(Mutex::new(writer))
-                .with_ansi(false)
-                .fmt_fields(JsonFields)
-                .event_format(JsonEvent::new(false))
-                .log_internal_errors(true)
-                .boxed(),
+            FileLogFormat::Json => {
+                #[cfg(feature = "otel")]
+                let event_fmt = JsonEvent::with_otel_dispatch(false, self.otel_dispatch.clone());
+                #[cfg(not(feature = "otel"))]
+                let event_fmt = JsonEvent::with_otel(false, self.otel_enabled);
+                tracing_subscriber::fmt::layer()
+                    .with_writer(Mutex::new(writer))
+                    .with_ansi(false)
+                    .fmt_fields(JsonFields)
+                    .event_format(event_fmt)
+                    .log_internal_errors(true)
+                    .boxed()
+            }
         };
 
         // R59: install body BEFORE enabling filter so no event hits an empty slot.
@@ -955,6 +1066,7 @@ fn build_subscriber_inner<M>(
     profile: Profile,
     stderr_is_tty: bool,
     make_writer: M,
+    otel_layer: OtelSlot,
 ) -> (impl Subscriber + Send + Sync, TelemetryHandles)
 where
     M: for<'a> MakeWriter<'a> + Send + Sync + 'static,
@@ -969,6 +1081,14 @@ where
         Profile::Service { level, format } => (format.resolved(), level, false, false),
     };
 
+    #[cfg(not(feature = "otel"))]
+    let otel_enabled = otel_layer.is_some();
+
+    #[cfg(feature = "otel")]
+    let otel_dispatch: Option<OtelDispatchSlot> = otel_layer
+        .is_some()
+        .then(|| std::sync::Arc::new(std::sync::OnceLock::new()));
+
     let console_layer: Box<dyn Layer<BaseSubscriber> + Send + Sync> = match resolved_format {
         ResolvedLogFormat::Console => tracing_subscriber::fmt::layer()
             .with_writer(make_writer)
@@ -978,32 +1098,54 @@ where
             .with_thread_names(debug)
             .fmt_fields(HumanFields)
             .boxed(),
-        ResolvedLogFormat::Json => tracing_subscriber::fmt::layer()
-            .with_writer(make_writer)
-            .with_ansi(false)
-            .fmt_fields(JsonFields)
-            .event_format(JsonEvent::new(debug))
-            .boxed(),
+        ResolvedLogFormat::Json => {
+            #[cfg(feature = "otel")]
+            let event_fmt = JsonEvent::with_otel_dispatch(debug, otel_dispatch.clone());
+            #[cfg(not(feature = "otel"))]
+            let event_fmt = JsonEvent::with_otel(debug, otel_enabled);
+            tracing_subscriber::fmt::layer()
+                .with_writer(make_writer)
+                .with_ansi(false)
+                .fmt_fields(JsonFields)
+                .event_format(event_fmt)
+                .boxed()
+        }
     };
 
+    // R58/R78 extension slot: attach optional OpenTelemetry layer on `Registry` (`None` is a
+    // zero-cost no-op layer so subscriber types remain identical across all configurations).
+    let root: RootSubscriber = Registry::default().with(otel_layer);
+
     // R59 S1: both console and file layers use independent per-layer reload filters stacked via
-    // `.with(...)` on `Registry` so `max_level_hint()` computes `max(console, file)` and a file
-    // sink at DEBUG receives debug events while console stays at WARN (and vice versa when the
-    // file sink is OFF).
-    let (file_body_layer, file_body_handle) = reload::Layer::<FileSinkLayer, Registry>::new(None);
+    // `.with(...)` on `RootSubscriber` so `max_level_hint()` computes `max(console, file)` and a
+    // file sink at DEBUG receives debug events while console stays at WARN (and vice versa when
+    // the file sink is OFF).
+    let (file_body_layer, file_body_handle) =
+        reload::Layer::<FileSinkLayer, RootSubscriber>::new(None);
     let (file_filter_layer, file_filter_handle) = reload::Layer::new(LevelFilter::OFF);
-    let base: BaseSubscriber =
-        Registry::default().with(file_body_layer.with_filter(file_filter_layer));
+    let base: BaseSubscriber = root.with(file_body_layer.with_filter(file_filter_layer));
 
     let (console_filter_layer, console_filter_handle) =
         reload::Layer::new(level_to_env_filter(level));
     let subscriber = base.with(console_layer.with_filter(console_filter_layer));
+
+    // Attach concrete DispatchCaptureLayer directly on the outer Subscriber (not inside
+    // `Option<...>` or `Box<dyn Layer>`) so `Layered::on_register_dispatch` always fires and hands
+    // `JsonEvent` a live `WeakDispatch` for `tracing_opentelemetry::get_otel_context`.
+    #[cfg(feature = "otel")]
+    let subscriber = subscriber.with(DispatchCaptureLayer {
+        slot: otel_dispatch.clone(),
+    });
 
     let handles = TelemetryHandles {
         console_filter: console_filter_handle,
         file_body: file_body_handle,
         file_filter: file_filter_handle,
         log_bridge_refused: false,
+        #[cfg(not(feature = "otel"))]
+        otel_enabled,
+        #[cfg(feature = "otel")]
+        otel_dispatch,
     };
 
     (subscriber, handles)
@@ -1019,7 +1161,22 @@ pub fn build_scoped_subscriber<M>(
 where
     M: for<'a> MakeWriter<'a> + Send + Sync + 'static,
 {
-    build_subscriber_inner(profile, false, make_writer)
+    build_subscriber_inner(profile, false, make_writer, None)
+}
+
+/// Build an isolated subscriber with an optional OpenTelemetry layer attached to the R58/R78
+/// extension slot (`otel` feature required).
+#[cfg(feature = "otel")]
+#[must_use]
+pub fn build_scoped_subscriber_with_otel<M>(
+    profile: Profile,
+    make_writer: M,
+    otel_layer: Option<crate::otel::OtelLayer>,
+) -> (impl Subscriber + Send + Sync, TelemetryHandles)
+where
+    M: for<'a> MakeWriter<'a> + Send + Sync + 'static,
+{
+    build_subscriber_inner(profile, false, make_writer, otel_layer)
 }
 
 /// Install the global `tracing` subscriber on `stderr` if no host subscriber is active (`R58`).
@@ -1028,12 +1185,28 @@ where
 /// so embedding hosts that own the global subscriber never panic.
 #[must_use]
 pub fn init_telemetry(profile: Profile) -> TelemetryInit {
+    init_telemetry_inner(profile, None)
+}
+
+/// Install the global `tracing` subscriber on `stderr` with an optional OpenTelemetry layer
+/// attached to the R58/R78 extension slot (`otel` feature required).
+#[cfg(feature = "otel")]
+#[must_use]
+pub fn init_telemetry_with_otel(
+    profile: Profile,
+    otel_layer: Option<crate::otel::OtelLayer>,
+) -> TelemetryInit {
+    init_telemetry_inner(profile, otel_layer)
+}
+
+fn init_telemetry_inner(profile: Profile, otel_layer: OtelSlot) -> TelemetryInit {
     if tracing::dispatcher::has_been_set() {
         return TelemetryInit::HostOwned;
     }
 
     let stderr_is_tty = io::stderr().is_terminal();
-    let (subscriber, mut handles) = build_subscriber_inner(profile, stderr_is_tty, io::stderr);
+    let (subscriber, mut handles) =
+        build_subscriber_inner(profile, stderr_is_tty, io::stderr, otel_layer);
 
     match subscriber.try_init() {
         Ok(()) => TelemetryInit::Installed(handles),
@@ -1041,5 +1214,27 @@ pub fn init_telemetry(profile: Profile) -> TelemetryInit {
             handles.log_bridge_refused = true;
             TelemetryInit::Installed(handles)
         }
+    }
+}
+
+/// Emit one diagnostic warning when a caller requests OpenTelemetry or configures an
+/// `OTEL_EXPORTER_OTLP_*` endpoint against a build without `--features otel` (`R78` Gate 1).
+///
+/// No-op when the `otel` feature is compiled in.
+pub fn warn_if_otlp_env_ignored(otel_enabled_flag: bool, otlp_endpoint: Option<&str>) {
+    #[cfg(not(feature = "otel"))]
+    {
+        let endpoint_set = otlp_endpoint.is_some_and(|v| !v.trim().is_empty());
+        if otel_enabled_flag || endpoint_set {
+            tracing::warn!(
+                otel_enabled = otel_enabled_flag,
+                endpoint_configured = endpoint_set,
+                "otel export ignored: binary built without `--features otel`"
+            );
+        }
+    }
+    #[cfg(feature = "otel")]
+    {
+        let _ = (otel_enabled_flag, otlp_endpoint);
     }
 }

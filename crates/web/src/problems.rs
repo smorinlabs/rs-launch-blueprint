@@ -34,7 +34,7 @@ pub const NOT_REQUEST_REACHABLE: &[ErrorCode] = &[
 ];
 
 /// Structured per-field validation entry emitted inside `errors[]` (`R5.15`, `R70`).
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, utoipa::ToSchema)]
 pub struct FieldError {
     /// RFC 6901 JSON Pointer locating the offending field or parameter (e.g. `"/name"`).
     pub pointer: String,
@@ -512,11 +512,15 @@ pub fn join_error_to_web_error(err: JoinError, base_uri: &str, instance: &str) -
     WebError::internal(base_uri, Some(instance))
 }
 
-/// Router fallback converting unmatched routes into RFC 9457 `404` (`R70`).
+/// Router fallback converting unmatched routes into RFC 9457 `404` (`R70`, `R79`).
 pub async fn not_found(
     axum::extract::State(settings): axum::extract::State<WebSettings>,
     uri: Uri,
 ) -> WebError {
+    #[cfg(feature = "metrics")]
+    if settings.metrics_enabled {
+        crate::metrics::count_unmatched();
+    }
     WebError::not_found(&settings.problem_base_uri, uri.path())
 }
 

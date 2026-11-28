@@ -38,6 +38,7 @@ deny = [
     { crate = "axum", wrappers = [
         "rs-launch-blueprint-web",
         "problem_details",
+        "utoipa-axum",
     ], reason = "core and the CLI are framework-agnostic (F008)" },
     { crate = "problem_details", wrappers = [
         "rs-launch-blueprint-web",
@@ -52,10 +53,13 @@ deny = [
     ], reason = "shell completion generation belongs to the CLI crate only (R60)" },
     { crate = "tracing-subscriber", wrappers = [
         "rs-launch-blueprint",
-    ], reason = "subscriber initialization belongs to the root composition package only (R58)" },
+        "tracing-opentelemetry",
+        "loom",
+    ], reason = "subscriber initialization belongs to the root composition package only (R58); tracing-opentelemetry depends on it for Layer bridging (R78); loom is an inactive cfg(loom) target dep of left-right via metrics-exporter-prometheus (R79)" },
     { crate = "anyhow", wrappers = [
         "rs-launch-blueprint",
-    ], reason = "library crates return typed errors; anyhow is confined to binary entrypoints (R67)" },
+        "prost-derive",
+    ], reason = "library crates return typed errors; anyhow is confined to binary entrypoints (R67); prost-derive uses it at proc-macro compile time under otel (R78)" },
 ]
 
 [sources]

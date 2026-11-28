@@ -65,6 +65,27 @@ impl HttpProjectsPort {
     }
 }
 
+/// Collect outbound W3C Trace Context headers (`traceparent` / `tracestate`) from the active
+/// tracing span when `otel` is enabled (`R78` point 5).
+#[cfg(feature = "otel")]
+fn outbound_trace_headers() -> Vec<(String, String)> {
+    let mut map = ureq::http::HeaderMap::new();
+    crate::otel::inject_trace_context(&mut map);
+    map.iter()
+        .filter_map(|(name, value)| {
+            value
+                .to_str()
+                .ok()
+                .map(|v| (name.as_str().to_owned(), v.to_owned()))
+        })
+        .collect()
+}
+
+#[cfg(not(feature = "otel"))]
+const fn outbound_trace_headers() -> Vec<(String, String)> {
+    Vec::new()
+}
+
 #[derive(Debug, Deserialize)]
 struct Envelope<T> {
     data: T,
@@ -205,13 +226,22 @@ impl ProjectsPort for HttpProjectsPort {
             let _ = write!(&mut url, "{sep}limit={limit}");
         }
 
+        let span = tracing::info_span!(
+            "http.client.request",
+            otel.kind = "client",
+            http.request.method = "GET"
+        );
+        let _enter = span.enter();
         let mut auth = self.bearer_header();
-        let result = self
+        let mut req = self
             .agent
             .get(&url)
             .header("Authorization", &auth)
-            .header("Accept", "application/json")
-            .call();
+            .header("Accept", "application/json");
+        for (name, val) in outbound_trace_headers() {
+            req = req.header(&name, &val);
+        }
+        let result = req.call();
         auth.zeroize();
 
         let response = result.map_err(|err| PortError::Transport {
@@ -233,13 +263,22 @@ impl ProjectsPort for HttpProjectsPort {
 
     fn get(&self, id: &str) -> Result<Option<Project>, PortError> {
         let url = format!("{}/projects/{}", self.base_url, percent_encode(id));
+        let span = tracing::info_span!(
+            "http.client.request",
+            otel.kind = "client",
+            http.request.method = "GET"
+        );
+        let _enter = span.enter();
         let mut auth = self.bearer_header();
-        let result = self
+        let mut req = self
             .agent
             .get(&url)
             .header("Authorization", &auth)
-            .header("Accept", "application/json")
-            .call();
+            .header("Accept", "application/json");
+        for (name, val) in outbound_trace_headers() {
+            req = req.header(&name, &val);
+        }
+        let result = req.call();
         auth.zeroize();
 
         let response = result.map_err(|err| PortError::Transport {
@@ -265,13 +304,22 @@ impl ProjectsPort for HttpProjectsPort {
             workspace: input.workspace.as_deref(),
         };
 
+        let span = tracing::info_span!(
+            "http.client.request",
+            otel.kind = "client",
+            http.request.method = "POST"
+        );
+        let _enter = span.enter();
         let mut auth = self.bearer_header();
-        let result = self
+        let mut req = self
             .agent
             .post(&url)
             .header("Authorization", &auth)
-            .header("Accept", "application/json")
-            .send_json(&payload);
+            .header("Accept", "application/json");
+        for (name, val) in outbound_trace_headers() {
+            req = req.header(&name, &val);
+        }
+        let result = req.send_json(&payload);
         auth.zeroize();
 
         let response = result.map_err(|err| PortError::Transport {
@@ -289,13 +337,22 @@ impl ProjectsPort for HttpProjectsPort {
 
     fn delete(&self, id: &str) -> Result<bool, PortError> {
         let url = format!("{}/projects/{}", self.base_url, percent_encode(id));
+        let span = tracing::info_span!(
+            "http.client.request",
+            otel.kind = "client",
+            http.request.method = "DELETE"
+        );
+        let _enter = span.enter();
         let mut auth = self.bearer_header();
-        let result = self
+        let mut req = self
             .agent
             .delete(&url)
             .header("Authorization", &auth)
-            .header("Accept", "application/json")
-            .call();
+            .header("Accept", "application/json");
+        for (name, val) in outbound_trace_headers() {
+            req = req.header(&name, &val);
+        }
+        let result = req.call();
         auth.zeroize();
 
         let response = result.map_err(|err| PortError::Transport {

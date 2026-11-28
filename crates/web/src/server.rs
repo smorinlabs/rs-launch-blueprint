@@ -9,14 +9,22 @@ use std::time::Duration;
 
 use axum::Router;
 use axum::extract::FromRef;
+use axum::routing::get;
 use rs_launch_blueprint_core::{
     Diagnostics, ErasedProjectsService, Exit, IdempotencyStore, InMemoryIdempotencyStore,
+    InMemoryProjectsPort, ProjectsPort, ProjectsService,
 };
 use thiserror::Error;
 use tokio::net::TcpListener;
 use tokio::sync::Notify;
+use utoipa::OpenApi as _;
+use utoipa_axum::router::OpenApiRouter;
 
 use crate::middleware::apply_middleware;
+use crate::openapi::{
+    API_DOCUMENT_VERSION, ApiDoc, OPENAPI_PATH, declare_problem_responses, serialize_openapi,
+    serve_openapi,
+};
 use crate::pagination::PaginationLimits;
 use crate::problems::{method_not_allowed, not_found};
 use crate::rate_limit::{InMemoryRateLimitStore, RateLimitStore};
@@ -186,24 +194,75 @@ impl FromRef<AppState> for DiagnosticsRunner {
     }
 }
 
-/// Assemble the complete HTTP [`Router`] with versioned routes, root operational probes,
-/// RFC 9457 fallbacks, and the fixed-order R75 middleware stack (`R69`, `R75`, `R80`).
-pub fn build_router(state: AppState) -> Router {
-    let projects_router = routes::projects::router(&state);
-    let api_router = if state.settings.root_path.is_empty() {
-        projects_router
+/// Assemble both the complete HTTP [`Router`] and its code-derived OpenAPI 3.1 document from one
+/// shared `OpenApiRouter` wiring so routes and schema cannot diverge (`R69`, `R71` A8, `R75`, `R80`).
+pub fn build_router_and_openapi(state: AppState) -> (Router, utoipa::openapi::OpenApi) {
+    let projects_openapi_router = if state.settings.root_path.is_empty() {
+        routes::projects::router(&state)
     } else {
-        Router::new().nest(&state.settings.root_path, projects_router)
+        OpenApiRouter::new().nest(&state.settings.root_path, routes::projects::router(&state))
+    };
+    let (api_router, projects_doc) = projects_openapi_router.split_for_parts();
+    let (ops_router, ops_doc) = routes::ops::router().split_for_parts();
+
+    let mut doc = ApiDoc::openapi();
+    doc.merge(ops_doc);
+    doc.merge(projects_doc);
+    declare_problem_responses(&mut doc);
+    doc.info.version = API_DOCUMENT_VERSION.to_owned();
+
+    let rendered_doc = Arc::new(serialize_openapi(&doc));
+
+    #[cfg(feature = "metrics")]
+    let api_router = if state.settings.metrics_enabled {
+        let _ = crate::metrics::metrics_recorder();
+        api_router.route_layer(axum::middleware::from_fn(crate::metrics::track))
+    } else {
+        api_router
     };
 
+    let openapi_router = Router::new()
+        .route(OPENAPI_PATH, get(serve_openapi))
+        .with_state((state.settings.clone(), rendered_doc));
+
     let router = Router::new()
-        .merge(routes::ops::router())
+        .merge(ops_router)
         .merge(api_router)
         .fallback(not_found)
         .method_not_allowed_fallback(method_not_allowed)
-        .with_state(state.clone());
+        .with_state(state.clone())
+        .merge(openapi_router);
 
-    apply_middleware(router, &state.settings, Arc::clone(&state.rate_limit))
+    #[cfg(feature = "metrics")]
+    let router = if state.settings.metrics_enabled {
+        router.merge(crate::metrics::metrics_router(state.settings.clone()))
+    } else {
+        router
+    };
+
+    let router = apply_middleware(router, &state.settings, Arc::clone(&state.rate_limit));
+    (router, doc)
+}
+
+/// Assemble the complete HTTP [`Router`] with versioned routes, root operational probes,
+/// `/openapi.json`, RFC 9457 fallbacks, and the fixed-order R75 middleware stack (`R69`, `R71`,
+/// `R75`, `R80`).
+pub fn build_router(state: AppState) -> Router {
+    build_router_and_openapi(state).0
+}
+
+/// Build the canonical OpenAPI 3.1 document from the live route wiring (`R71` F332).
+#[must_use]
+pub fn openapi_document() -> utoipa::openapi::OpenApi {
+    let port: Arc<dyn ProjectsPort> = Arc::new(InMemoryProjectsPort::new());
+    let state = AppState::for_testing(Arc::new(ProjectsService::new(port)));
+    build_router_and_openapi(state).1
+}
+
+/// Render the canonical OpenAPI 3.1 JSON document deterministically with a trailing newline (`R71`).
+#[must_use]
+pub fn openapi_json() -> String {
+    serialize_openapi(&openapi_document())
 }
 
 /// OS termination signal observed by [`shutdown_signal`] (`R69`, `R67`).
@@ -249,33 +308,41 @@ pub enum ServeError {
     GracefulShutdownTimedOut(Duration),
 }
 
-/// Wait for `SIGINT` (Ctrl-C) or Unix `SIGTERM` (`R69`).
-pub async fn shutdown_signal() -> ShutdownSignal {
-    let ctrl_c = async {
-        let _ = tokio::signal::ctrl_c().await;
-    };
-
+/// Eagerly register the OS `SIGTERM` handler (on Unix) before returning a future that resolves on
+/// `SIGINT` or `SIGTERM`, so binding a listener never races with signal handler installation.
+fn prepare_shutdown_signal() -> impl Future<Output = ShutdownSignal> + Send + 'static {
     #[cfg(unix)]
-    {
-        match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
-            Ok(mut sigterm) => {
+    let sigterm = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()).ok();
+
+    async move {
+        let ctrl_c = async {
+            let _ = tokio::signal::ctrl_c().await;
+        };
+
+        #[cfg(unix)]
+        {
+            if let Some(mut sigterm) = sigterm {
                 tokio::select! {
                     () = ctrl_c => ShutdownSignal::SigInt,
                     _ = sigterm.recv() => ShutdownSignal::SigTerm,
                 }
-            }
-            Err(_) => {
+            } else {
                 ctrl_c.await;
                 ShutdownSignal::SigInt
             }
         }
-    }
 
-    #[cfg(not(unix))]
-    {
-        ctrl_c.await;
-        ShutdownSignal::SigInt
+        #[cfg(not(unix))]
+        {
+            ctrl_c.await;
+            ShutdownSignal::SigInt
+        }
     }
+}
+
+/// Wait for `SIGINT` (Ctrl-C) or Unix `SIGTERM` (`R69`).
+pub async fn shutdown_signal() -> ShutdownSignal {
+    prepare_shutdown_signal().await
 }
 
 /// Serve `app` on `listener` using `into_make_service_with_connect_info::<SocketAddr>()` until
@@ -361,27 +428,49 @@ pub fn run_server_blocking(state: AppState) -> Result<Exit, ServeError> {
 
     runtime.block_on(async move {
         let addr = state.settings.bind_addr();
+        let readiness = state.readiness.clone();
+        let readiness_pause = state.settings.readiness_pause;
+        let drain_budget = state.settings.drain_budget();
+        #[cfg(feature = "metrics")]
+        let metrics_enabled = state.settings.metrics_enabled;
+
+        // Build the router and register OS termination signal handlers BEFORE opening the
+        // listening TCP socket so no client or probe can observe a listening port before routes
+        // and graceful SIGTERM handling are installed.
+        let app = build_router(state);
+        let shutdown = prepare_shutdown_signal();
+
         let listener = TcpListener::bind(addr)
             .await
             .map_err(|source| ServeError::Bind { addr, source })?;
         let local_addr = listener.local_addr().unwrap_or(addr);
-        let readiness = state.readiness.clone();
-        let readiness_pause = state.settings.readiness_pause;
-        let drain_budget = state.settings.drain_budget();
-        let app = build_router(state);
+
+        #[cfg(feature = "metrics")]
+        let upkeep_task = if metrics_enabled {
+            let handle = crate::metrics::metrics_recorder();
+            Some(tokio::spawn(crate::metrics::run_metrics_upkeep(handle)))
+        } else {
+            None
+        };
 
         tracing::info!(addr = %local_addr, "web service listening");
 
-        let sig = serve_until(
+        let serve_result = serve_until(
             listener,
             app,
-            shutdown_signal(),
+            shutdown,
             readiness,
             readiness_pause,
             drain_budget,
         )
-        .await?;
+        .await;
 
+        #[cfg(feature = "metrics")]
+        if let Some(task) = upkeep_task {
+            task.abort();
+        }
+
+        let sig = serve_result?;
         Ok(sig.map_or(Exit::Success, ShutdownSignal::exit))
     })
 }

@@ -1,0 +1,3 @@
+# Accepted OpenAPI breaking changes (R71 F333).
+# Add one oasdiff `--err-ignore` line per reviewed, intentional contract break.
+# Kept comment-only at baseline.
