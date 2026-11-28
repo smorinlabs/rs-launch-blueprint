@@ -79,19 +79,31 @@ cd <repo_name>
 
 (Pass `--public` instead of `--private` when requested.)
 
-Verify this is a fresh, unstamped repository:
+Verify this is a fresh, unstamped repository on default branch `main` (both
+`.github/workflows/ci.yml` and `.github/workflows/press-verify.yml` run
+`pull_request` checks targeting `main`; if your organization creates new
+repositories with a different default branch, rename it to `main` first):
 
 ```bash
 test ! -f press/press-receipt.toml
+test "$(git symbolic-ref --short HEAD)" = "main"
 ```
 
-Create an initialization branch so `main` stays clean for PR review:
+Create an initialization branch off `main` so `main` stays clean for PR review:
 
 ```bash
 git switch -c chore/initialize-template
 ```
 
-## Step 4 — Provision pinned Template Press (`template-press==5.0.0`)
+## Step 4 — Fetch Cargo cache and provision pinned Template Press (`template-press==5.0.0`)
+
+Pre-populate the local Cargo registry cache from the committed `Cargo.lock` so
+Template Press's offline `cargo update --workspace --offline` regeneration
+succeeds even on a machine with an empty Cargo cache:
+
+```bash
+cargo fetch --locked
+```
 
 Install the hash-pinned `template-press==5.0.0` release declared in
 `press/requirements.txt` into a local virtual environment:
@@ -190,6 +202,7 @@ git add --all
 git commit -m "chore: initialize repository from template"
 git push -u origin chore/initialize-template
 gh pr create \
+  --base main \
   --title "chore: initialize repository from template" \
   --body "Stamps the repository with Template Press and verifies \`just check\`, \`just check-packaging\`, and \`press verify\`."
 ```

@@ -72,13 +72,23 @@ Create the following GitHub Environments under **Settings -> Environments**:
 - `security-review` — required reviewer gate for manual security workflows
   (`.github/workflows/manual-pr-security-scan.yml` and audit triage).
 
-Configure crates.io authentication using **either**:
+Configure crates.io authentication:
 
-- **Trusted Publishing via OIDC (recommended):** register the repository and
-  `.github/workflows/publish.yml` on crates.io, then set repository variable
-  `CRATES_IO_TRUSTED_PUBLISHING=true`.
-- **API token fallback:** store a publish-scoped crates.io token as the
-  `CRATES_IO_TOKEN` secret on the `crates-io` environment.
+1. **One-time initial publish (required before Trusted Publishing):** crates.io
+   Trusted Publishing attaches to crates that already exist on crates.io. For a
+   brand-new project, first publish all four workspace crates in dependency
+   order (`<repo>-core`, `<repo>-cli`, `<repo>-web`, and `<repo>`) using a
+   publish-scoped crates.io API token (either manually with `cargo publish` or
+   via the `CRATES_IO_TOKEN` secret on the `crates-io` environment during the
+   initial `v0.1.0` release).
+2. **Trusted Publishing via OIDC (recommended after initial publish):** on
+   crates.io, register this repository, `.github/workflows/publish.yml`, and
+   environment `crates-io` as a Trusted Publisher for each of the four crates,
+   then set repository variable `CRATES_IO_TRUSTED_PUBLISHING=true` (and remove
+   `CRATES_IO_TOKEN` if you no longer want the token fallback).
+3. **API token fallback:** if you prefer not to use OIDC, keep a publish-scoped
+   crates.io token stored as the `CRATES_IO_TOKEN` secret on the `crates-io`
+   environment.
 
 See [RELEASE.md](RELEASE.md) for the full release and dry-run sequence.
 

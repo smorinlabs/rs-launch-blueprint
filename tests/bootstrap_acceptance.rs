@@ -159,17 +159,27 @@ fn press_rules_stubs_and_gitignore_match_p12_contract() {
         "substring_rewrite_fields must include app_name (R15 CARGO_BIN_EXE_<name>): {sub_fields:?}"
     );
 
-    // Declared [[regenerate]] includes Cargo.lock.
-    let regen_files: Vec<&str> = rules_doc["regenerate"]
+    // Declared [[regenerate]] includes Cargo.lock and forwards CARGO_HOME / RUSTUP_HOME.
+    let regens = rules_doc["regenerate"]
         .as_array()
-        .expect("press-rules.toml must declare [[regenerate]]")
+        .expect("press-rules.toml must declare [[regenerate]]");
+    let cargo_lock_regen = regens
         .iter()
-        .filter_map(|e| e.get("file").and_then(toml::Value::as_str))
+        .find(|e| e.get("file").and_then(toml::Value::as_str) == Some("Cargo.lock"))
+        .expect("[[regenerate]] must rebuild Cargo.lock");
+    let regen_env: Vec<&str> = cargo_lock_regen
+        .get("env")
+        .and_then(toml::Value::as_array)
+        .expect("Cargo.lock [[regenerate]] must declare env list")
+        .iter()
+        .filter_map(toml::Value::as_str)
         .collect();
-    assert!(
-        regen_files.contains(&"Cargo.lock"),
-        "[[regenerate]] must rebuild Cargo.lock"
-    );
+    for var in ["CARGO_HOME", "RUSTUP_HOME"] {
+        assert!(
+            regen_env.contains(&var),
+            "Cargo.lock [[regenerate]] env must forward `{var}`: {regen_env:?}"
+        );
+    }
 
     // Declared [[remove]] covers template-only files and directories.
     let removes = rules_doc["remove"]
@@ -384,6 +394,8 @@ fn bootstrap_skill_and_agents_symlink_match_contract() {
     for required in [
         "smorinlabs/rs-launch-blueprint",
         "gh repo create",
+        "cargo fetch --locked",
+        "--base main",
         "press/requirements.txt",
         "template-press==5.0.0",
         "press check-tools",
@@ -441,15 +453,27 @@ fn contributors_config_roster_and_workflow_satisfy_r07_r21_f209() {
 
     let cfg = read_text(&root, ".contributors.yml");
     for required in [
+        "classifier: path",
         "output_file: CONTRIBUTORS.md",
         "state_file: .contributors.jsonl",
         "in_place: true",
-        "<!-- contributors-please:start -->",
-        "<!-- contributors-please:end -->",
+        "in_place_marker_start: \"<!-- contributors-please:start -->\"",
+        "in_place_marker_end: \"<!-- contributors-please:end -->\"",
+        "classification:",
+        "categories:",
+        "default:",
+        "identity_map:",
+        "- login: smorin",
     ] {
         assert!(
             cfg.contains(required),
             ".contributors.yml missing required F209 clause `{required}`"
+        );
+    }
+    for unsupported in ["start_marker:", "end_marker:", "path_rules:"] {
+        assert!(
+            !cfg.contains(unsupported),
+            ".contributors.yml must not use unsupported key `{unsupported}`"
         );
     }
 
@@ -879,7 +903,11 @@ mod live {
                 if stream.write_all(req.as_bytes()).is_ok() {
                     let mut resp = String::new();
                     if stream.read_to_string(&mut resp).is_ok()
-                        && let Some((_, body)) = resp.split_once("\r\n\r\n")
+                        && let Some((head, body)) = resp.split_once("\r\n\r\n")
+                        && head
+                            .lines()
+                            .next()
+                            .is_some_and(|status| status.starts_with("HTTP/1.1 200"))
                     {
                         health_body = Some(body.to_owned());
                         break;
