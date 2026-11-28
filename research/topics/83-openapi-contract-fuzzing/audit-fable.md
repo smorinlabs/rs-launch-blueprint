@@ -1,117 +1,89 @@
-actor: fable
+decision-sha256: 2a7101ed1cd59c707c04234b4e6dc6006c31b51fc982b84648798e0ca5fb5654
+actor: audit-fable-r83-r6-2026-11-27
 model: claude-opus-5-5
 family: anthropic
-decision-sha256: 90bc90e8254dea3be6046d95f0de6791b2005c3694d41a0ace01498d5ecbb209
 verdict: approve
 unresolved-findings: none
 
-# R83 openapi-contract-fuzzing — directed verification of revision 5
+# R83 revision 6: independent judgment audit (audit-fable seat)
 
-This is a directed verification, not a fresh audit. It confirms or disputes the four repairs
-that revision 5 makes in answer to the two revision-4 audits. It does not look for new findings.
+**Target:** `/tmp/p02-flagday/drafts/R83-DECISION.md`, revision 6 of `openapi-contract-fuzzing`, written as the flag-day touch-up for R69 revision 11.
+**Prior published decision:** `research/topics/83-openapi-contract-fuzzing/DECISION.md`, revision 5.
+**Outcome:** I approve. Revision 6 is a pure flag-day touch-up. Its recommendation, principles, agreement level and evidence are byte-identical to revision 5. I found no BLOCKING contradiction under `research/RUNBOOK.md` §7.1 (Q23). The three observations below are wording and citation drift, which §7.1 records but never rounds.
 
-**Method.** `shasum -a 256 review/DECISION.md` was run first. It printed the expected value above.
-Four files were then read: `review/audit-fable.r4.md`, `review/audit-codex.r4.md`,
-`review/R83-r4-snapshot.md` and `review/DECISION.md`. `diff R83-r4-snapshot.md DECISION.md` was
-run over the whole file. No other audit or snapshot file was read, and nothing was rerun.
+All checks were read-only. No repository file was edited.
 
-## Diff scope
+## Check 1: integrity of the draft and its supersession tail
 
-The diff contains exactly nine hunks. Each one is either an enumerated repair or a conventional
-update:
-
-| Old lines | New lines | What changed | Class |
-|---|---|---|---|
-| `:1` | `:1` | Title now says "revision 5" | header |
-| `:3`–`:11` | `:3`–`:12` | Revision note rewritten for revision 5; cites the r4 sha `342b9874…a7093` and the r4 snapshot | revision note |
-| `:15`–`:16` | `:16`–`:19` | Disposition rows for JF3-1-1 and JF3-1-2 replaced by rows for JF4-1-1, JF4-1-2 and the two codex findings | disposition |
-| `:32` | `:35`–`:40` | History paragraph records revision 4 and its audits | history |
-| `:129`–`:131` | `:137`–`:141` | Criterion 7 first half reworded | repair 1 |
-| `:507` | `:517` | "this revision carries" becomes "revision 4 carried" | history |
-| after `:508` | `:519`–`:525` | New "Revision 5 ran nothing new either" paragraph | history |
-| `:585`–`:591` | `:602`–`:620` | Probe and registry reproducibility sentences scoped, with the rerun recorded | repairs 3 and 4 |
-| `:755`–`:756` | `:784`–`:785` | P03 item (6) widened | repair 2 |
-
-No hunk falls outside this list.
-
-## Per-repair confirmations
-
-### 1. JF4-1-1, option (a): CONFIRMED
-
-The new text is at `:137`–`:141`, with the disposition row at `:16`.
-
-- `:137`–`:138` reads "The mapper's valid strategy contains a `Just` arm for each declared
-  boundary, and `contract_mapper.rs` asserts that each boundary is generated". This matches
-  option (a) in `audit-fable.r4.md` verbatim.
-- `:138`–`:139` reads "the 16 random valid cases of one run are not promised to hit every
-  boundary". This is the explicit non-promise that was requested.
-- The per-run claim now appears only in the second half, at `:139`–`:141`: "For each operation in
-  each run, the boundary-invalid mode enumerated exactly one case for every declared constraint
-  arm". So the second half still enumerates one case per declared arm.
-- The disposition row at `:16` names option (a) and gives a reason for not taking option (b).
-
-### 2. JF4-1-2: CONFIRMED
-
-`:784`–`:785` reads "(6) Query, header and cookie parameter generation, proved against R72's
-`cursor`/`limit` for the query location." This is byte-for-byte the repair wording in
-`audit-fable.r4.md`.
-
-### 3. Codex finding 1, probe log byte drift: CONFIRMED
-
-- `:602`–`:604` scopes the byte-identity claim to "revision 1", on "the same toolchain,
-  `rustc 1.98.0`".
-- `:607`–`:608` adds "That byte-identity holds for the original same-toolchain pair only."
-- The rerun at `:608`–`:611` records `PASS=24 FAIL=0 SKIP=0 TOTAL=24`, script exit 0, and `cmp`
-  returning 1. The first differing lines are `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`
-  versus `rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)`, then `cargo 1.98.0` versus
-  `cargo 1.98.1`.
-- `:612`–`:613` states "All 24 assertions and the final totals match" and "The committed log is
-  kept as the historical 1.98.0 record."
-
-Every figure matches `audit-codex.r4.md:7` and the rerun-table row at `:16` verbatim. The citation
-`review/audit-codex.r4.md:16`, `:21` points at the right lines.
-
-### 4. Codex finding 2, registry log byte drift: CONFIRMED
-
-- `:613`–`:615` scopes "the only difference anywhere in that original pair" and adds "That holds
-  for the original pair only."
-- The rerun at `:615`–`:620` records `PASS=29 FAIL=0 SKIP=0 TOTAL=29`, script exit 0, and `cmp`
-  returning 1.
-- The recorded deltas are:
-  - `retrieved: 2026-09-27T07:41:52Z` versus `retrieved: 2026-09-27T18:16:14Z`;
-  - `oas3` downloads `997209 / 2239368` → `1000779 / 2242938`;
-  - `openapi-fuzzer` downloads `39 / 11730` → `40 / 11731`, labelled "(recent / all-time)".
-- `:619`–`:620` states "The entire stable-assertions section and all 29 `PASS` lines match" and
-  "The committed log is kept unchanged."
-
-Every figure matches `audit-codex.r4.md:8` and the rerun-table row at `:17` verbatim. The citation
-`:17`, `:21` is correct.
-
-## Criterion-7 cross-references
-
-Each remaining reference to criterion 7 still reads true against the new wording:
-
-| Line | What it says | Why it still holds |
+| Check | Command | Result |
 |---|---|---|
-| `:243` | The Mapper placement row says `contract_mapper.rs` carries criterion 7's guarantee for the valid boundaries and for the boundary-invalid neighbours | The new first half is exactly that mapper assertion |
-| `:319` | "Acceptance criterion 7 exists to keep both guarantees" | Both halves are still present |
-| `:330` | The `contract_mapper.rs` migration row asserts that every declared boundary is generated | This is consistent with the first half |
-| `:646` | "criterion 7's second half" means boundary-invalid generation | The second half still covers boundary-invalid generation |
-| `:780` | P03 item (1) says "plus criterion 7" | This is a generic reference and still holds |
-| `:787` | P03 item (9) says `contract_mapper.rs` fails when a declared boundary stops being generated | This is the mechanism the first half now names |
+| Draft hash | `shasum -a 256` on the draft | `2a7101ed1cd59c707c04234b4e6dc6006c31b51fc982b84648798e0ca5fb5654`, which equals the expected value. It also matches the `R83` entry in `/tmp/p02-flagday/shas-wave2.json`. |
+| Supersession tail | `tail -n 791` of the draft piped to `cmp` against the published revision 5, which is 791 lines | `cmp` exit 0, so the tail is byte-identical. The `## Supersedes` heading sits at draft line 781, directly above the preserved bytes. |
+| Revision 5 hash cited in the revision note | compared with the published file | The note cites `90bc90e8…b209` for revision 5 and preserves those bytes verbatim, as stated. |
 
-`:11`, `:16` and `:519` describe the repair itself and are accurate.
+## Check 2: revision 6 changes only flag-day text
 
-## Observations (non-blocking)
+I diffed the revision-5 body against the draft body (draft lines 1 to 779, without the supersession section). The diff contains only these hunks:
 
-- **O1.** The disposition row at `:16` says the `Just(min)` and `Just(max)` arms "were measured
-  reaching the boundary under 20 of 20 seeds (`A14`)". The text at `:313`–`:314` describes `A14`
-  as measuring only the declared boundary `0`, so the measurement covered one boundary, not both
-  arms. This slightly overstates the evidence. The reasoning is not affected, because the
-  first half no longer relies on a per-run outcome.
-- **O2.** `:16` paraphrases revision 4's reason for rejecting option (a) as "a draw over the
-  declared range could never leave it". The r4 snapshot worded that reason as the 16-case run
-  being unable to promise that `limit=0` and `limit=101` are generated. The two describe the same
-  underlying point, and the paraphrase is fair.
-- **O3.** Two edited source lines, `:613` and `:620`, run long because new text was spliced into
-  existing lines without re-wrapping. This affects formatting only.
+1. **Title line.** The date becomes 2026-11-27 and the revision becomes 6.
+2. **A new revision-6 note** at line 3. The revision-5 note is kept below it.
+3. **The `re-verify:` line** (line 416):
+   - The R71 trigger changes from "R71 publishing" to "R71 revising its published revision 4". It records the earlier trigger as fired on 2026-11-27, with `utoipa` 6.0.0 and OpenAPI 3.1.0 unchanged.
+   - The R69 trigger changes from "republishing revision 10 or later" to "revising its published revision 11". It records the earlier trigger as fired, and names both the `crates/web/tests/` and `crates/web/**` paths.
+   - Every other trigger is byte-identical.
+4. **The `- assumes web-extra-surface` line** (line 426). It is rebound from the revision-9 registry bytes to the revision-11 bytes.
+5. **The note the `assumes` line requires** (line 431). Revision 5's "pending publication, not a `CONFLICT:`" text becomes a statement that the live row now matches the design's paths.
+
+No other line moved. That includes `## Decision`, the recommendation, the alternatives, the principles and agreement level, `## Empirical check`, `## Engines`, and every evidence citation.
+
+**Was the rebind done byte-for-byte?**
+- R69's decision file `research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md` hashes to `2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`. Its line 1 reads `revision 11`. Both match what the revision-6 note cites.
+- Line 1885 of that file is the `- owns web-extra-surface = …` line. With `owns` replaced by `assumes`, it `diff`s identical to the draft's `assumes` line.
+
+**Does R83's design match the revision-11 value?** It does, on every point the design uses:
+
+| R69 revision 11 says | R83's existing design | Match |
+|---|---|---|
+| The feature is declared on the root package `rs-launch-blueprint` as `web = ["dep:rs-launch-blueprint-web"]` | The suite is a test of the optional member `crates/web` | Yes |
+| `the web integration tests in crates/web/tests/, with no file-level #![cfg(feature = "web")] because the whole member is optional` | Line 242: `crates/web/tests/contract_fuzz.rs`, "**no file-level `#![cfg(feature = "web")]`**" | Yes |
+| `tower 0.5.3 is crates/web's dev-dependency only, for the ServiceExt::oneshot in-process test idiom` | `oas3` 0.22.0 is a `[dev-dependencies]` entry of `crates/web/Cargo.toml`, beside `tower` 0.5.3 `oneshot` | Yes |
+| `path-based skip-gating keys on crates/web/**` | The suite lives under `crates/web/**` | Yes |
+
+Revisions 2 to 5 already used these paths in anticipation of revision 10. So the flag day turns anticipated paths into confirmed ones and changes no design element. No `CONFLICT:` is needed, and the draft correctly raises none.
+
+**R71 revision 4.** The R71 draft at `/tmp/p02-flagday/drafts/R71-DECISION.md` is revision 4, with sha256 `f5ccec37…e952`, which matches `shas-wave1.json`. It pins `utoipa = "=6.0.0"` and `utoipa-axum` 0.3.0. Its committed probe document declares `openapi` `3.1.0`, and it requires curated `operation_id`s (F312). R83's hand-off paragraph (lines 341 to 350) needs three things from R71:
+
+| R83 needs | R71 revision 4 provides | Effect on R83 |
+|---|---|---|
+| OpenAPI 3.1 JSON | `openapi` `3.1.0` | `oas3::from_json` and the parser choice stand |
+| The router serves the document | Either outcome is covered: R83's conditional says a non-serving R71 only loses one redundant failure mode | The recommendation does not move |
+| Stable `operationId`s | Curated `operation_id = "<tag>-<name>"` | Covered |
+
+So the revision-6 note's claim that "the parser choice and discovery mechanism stand as written" is supported.
+
+## Check 3: BLOCKING contradictions under RUNBOOK §7.1 (Q23)
+
+Under §7.1, a finding is BLOCKING only if it moves the recommendation, a load-bearing claim, or the evidence sufficiency for either. Revision 6 changes none of these:
+- **Recommendation:** `oas3 = "0.22.0"` as a `crates/web` dev-dependency, with `proptest` 1.11.0 and `tower` 0.5.3 `oneshot` as companions, is unchanged.
+- **Evidence:** No script, log or fixture changed. The evidence set and its counts are revision 2's, carried forward.
+- **Consumed values:** No value R83 consumes changes in a way that conflicts with the design.
+
+**BLOCKING findings: none.**
+
+## Observations
+
+These are recorded, never rounded (§7.1: "re-pins, title baselines, live-policy citation drift, wording polish, and observations are recorded, never rounded"). None of them affects the approval.
+
+- **O1 (wording).** The revision-6 note says "Three things are updated", then lists two: the `re-verify:` line and the note under `## Parameters`. The third, the `assumes` line itself, appears in the sentence before. The meaning is recoverable.
+- **O2 (citation drift).** Line 341 still calls R71 "`openapi-generation-pipeline`, not yet researched", and still names "`utoipa` 5" as the outcome the reference architecture points at. Both are stale now that R71 revision 4 publishes `utoipa` 6.0.0. R83 wrote the paragraph as a conditional, and R71 revision 4 takes its "emits 3.1" branch, under which "nothing here changes". So no conclusion moves. A later revision could update the wording.
+- **O3 (citation drift).** Lines 75, 242, 382 and 702 still cite "R69 revision 10" for `tower` 0.5.3 `oneshot` and the `crates/web/tests/` location. Revision 11 carries those same facts, so each citation remains true of what it cites. The live-registry binding is correctly on revision 11 at lines 416, 426 and 431.
+
+## Conclusion
+
+Revision 6 does exactly what a flag-day touch-up should:
+- It rebinds the `assumes web-extra-surface` line byte-for-byte to R69 revision 11's live value.
+- It records R69 revision 11 and R71 revision 4 as fired triggers.
+- It confirms that R83's existing design already matches the published value: `crates/web/tests/contract_fuzz.rs` with no file-level `cfg`, and the dev-dependency in `crates/web/Cargo.toml`.
+- It leaves the recommendation, principles, agreement level and evidence untouched.
+
+The supersession tail is verbatim and the hash matches. I approve with no unresolved findings.

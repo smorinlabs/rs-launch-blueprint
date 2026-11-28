@@ -7,6 +7,13 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-18T02:06:01Z",
       "state": "ready"
+    },
+    {
+      "acceptance_sha256": "59070607e52398cee38db223a1249c7fcbd08b07f49d66758413116ea7b5ca19",
+      "actor": "p02-flagday-closeout",
+      "at": "2026-11-27T00:00:00Z",
+      "decision_sha256": "2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815",
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -31,7 +38,7 @@
   ],
   "run_id": "2026-09-18T020601Z-f304731ab06f",
   "schema_version": 1,
-  "state": "ready",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-18T02:06:01Z"
+  "updated_at": "2026-11-27T00:00:00Z"
 }

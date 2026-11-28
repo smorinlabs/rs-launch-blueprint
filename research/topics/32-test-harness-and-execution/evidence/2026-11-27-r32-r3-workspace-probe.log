@@ -1,0 +1,281 @@
+=== ENV rustc: rustc --version ===
+EXIT=0
+rustc 1.100.1 (20ddd0171 2026-11-25)
+=== ENV cargo: cargo --version ===
+EXIT=0
+cargo 1.100.1 (3acc79c0c 2026-11-05)
+=== ENV uname: uname -srm ===
+EXIT=0
+Darwin 27.2.0 arm64
+=== LOCK: cargo generate-lockfile ===
+EXIT=0
+=== NEG-1 (no --workspace, tests): cargo test --locked --features web ===
+EXIT=0
+
+running 1 test
+test tests::root_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test src/lib.rs - root_marker (line 2) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.28s; merged doctests compilation took 0.17s
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91/crates/core)
+   Compiling rs-launch-blueprint-web v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91/crates/web)
+   Compiling rs-launch-blueprint-cli v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91/crates/cli)
+   Compiling rs-launch-blueprint v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91)
+warning: unused dependency `rs-launch-blueprint-cli`
+  --> Cargo.toml:33:1
+   |
+33 | rs-launch-blueprint-cli = { path = "crates/cli" }
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `cargo::unused_dependencies` is set to `warn` by default
+help: consider removing the dependency on `rs-launch-blueprint-cli`
+warning: `rs-launch-blueprint` (manifest) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.40s
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint/be3350e498b471c0/out/rs_launch_blueprint-be3350e498b471c0)
+     Running unittests src/main.rs (target/debug/build/rs-launch-blueprint/2fad49190a515030/out/rslbp-2fad49190a515030)
+     Running unittests src/bin/serve.rs (target/debug/build/rs-launch-blueprint/b429d4b7fd1089fb/out/rslbp_serve-b429d4b7fd1089fb)
+   Doc-tests rs_launch_blueprint
+=== NEG-2 (no --workspace, doc): cargo test --doc --locked --features web ===
+EXIT=0
+
+running 1 test
+test src/lib.rs - root_marker (line 2) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.25s; merged doctests compilation took 0.13s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+   Doc-tests rs_launch_blueprint
+=== POS-1 (--workspace --features web, tests): cargo test --locked --workspace --features web ===
+EXIT=0
+
+running 1 test
+test tests::root_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test tests::cli_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test tests::core_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test tests::web_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test web_integration_smoke ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test src/lib.rs - root_marker (line 2) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.27s; merged doctests compilation took 0.13s
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test crates/web/src/lib.rs - web_health (line 2) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.26s; merged doctests compilation took 0.12s
+   Compiling rs-launch-blueprint-web v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91/crates/web)
+   Compiling rs-launch-blueprint-cli v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91/crates/cli)
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91/crates/core)
+warning: unused dependency `rs-launch-blueprint-cli`
+  --> Cargo.toml:33:1
+   |
+33 | rs-launch-blueprint-cli = { path = "crates/cli" }
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `cargo::unused_dependencies` is set to `warn` by default
+help: consider removing the dependency on `rs-launch-blueprint-cli`
+warning: `rs-launch-blueprint` (manifest) generated 1 warning
+warning: unused dependency `rs-launch-blueprint-core`
+ --> crates/cli/Cargo.toml:6:1
+  |
+6 | rs-launch-blueprint-core = { path = "../core" }
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `cargo::unused_dependencies` is set to `warn` by default
+help: consider removing the dependency on `rs-launch-blueprint-core`
+warning: `rs-launch-blueprint-cli` (manifest) generated 1 warning
+warning: unused dependency `rs-launch-blueprint-core`
+ --> crates/web/Cargo.toml:6:1
+  |
+6 | rs-launch-blueprint-core = { path = "../core" }
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `cargo::unused_dependencies` is set to `warn` by default
+help: consider removing the dependency on `rs-launch-blueprint-core`
+warning: `rs-launch-blueprint-web` (manifest) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint/be3350e498b471c0/out/rs_launch_blueprint-be3350e498b471c0)
+     Running unittests src/main.rs (target/debug/build/rs-launch-blueprint/2fad49190a515030/out/rslbp-2fad49190a515030)
+     Running unittests src/bin/serve.rs (target/debug/build/rs-launch-blueprint/b429d4b7fd1089fb/out/rslbp_serve-b429d4b7fd1089fb)
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint-cli/ad9357bfbcf4ed6a/out/rs_launch_blueprint_cli-ad9357bfbcf4ed6a)
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint-core/b292092970f99387/out/rs_launch_blueprint_core-b292092970f99387)
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint-web/0d3a1eb16c969820/out/rs_launch_blueprint_web-0d3a1eb16c969820)
+     Running tests/web/main.rs (target/debug/build/rs-launch-blueprint-web/7f1a9b0540a4c5a2/out/web-7f1a9b0540a4c5a2)
+   Doc-tests rs_launch_blueprint
+   Doc-tests rs_launch_blueprint_cli
+   Doc-tests rs_launch_blueprint_core
+   Doc-tests rs_launch_blueprint_web
+=== POS-2 (--workspace --features web, doc): cargo test --doc --locked --workspace --features web ===
+EXIT=0
+
+running 1 test
+test src/lib.rs - root_marker (line 2) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.25s; merged doctests compilation took 0.12s
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test crates/web/src/lib.rs - web_health (line 2) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.25s; merged doctests compilation took 0.12s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+   Doc-tests rs_launch_blueprint
+   Doc-tests rs_launch_blueprint_cli
+   Doc-tests rs_launch_blueprint_core
+   Doc-tests rs_launch_blueprint_web
+=== CI-OFF (-p non-web packages): cargo test --locked -p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli ===
+EXIT=0
+
+running 1 test
+test tests::root_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test tests::cli_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test tests::core_unit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test src/lib.rs - root_marker (line 2) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.26s; merged doctests compilation took 0.12s
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+   Compiling rs-launch-blueprint v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmp3pc7qj91)
+warning: unused dependency `rs-launch-blueprint-cli`
+  --> Cargo.toml:33:1
+   |
+33 | rs-launch-blueprint-cli = { path = "crates/cli" }
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `cargo::unused_dependencies` is set to `warn` by default
+help: consider removing the dependency on `rs-launch-blueprint-cli`
+warning: `rs-launch-blueprint` (manifest) generated 1 warning
+warning: unused dependency `rs-launch-blueprint-core`
+ --> crates/cli/Cargo.toml:6:1
+  |
+6 | rs-launch-blueprint-core = { path = "../core" }
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `cargo::unused_dependencies` is set to `warn` by default
+help: consider removing the dependency on `rs-launch-blueprint-core`
+warning: `rs-launch-blueprint-cli` (manifest) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint/c44f3dca58da791c/out/rs_launch_blueprint-c44f3dca58da791c)
+     Running unittests src/main.rs (target/debug/build/rs-launch-blueprint/9e28a271672af90d/out/rslbp-9e28a271672af90d)
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint-cli/ad9357bfbcf4ed6a/out/rs_launch_blueprint_cli-ad9357bfbcf4ed6a)
+     Running unittests src/lib.rs (target/debug/build/rs-launch-blueprint-core/b292092970f99387/out/rs_launch_blueprint_core-b292092970f99387)
+   Doc-tests rs_launch_blueprint
+   Doc-tests rs_launch_blueprint_cli
+   Doc-tests rs_launch_blueprint_core
+=== TIER-WEB (-p rs-launch-blueprint-web --test web): cargo test --locked -p rs-launch-blueprint-web --test web ===
+EXIT=0
+
+running 1 test
+test web_integration_smoke ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running tests/web/main.rs (target/debug/build/rs-launch-blueprint-web/7f1a9b0540a4c5a2/out/web-7f1a9b0540a4c5a2)

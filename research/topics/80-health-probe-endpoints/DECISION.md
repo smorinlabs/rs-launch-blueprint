@@ -1,4 +1,67 @@
-# 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 6)
+# 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 7)
+
+**Revision note (revision 7) — a flag-day parameter swap; the recommendation does not move.**
+Owner decision Q3.A (flag day now) re-binds every consumer of R69's
+`web-extra-surface` at once. R69 revision 11
+(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, sha256
+`2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`) is approved
+for re-accept under Q3.A. R69's owned value changed at revision 10 under owner
+ruling W1-R02: the web surface is the workspace member `crates/web`, whose
+`axum` and `tokio` are non-optional in `crates/web/Cargo.toml`, and the root
+package reaches it through `web = ["dep:rs-launch-blueprint-web"]`. Revision 11
+carries that value unchanged at its line 1885. Revision 6 of this decision still
+assumed revision 9's text. Revision 7 adopts W1-R02's shape through R69
+revision 11. Revision 6 is preserved byte-for-byte as
+`review/R80-r6-snapshot.md` (sha256 `4b63412a…`, check `V1`). This revision was
+written on 2026-09-27 by an Opus-seat context (`claude-opus-5-5`) that produced
+none of this item's raw reports, under the Q23 scope of RUNBOOK section 7: the
+swap and its dependent prose only.
+
+| What | Revision 6 | Revision 7 | Check |
+|---|---|---|---|
+| `- assumes web-extra-surface = ` | revision 9's value: `src/web/`, `web = ["dep:axum", "dep:tokio"]` with both crates optional, file-level `cfg` on the web tests | R69 revision 11's line-1885 value, byte-identical after the prefix: `crates/web/src/`, `web = ["dep:rs-launch-blueprint-web"]`, `axum` and `tokio` non-optional in `crates/web/Cargo.toml`, web tests in `crates/web/tests/` with no file-level `cfg` | `O3`, `O5` |
+| The `CONFLICT:` paragraph and the prose note beside that line | the line held the registry's revision-9 bytes; R69 revision 10 was unpublished; a publication lag | the line holds R69 revision 11's bytes under Q3.A, ahead of the registry row, which the flag-day publication rewrites | `O5` |
+| Citations of R69's owned line | line 1791 of revision 10 | line 1885 of revision 11 | `O5`, `V6` |
+
+**The revision-11 value breaks no claim.** This decision's design already used
+revision 10's paths — `crates/web/src/routes/ops.rs`, `crates/web/src/lib.rs`,
+`crates/web/tests/`, `crates/web/Cargo.toml` — and revision 11 moves none of
+them. Only the description of the line changes. The recommendation
+`probe-contract/v1`, every finding, verdict and figure the prose states, and
+the `re-verify:` line are unchanged.
+
+**Evidence touched, and why.** `O3` compared all seven `- assumes` values with
+the registry. The registry row still carries revision 9's text until the
+flag-day publication. `O3` therefore now compares six values with the registry
+and `web-extra-surface` with R69 revision 11's line 1885, bound by the sha256
+above, and prints the registry row's current form as information. `O5` now
+asserts that owned line at 1885, bound the same way, and no longer asserts the
+registry's revision-9 form. `V6` reads line 1885. The header bump re-baselines
+the three H1 checks, `C2`, `R1` and `V1`, and `V1` also pins the revision-6
+snapshot. The digest tables `C1`, `R6` and `V13` re-pin the edited scripts and
+the re-recorded logs. The four logs were re-recorded in the order
+`## Empirical check` states, and `shellcheck` on the four edited scripts is
+recorded in `shellcheck-r7.log`, which is empty. The four logs' reproduction
+was repeated, and its eight rerun diffs replace the prior files of those names. The check counts
+do not move: 14 in
+`check-standard-r4.sh` and 113 across the six scripts. `check-probe.sh` and
+`check-live.sh` assert nothing about the value and were neither edited nor
+re-run.
+
+**Two failures recorded, not repaired.** `check-standard-r4.log` now records
+**12 PASS, 2 FAIL, 0 SKIP**. `V3` and `V4` fail on drift outside this item's
+`review/` directory. The controller's Q23 pack re-freeze (2026-09-28T03:12:17Z)
+added a second migration event to `manifest.json` that carries no `from` key.
+`V3`'s reader raises `KeyError: 'from'` on it, and `V3` also expects exactly one
+migration event. `V4` reads the manifest's prompt hash from `V3`'s output, which
+the exception cut short. The frozen prompt is byte-identical to the live prompt
+(both `584f0994…`). Under RUNBOOK section 7.1 this is drift, so it is recorded
+here and not repaired by this revision.
+
+**Rerun logs rewritten.** `check-offline.r2-rerun.log`,
+`check-standard-r2.r3-rerun.log` and `check-standard-r3.r4-rerun.log` are
+rewritten by every run of their parent scripts, so revision 6's bytes of them
+are gone. No check pins them.
 
 **Revision note (revision 6) — an evidence repair; the recommendation does not move.**
 The empirical audit of revision 5 (sha256
@@ -587,7 +650,7 @@ the ground under that text:
   (`crate-boundary-enforcement`, still `open`) selecting a multi-crate
   workspace"*. The trigger has fired.
 - **R69 revision 10** declares `web = ["dep:rs-launch-blueprint-web"]` on the
-  root package (its owned value, line 1791). The facade therefore depends on
+  root package (its owned value, carried unchanged by revision 11 at line 1885). The facade therefore depends on
   `crates/web`, and `crates/web` cannot import `rs_launch_blueprint::VERSION`
   without a dependency cycle, which Cargo refuses.
 
@@ -959,34 +1022,34 @@ character.
 - assumes license = MIT OR Apache-2.0
 - assumes build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rslbp, a different string from the package name rs-launch-blueprint, so cargo install rs-launch-blueprint installs the command rslbp and integration tests resolve it through CARGO_BIN_EXE_rslbp; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
 - assumes http-transport-injection-seam = trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92
-- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on the root package rs-launch-blueprint; web = ["dep:rs-launch-blueprint-web"], with axum 0.8.9 declared non-optionally in crates/web/Cargo.toml and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 declared non-optionally in crates/web/Cargo.toml with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is crates/web's dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module crates/web/src/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests in crates/web/tests/, with no file-level #![cfg(feature = "web")] because the whole member is optional, and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated crates/web/src/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on crates/web/**, the serve binary's source file and the web test files
 
 **`CONFLICT:` lines: none.** No consumed value needs to change for this
 recommendation. The two places a reader might expect one, and why neither is: R49's
 `build-tool-output-shape` no-`build.rs` clause **excludes** `built`, `vergen` and
 `shadow-rs`, and this decision declines all three rather than asking for the clause
-to move; and R69's `web-extra-surface` differs between the registry and the
-accepted revision, which is a publication lag, not a needed change.
+to move; and this decision's `web-extra-surface` line carries R69 revision 11's
+owned value ahead of the registry row, which is the Q3.A flag day, not a needed
+change.
 
-**Prose note beside the `web-extra-surface` line, required because the registry and
-the accepted revision disagree about paths.** The line above carries the registry's
-current bytes, which are **revision 9's**: it names the library module `src/web/`,
-gates the web tests file-level with `#![cfg(feature = "web")]`, and declares
-`web = ["dep:axum", "dep:tokio"]` with both crates optional on one manifest.
-**R69 revision 10 is owner-accepted and unpublished**
-(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, its
-`- owns web-extra-surface` line at **line 1791**, verified by check `O5` together
-with the registry's surviving `src/web/` form): it moves the tree to the optional
-workspace member `crates/web/`, declares `web = ["dep:rs-launch-blueprint-web"]` on
-the root package, declares `axum` and `tokio` **non-optionally** in
-`crates/web/Cargo.toml`, and puts the web tests in `crates/web/tests/` with **no**
-file-level `cfg` because the whole member is optional. **This decision's design
-uses revision 10's paths** — `crates/web/src/routes/ops.rs`,
-`crates/web/src/lib.rs`, `crates/core/src/diagnostics.rs` — and the executed probe
-workspace is built in that shape. **This is not a `CONFLICT:`**: the recommendation
-needs nothing in R69's value changed, only the accepted revision's paths, which R69
-will publish itself. **R69's republication is a re-verify trigger** for every file
-path in the migration table below.
+**Prose note beside the `web-extra-surface` line, required because the line runs
+ahead of the registry.** The line above carries **R69 revision 11's** owned value,
+copied byte-for-byte from the `- owns web-extra-surface` line at **line 1885** of
+`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md` (sha256
+`2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`, verified by
+checks `O3` and `O5`). Revision 11 is approved for re-accept under owner decision
+Q3.A (flag day now). Its value changed at revision 10 under owner ruling W1-R02: it
+puts the tree in the optional workspace member `crates/web/`, declares
+`web = ["dep:rs-launch-blueprint-web"]` on the root package, declares `axum` and
+`tokio` **non-optionally** in `crates/web/Cargo.toml`, and puts the web tests in
+`crates/web/tests/` with **no** file-level `cfg` because the whole member is
+optional. The registry row still carries revision 9's `src/web/` form until the
+flag-day publication rewrites it. **This decision's design uses these paths** —
+`crates/web/src/routes/ops.rs`, `crates/web/src/lib.rs`,
+`crates/core/src/diagnostics.rs` — and the executed probe workspace is built in
+that shape. **This is not a `CONFLICT:`**: the recommendation needs nothing in
+R69's value changed. **R69's republication is a re-verify trigger** for every file
+path in the migration table below; revision 11 moves none of them.
 
 **Two further published values bind the recommendation without being consumed as
 values**, so they are named here rather than given an `assumes` line. **R67's
@@ -1048,12 +1111,12 @@ stand because `V8` was repaired, not dropped.
 
 | Script | Checks | Added by | In revision 4 | Paired log | Result |
 |---|---|---|---|---|---|
-| `check-offline.sh` | 28: `O1`–`O28` | revision 1 | edited: EA-1, EA-3, published R55/R57, `O25` | `check-offline.log` | **28 PASS, 0 FAIL, 0 SKIP** |
+| `check-offline.sh` | 28: `O1`–`O28` | revision 1 | edited: EA-1, EA-3, published R55/R57, `O25`; revision 7 moved `O3` and `O5` to R69 revision 11 | `check-offline.log` | **28 PASS, 0 FAIL, 0 SKIP** |
 | `check-probe.sh` | 13: `A`, `B`, `T1`–`T8`, `C9`–`C11` | revision 1 | edited: EA-4 | `check-probe.log` | **13 / 0 / 0** |
 | `check-live.sh` | 9: `L1`–`L9` | revision 1 | unchanged | `check-live.log` (revision 1's), plus `check-live.r4-fetch.log` and `check-live.r4-snapshots.log` | **9 / 0 / 0** in all three |
-| `check-standard-r2.sh` | 42: `S1`–`S27`, `P1`–`P6`, `C1`–`C9` | revision 2 | edited: EA-3, EA-4, re-baselined; revision 5 re-baselined `C2`; revision 6 re-baselined `C2` | `check-standard-r2.log` | **42 / 0 / 0** |
-| `check-standard-r3.sh` | 7: `R1`–`R7` | revision 3 | edited: EA-3, re-baselined; revision 5 re-baselined `R1`, re-pinned `R6`; revision 6 re-baselined `R1`, re-pinned `R6` | `check-standard-r3.log` | **7 / 0 / 0** |
-| `check-standard-r4.sh` | 14: `V1`–`V14` | revision 4 | new; revision 5 repaired `V8` (EF-1), re-baselined `V1`, re-pinned `V13`; revision 6 repaired `V3` (Codex finding 1), re-baselined `V1`, re-pinned `V13` | `check-standard-r4.log` | **14 / 0 / 0** |
+| `check-standard-r2.sh` | 42: `S1`–`S27`, `P1`–`P6`, `C1`–`C9` | revision 2 | edited: EA-3, EA-4, re-baselined; revision 5 re-baselined `C2`; revision 6 re-baselined `C2`; revision 7 re-baselined `C2`, re-pinned `C1` and re-worded its message | `check-standard-r2.log` | **42 / 0 / 0** |
+| `check-standard-r3.sh` | 7: `R1`–`R7` | revision 3 | edited: EA-3, re-baselined; revision 5 re-baselined `R1`, re-pinned `R6`; revision 6 re-baselined `R1`, re-pinned `R6`; revision 7 re-baselined `R1`, re-pinned `R6` | `check-standard-r3.log` | **7 / 0 / 0** |
+| `check-standard-r4.sh` | 14: `V1`–`V14` | revision 4 | new; revision 5 repaired `V8` (EF-1), re-baselined `V1`, re-pinned `V13`; revision 6 repaired `V3` (Codex finding 1), re-baselined `V1`, re-pinned `V13`; revision 7 re-baselined `V1`, moved `V6` to line 1885, re-pinned `V13` | `check-standard-r4.log` | **12 / 2 / 0** since revision 7 (`V3`, `V4`: manifest drift) |
 
 ```bash
 cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/evidence
@@ -1091,10 +1154,11 @@ claims of `raw/opus.md` that need no network: the registered report's digest
 `validate_answer_text(text, "bundle")` from `scripts/research_validation.py`,
 including the `### Members` window rule that keeps every H5 field inside a named
 member (`O2`, **0 errors**); the byte-identity of all seven `- assumes` values in
-this decision against the live registry, compared character for character by a
-table parser rather than by eye (`O3`); the absence of any `- owns` line (`O4`);
-R69 revision 10's owned value at line 1791 *and* the registry's surviving
-revision-9 `src/web/` form, which is what earns the publication-lag note (`O5`);
+this decision, compared character for character by a table parser rather than
+by eye — six against the live registry and, since revision 7, `web-extra-surface`
+against R69 revision 11's owned value at line 1885 (`O3`); the absence of any
+`- owns` line (`O4`); R69 revision 11's owned value at line 1885, bound by sha256,
+which is what earns the prose note beside the line (`O5`);
 R49's no-`build.rs` clause (`O6`); the F308/F328/F329 ledger rows (`O7`); R60's
 recorded ruling (b) (`O8`); the acceptance rows for R55, R57, R02, R05, R03 and
 R56 (`O9`); the W1-CODEX3 ruling (`O10`); the owner's licence ruling (`O11`); the
@@ -1251,8 +1315,8 @@ byte-identical to the live topic prompt and to the manifest's recorded prompt
 hash `7596eda6…`, and reads `- engines: muse, opus`; it also prints whether the
 other frozen inputs equal their live files. `V5` anchors each Muse disagreement
 at source in `raw/muse.md`. `V6` asserts R22 revision 1's acceptance row, its
-placement text, its re-verify trigger, and R69 revision 10's facade→web edge at
-line 1791. `V7` asserts R55 and R57 published at their accepted bytes. `V8` is
+placement text, its re-verify trigger, and R69's facade→web edge at line 1885
+of revision 11. `V7` asserts R55 and R57 published at their accepted bytes. `V8` is
 the static proof for EA-3: across all six scripts, **0** lines pipe into
 `grep -q`. As revision 4 recorded it, `V8` could not fail (audit EF-1). Since
 revision 5 its patterns escape the leading pipe, a grep status of 2 or more
@@ -1265,8 +1329,10 @@ artifacts by sha256. `V14` re-runs the revision-3 script into
 `check-standard-r3.r4-rerun.log` and expects **7 PASS and 0 FAIL**, which nests
 the revision-2 and offline re-runs, so one call exercises the whole chain.
 
-Result: **14 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
-`review/evidence/check-standard-r4.log`; `shellcheck` on all six scripts exits 0
+Result through revision 6: **14 PASS, 0 FAIL, 0 SKIP**, exit 0. Revision 7's
+re-recording of `review/evidence/check-standard-r4.log`: **12 PASS, 2 FAIL,
+0 SKIP**, exit 1; `V3` and `V4` fail on the `manifest.json` drift revision 7's note
+records, and every other check passes. Through revision 6, `shellcheck` on all six scripts exits 0
 with no output, recorded in `shellcheck-r4.log`. Revision 5's re-recording gives
 the same totals, and its log contains no grep error. Revision 6's re-recording
 gives the same totals, and `V3` prints `policy_empirical_auditor_R80=codex`.
@@ -1304,6 +1370,16 @@ reproduce byte-for-byte: each `.rerun.diff` is **0 bytes**. For
 `check-standard-r2.log` the `.rerun.assertions.diff` is **0 bytes**, and the
 whole-log diff carries **2** differing lines, one before-and-after pair: the
 cargo `Finished` timing line.
+Revision 7 repeated it for its four re-recorded logs, `check-offline.log`,
+`check-standard-r2.log`, `check-standard-r3.log` and `check-standard-r4.log`,
+and its eight rerun diffs replace the prior files of those names. The
+normalisation also maps the probe's `r80-probe-r2.*` workspace path, which the
+`Compiling` lines echo, to one placeholder. `check-offline.log`,
+`check-standard-r3.log` and `check-standard-r4.log` reproduce byte-for-byte:
+each `.rerun.diff` is **0 bytes**. For `check-standard-r2.log` the
+`.rerun.assertions.diff` is **0 bytes**, and the whole-log diff carries **4**
+differing lines, two before-and-after pairs: the cargo `Finished` timing line
+and the `finished in` duration.
 
 **Revision 1's archive diffs are history, and one of revision 3's statements
 about them was wrong.** The `*.archive.diff` and `*.archive.assertions.diff`
@@ -1501,7 +1577,8 @@ the recommendation fits all consumed values (point 1), its reading of the prompt
 
 **Re-verified here, with the check that did it.** The registered report's digest
 and shape (`O1`, `O2`). The seven `- assumes` values against the live registry
-(`O3`). R69 revision 10's owned value and the registry's lag (`O5`). R49's
+(`O3`), `web-extra-surface` against R69 revision 11 since revision 7. R69
+revision 11's owned value at line 1885 (`O5`). R49's
 no-`build.rs` clause (`O6`). The ledger rows (`O7`). R60's ruling (`O8`). The
 acceptance record (`O9`). The W1-CODEX3 and licence rulings (`O10`, `O11`). The
 four in-flight couplings (`O12`–`O15`). R67's catalog (`O16`). The accepted

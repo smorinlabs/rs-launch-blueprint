@@ -76,6 +76,10 @@ class PackageTests(unittest.TestCase):
         self.work = Path(self.tmp.name).resolve()
         self.root = self.work / "root"
         shutil.copytree(REPO, self.root, ignore=IGNORE)
+        # The live repository has all 85 items resolved; reset the items exercised
+        # by these synthetic first-acceptance fixtures in this temporary copy only.
+        fixtures.reset_to_open(self.root, {"R38", "R22", "R72"},
+                               clear_auditor_overrides={"R38", "R22", "R72"})
         self.staged_count = 0
         self.run_id = "package-fixture"
         self.prepare("R38")
@@ -198,6 +202,7 @@ class PackageTests(unittest.TestCase):
 
     def build_light(self, item):
         """Publish the consumed owner, then package a Light item's run."""
+        fixtures.reset_to_open(self.root, {"R49", item}, clear_auditor_overrides={"R49", item})
         set_registry_value(self.root, "build-tool-output-shape",
                            "workspace target/ with one bin rs-launch-blueprint and one lib")
         fixtures.accept_fixture(self.root, "R49", kind="crate")

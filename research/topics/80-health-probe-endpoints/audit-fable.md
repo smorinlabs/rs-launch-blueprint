@@ -1,15 +1,15 @@
-# Controller triage memo — R80 health-probe-endpoints, revision 6 (Q23 §7.4, NOT a blind run)
+# Controller triage memo — R80 health-probe-endpoints, revision 7 (Q23 §7.4, NOT a blind run)
 
-decision-sha256: 4b63412a4dc1df4c2e31caa51fa20ca509c8e8cd430595f72b94de0843d4c204
+decision-sha256: 065dfba6cded1036b6c2a89acbc9ad71db0aa0dddcdb68a8e3a1da49b6ad1a85
 actor: s1-controller
 model: muse-spark
 family: meta
 verdict: approve
 unresolved-findings: none
 
-## Dispositions (S1 triage of review/audit-codex.r6.md, 0 BLOCKING, 3 OBS)
+## Dispositions (S1 triage of review/audit-codex.r7.md, 0 BLOCKING, 2 OBS)
 
-- OBS R69 owned-line move (1791→1885, byte-identical text) failing O5/C9/R7/V14/V6: ACCEPTED as citation re-baseline per §7.1/§7.7. Substance unchanged. No action.
-- OBS R02 bytes moved to snapshot (O17 passes): ACCEPTED. No action.
-- OBS cargo/live-counter variance as disclosed: ACCEPTED. No action.
-- rev6 + r5-EF-1 + rev4 repairs hold. Recommendation unchanged. Packable. PRIORITY: pack unblocks R70 (Q20).
+- OBS V3/V4 fail on disclosed manifest drift: ACCEPTED. Committed and fresh `check-standard-r4.log` assertion lines agree on both FAILs; the drift is disclosed, not new. No action.
+- OBS raw-log reproducibility and live-counter diffs outside assertions: ACCEPTED. All eight fresh assertion sets match committed; offline 28 + probe 13 + r2 42 + r3 7 + live 9/9 hold, shellcheck clean. No action.
+
+S1 verification: decision sha recomputed pre-pack; r7 binds this sha with verdict approve. Recommendation unmoved. No action.

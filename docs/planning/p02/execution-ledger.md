@@ -1515,3 +1515,20 @@ Revisit when: any touch-up reports the r11 value breaks (not renames) a claim.
 - KNOWN GAP: R69 is REOPENED (`research_scan.py --todo`: run at revision 11, published copy differs). The r11 flag-day atomic commit
   (S91 accepted 6/6, S92 for R84r7 never run) is NOT in v0.2.0; its edits stay uncommitted in the p02-plan worktree for a follow-up.
   v0.2.0 therefore ships 84/85 done, not the 85/85 claimed by 27dc3395.
+
+## 2026-11-27 — P02 closeout: R69 r11 atomic flag-day published (85/85 done), conflicts & TS01/TS02 closed
+- Published R69 r11 (`2806a1f04517`) with fresh Claude judgment audit (`audit-fable-r69-r11-2026-11-27`, approve) alongside existing
+  Codex empirical audit (`audit-codex-r69-r11-2026-09-27`, approve), updating `docs/port/PARAMETERS.md` (`web-extra-surface`) and
+  `docs/port/OWNER-ACCEPTANCES.md`.
+- Published all 12 `web-extra-surface` consumers atomically: 4 pre-audited (`R51` r6, `R76` r5, `R77` r6, `R80` r7) and 8 freshly
+  synthesized & dual-audited (`R11` r8, `R32` r3, `R37` r5, `R58` r3, `R71` r4, `R82` r3, `R83` r6, `R84` r6). Independent audits caught
+  two blocking workspace bugs — `R32` Codex F1 (`--workspace` package selection + `crates/web/tests/web/main.rs`) and `R71` Claude JF-1
+  (`crates/web/tests/openapi.rs`, `CARGO_MANIFEST_DIR`-anchored `SNAPSHOT`, `--workspace` regen, A13 scoped per R11) — both repaired,
+  backed by live `cargo 1.100.1` four-package workspace probes, and dual-approved on re-audit.
+- Updated prerequisite hashes in all 21 indirect transitive dependents (`R08`, `R09`, `R12`–`R14`, `R27`–`R31`, `R35`, `R39`, `R40`,
+  `R59`, `R70`, `R72`–`R75`, `R78`, `R79`). `check-research-tree.sh --require-owner-review` passes (`OK: research tree structure valid`)
+  and `research_scan.py --todo` reports `summary: done 85` (0 `REOPENED`).
+- Discharged all `CONFLICT:` lines (`P02-T03`: `R02 → R69`, `R71 → R69`, `R32 → R11`, plus already-disposed raw-only items in `R01`,
+  `R53/R55`, `R67`, `R72`), verified `P02-TS01` (85/85) and `P02-TS02` (85/85, 0 `COMMON → OVERRIDE` ledger rows, all `OV-01`..`OV-17`
+  audited), and repaired offline fixture isolation in `scripts/test-research-runner.py` and `scripts/test-research-package.py`.
+- Full closeout tables and hashes recorded in `docs/planning/p02/closeout-verification.md`.

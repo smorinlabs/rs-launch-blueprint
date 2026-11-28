@@ -1,32 +1,31 @@
+# R76 revision 5 empirical re-run audit
+
 actor: codex
 model: gpt-6
 family: openai
-decision-sha256: c732bf24633eb386db07c186324af00a74c7d43f9932e4327c519a37aa40d641
+decision-sha256: fd1647b8f46f66adb1817f6387f5b1a977cd58c76e32c319e839fe05deb84278
+execution-sha256-pin: fd746cb86e545023aed589b9d0c4db7125673a62849181ac898db56a5fa3545c
 verdict: approve
 unresolved-findings: none
 
-# R76 revision 4 empirical retry
+## Re-execution and byte comparison
 
-The target SHA-256 matched before any other read. I ran all five evidence scripts unchanged from the repository root with `CARGO_HOME=/tmp/cargo-s61-R76-evr` and `CARGO_TARGET_DIR=/tmp/cargo-s61-R76-evr-target`, after removing and recreating both directories. Each invocation had an 1100-second alarm. The scripts' internal read-only Git calls were permitted. Fresh output went only to `/tmp`; each file was byte-compared with its committed log.
+All five evidence scripts ran from `review/evidence/`, wrote their captured output to `/tmp/r76-r5-*.log`, and exited 0. Each captured log was byte-compared with its committed namesake. All five byte comparisons differ; all `ASSERT` lines match their committed logs byte-for-byte. There are no `ASSERT FAIL` lines. The committed lockfile and measured `CHECK` lines match, including the `X1`, `X9`, `X10`, and `X11` checks of the revision 4 expose-list repair. Network-dependent reruns used read-only network access after restricted attempts skipped those sections.
 
-| Script | Fresh output in `/tmp` | Fresh result | `cmp` | Difference |
-|---|---|---|---|---|
-| `registry-figures.sh` | `R76-registry-figures.r4-retry.log` | 56 pass, 0 fail, 0 skip | different | UTC timestamp, downloads, `q=cors` search count, moving crates.io default-branch commit |
-| `probe-checks.sh` | `R76-probe-checks.r4-retry.log` | 29 pass, 0 fail, 0 skip | different | UTC timestamp, scratch path, clean-build seconds; stripped sizes unchanged |
-| `muse-adjudication.sh` | `R76-muse-adjudication.r4-retry.log` | 27 pass, 0 fail, 0 skip | different | UTC timestamp, live counters and stars, live policy hashes |
-| `decision-self-check.sh` | `R76-decision-self-check.r4-retry.log` | 73 pass, 0 fail, 0 skip at 22:02:17 UTC | different | UTC timestamp only at first execution; a later rerun failed one R69 line check, described below |
-| `rest-conformance-r2.sh` | `R76-rest-conformance-r2.r4-retry.log` | 64 pass, 2 fail, 0 skip | different | UTC timestamp, live override-token counts, and two failures inherited from its nested self-check of a moving R69 citation |
+| Script | Rerun result | Byte comparison |
+|---|---|---|
+| `decision-self-check.sh` | 74 pass, 0 fail, 0 skip | UTC timestamp only |
+| `registry-figures.sh` | 56 pass, 0 fail, 0 skip | UTC timestamp and live registry / default-branch figures |
+| `probe-checks.sh` | 29 pass, 0 fail, 0 skip | UTC timestamp, scratch path, and unasserted build seconds; stripped sizes remain 502,264 and 668,728 bytes, a 166,464-byte difference |
+| `muse-adjudication.sh` | 27 pass, 0 fail, 0 skip | UTC timestamp, live input / policy hashes and manifest state, plus live download, dependency, and star counts |
+| `rest-conformance-r2.sh` | 66 pass, 0 fail, 0 skip | UTC timestamp, decision hash, nested self-check count, and live `OVERRIDE` token counts |
+
+## Revision 5 line checks
+
+The flag-day `web-extra-surface` value in `review/DECISION.md:787` matches R69 revision 11's `- owns web-extra-surface` at `research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1885` after the prefix swap; R69's decision hashes to `2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`. The revised `crates/web` dependency and path claims appear at `review/DECISION.md:708`, `:753-766`, and `:794-807`; re-verify trigger 1 names R69 revision 11 at `:773`. The revision note states the limited touch-up and unchanged recommendation at `:11-27`. The retargeted self-check verifies the revision 5 title and R69 source at `review/evidence/decision-self-check.sh:14-23`, `:73-74`, and `:103-147`; its rerun passes. The revision 4 expose-list repair remains stated at `review/DECISION.md:40` and `:142`, with the measured `X` checks unchanged.
 
 ## Findings
 
-- **OBS O1 — R69 citation moved during this retry.** The committed REST log says `decision-self-check.sh exit=0; ASSERT FAIL lines=0; PASS=73`; the fresh REST log says `exit=1; ASSERT FAIL lines=1; PASS=72`. Its two failed assertions are the nested self-check exit and absence of failed assertions. The nested failure expects `- owns web-extra-surface =` at R69 `DECISION.md:1791`. That line exists at 1791 in `review/R69-r10-snapshot.md`; the live R69 `DECISION.md` is now revision 11 and carries the same `web-extra-surface` value at line 1883. The standalone R76 self-check passed just before that change; a later standalone rerun reproduced the single citation failure. No CORS measurement or recommendation changed. This is a moving cross-item line citation under RUNBOOK §7.1 and §7.7, not an outcome-changing evidence gap.
-- **OBS O2 — Probe timing and scratch drift.** The committed versus fresh clean-build seconds are `11.5/11.8` and `11.4/11.7` versus `9.0/8.3` and `9.0/9.6`; the scratch path and timestamp also changed. Both stripped sizes remain 502264 and 668728 bytes, all 29 assertions match, and `DECISION.md:1027-1041` says build seconds and scratch paths do not reproduce.
-- **OBS O3 — Live registry and policy figures moved.** The registry and Muse logs differ in download/search/reverse-dependency/star counters, the crates.io default-branch SHA, timestamps, and the live `research/EXECUTION.json` and `research/RUNBOOK.md` hashes. Their 56 and 27 assertions, pinned-source lines, snapshots, and pass counts match. `DECISION.md:1034-1041` discloses point-in-time `FIGURE` and `HEAD` values; RUNBOOK §7.7 makes live policy citations point-in-time. The supplied frozen seat hash `55f51017f3ab` is a point-in-time citation, not a re-pin request.
-
-## Revision-note repairs and outcome
-
-- **EA-1 holds:** `DECISION.md:124` gives the expose-list floor as `request-id` and `allow`; `rest-conformance-r2.sh:216` defines both in the four-name `EXPOSED` list. The decision's option 2 at `:394-401` and `X10` row at `:917` match the fresh `CHECK X10`: the preflight has `access-control-expose-headers=request-id,allow,retry-after,ratelimit`, `allow=GET,HEAD`, and `request-id=req_probe`. The fresh `X10` and `X11` assertions pass.
-- **Judgment finding 1 holds:** `DECISION.md:598-615` calls `hyper-cors` substrate-compatible but unproven, with no direct axum layer, 41 downloads, zero dependents, and remaining gates unevaluated. The qualified shortlist and `tower-http` 0.7.1 recommendation are unchanged.
-- **Judgment finding 2 holds:** `DECISION.md:755` and `:903` describe the three Fetch Standard sentences, two quoted and one paraphrased. The fresh REST section G passes its three assertions.
-
-The empirical behavior still supports conditional installation of `tower-http` 0.7.1 with the `cors` feature. The only failed checks target the moving R69 line number. There are zero BLOCKING findings under RUNBOOK §7.1, so the verdict is `approve`.
+- **OBS-1:** The live registry figures, default-branch commit, scratch path, and build seconds changed. `review/DECISION.md:1049-1059` explicitly says `FIGURE`/`HEAD` lines are point-in-time and build seconds and the `mktemp` path never reproduce byte-for-byte. The crate recommendation remains `tower-http` 0.7.1, and the rerun preserves the measured behavior and binary-size result.
+- **OBS-2:** `muse-adjudication.sh` prints changed prompt, `EXECUTION.json`, `RUNBOOK.md`, and manifest bytes/state. Its engine and answer assertions still pass. The current `EXECUTION.json` matches the S79 pin in this header; Q23's `research/RUNBOOK.md:332-342` says input and policy citation drift is point-in-time and never a re-pin finding.
+- **OBS-3:** The committed `rest-conformance-r2.log` header names revision 4's decision hash `c732bf24633eb386db07c186324af00a74c7d43f9932e4327c519a37aa40d641` and its nested self-check reports 73 passes; the rerun names revision 5's hash and reports 74 passes. `review/DECISION.md:11-27` discloses the title and self-check retargeting. The conformance script itself passes all 66 assertions, and its measured `X` lines match the committed log.

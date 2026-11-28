@@ -1,69 +1,55 @@
-actor: fable
+decision-sha256: 30d9f60c0091cfba6bccf356000e19e36ba2e572d0a437170eb1f7859e73a00a
+actor: audit-fable-r71-r4b-2026-11-27
 model: claude-opus-5-5
 family: anthropic
-decision-sha256: 0743a12544a2ef9434bfd1fcff9b9fe80812396569eb3963e49581c2078400c6
 verdict: approve
 unresolved-findings: none
 
-# R71 revision 3 — directed verification of the enumerated repairs (fable seat)
+# R71 revision 4 (r4b, the JF-1 repair): judgment audit (audit-fable seat)
 
-**Scope.** This seat checks only the five repairs listed in `review/audit-fable.r2.md` (findings 1–2) and `review/audit-codex.r2.md` (M1–M3). For each one, it confirms or disputes the repair. It did not look for new findings. It read `audit-fable.r2.md`, `audit-codex.r2.md`, `R71-r2-snapshot.md` and the new `DECISION.md` in full. It read no `.r3vo.md` file. The repair under verification is `diff R71-r2-snapshot.md DECISION.md`, which this seat ran itself. The seat made no git writes and no network calls, and every rerun wrote to `/tmp`.
+**Result: approved, with no BLOCKING finding left.** The repaired draft applies every clause of the JF-1 repair. The repair matches the one recorded in `docs/planning/p02/execution-ledger.md` S81 and S84, and the executed four-package workspace probe supports it. The recommendation has not changed: the same six members at the same versions. I record five observations below. Under RUNBOOK §7.1, none of them costs a round.
 
-## Hash check
+## Check 1: hash and supersession tail (passes)
 
-- `shasum -a 256 review/DECISION.md` gives `0743a12544a2ef9434bfd1fcff9b9fe80812396569eb3963e49581c2078400c6`, which equals the expected value.
-- `review/audit-fable.r3vo.md` did not exist before this write.
+| Item | Result |
+|---|---|
+| `shasum -a 256 /tmp/p02-flagday/drafts/R71-DECISION.md` | `30d9f60c…a73a00a`. It matches the expected value and `/tmp/p02-flagday/sha-r71-r4b.txt`. |
+| `## Supersedes` heading | Line 620. Its tail starts at line 622. |
+| Tail compared with the published `research/topics/71-openapi-generation-pipeline/DECISION.md` | `tail -n +622 … \| cmp - <published>` reports the two files byte-identical (607 lines). The published file is revision 3, dated 2026-09-27, and the revision-4 note cites it as sha256 `0743a125…78400c6`. |
+| R69 revision 11 source | `research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md` hashes to `2806a1f0…bc1815`, as the draft cites. |
 
-## The repair is confined to the decision text
+## Check 2: every JF-1 repair item (passes)
 
-- **The diff.** The diff touches the header and the revision notes (:1, :3, :7–:18) and blocker 2 (:29). It touches :82, :84, :87 and :91, the A10/A11 cells (:141–:142), the new download and snapshot block (:289–:299), and the evidence table (:353, :358–:359). It adds the replay and rerun notes (:361–:380) and changes :562 and :580. No change reaches the recommendation, a member, a version, an `assumes` line or a command.
-- **The evidence files.** The latest modification time in `review/evidence/` is 2026-09-27 09:56 local. That is earlier than both revision-2 audits (10:59 and 11:03) and earlier than the new `DECISION.md` (11:48).
-- **The citation logs.** My legacy replay reproduced the committed `r71-citations.log` byte for byte (below). My in-place run of `r71-r2-citations.sh` writes only to stdout, which I sent to `/tmp`.
+I diffed draft lines 1–619 against revision 3. Every hunk is either one of the original four flag-day edits or a JF-1 repair clause. No other content changed.
 
-## Per-repair confirmations
+| JF-1 item | Where in r4b | Result |
+|---|---|---|
+| Member table moved to the new layout | Lines 50–54 | Member 1 and member 2 are non-optional in `crates/web/Cargo.toml`, gated by root `web = ["dep:rs-launch-blueprint-web"]`. Member 3 is `crates/web/src/openapi.rs`. Member 5 is `crates/web/tests/openapi.rs` with the anchored `SNAPSHOT`. `expectorate` is in `[dev-dependencies]` of `crates/web/Cargo.toml`. **Resolved.** |
+| Library path `crates/web/src/` | Lines 42, 161, 343 | No unqualified `src/web/` remains in revision-4 prose. The one remaining `src/web/` is in the preserved `CONFLICT:` line (341), which is correct. Line 420 is historical evidence; see O-2. **Resolved.** |
+| `crates/web/tests/openapi.rs` without `#![cfg(feature = "web")]` | Lines 54, 187, 343 | Matches R69 revision 11 clause (3), at draft line 335: "with no file-level #![cfg(feature = "web")] because the whole member is optional". **Resolved.** |
+| `SNAPSHOT` anchored on `CARGO_MANIFEST_DIR` | Lines 190 and 195 | The constant is `const SNAPSHOT: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../openapi/openapi.json");`. `assert_contents(SNAPSHOT, &rs_launch_blueprint_web::openapi_json())` uses the correct library name for package `rs-launch-blueprint-web`. The committed contract stays at the repository-root `openapi/openapi.json`. The CI step (`snap=openapi/openapi.json`, line 222), the `api-breaking` recipe, and A12/`D7` all depend on that root path, so they stay valid. **Resolved.** |
+| Regeneration command uses `--workspace --features web --test openapi` | Line 192 (code comment), line 207 (`export-openapi`), A5 (line 141), R37 (line 323), RESOLVED paragraph (line 343) | All five places carry `EXPECTORATE=overwrite cargo test --locked --workspace --features web --test openapi openapi_snapshot_is_current` or its non-overwrite form. The recipe's `mkdir -p openapi` runs at the root, which is where the anchored path points. **Resolved.** |
+| Probe agreement | `/tmp/p02-flagday/r71-r4-workspace-probe.log`, sha256 `4e1a9dca…5bb2ad2`, which matches the hash the draft cites | `NEG-OLD-CMD` exits 101 with ``no test target named `openapi` in default-run packages``. `POS-WORKSPACE` exits 0 with `1 passed`. `POS-PKG` exits 0 with `1 passed`. The paragraph at draft line 430 reports all three exactly, under `cargo 1.100.1 (3acc79c0c 2026-11-05)`. **Matches.** |
+| A5 | Line 141 | Restated for the workspace command and the root contract. The single-crate `P5` diff is kept, and the revision-4 probe is added. **Resolved.** |
+| A13 scoped per R11 | Line 149 | `-p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli` names the three packages that are not `crates/web`. That matches R11's "cargo test with the feature off scoped by -p to the non-web packages" (R11 `DECISION.md:320`, and `:221` citing R02 `B3`). **Resolved.** |
+| Revision-4 note is accurate | Lines 3–5 | The note lists every edit the diff shows: the layout repair, the regeneration command, A13, the probe, the `re-verify:` trigger, and the O-1 wording change. It no longer says "the commands are the same as in revision 3". **Resolved.** |
+| RESOLVED paragraph is accurate | Line 343 | It names the moved paths, the absent `cfg`, the anchored `SNAPSHOT`, and the workspace command. It also cites S81 and S84. S81 adopted exactly this repair, and S84 recorded "adopted repair verbatim (CARGO_MANIFEST_DIR SNAPSHOT const + --workspace regen command); A13 scoped". **Resolved.** |
+| `expectorate` 1.3.0 consistency | Lines 3, 54, 247, 265, 278, 343 | Every recommendation mention says 1.3.0. The empirical audit had flagged a note that said 1.2.1; that error is gone. The only other version, `expectorate = "1.2.0"` at line 99, is a quoted fact about `dropshot`'s own manifest, not a recommendation. **Resolved.** |
+| O-1 grammar | Line 20 | It now reads "There is no supersession section". **Resolved.** |
 
-1. **fable-1 (JF-8) — CONFIRMED.**
-   - **Where the reworded text appears.** The text is "cases `O1`–`O4` executed by `r71-oasdiff.sh`; `O5` and `O6` are manual follow-on steps whose expectations the log records". It appears in blocker 2 (:29), in the evidence-table row for `r71-oasdiff.sh` (:358) and in the first P03 item (:580). A10 (:141) now says that `O5` is a manual step that the script does not execute. A11 (:142) says that `O4` is one of the four executed cases and that `O6` is a manual step.
-   - **Checked against the script.** In `review/evidence/r71-oasdiff.sh`, the `CASES` array (lines 19–24) holds `O1`–`O4`. When `oasdiff` is on PATH, the script loops over `CASES` only (lines 40–48). `O5` and `O6` appear only as `PLANNED` echoes in the branch that runs when `oasdiff` is absent (lines 32–33). The new wording is therefore accurate.
+## Check 3: BLOCKING contradiction under RUNBOOK §7.1 and Q23 (passes)
 
-2. **fable-2 (JF-2) — CONFIRMED.**
-   - **The figures match the log.** `r71-figures.log` gives these values:
-     - line 5: `utoipa recent_downloads=15462313 downloads=48906319`
-     - line 8: `utoipa-gen` 15468242 / 48938245
-     - line 11: `utoipa-axum` 3181337 / 7552921
-     - line 20: `expectorate` 278769 / 1683740
+I found no BLOCKING contradiction. Every load-bearing claim agrees with R69 revision 11 clauses (1)–(4) and with R11's step ordering:
+- F332 says "one command regenerates it".
+- The RESOLVED paragraph says R11's feature-on step runs the staleness test.
+- A5 and A13 restate those properties for the new layout.
 
-     All eight numbers equal the table at :291–:296.
-   - **Placement.** The table opens *Maintenance state, by the rubric* (:287). Its lead-in (:289) states the retrieval time 2026-09-27T03:43:23Z, which matches `r71-figures.log` line 1, and labels the figures as dated snapshots.
-   - **The requested rerun.** I reran `r71-r2-citations.sh` against the new decision, with output to `/tmp`. It exited 0. Its first line records the decision sha `0743a125…c400c6`, and its last line reads `resolved=159 unresolved=0`, which matches :353.
+The preserved `CONFLICT:` line and the RESOLVED paragraph that discharges it follow RUNBOOK §4.
 
-3. **codex M1 — CONFIRMED.**
-   - **The script cannot take a path.** `r71-citations.sh` has no path argument. It computes `RUN` from its own location (line 11) and hashes and reads `$RUN/review/DECISION.md` (lines 13 and 18). This matches :361.
-   - **My independent replay.** I built a symlink mirror at `/tmp/r71-r3vo-legacy` in which `review/DECISION.md` is a copy of `R71-r1-snapshot.md`. The script and both logs in the mirror are byte-identical copies, which I confirmed with `cmp`.
-   - **Replay result.** The run exited 0. Line 1 is `# decision sha256=f0f9450f…e2a4fc`, and the last line is `# citations resolved=124 unresolved=0`. `cmp` against the committed `r71-citations.log` found no difference. Both files hash to `f1c97ccc…97d9c9`, the value stated at :367.
-   - **Current-decision check.** The evidence row (:359) records the replay. :353 and :367 keep `r71-r2-citations.sh` as the current-decision check.
+## Observations (non-blocking; recorded only, per §7.1)
 
-4. **codex M2 — CONFIRMED.**
-   - **The five logs and their volatile fields.** The note at :369–:380 names the five non-identical comparisons: `r71-figures`, `r71-sources`, `r71-r2-gates`, `r71-oasdiff` and `r71-probe`. For each one it lists the volatile fields that the audit reported. For the probe, those fields are the private `CARGO_HOME`, the temporary atomic-write path, a thread ID, test durations and `P13` wall time (16 s → 9 s).
-   - **Old timestamps match the committed logs.** The committed logs contain these values:
-     - `r71-figures.log`: `03:43:23Z`
-     - `r71-sources.log`: `03:42:30Z`
-     - `r71-r2-gates.log`: `16:52:36Z`
-     - `r71-oasdiff.log`: `16:53:04Z`
-     - `r71-probe.log` P0: `03:39:01Z`
-     - `r71-probe.log:103`: `wall_seconds=16`
-   - **New timestamps.** The new-side timestamps equal the values in `audit-codex.r2.md`.
-   - **Stable claims.** The note lists the stable claims that matched and says both raw logs are retained.
-
-5. **codex M3 — CONFIRMED.**
-   - **"today" is gone for the branch head.** `grep today` finds no remaining "py's `main` today" wording. :84 now reads "was also py's `main` at retrieval, 2026-09-27T03:42:30Z" and cites `r71-sources.log` line 5, which is `P main commit b55b8c26…`. :84 also records `d39f07fa…` at the 17:56Z rerun.
-   - **Dated-snapshot labels.** Snapshot labels appear at :82, :87, :289 and :298, and at :562 ("as read at 2026-09-27T03:42:30Z").
-   - **Rerun values match the audit.** :298 records reverse dependencies 1,810 (was 1,813), `utoipa` stars 4,107 (was 4,106), `oasdiff` stars 1,389 (was 1,387) and crates.io `main` `765bbf47…` (was `067b45e1…`). All of these equal the audit's report.
-   - **Cited code bound to a commit.** :91 binds the Rust project's code to commit `067b45e1a15fc1b97f7321792b86bdf8d6371d7c`, which is recorded at `r71-sources.log:126`.
-
-## Observations (noticed, not findings)
-
-- **Manifest lines and the head commit.** The crates.io manifest lines are logged as `V rust-lang/crates.io@main:Cargo.toml:…` (`r71-sources.log:108–110`). The head commit comes from a separate `W` line in the same retrieval (`:126`). The binding at :91 is therefore indirect, as the repair reported.
-- **Other `O1`–`O6` wording.** :416 and the round-1-audit sentence in :29 still say `O1`–`O6`. Both describe the case set or a past audit run, not what the script executes, so they do not contradict the repair.
-- **"today" at :231.** "So the flag costs nothing today" at :231 is about the current contract, not a branch head. M3 does not cover it.
-- **Where the audit's rerun logs live.** The audit's fresh rerun logs exist only in `/tmp` on the audit host. The `review/` directory is untracked, so "committed under `review/evidence/`" is wording written before publication.
+- **O-1: one revision-3 line about the blocker is out of date.** Line 33, under "Two blockers stand before acceptance", still says R71 "stays `in-progress` until R69 republishes". That has since happened. The revision-4 note (line 3) and the RESOLVED paragraph (line 343) both discharge it, so a reader can resolve it from the same page. The empirical audit flagged the same line. A one-clause pointer to the RESOLVED paragraph would tidy it.
+- **O-2: some evidence predates the new layout.** The detector results at line 420 (`D2`/`D3`/`D4`/`D7`/`D8`) still name `src/web/openapi.rs`. Line 291 still cites `cargo test --features web`. Both come from revision-3 evidence and phrasing. Neither breaks a load-bearing claim. A12 keys only on the root `openapi/openapi.json`. R11's `web` output fails closed and is set by any change under `crates/web/` (R11 `DECISION.md:61`).
+- **O-3: the new evidence file has not been published yet.** The draft cites `evidence/2026-11-27-r71-r4-workspace-probe.log`. That file is not yet in `research/topics/71-openapi-generation-pipeline/evidence/`, and its name does not follow the `<run-timestamp>-<run-id>-r71-*.log` pattern. The publisher must copy it in with sha256 `4e1a9dca…5bb2ad2` unchanged.
+- **O-4: two probe claims rest on disclosure, not on the log.** The log does not echo the test source. So the claim that `POS-WORKSPACE` asserts no relative `openapi/openapi.json` exists inside `crates/web/` rests on the probe author's word. Line 430 says so openly. The probe also has no stale-snapshot negative case in the workspace layout. A5's readable diff still rests on the single-crate `P5`. That is acceptable, because `expectorate`'s diff output does not depend on the layout.
+- **O-5: this audit shares a model family with the synthesizer.** This audit seat and the synthesizer `synth-claude-r71-r4b-2026-11-27` are both Anthropic `claude-opus-5-5`. The revision-4 note discloses this overlap. The matching empirical audit file, `/tmp/p02-flagday/audit-codex-r71-r4b.md`, was empty when I read it. Acceptance still needs a bound empirical verdict, and S89 records that an Opus-driven audit cannot fill the codex seat.

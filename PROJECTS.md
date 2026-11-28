@@ -49,7 +49,7 @@ Planning system: **Superpowers** — specs/plans live under
 
 <!-- One row per project. Scoped / in-progress / done first; ideas last. -->
 - [x] **P01** — [Port research program](projects/P01-port-research-program.md) — evidence-based research tree, commonality ledger, and deep-research prompts (v0.1.0)
-- [~] **P02** — [Execute research program](projects/P02-execute-research-program.md) — run accepted research items to audited decisions and filled parameters (v0.2.0)
+- [x] **P02** — [Execute research program](projects/P02-execute-research-program.md) — run accepted research items to audited decisions and filled parameters (v0.2.0)
 - [ ] **P03** — [Install difftree-action PR comment workflow](projects/P03-install-difftree-action-pr-comment-workflow.md) — scaffold canonical difftree-pr-comment.yml via difftree-action-setup
 - [ ] **P04** — [Workspace skeleton toolchain and Blaze accelerator](projects/P04-workspace-skeleton-toolchain-and-blaze-accelerator.md) — 4-crate Cargo workspace, Edition 2024, MSRV, Makefile/Justfile, and opt-in Blaze local loop
 - [ ] **P05** — [Local quality gates hooks and devcontainer](projects/P05-local-quality-gates-hooks-and-devcontainer.md) — lefthook, committed, gitleaks, dprint, ast-grep, large-file guard, DevContainer, and AI config

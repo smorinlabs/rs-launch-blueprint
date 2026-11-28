@@ -6,7 +6,7 @@
 - **Plan:** [P02 research execution plan](../docs/superpowers/plans/2026-09-05-p02-research-execution.md)
 - **Depends on:** P01
 
-**Status:** `[~]` in progress (`v0.2.0` tagged on PR #6 merge `4deb25c8`; R69 revision-11, `T03`, `TS01`, `TS02` open).
+**Status:** `[x]` completed (2026-11-27 closeout: R69 revision-11 atomic flag-day published across all 34 affected topics, all `CONFLICT:` lines discharged, `TS01`/`TS02` verified 85/85, all regression tests green; see `docs/planning/p02/closeout-verification.md`).
 
 **Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`. Each decision demonstrates the intended principle at its declared agreement level with an appropriate native design and a realistic acceptance example.
 - Gate: P01 merged and tagged `v0.1.0` (satisfied 2026-09-05); paid batches authorized in `docs/planning/p02/APPROVAL.md` (pilot USD 40; bulk Deep ceiling USD 300). Only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
@@ -29,19 +29,25 @@
 - [x] [P02-T01] First review REUSE/ADOPT baselines for agreement-level mistakes and record/reconcile `BASELINE-REVIEW:` findings under A5; then run R38 as the pilot end-to-end
       2026-09-04: all 97 REUSE/ADOPT rows adjudicated (`docs/port/BASELINE-REVIEW.md`: 18 worker findings plus 11 challenges from the Codex gpt-6-astra adversarial sample, adjudicated by the controller); 28 ledger rows annotated (2 reclassified), 20 prompts and the dependency record reconciled; owner questions listed there. R38 pilot: tag and envelope cleared 2026-09-05; decision revision 3 is fully audited on Codex and Opus (both verdicts approve) but cannot publish because the policy requires the third engine and Doxa is blocked on exhausted OpenAI credits and Perplexity quota (prompt → three raw answers in parallel → `scripts/check-answer-shape.sh` on each → synthesized `DECISION.md` with `## Engines` → both audits) — this run is binding, unlike P01-TS07
       2026-11-13: R38 published; its index row is `resolved` and `research_scan.py --todo` counts it done
-- [~] [P02-T02] Run remaining items as their own prerequisites become current and accepted, under the approved tier policy and capacity limits; save original outputs in unique run directories and accepted reports under each topic's `raw/`
+- [x] [P02-T02] Run remaining items as their own prerequisites become current and accepted, under the approved tier policy and capacity limits; save original outputs in unique run directories and accepted reports under each topic's `raw/`
       2026-09-07: three items published (R23, R47, R04) through `research_runner.py publication apply`; all 32 prerequisite-free items have their Codex report collected; R06 awaits synthesis; R41 and R46 have revision 2 awaiting fresh audit pairs. Execution record: `docs/planning/p02/execution-ledger.md`; handoff: `docs/handoffs/2026-09-07-p02-research-execution.md`
       2026-11-13: 84 of 85 items published; R69's revision-11 flag-day update is deferred out of `v0.2.0` (owner Q2.A; `docs/planning/p02/execution-ledger.md`)
-- [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
+      2026-11-27: R69 revision-11 (`2806a1f0...`), all 12 `web-extra-surface` consumers, and all 21 indirect transitive dependents published atomically (`docs/planning/p02/closeout-verification.md`); `research_scan.py --todo` reports `done 85` (0 `REOPENED`)
+- [x] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
+      2026-11-27: all active `CONFLICT:` lines discharged — `R02 → R69` via R69 r11 publication into `docs/port/PARAMETERS.md`, `R71 → R69` via non-optional `crates/web/Cargo.toml` deps under R69 r11 clause (4) (`R71` r4), and `R32 → R11` via R11's delegated R32 slot rule (`R11 DECISION.md:282`, `R32` r3, owner-approved 2026-11-27 roadmap Area 8); raw-only non-conflicts in `R01`, `R53/R55`, `R67`, `R72` already disposed (`docs/planning/p02/closeout-verification.md` §2)
 - [x] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; distinct fresh auditors approve the exact decision revision with no unresolved findings, and neither auditor produced raw evidence or synthesis
       2026-11-13: all 85 items have `audit-fable.md` and an empirical audit; 18 use `audit-claude.md` under `empirical_auditor_overrides` in `research/EXECUTION.json`; `check-research-tree.sh --require-owner-review` passes
 - [x] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
       2026-11-13: every registry row matches its owner's published decision (`check-research-tree.sh --require-owner-review` passes); R69's unpublished revision-11 value is tracked under T02
+      2026-11-27: `web-extra-surface` updated to R69 revision-11 value; all researched parameter rows match their owners' published decisions
 - [x] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
 - [x] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0` — PR #6 merged 2026-11-12 as `4deb25c8`; `v0.2.0` tagged on it
-- [ ] [P02-TS01] Every `DECISION.md` has an `## Empirical check` whose command was actually executed and whose output is pasted
-- [ ] [P02-TS02] A reviewer verifies the principle-to-design mapping and agreement level in every decision, then re-reads every OVERRIDE item's "Override justified" field; any `no` flips the ledger row back to the inherited verdict and records the reversal under `### OV-nn`
-- [ ] Regression Test Status
+- [x] [P02-TS01] Every `DECISION.md` has an `## Empirical check` whose command was actually executed and whose output is pasted
+      2026-11-27: verified 85/85 published topics have non-empty `## Empirical check`, `empirical.exit_code == 0`, non-empty `argv`/`cwd`/`toolchain`, SHA-256-verified committed `evidence/*.log`, and matching approving empirical audits, with environment bounds honestly disclosed (`docs/planning/p02/closeout-verification.md` §3)
+- [x] [P02-TS02] A reviewer verifies the principle-to-design mapping and agreement level in every decision, then re-reads every OVERRIDE item's "Override justified" field; any `no` flips the ledger row back to the inherited verdict and records the reversal under `### OV-nn`
+      2026-11-27: verified 85/85 published topics carry non-empty `### Principles and implementation` and approving `audit-fable.md`; 0 `COMMON → OVERRIDE` rows exist in `docs/port/COMMONALITY.md` (0 ledger reversals owed); all 17 allocated charter/standard `OV-01`..`OV-17` numbers audited (1 retired, 4 returned unused, 12 active verified; `docs/planning/p02/closeout-verification.md` §4)
+- [x] Regression Test Status
+      2026-11-27: fixed stale live-repo fixture assumptions in `scripts/test-research-runner.py` (21/21 pass) and `scripts/test-research-package.py` (7/7 pass); all shell (`check-shell.sh`, `test-check-shell.sh`, `test-chain-next.sh`, `check-research-tree.sh --require-owner-review`, `test-check-research-tree.sh`) and Python (`scripts/test-*.py`) suites pass cleanly
 
 ### Deliverable
 ```bash

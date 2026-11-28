@@ -1,0 +1,30 @@
+=== ENV: cargo --version ===
+EXIT=0
+cargo 1.100.1 (3acc79c0c 2026-11-05)
+=== LOCK: cargo generate-lockfile ===
+EXIT=0
+=== NEG-OLD-CMD (no --workspace, fails no target openapi): cargo test --locked --features web --test openapi openapi_snapshot_is_current ===
+EXIT=101
+error: no test target named `openapi` in default-run packages
+help: available test in `rs-launch-blueprint-web` package:
+    openapi
+=== POS-WORKSPACE (--workspace --features web --test openapi): cargo test --locked --workspace --features web --test openapi openapi_snapshot_is_current ===
+EXIT=0
+
+running 1 test
+test openapi_snapshot_is_current ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmpgsad8qd7/crates/core)
+   Compiling rs-launch-blueprint-web v0.1.0 (/private/var/folders/9b/cv7xd01s0xzgdjkll4z5hv900000gn/T/tmpgsad8qd7/crates/web)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running tests/openapi.rs (target/debug/build/rs-launch-blueprint-web/e10bc1a198008e08/out/openapi-e10bc1a198008e08)
+=== POS-PKG (-p rs-launch-blueprint-web --test openapi): cargo test --locked -p rs-launch-blueprint-web --test openapi openapi_snapshot_is_current ===
+EXIT=0
+
+running 1 test
+test openapi_snapshot_is_current ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running tests/openapi.rs (target/debug/build/rs-launch-blueprint-web/e10bc1a198008e08/out/openapi-e10bc1a198008e08)
