@@ -1,0 +1,13 @@
+# typos.toml (R40)
+[files]
+# Walk .github/ too, so the CI whole-tree run checks what the hook checks.
+ignore-hidden = false
+# Exclude .git/ plus archived P01/P02 research/port/planning records
+# (stripped in stamped child repos by Template Press).
+extend-exclude = [
+    ".git/",
+    "research/",
+    "docs/planning/p02/",
+    "docs/port/",
+    "docs/handoffs/",
+]

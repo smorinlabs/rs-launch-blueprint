@@ -1,0 +1,5 @@
+# .gitattributes
+# Per-path exemption for scripts/check-large-files.sh (> 1 MiB, R14).
+# No active exemptions ship at baseline. Prefer Git LFS for binary assets;
+# for an intentional reviewable large text fixture, add a per-path entry:
+# path/to/large-fixture.json large-file-ok

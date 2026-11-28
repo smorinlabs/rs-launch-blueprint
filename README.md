@@ -7,12 +7,12 @@ production-ready template for a Rust CLI + library + web service.
 **Status: research phase.** There is no Rust code here yet. This repository
 currently holds the analysis that decides what the template will be made of:
 
-| Where | What |
-|---|---|
-| `docs/port/` | Side-by-side inventories of the two existing blueprints and the authoritative reuse / substitute / override ledger (`COMMONALITY.md`) |
-| `research/CLAUDE.md` | Index of every open technology or pattern decision, one deep-research prompt each |
-| `docs/superpowers/specs/` | The approved design for this research program |
-| `scripts/check-research-tree.sh` | Structural checks for the index, prompts, and ledger |
+| Where                            | What                                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/port/`                     | Side-by-side inventories of the two existing blueprints and the authoritative reuse / substitute / override ledger (`COMMONALITY.md`) |
+| `research/CLAUDE.md`             | Index of every open technology or pattern decision, one deep-research prompt each                                                     |
+| `docs/superpowers/specs/`        | The approved design for this research program                                                                                         |
+| `scripts/check-research-tree.sh` | Structural checks for the index, prompts, and ledger                                                                                  |
 
 ## Governing rule
 
@@ -32,10 +32,9 @@ MIT OR Apache-2.0, at your option — see `LICENSE` (Apache-2.0) and `LICENSE-MI
 ## Shell validation
 
 Install the pinned analyzer with `bash scripts/install-shellcheck.sh` and add
-`~/.local/bin` to PATH. Run `bash scripts/install-hooks.sh` once per clone
-to install the native Git pre-commit hook. It checks staged shell content,
-including partial staging, and blocks commits when ShellCheck fails. The
-installer preserves existing hooks and custom hook configurations.
+`~/.local/bin` to PATH. Run `just setup` (or `just hooks-install`) once per clone
+to install the `lefthook` Git hooks (`lefthook.yml`), which include staged
+ShellCheck verification alongside formatting, linting, security, and secret checks.
 
 Run `bash scripts/check-shell.sh` to check all tracked
 `.sh` and `.bash` files, or pass explicit paths to check selected scripts.
@@ -43,6 +42,4 @@ Recorded evidence scripts under `research/runs/` that predate the check are
 listed with their SHA-256 in `scripts/shellcheck-evidence-baseline.txt`; each
 is skipped only while its bytes match, and new or edited evidence is checked.
 CI runs the same check alongside the research validator and its regression
-suite. The hook uses Git directly and requires no hook-manager dependency.
-Re-run the installer after hook updates; if it reports an existing different
-hook, review and integrate the change before replacing your installed hook.
+suite.

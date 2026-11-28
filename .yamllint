@@ -1,0 +1,16 @@
+# .yamllint — read by ryl; the same file drives yamllint unchanged (R40).
+extends: default
+
+ignore: |
+  research/
+
+rules:
+  document-start: disable
+  line-length: disable
+  indentation: disable
+  comments:
+    min-spaces-from-content: 1
+  truthy:
+    level: error
+    allowed-values: ["true", "false"]
+    check-keys: false

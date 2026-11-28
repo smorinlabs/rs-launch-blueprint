@@ -1,0 +1,19 @@
+id: rs-sql-format
+language: rust
+severity: error
+message: SQL text is built with format!; bind parameters instead (bandit B608 analogue).
+ignores:
+  - "**/tests/**"
+  - "**/benches/**"
+  - "**/fuzz/**"
+  - "**/research/**"
+rule:
+  any:
+    - pattern: $Q(&format!($$$A))
+    - pattern: $Q(format!($$$A).as_str())
+    - pattern: $Q(format!($$$A))
+    - pattern: $Q(&format!($$$A), $$$REST)
+    - pattern: $Q(format!($$$A).as_str(), $$$REST)
+constraints:
+  Q:
+    regex: '(^|::|\.)(query|query_as|query_scalar|execute|raw_sql|sql_query)$|(^|::)AssertSqlSafe$'

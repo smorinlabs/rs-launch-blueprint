@@ -28,7 +28,7 @@ while IFS= read -r -d '' file; do
             fi ;;
     esac
     files+=("$file")
-done < <(git ls-files -z -- '*.sh' '*.bash' '.githooks/pre-commit')
+done < <(git ls-files -z -- '*.sh' '*.bash')
 if [ "${#files[@]}" -gt 0 ]; then
     shellcheck -- "${files[@]}"
 fi

@@ -1,0 +1,16 @@
+# .gitleaks.toml — read by gitleaks >= 8.25 and by Betterleaks (legacy-format compatible).
+title = "rs-launch-blueprint secret-scanning rules"
+
+# Start from the scanner's maintained default rule set. It already ignores its own
+# config file and the AWS documentation example keys (rule allowlist `.+EXAMPLE$`).
+[extend]
+useDefault = true
+
+# No path or regex exemptions ship by default. Add one only for a real false positive,
+# scoped as narrowly as possible, for example:
+# [[allowlists]]
+# description = "Fake credentials used by the web service's config-parsing tests"
+# targetRules = ["generic-api-key"]
+# condition = "AND"
+# paths = ['''^crates/web/tests/fixtures/''']
+# regexes = ['''^fixture-''']

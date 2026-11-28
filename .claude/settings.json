@@ -1,5 +1,5 @@
 {
   "companyAnnouncements": [
-    "rs-launch-blueprint: the Rust sibling of py-launch-blueprint and ts-launch-blueprint (CLI + library + web service), currently in research phase — no Rust code yet. Commands: scripts/check-research-tree.sh (validate index/prompts/ledger/registry; add --require-owner-review before Phase 4), scripts/test-check-research-tree.sh (53-case regression suite for the checker). See docs/port/README.md for the research method and verdict vocabulary, and PROJECTS.md P01 for phase status."
+    "rs-launch-blueprint: a production-ready Rust template shipping a CLI, a library crate, and an optional web service behind a Cargo feature. Commands: just setup (toolchain and hooks), just check (format, non-code format, security, hygiene, lint, typecheck, test, deny), just security (ast-grep rules), just check-deps (toolchain check), just debug-info (environment report); just --list for the rest. See AGENTS.md for the project charter and the Justfile for all recipes."
   ]
 }

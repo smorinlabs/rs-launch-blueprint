@@ -15,7 +15,7 @@ CHECK := $(GREEN)✓$(NC)
 CROSS := $(RED)✗$(NC)
 DASH := $(GRAY)-$(NC)
 
-.PHONY: all bootstrap check install-rust install-rust-force install-just install-just-force help
+.PHONY: all bootstrap check hook-check install-rust install-rust-force install-just install-just-force help
 
 all: help
 
@@ -74,6 +74,45 @@ check: ## Check Level 1 base toolchain requirements
 		echo ""; \
 		echo -e "$(RED)Found $${ERROR_COUNT} missing deps: $${MISSING_DEPS}$(NC)"; \
 		exit 1; \
+	fi
+
+hook-check: ## F186 — report-only readiness doctor for git-hook toolchain (R37, R39, R40)
+	@echo "Checking git-hook toolchain..."
+	@echo "=== Hook Toolchain Status ==="
+	@PATH="$(HOME)/.local/bin:$(HOME)/.cargo/bin:$$PATH"; \
+	LEFTHOOK_PIN="2.1.14"; \
+	ISSUES=0; \
+	if command -v lefthook >/dev/null 2>&1; then \
+		LH_VER=$$(lefthook version 2>/dev/null || true); \
+		if [ "$$LH_VER" = "$$LEFTHOOK_PIN" ]; then \
+			printf "[$(CHECK)] lefthook (%s)\n" "$$LH_VER"; \
+		else \
+			printf "[$(CROSS)] lefthook version mismatch (got %s, want %s — $(CYAN)just install-tool ubi:evilmartians/lefthook@v%s$(NC))\n" "$$LH_VER" "$$LEFTHOOK_PIN" "$$LEFTHOOK_PIN"; \
+			ISSUES=$$((ISSUES + 1)); \
+		fi; \
+		if lefthook check-install >/dev/null 2>&1; then \
+			printf "[$(CHECK)] lefthook hooks installed\n"; \
+		else \
+			printf "[$(CROSS)] lefthook hooks not installed or stale ($(CYAN)just hooks-install$(NC))\n"; \
+			ISSUES=$$((ISSUES + 1)); \
+		fi; \
+	else \
+		printf "[$(CROSS)] lefthook ($(CYAN)just install-tool ubi:evilmartians/lefthook@v%s$(NC))\n" "$$LEFTHOOK_PIN"; \
+		ISSUES=$$((ISSUES + 1)); \
+	fi; \
+	for TOOL in dprint ast-grep committed gitleaks editorconfig-checker ryl typos actionlint shellcheck; do \
+		if command -v "$$TOOL" >/dev/null 2>&1; then \
+			printf "[$(CHECK)] %s\n" "$$TOOL"; \
+		else \
+			printf "[$(CROSS)] %s ($(CYAN)just setup$(NC))\n" "$$TOOL"; \
+			ISSUES=$$((ISSUES + 1)); \
+		fi; \
+	done; \
+	if [ "$$ISSUES" = "0" ]; then \
+		echo -e "$(GREEN)All git-hook tools are ready!$(NC)"; \
+	else \
+		echo ""; \
+		echo -e "$(YELLOW)Found $${ISSUES} hook-toolchain issue(s). Run $(BLUE)just setup$(NC)$(YELLOW) or $(BLUE)just hooks-install$(NC)$(YELLOW) to remediate.$(NC)"; \
 	fi
 
 install-rust: ## Print rustup installation command

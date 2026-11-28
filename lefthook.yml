@@ -1,0 +1,80 @@
+# lefthook.yml — local git hooks (R37, R14, R27, R28, R29, R31, R32, R38, R39, R40, R41).
+# Install with `just setup` or `just hooks-install`. Re-run whole-tree with `just hooks-run`.
+min_version: 2.1.14
+assert_lefthook_installed: true
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: rustfmt
+      run: cargo fmt --all --check
+    - name: format-files
+      glob: "*.{toml,json,jsonc,md,yml,yaml}"
+      exclude:
+        - "CHANGELOG.md"
+        - ".release-please-manifest.json"
+        - "research/**"
+        - "docs/planning/p02/**"
+        - "docs/port/**"
+        - "docs/handoffs/**"
+        - "docs/superpowers/**"
+        - "projects/**"
+      run: dprint check --allow-no-files {staged_files}
+    - name: clippy
+      tags: [compiles]
+      glob: "*.{rs,toml}"
+      exclude:
+        - "research/**"
+      run: cargo clippy --workspace --all-targets --locked -- -D warnings
+    - name: security-scan
+      glob: "*.rs"
+      exclude:
+        - "research/**"
+      run: ast-grep scan --error {staged_files}
+    - name: shellcheck
+      glob: "*.{sh,bash}"
+      exclude:
+        - "research/runs/**"
+      run: bash scripts/check-shell.sh {staged_files}
+    - name: gitleaks
+      run: gitleaks git --pre-commit --staged --no-banner --redact --config .gitleaks.toml .
+    - name: large-files
+      run: sh scripts/check-large-files.sh --staged
+    - name: cargo-lock
+      run: bash scripts/check-cargo-lock.sh
+    - name: editorconfig-checker
+      exclude:
+        - "research/**"
+      run: editorconfig-checker {staged_files}
+    - name: yaml-lint
+      glob: "*.{yml,yaml}"
+      exclude:
+        - "research/**"
+      run: ryl {staged_files}
+    - name: typos
+      exclude:
+        - "research/**"
+      run: typos --force-exclude {staged_files}
+    - name: actionlint
+      glob:
+        - ".github/*.{yml,yaml}"
+        - ".github/**/*.{yml,yaml}"
+      run: actionlint
+
+commit-msg:
+  jobs:
+    - name: committed
+      run: committed --fixup --wip --commit-file {1}
+
+pre-push:
+  parallel: true
+  jobs:
+    - name: gitleaks
+      run: gitleaks git --no-banner --redact --config .gitleaks.toml --log-opts="--branches --tags HEAD --not --remotes" .
+    - name: test
+      run: |
+        if [ "${RS_PROJECTS_PREPUSH_TESTS:-0}" = "1" ]; then
+          just test
+        else
+          echo "pre-push tests skipped (opt-in: RS_PROJECTS_PREPUSH_TESTS=1)"
+        fi

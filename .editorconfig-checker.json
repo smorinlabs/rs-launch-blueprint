@@ -1,0 +1,10 @@
+{
+  "Version": "v4.0.2",
+  "Exclude": [
+    "^research/"
+  ],
+  "Disable": {
+    "Indentation": true,
+    "IndentSize": true
+  }
+}

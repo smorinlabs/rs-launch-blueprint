@@ -1,0 +1,56 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "CLI: Launch",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--package",
+          "rs-launch-blueprint",
+          "--bin",
+          "rslbp"
+        ]
+      },
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "CLI: Launch (With Args)",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--package",
+          "rs-launch-blueprint",
+          "--bin",
+          "rslbp"
+        ]
+      },
+      "args": ["--help"],
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "Web: Launch (rslbp-serve)",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": [
+          "build",
+          "--package",
+          "rs-launch-blueprint",
+          "--features",
+          "web",
+          "--bin",
+          "rslbp-serve"
+        ]
+      },
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"]
+    }
+  ]
+}

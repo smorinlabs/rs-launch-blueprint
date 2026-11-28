@@ -1,0 +1,10 @@
+id: rs-weak-hash
+valid:
+  - Sha256::new()
+  - sha2::Sha512::digest(data)
+invalid:
+  - md5::compute(b"data")
+  - md5::Md5::new()
+  - sha1::Sha1::new()
+  - Sha1::default()
+  - Md5::digest(data)

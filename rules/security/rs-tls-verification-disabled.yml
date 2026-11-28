@@ -1,0 +1,13 @@
+id: rs-tls-verification-disabled
+language: rust
+severity: error
+message: TLS certificate or hostname verification is disabled (bandit B501 analogue).
+ignores:
+  - "**/tests/**"
+  - "**/benches/**"
+  - "**/fuzz/**"
+  - "**/research/**"
+rule:
+  any:
+    - pattern: $B.danger_accept_invalid_certs(true)
+    - pattern: $B.danger_accept_invalid_hostnames(true)

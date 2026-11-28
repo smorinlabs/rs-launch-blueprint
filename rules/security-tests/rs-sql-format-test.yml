@@ -1,0 +1,11 @@
+id: rs-sql-format
+valid:
+  - sqlx::query("SELECT * FROM t WHERE id = $1").bind(id)
+  - query_as::<_, Row>("SELECT 1")
+  - conn.execute("DELETE FROM t WHERE id = ?1", [id])
+invalid:
+  - sqlx::query(AssertSqlSafe(format!("SELECT * FROM t WHERE id = {id}")))
+  - conn.execute(format!("DELETE FROM {t}").as_str(), [])
+  - pool.execute(sqlx::AssertSqlSafe(format!("DROP TABLE {t}")))
+  - conn.execute(&format!("DELETE FROM {t}"), [])
+  - diesel::sql_query(format!("SELECT {c}"))

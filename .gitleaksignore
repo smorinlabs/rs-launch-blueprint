@@ -1,0 +1,12 @@
+# .gitleaksignore — per-finding suppressions, one fingerprint per line.
+# Pattern or path exemptions belong in .gitleaks.toml, not here.
+#
+# Prefer, in order:
+#   1. an inline `gitleaks:allow` comment on a deliberate fake in a new change;
+#   2. a commit-form fingerprint  <commit-sha>:<path>:<rule-id>:<line>  for a finding
+#      already in history (it suppresses that one commit's occurrence only);
+#   3. a path-form fingerprint   <path>:<rule-id>:<line>  only when (1) is impossible;
+#      it suppresses that line in every commit and at both hook tiers.
+# Precede every entry with a one-line comment saying what it is and why it is safe.
+# To obtain a fingerprint:
+#   gitleaks git --no-banner --redact --config .gitleaks.toml -v --log-opts="<range>" .

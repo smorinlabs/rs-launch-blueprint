@@ -6,14 +6,14 @@ file plus those.
 
 ## Status legend
 
-| Glyph | Meaning                | File state                              |
-|-------|------------------------|-----------------------------------------|
-| `[?]` | Idea / exploratory     | stub file, trailing-hyphen filename     |
-| `[ ]` | Scoped, not started    | full scope + tasks                      |
-| `[~]` | In progress            | full + some `[x]` tasks                 |
-| `[x]` | Completed              | all tasks `[x]`                         |
-| `[-]` | Decided not to do      | reason at top of file                   |
-| `[>]` | Proceeded to successor | redirects to successor's file           |
+| Glyph | Meaning                | File state                          |
+| ----- | ---------------------- | ----------------------------------- |
+| `[?]` | Idea / exploratory     | stub file, trailing-hyphen filename |
+| `[ ]` | Scoped, not started    | full scope + tasks                  |
+| `[~]` | In progress            | full + some `[x]` tasks             |
+| `[x]` | Completed              | all tasks `[x]`                     |
+| `[-]` | Decided not to do      | reason at top of file               |
+| `[>]` | Proceeded to successor | redirects to successor's file       |
 
 ## Conventions
 
@@ -48,11 +48,12 @@ Planning system: **Superpowers** — specs/plans live under
 ## Project index
 
 <!-- One row per project. Scoped / in-progress / done first; ideas last. -->
+
 - [x] **P01** — [Port research program](projects/P01-port-research-program.md) — evidence-based research tree, commonality ledger, and deep-research prompts (v0.1.0)
 - [x] **P02** — [Execute research program](projects/P02-execute-research-program.md) — run accepted research items to audited decisions and filled parameters (v0.2.0)
 - [x] **P03** — [Install difftree-action PR comment workflow](projects/P03-install-difftree-action-pr-comment-workflow.md) — scaffold canonical difftree-pr-comment.yml via difftree-action-setup
 - [x] **P04** — [Workspace skeleton toolchain and Blaze accelerator](projects/P04-workspace-skeleton-toolchain-and-blaze-accelerator.md) — 4-crate Cargo workspace, Edition 2024, MSRV, Makefile/Justfile, and opt-in Blaze local loop
-- [ ] **P05** — [Local quality gates hooks and devcontainer](projects/P05-local-quality-gates-hooks-and-devcontainer.md) — lefthook, committed, gitleaks, dprint, ast-grep, large-file guard, DevContainer, and AI config
+- [x] **P05** — [Local quality gates hooks and devcontainer](projects/P05-local-quality-gates-hooks-and-devcontainer.md) — lefthook, committed, gitleaks, dprint, ast-grep, large-file guard, DevContainer, and AI config
 - [ ] **P06** — [Core library ports config and logging](projects/P06-core-library-ports-config-and-logging.md) — ProjectsPort/Service, ureq adapter, RSLB errors, XDG paths, 6-tier TOML config, secrets, and tracing
 - [ ] **P07** — [CLI rslbp feature parity and test harness](projects/P07-cli-rslbp-feature-parity-and-test-harness.md) — clap derive CLI, output formats, rich UX, nextest, proptest, insta, assert_cmd, and llvm-cov
 - [ ] **P08** — [Optional web service core and middleware](projects/P08-optional-web-service-core-and-middleware.md) — opt-in web feature, axum/tokio rslbp-serve, RFC 9457, /v1, pagination, idempotency, rate limit, probes

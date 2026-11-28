@@ -1,0 +1,28 @@
+# .editorconfig
+# EditorConfig (https://editorconfig.org): the cross-editor baseline that
+# editorconfig-checker enforces at pre-commit and in CI (R40).
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml,json}]
+indent_size = 2
+
+[Makefile]
+indent_style = tab
+
+# Markdown: two trailing spaces are a hard line break; trimming them changes
+# the rendered document.
+[*.md]
+trim_trailing_whitespace = false
+
+# insta file snapshots (R33): trailing spaces inside a snapshot line are data,
+# and an editor trim makes the snapshot test fail.
+[*.snap]
+trim_trailing_whitespace = false
