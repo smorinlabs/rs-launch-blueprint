@@ -493,4 +493,120 @@ mod otel_enabled {
         let _cfg = OtelConfig::from_process_env(false, Duration::from_secs(2));
         rs_launch_blueprint::warn_if_otlp_env_ignored(true, Some("http://127.0.0.1:4318"));
     }
+
+    #[derive(Debug)]
+    struct SecretInnerError;
+
+    impl std::fmt::Display for SecretInnerError {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("INNER_SECRET_SOURCE_VALUE")
+        }
+    }
+
+    impl std::error::Error for SecretInnerError {}
+
+    #[derive(Debug)]
+    struct SecretOuterError(SecretInnerError);
+
+    impl std::fmt::Display for SecretOuterError {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            f.write_str("OUTER_SECRET_DISPLAY_VALUE")
+        }
+    }
+
+    impl std::error::Error for SecretOuterError {
+        fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+            Some(&self.0)
+        }
+    }
+
+    #[test]
+    fn otel_redacts_sensitive_typed_errors_and_correlates_explicit_event_parents() {
+        let exporter = InMemoryExporter::default();
+        let (otel_layer, otel_guard) =
+            build_otel_layer_with_exporter("rslbp-web", exporter.clone(), Duration::from_secs(2));
+
+        let log_buf = CaptureBuf::default();
+        let writer = log_buf.clone();
+        let (subscriber, _handles) = build_scoped_subscriber_with_otel(
+            Profile::Service {
+                level: LogLevel::Info,
+                format: ServiceLogFormat::Json,
+            },
+            move || writer.clone(),
+            Some(otel_layer),
+        );
+
+        let err = SecretOuterError(SecretInnerError);
+        {
+            let _sub_guard = tracing::subscriber::set_default(subscriber);
+
+            // Create two independent root spans A and B; enter A, emit explicit parent: &B and
+            // explicit parent: None events, plus sensitive typed errors on span and event.
+            let span_a = info_span!("span_a", token = &err as &dyn std::error::Error);
+            let span_b = info_span!("span_b");
+
+            let _enter_a = span_a.enter();
+            info!(secret = &err as &dyn std::error::Error, "error in span_a");
+            info!(parent: &span_b, "explicit parent span_b");
+            info!(parent: None, "explicit parentless event");
+        }
+
+        otel_guard.shutdown_blocking().expect("otel shutdown");
+
+        // 1. Sensitive typed error on both span and event MUST NOT leak into exported SpanData
+        //    (including via tracing-opentelemetry's exception.message / exception.stacktrace).
+        let spans = exporter.spans();
+        let dumped = format!("{spans:?}");
+        for leaked in ["OUTER_SECRET_DISPLAY_VALUE", "INNER_SECRET_SOURCE_VALUE"] {
+            assert!(
+                !dumped.contains(leaked),
+                "sensitive typed error leaked `{leaked}` into exported SpanData: {dumped}"
+            );
+        }
+
+        let span_a_data = spans
+            .iter()
+            .find(|s| s.name == "span_a")
+            .expect("exported span_a");
+        let span_b_data = spans
+            .iter()
+            .find(|s| s.name == "span_b")
+            .expect("exported span_b");
+        let trace_a = span_a_data.span_context.trace_id().to_string();
+        let span_id_a = span_a_data.span_context.span_id().to_string();
+        let trace_b = span_b_data.span_context.trace_id().to_string();
+        let span_id_b = span_b_data.span_context.span_id().to_string();
+        assert_ne!(
+            trace_a, trace_b,
+            "independent roots must have distinct trace IDs"
+        );
+
+        // 2. JSON log correlation matches each event's effective parent span (not just entered).
+        let log_text = log_buf.text();
+        let parse_msg = |needle: &str| -> serde_json::Value {
+            let line = log_text
+                .lines()
+                .find(|l| l.contains(needle))
+                .unwrap_or_else(|| panic!("missing `{needle}` in:\n{log_text}"));
+            serde_json::from_str(line).expect("parse json log line")
+        };
+
+        let ev_a = parse_msg("error in span_a");
+        assert_eq!(ev_a["trace_id"].as_str(), Some(trace_a.as_str()));
+        assert_eq!(ev_a["span_id"].as_str(), Some(span_id_a.as_str()));
+        assert_eq!(ev_a["secret"], "[REDACTED]");
+
+        let ev_b = parse_msg("explicit parent span_b");
+        assert_eq!(ev_b["span"]["name"], "span_b");
+        assert_eq!(ev_b["trace_id"].as_str(), Some(trace_b.as_str()));
+        assert_eq!(ev_b["span_id"].as_str(), Some(span_id_b.as_str()));
+
+        let ev_none = parse_msg("explicit parentless event");
+        assert!(ev_none.get("span").is_none());
+        assert!(
+            ev_none.get("trace_id").is_none() && ev_none.get("span_id").is_none(),
+            "parent: None event must omit trace_id/span_id: {ev_none}"
+        );
+    }
 }

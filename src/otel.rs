@@ -212,6 +212,8 @@ fn build_layer_from_provider(
     let tracer = provider.tracer(service_name.to_owned());
     let layer = tracing_opentelemetry::layer()
         .with_tracer(tracer)
+        .with_error_fields_to_exceptions(false)
+        .with_error_records_to_exceptions(false)
         .with_filter(otel_feedback_filter())
         .boxed();
     let guard = OtelGuard {

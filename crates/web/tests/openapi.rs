@@ -197,6 +197,34 @@ async fn served_openapi_endpoint_matches_committed_snapshot_and_rejects_stream()
         bad.headers().get(header::CONTENT_TYPE).unwrap(),
         "application/problem+json"
     );
+
+    // When `root_path` is set (e.g. "/api"), served `/openapi.json` prefixes project paths to
+    // match the mounted router while keeping operational probes at the root.
+    let settings = rs_launch_blueprint_web::WebSettings {
+        root_path: "/api".to_owned(),
+        ..rs_launch_blueprint_web::WebSettings::default()
+    };
+    let prefixed_app = build_router(empty_state().with_settings(settings));
+    let prefixed_res = prefixed_app
+        .oneshot(
+            Request::builder()
+                .uri(OPENAPI_PATH)
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(prefixed_res.status(), StatusCode::OK);
+    let prefixed_body = to_bytes(prefixed_res.into_body(), usize::MAX)
+        .await
+        .unwrap();
+    let prefixed_doc: Value = serde_json::from_slice(&prefixed_body).unwrap();
+    let prefixed_paths = prefixed_doc["paths"].as_object().unwrap();
+    assert!(prefixed_paths.contains_key("/api/v1/projects"));
+    assert!(prefixed_paths.contains_key("/api/v1/projects/{id}"));
+    assert!(!prefixed_paths.contains_key("/v1/projects"));
+    assert!(prefixed_paths.contains_key("/healthz"));
+    assert!(prefixed_paths.contains_key("/readyz"));
 }
 
 #[test]
@@ -213,13 +241,22 @@ fn openapi_supporting_files_and_client_config_conform_to_r71_and_r84() {
         "openapi/oasdiff-levels.txt must raise api-operation-id-removed to err (R71)"
     );
 
-    // R71 member 6: breaking-accepted.txt exists and carries no active exemptions at baseline.
+    // R71 member 6: breaking-accepted.txt exists, documents the oasdiff --err-ignore format,
+    // and permits reviewed non-comment exemption entries (A10).
     let accepted = fs::read_to_string(root.join("openapi/breaking-accepted.txt"))
         .expect("read openapi/breaking-accepted.txt");
+    assert!(
+        accepted.contains("--err-ignore"),
+        "openapi/breaking-accepted.txt must document its oasdiff --err-ignore usage"
+    );
     for (idx, line) in accepted.lines().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
         assert!(
-            line.trim().is_empty() || line.trim_start().starts_with('#'),
-            "openapi/breaking-accepted.txt baseline must be comment-only (line {}): {line}",
+            !trimmed.contains('\0'),
+            "openapi/breaking-accepted.txt line {} contains invalid NUL byte",
             idx + 1
         );
     }

@@ -117,6 +117,88 @@ fn valid_strategy_hits_declared_integer_string_array_enum_and_nullable_boundarie
         seen_enum,
         BTreeSet::from(["error".to_owned(), "ok".to_owned(), "warn".to_owned()])
     );
+
+    // 5. Exclusive float bounds: exclusiveMinimum=0.0, maximum=1.0 -> valid samples strictly > 0.0
+    //    and <= 1.0, and invalid enumeration emits the excluded boundary 0.0.
+    let (spec, float_schema) = parse_schema(json!({
+        "type": "number",
+        "exclusiveMinimum": 0.0,
+        "maximum": 1.0
+    }));
+    let strategy = common::valid_strategy(&float_schema, &spec);
+    for _ in 0..64 {
+        let v = strategy.new_tree(&mut runner).unwrap().current();
+        let f = v.as_f64().expect("float sample");
+        assert!(
+            f > 0.0 && f <= 1.0,
+            "exclusiveMinimum=0.0 must never emit 0.0 or > 1.0, got {f}"
+        );
+    }
+    let det_float = common::sample_valid_value(&float_schema, &spec)
+        .as_f64()
+        .expect("deterministic float");
+    assert!(det_float > 0.0 && det_float <= 1.0);
+    let float_invalids = common::enumerate_boundary_invalid(&float_schema, &spec);
+    assert!(
+        float_invalids
+            .iter()
+            .any(|c| c.arm.contains("exclusiveMinimum") && c.value.as_f64() == Some(0.0)),
+        "expected excluded boundary 0.0 in invalid cases: {float_invalids:?}"
+    );
+
+    // 6. Negative-only upper bound: integer maximum=-200 -> fallback lo stays <= -200.
+    let (spec, neg_int_schema) = parse_schema(json!({
+        "type": "integer",
+        "maximum": -200
+    }));
+    let strategy = common::valid_strategy(&neg_int_schema, &spec);
+    let mut saw_max = false;
+    for _ in 0..64 {
+        let v = strategy.new_tree(&mut runner).unwrap().current();
+        let n = v.as_i64().expect("negative integer sample");
+        assert!(n <= -200, "generated sample {n} violated maximum -200");
+        if n == -200 {
+            saw_max = true;
+        }
+    }
+    assert!(saw_max, "expected boundary -200 to be generated");
+
+    // 7. Declared string bounds up to 255 (e.g. Idempotency-Key) and minLength > 32 stay intact.
+    let (spec, long_str_schema) = parse_schema(json!({
+        "type": "string",
+        "minLength": 40,
+        "maxLength": 255
+    }));
+    let strategy = common::valid_strategy(&long_str_schema, &spec);
+    let mut seen_long_lens = BTreeSet::new();
+    for _ in 0..64 {
+        let v = strategy.new_tree(&mut runner).unwrap().current();
+        let len = v.as_str().expect("long string sample").len();
+        assert!(
+            (40..=255).contains(&len),
+            "sample length {len} outside 40..=255"
+        );
+        seen_long_lens.insert(len);
+    }
+    assert!(
+        seen_long_lens.contains(&40) && seen_long_lens.contains(&255),
+        "must preserve declared boundaries 40 and 255, got: {seen_long_lens:?}"
+    );
+    let det_long = common::sample_valid_value(&long_str_schema, &spec);
+    assert!(det_long.as_str().expect("det long string").len() >= 40);
+    let long_invalids = common::enumerate_boundary_invalid(&long_str_schema, &spec);
+    assert!(
+        long_invalids
+            .iter()
+            .any(|c| c.value.as_str().is_some_and(|s| s.len() == 39)),
+        "expected below_minLength(39): {long_invalids:?}"
+    );
+    assert!(
+        long_invalids
+            .iter()
+            .any(|c| c.value.as_str().is_some_and(|s| s.len() == 256)),
+        "expected above_maxLength(256): {long_invalids:?}"
+    );
 }
 
 #[test]
@@ -240,6 +322,14 @@ fn request_assembly_handles_path_query_header_and_cookie_parameters() {
             .iter()
             .any(|(arm, req)| arm.contains("param(session)") && !req.cookies.is_empty()),
         "expected cookie boundary-invalid request"
+    );
+
+    assert!(
+        invalid_reqs.iter().any(
+            |(arm, req)| arm.contains("param(id):string:below_minLength")
+                && req.path == "/v1/items/"
+        ),
+        "expected empty path segment preserved for below_minLength(1 - 1): {invalid_reqs:?}"
     );
 
     // Ensure every generated request builds cleanly into an Axum HTTP request.

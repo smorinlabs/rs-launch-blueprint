@@ -18,6 +18,7 @@ use thiserror::Error;
 use tokio::net::TcpListener;
 use tokio::sync::Notify;
 use utoipa::OpenApi as _;
+use utoipa_axum::router::OpenApiRouter;
 
 use crate::middleware::apply_middleware;
 use crate::openapi::{
@@ -196,7 +197,12 @@ impl FromRef<AppState> for DiagnosticsRunner {
 /// Assemble both the complete HTTP [`Router`] and its code-derived OpenAPI 3.1 document from one
 /// shared `OpenApiRouter` wiring so routes and schema cannot diverge (`R69`, `R71` A8, `R75`, `R80`).
 pub fn build_router_and_openapi(state: AppState) -> (Router, utoipa::openapi::OpenApi) {
-    let (projects_router, projects_doc) = routes::projects::router(&state).split_for_parts();
+    let projects_openapi_router = if state.settings.root_path.is_empty() {
+        routes::projects::router(&state)
+    } else {
+        OpenApiRouter::new().nest(&state.settings.root_path, routes::projects::router(&state))
+    };
+    let (api_router, projects_doc) = projects_openapi_router.split_for_parts();
     let (ops_router, ops_doc) = routes::ops::router().split_for_parts();
 
     let mut doc = ApiDoc::openapi();
@@ -206,12 +212,6 @@ pub fn build_router_and_openapi(state: AppState) -> (Router, utoipa::openapi::Op
     doc.info.version = API_DOCUMENT_VERSION.to_owned();
 
     let rendered_doc = Arc::new(serialize_openapi(&doc));
-
-    let api_router = if state.settings.root_path.is_empty() {
-        projects_router
-    } else {
-        Router::new().nest(&state.settings.root_path, projects_router)
-    };
 
     #[cfg(feature = "metrics")]
     let api_router = if state.settings.metrics_enabled {

@@ -483,6 +483,10 @@ api-breaking base="origin/main":
         echo "oasdiff {{oasdiff_version}} not found on PATH — install from https://github.com/oasdiff/oasdiff/releases/tag/{{oasdiff_version}}" >&2
         exit 1
     fi
+    if ! git rev-parse --verify --quiet "{{base}}^{commit}" >/dev/null; then
+        echo "error: base ref '{{base}}' does not resolve to a commit (fetch it first or pass a valid ref)" >&2
+        exit 1
+    fi
     if ! git cat-file -e "{{base}}:openapi/openapi.json" 2>/dev/null; then
         echo "base ref {{base}} has no openapi/openapi.json; this branch introduces the contract"
         exit 0

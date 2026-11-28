@@ -168,18 +168,87 @@ fn integer_bounds(obj: &ObjectSchema) -> (Option<i64>, Option<i64>) {
     (min, max)
 }
 
-fn float_bounds(obj: &ObjectSchema) -> (Option<f64>, Option<f64>) {
-    let min = obj
-        .minimum
-        .as_ref()
-        .and_then(Number::as_f64)
-        .or_else(|| obj.exclusive_minimum.as_ref().and_then(Number::as_f64));
-    let max = obj
-        .maximum
-        .as_ref()
-        .and_then(Number::as_f64)
-        .or_else(|| obj.exclusive_maximum.as_ref().and_then(Number::as_f64));
+#[derive(Debug, Clone, Copy)]
+struct FloatBound {
+    value: f64,
+    exclusive: bool,
+}
+
+fn float_bounds(obj: &ObjectSchema) -> (Option<FloatBound>, Option<FloatBound>) {
+    let min = match (
+        obj.minimum.as_ref().and_then(Number::as_f64),
+        obj.exclusive_minimum.as_ref().and_then(Number::as_f64),
+    ) {
+        (Some(inc), Some(exc)) => {
+            if exc >= inc {
+                Some(FloatBound {
+                    value: exc,
+                    exclusive: true,
+                })
+            } else {
+                Some(FloatBound {
+                    value: inc,
+                    exclusive: false,
+                })
+            }
+        }
+        (Some(inc), None) => Some(FloatBound {
+            value: inc,
+            exclusive: false,
+        }),
+        (None, Some(exc)) => Some(FloatBound {
+            value: exc,
+            exclusive: true,
+        }),
+        (None, None) => None,
+    };
+    let max = match (
+        obj.maximum.as_ref().and_then(Number::as_f64),
+        obj.exclusive_maximum.as_ref().and_then(Number::as_f64),
+    ) {
+        (Some(inc), Some(exc)) => {
+            if exc <= inc {
+                Some(FloatBound {
+                    value: exc,
+                    exclusive: true,
+                })
+            } else {
+                Some(FloatBound {
+                    value: inc,
+                    exclusive: false,
+                })
+            }
+        }
+        (Some(inc), None) => Some(FloatBound {
+            value: inc,
+            exclusive: false,
+        }),
+        (None, Some(exc)) => Some(FloatBound {
+            value: exc,
+            exclusive: true,
+        }),
+        (None, None) => None,
+    };
     (min, max)
+}
+
+/// Nudge a float strictly inward across an exclusive bound by a representable JSON-safe step.
+fn nudge_above(lo: f64, upper_limit: Option<f64>) -> f64 {
+    let step = (lo.abs() * 1e-6).max(1e-6);
+    let candidate = lo + step;
+    match upper_limit {
+        Some(hi) if candidate >= hi => f64::midpoint(lo, hi),
+        _ => candidate,
+    }
+}
+
+fn nudge_below(hi: f64, lower_limit: Option<f64>) -> f64 {
+    let step = (hi.abs() * 1e-6).max(1e-6);
+    let candidate = hi - step;
+    match lower_limit {
+        Some(lo) if candidate <= lo => f64::midpoint(lo, hi),
+        _ => candidate,
+    }
 }
 
 /// Build a **valid**, boundary-biased `proptest` strategy for an OpenAPI 3.1 [`Schema`] (`R83` P2).
@@ -223,8 +292,12 @@ fn valid_object_strategy(obj: &ObjectSchema, spec: &Spec, depth: usize) -> Boxed
             SchemaType::Boolean => any::<bool>().prop_map(Value::Bool).boxed(),
             SchemaType::Integer => {
                 let (decl_min, decl_max) = integer_bounds(obj);
-                let lo = decl_min.unwrap_or(-100);
-                let hi = decl_max.unwrap_or(100).max(lo);
+                let (lo, hi) = match (decl_min, decl_max) {
+                    (Some(min), Some(max)) => (min, max.max(min)),
+                    (Some(min), None) => (min, min.saturating_add(100)),
+                    (None, Some(max)) => (max.saturating_sub(100), max),
+                    (None, None) => (-100, 100),
+                };
                 let mut int_arms: Vec<BoxedStrategy<i64>> =
                     vec![Just(lo).boxed(), Just(hi).boxed(), (lo..=hi).boxed()];
                 if lo <= 0 && 0 <= hi {
@@ -236,8 +309,27 @@ fn valid_object_strategy(obj: &ObjectSchema, spec: &Spec, depth: usize) -> Boxed
             }
             SchemaType::Number => {
                 let (decl_min, decl_max) = float_bounds(obj);
-                let lo = decl_min.unwrap_or(-100.0);
-                let hi = decl_max.unwrap_or(100.0).max(lo);
+                let raw_lo = match (decl_min, decl_max) {
+                    (Some(min), _) => min.value,
+                    (None, Some(max)) => max.value - 100.0,
+                    (None, None) => -100.0,
+                };
+                let raw_hi = match (decl_min, decl_max) {
+                    (_, Some(max)) => max.value,
+                    (Some(min), None) => min.value + 100.0,
+                    (None, None) => 100.0,
+                };
+                let lo = if decl_min.is_some_and(|b| b.exclusive) {
+                    nudge_above(raw_lo, Some(raw_hi))
+                } else {
+                    raw_lo
+                };
+                let hi = if decl_max.is_some_and(|b| b.exclusive) {
+                    nudge_below(raw_hi, Some(lo))
+                } else {
+                    raw_hi
+                };
+                let (lo, hi) = if lo <= hi { (lo, hi) } else { (hi, lo) };
                 let mut f_arms: Vec<BoxedStrategy<f64>> =
                     vec![Just(lo).boxed(), Just(hi).boxed(), (lo..=hi).boxed()];
                 if lo <= 0.0 && 0.0 <= hi {
@@ -251,18 +343,23 @@ fn valid_object_strategy(obj: &ObjectSchema, spec: &Spec, depth: usize) -> Boxed
                     .boxed()
             }
             SchemaType::String => {
-                let min_len = usize::try_from(obj.min_length.unwrap_or(0))
-                    .unwrap_or(0)
-                    .min(32);
-                let max_len = usize::try_from(obj.max_length.unwrap_or(16))
-                    .unwrap_or(16)
-                    .min(64)
-                    .max(min_len);
+                // Preserve declared minLength/maxLength intact (e.g. Idempotency-Key maxLength=255)
+                // while keeping undeclared strings compact and guarding against huge u64 bounds.
+                const MAX_DECLARED_LEN: usize = 4096;
+                let min_len = obj
+                    .min_length
+                    .and_then(|v| usize::try_from(v).ok())
+                    .map_or(0, |v| v.min(MAX_DECLARED_LEN));
+                let max_len = match obj.max_length.and_then(|v| usize::try_from(v).ok()) {
+                    Some(decl) => decl.min(MAX_DECLARED_LEN).max(min_len),
+                    None => min_len.max(16),
+                };
                 let shortest = "a".repeat(min_len);
                 let longest = "z".repeat(max_len);
+                let uniform_hi = max_len.min(min_len.saturating_add(64));
                 let uniform = proptest::collection::vec(
                     prop::sample::select(b"abcdefghijklmnopqrstuvwxyz0123456789-_".to_vec()),
-                    min_len..=max_len,
+                    min_len..=uniform_hi,
                 )
                 .prop_map(move |bytes| {
                     String::from_utf8(bytes).unwrap_or_else(|_| "a".repeat(min_len))
@@ -276,13 +373,15 @@ fn valid_object_strategy(obj: &ObjectSchema, spec: &Spec, depth: usize) -> Boxed
                 .boxed()
             }
             SchemaType::Array => {
-                let min_items = usize::try_from(obj.min_items.unwrap_or(0))
-                    .unwrap_or(0)
-                    .min(8);
-                let max_items = usize::try_from(obj.max_items.unwrap_or(3))
-                    .unwrap_or(3)
-                    .min(8)
-                    .max(min_items);
+                const MAX_DECLARED_ITEMS: usize = 64;
+                let min_items = obj
+                    .min_items
+                    .and_then(|v| usize::try_from(v).ok())
+                    .map_or(0, |v| v.min(MAX_DECLARED_ITEMS));
+                let max_items = match obj.max_items.and_then(|v| usize::try_from(v).ok()) {
+                    Some(decl) => decl.min(MAX_DECLARED_ITEMS).max(min_items),
+                    None => min_items.max(3),
+                };
                 let item_strategy = obj.items.as_deref().map_or_else(
                     || Just(Value::String("x".to_owned())).boxed(),
                     |s| valid_strategy_depth(s, spec, depth + 1),
@@ -291,7 +390,8 @@ fn valid_object_strategy(obj: &ObjectSchema, spec: &Spec, depth: usize) -> Boxed
                     proptest::collection::vec(item_strategy.clone(), min_items..=min_items);
                 let longest =
                     proptest::collection::vec(item_strategy.clone(), max_items..=max_items);
-                let uniform = proptest::collection::vec(item_strategy, min_items..=max_items);
+                let uniform_hi = max_items.min(min_items.saturating_add(8));
+                let uniform = proptest::collection::vec(item_strategy, min_items..=uniform_hi);
                 proptest::strategy::Union::new(vec![
                     shortest.boxed(),
                     longest.boxed(),
@@ -386,28 +486,49 @@ fn sample_valid_depth(schema: &Schema, spec: &Spec, depth: usize) -> Value {
         SchemaType::Number => {
             let (min, max) = float_bounds(&obj);
             let val = match (min, max) {
-                (Some(lo), Some(hi)) => f64::midpoint(lo, hi),
-                (Some(lo), None) => lo,
-                (None, Some(hi)) => hi,
+                (Some(lo), Some(hi)) => f64::midpoint(lo.value, hi.value),
+                (Some(lo), None) => {
+                    if lo.exclusive {
+                        nudge_above(lo.value, None)
+                    } else {
+                        lo.value
+                    }
+                }
+                (None, Some(hi)) => {
+                    if hi.exclusive {
+                        nudge_below(hi.value, None)
+                    } else {
+                        hi.value
+                    }
+                }
                 (None, None) => 1.0,
             };
             Number::from_f64(val).map_or_else(|| Value::Number(Number::from(1)), Value::Number)
         }
         SchemaType::String => {
-            let min_len = usize::try_from(obj.min_length.unwrap_or(1))
-                .unwrap_or(1)
-                .max(1);
-            let max_len = obj
+            const MAX_DECLARED_LEN: usize = 4096;
+            let decl_min = obj
+                .min_length
+                .and_then(|v| usize::try_from(v).ok())
+                .map(|v| v.min(MAX_DECLARED_LEN));
+            let decl_max = obj
                 .max_length
-                .and_then(|m| usize::try_from(m).ok())
-                .unwrap_or(min_len);
-            let len = min_len.min(max_len).min(32);
+                .and_then(|v| usize::try_from(v).ok())
+                .map(|v| v.min(MAX_DECLARED_LEN));
+            let len = match (decl_min, decl_max) {
+                (Some(min), Some(max)) => min.min(max),
+                (Some(min), None) => min.max(1),
+                (None, Some(max)) => max.min(1),
+                (None, None) => 1,
+            };
             Value::String("a".repeat(len))
         }
         SchemaType::Array => {
-            let count = usize::try_from(obj.min_items.unwrap_or(0))
-                .unwrap_or(0)
-                .min(4);
+            const MAX_DECLARED_ITEMS: usize = 64;
+            let count = obj
+                .min_items
+                .and_then(|v| usize::try_from(v).ok())
+                .map_or(0, |v| v.min(MAX_DECLARED_ITEMS));
             let item = obj
                 .items
                 .as_deref()
@@ -484,32 +605,53 @@ pub(crate) fn enumerate_boundary_invalid(schema: &Schema, spec: &Spec) -> Vec<Bo
 
     if types.contains(&SchemaType::Number) {
         let (min, max) = float_bounds(&obj);
-        if let Some(lo) = min
-            && let Some(n) = Number::from_f64(lo - 1.0)
-        {
-            out.push(BoundaryInvalidCase {
-                arm: format!("number:below_minimum({lo} - 1.0)"),
-                value: Value::Number(n),
-            });
+        if let Some(lo) = min {
+            let invalid_val = if lo.exclusive {
+                lo.value
+            } else {
+                lo.value - 1.0
+            };
+            if let Some(n) = Number::from_f64(invalid_val) {
+                let arm = if lo.exclusive {
+                    format!("number:at_exclusiveMinimum({})", lo.value)
+                } else {
+                    format!("number:below_minimum({} - 1.0)", lo.value)
+                };
+                out.push(BoundaryInvalidCase {
+                    arm,
+                    value: Value::Number(n),
+                });
+            }
         }
-        if let Some(hi) = max
-            && let Some(n) = Number::from_f64(hi + 1.0)
-        {
-            out.push(BoundaryInvalidCase {
-                arm: format!("number:above_maximum({hi} + 1.0)"),
-                value: Value::Number(n),
-            });
+        if let Some(hi) = max {
+            let invalid_val = if hi.exclusive {
+                hi.value
+            } else {
+                hi.value + 1.0
+            };
+            if let Some(n) = Number::from_f64(invalid_val) {
+                let arm = if hi.exclusive {
+                    format!("number:at_exclusiveMaximum({})", hi.value)
+                } else {
+                    format!("number:above_maximum({} + 1.0)", hi.value)
+                };
+                out.push(BoundaryInvalidCase {
+                    arm,
+                    value: Value::Number(n),
+                });
+            }
         }
     }
 
     if types.contains(&SchemaType::String) {
+        const MAX_INVALID_LEN: usize = 4097;
         if let Some(min_len) = obj.min_length
             && min_len > 0
             && let Ok(len) = usize::try_from(min_len - 1)
         {
             out.push(BoundaryInvalidCase {
                 arm: format!("string:below_minLength({min_len} - 1)"),
-                value: Value::String("a".repeat(len.min(64))),
+                value: Value::String("a".repeat(len.min(MAX_INVALID_LEN))),
             });
         }
         if let Some(max_len) = obj.max_length
@@ -517,12 +659,13 @@ pub(crate) fn enumerate_boundary_invalid(schema: &Schema, spec: &Spec) -> Vec<Bo
         {
             out.push(BoundaryInvalidCase {
                 arm: format!("string:above_maxLength({max_len} + 1)"),
-                value: Value::String("z".repeat(len.min(512))),
+                value: Value::String("z".repeat(len.min(MAX_INVALID_LEN))),
             });
         }
     }
 
     if types.contains(&SchemaType::Array) {
+        const MAX_INVALID_ITEMS: usize = 65;
         if let Some(min_items) = obj.min_items
             && min_items > 0
             && let Ok(len) = usize::try_from(min_items - 1)
@@ -535,7 +678,7 @@ pub(crate) fn enumerate_boundary_invalid(schema: &Schema, spec: &Spec) -> Vec<Bo
                 });
             out.push(BoundaryInvalidCase {
                 arm: format!("array:below_minItems({min_items} - 1)"),
-                value: Value::Array(vec![elem; len.min(16)]),
+                value: Value::Array(vec![elem; len.min(MAX_INVALID_ITEMS)]),
             });
         }
         if let Some(max_items) = obj.max_items
@@ -549,7 +692,7 @@ pub(crate) fn enumerate_boundary_invalid(schema: &Schema, spec: &Spec) -> Vec<Bo
                 });
             out.push(BoundaryInvalidCase {
                 arm: format!("array:above_maxItems({max_items} + 1)"),
-                value: Value::Array(vec![elem; len.min(32)]),
+                value: Value::Array(vec![elem; len.min(MAX_INVALID_ITEMS)]),
             });
         }
     }
@@ -750,11 +893,12 @@ fn assemble_request(
     for (loc, name, val) in params {
         match loc {
             ParameterIn::Path => {
-                let raw = val.unwrap_or_else(|| "x".to_owned());
-                let safe = if raw.is_empty() {
-                    "x".to_owned()
-                } else {
-                    percent_encode_component(&raw)
+                // Preserve explicit `Some("")` so boundary-invalid `below_minLength(1 - 1)`
+                // cases actually exercise the empty path segment rather than substituting `"x"`.
+                let safe = match val {
+                    Some(raw) if raw.is_empty() => String::new(),
+                    Some(raw) => percent_encode_component(&raw),
+                    None => "x".to_owned(),
                 };
                 path = path.replace(&format!("{{{name}}}"), &safe);
             }

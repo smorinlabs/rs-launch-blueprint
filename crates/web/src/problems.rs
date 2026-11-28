@@ -518,7 +518,9 @@ pub async fn not_found(
     uri: Uri,
 ) -> WebError {
     #[cfg(feature = "metrics")]
-    crate::metrics::count_unmatched();
+    if settings.metrics_enabled {
+        crate::metrics::count_unmatched();
+    }
     WebError::not_found(&settings.problem_base_uri, uri.path())
 }
 

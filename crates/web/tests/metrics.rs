@@ -264,6 +264,20 @@ mod enabled {
 
     #[tokio::test]
     async fn metrics_disabled_setting_returns_404_while_business_routes_serve() {
+        // Ensure the global recorder is initialized so this test exercises the case where another
+        // router in the same process enabled metrics while this router has metrics_enabled=false.
+        let handle = rs_launch_blueprint_web::metrics_recorder();
+        let parse_unmatched = |rendered: &str| -> u64 {
+            rendered
+                .lines()
+                .find_map(|line| {
+                    line.strip_prefix(&format!("{HTTP_UNMATCHED_REQUESTS_TOTAL} "))
+                        .and_then(|v| v.trim().parse::<u64>().ok())
+                })
+                .unwrap_or(0)
+        };
+        let before = parse_unmatched(&handle.render());
+
         let settings = WebSettings {
             metrics_enabled: false,
             ..WebSettings::default()
@@ -281,6 +295,24 @@ mod enabled {
             .await
             .unwrap();
         assert_eq!(m.status(), StatusCode::NOT_FOUND);
+
+        let nf = app
+            .clone()
+            .oneshot(
+                Request::builder()
+                    .uri("/disabled-router-unmatched")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(nf.status(), StatusCode::NOT_FOUND);
+
+        let after = parse_unmatched(&handle.render());
+        assert_eq!(
+            after, before,
+            "router with metrics_enabled=false must not increment unmatched counter"
+        );
 
         let ok = app
             .oneshot(
