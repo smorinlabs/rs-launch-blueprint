@@ -51,7 +51,9 @@
 
 mod clipboard;
 mod config;
+mod diagnostics;
 mod error;
+mod idempotency;
 mod metadata;
 mod models;
 mod paths;
@@ -64,15 +66,24 @@ pub use config::{
     ColorPreference, ConfigDiscoveryInputs, ConfigFile, ConfigOverrides, ConfigSource, ConfigTier,
     ConfigWarning, ConfigWarningKind, ExplicitOrigin, FileLogFormat, LoadedConfig, LogLevel,
     LoggingConfig, MERGE_STRATEGY_DOC, OutputConfig, OutputFormat, PRECEDENCE_CHAIN_DOC,
-    UnvalidatedConfig, ValidConfig, ValidationIssue, ValidationReport, WRITABLE_KEYS,
-    discover_config_sources, discover_project_config_file, discover_system_config_files,
-    get_config_value, load_config, merge_tables_recursive, read_config_file_key, set_config_value,
-    validate_config_assignment,
+    ResolvedLogFormat, ServiceLogFormat, UnvalidatedConfig, ValidConfig, ValidationIssue,
+    ValidationReport, WRITABLE_KEYS, discover_config_sources, discover_project_config_file,
+    discover_system_config_files, get_config_value, load_config, merge_tables_recursive,
+    read_config_file_key, set_config_value, validate_config_assignment,
+};
+pub use diagnostics::{
+    Check, CheckStatus, Diagnostics, DiagnosticsContext, draining_diagnostics, run_diagnostics,
 };
 pub use error::{
     AuthError, ConfigError, DomainError, ErrorBody, ErrorCode, ErrorEnvelope, Exit, PortError,
 };
-pub use metadata::{CORE_NAME, WorkspaceInfo};
+pub use idempotency::{
+    AlwaysFreshIdempotencyStore, CachedResponse, ClaimToken, Clock, CompletedOutcome,
+    DEFAULT_IDEMPOTENCY_IN_FLIGHT, DEFAULT_IDEMPOTENCY_MAX_ENTRIES, DEFAULT_IDEMPOTENCY_TTL,
+    FakeClock, IdempotencyBegin, IdempotencyCacheKey, IdempotencyStore, InMemoryIdempotencyStore,
+    PayloadFingerprint, SystemClock,
+};
+pub use metadata::{CORE_NAME, VERSION, WorkspaceInfo};
 pub use models::{CreateProjectInput, DEFAULT_PROJECT_LIMIT, Project, ProjectQuery};
 pub use paths::{
     CONFIG_FILE_NAME, CRASH_LOG_FILE_NAME, CREDENTIALS_FILE_NAME, LOG_FILE_NAME,

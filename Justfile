@@ -425,6 +425,32 @@ check-shell:
 alias ca := check
 
 # ================================
+# OPTIONAL WEB SERVICE DEV LOOP (R69 F339)
+# ================================
+
+# Run the optional web service with bacon live-reload and graceful SIGTERM drain (R69)
+[group('web'), group('dev')]
+serve:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if ! command -v bacon >/dev/null 2>&1; then
+        echo "bacon not found on PATH — install with \`cargo binstall --locked bacon\` or run \`just serve-once\`" >&2
+        exit 1
+    fi
+    exec bacon --job run-long
+
+# Run the optional web service once via cargo without a file watcher (R69)
+[group('web'), group('dev')]
+[positional-arguments]
+serve-once *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ "$#" -gt 0 ]; then
+        exec cargo run --features web --bin {{app_name}}-serve -- "$@"
+    fi
+    exec cargo run --features web --bin {{app_name}}-serve
+
+# ================================
 # BLAZE LOCAL ACCELERATOR (OPT-IN)
 # ================================
 

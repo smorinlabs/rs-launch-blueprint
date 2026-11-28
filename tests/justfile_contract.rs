@@ -119,6 +119,8 @@ fn justfile_lists_required_p04_recipes() {
         "blaze-run",
         "blaze-status",
         "install-blaze",
+        "serve",
+        "serve-once",
     ] {
         assert!(
             recipes.contains(&required),

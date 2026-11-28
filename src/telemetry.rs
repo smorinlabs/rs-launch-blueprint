@@ -120,75 +120,7 @@ impl FromStr for LogFormat {
     }
 }
 
-/// Concrete log format accepted by the web/service profile (`R58`).
-///
-/// Deliberately rejects `auto` (`RSLB203` / `ConfigError::InvalidValue`) so service deployments
-/// never silently switch formats based on container TTY allocation.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum ServiceLogFormat {
-    /// Newline-delimited structured JSON objects (default for services).
-    #[default]
-    Json,
-    /// Human-readable console lines for local development.
-    Console,
-}
-
-impl ServiceLogFormat {
-    /// Canonical lowercase representation.
-    #[must_use]
-    pub const fn as_str(&self) -> &'static str {
-        match self {
-            Self::Json => "json",
-            Self::Console => "console",
-        }
-    }
-
-    /// Convert into [`ResolvedLogFormat`].
-    #[must_use]
-    pub const fn resolved(self) -> ResolvedLogFormat {
-        match self {
-            Self::Json => ResolvedLogFormat::Json,
-            Self::Console => ResolvedLogFormat::Console,
-        }
-    }
-}
-
-impl fmt::Display for ServiceLogFormat {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_str())
-    }
-}
-
-impl FromStr for ServiceLogFormat {
-    type Err = ConfigError;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.trim().to_ascii_lowercase().as_str() {
-            "json" => Ok(Self::Json),
-            "console" => Ok(Self::Console),
-            "auto" => Err(ConfigError::InvalidValue {
-                path: None,
-                key: "logging.format".to_owned(),
-                detail: "service profile does not accept 'auto'; choose 'json' or 'console'"
-                    .to_owned(),
-            }),
-            _ => Err(ConfigError::InvalidValue {
-                path: None,
-                key: "logging.format".to_owned(),
-                detail: format!("expected one of: json, console (got '{s}')"),
-            }),
-        }
-    }
-}
-
-/// Resolved concrete format after TTY detection.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ResolvedLogFormat {
-    /// Human-readable console lines.
-    Console,
-    /// Newline-delimited structured JSON objects.
-    Json,
-}
+pub use rs_launch_blueprint_core::{ResolvedLogFormat, ServiceLogFormat};
 
 /// Subscriber installation profile distinguishing CLI and service entrypoints (`R58`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

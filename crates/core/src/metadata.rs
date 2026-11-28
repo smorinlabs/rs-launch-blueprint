@@ -3,6 +3,10 @@
 /// Crate name of the core library package.
 pub const CORE_NAME: &str = env!("CARGO_PKG_NAME");
 
+/// Workspace-inherited package version shared across core, CLI, and optional web crates (`R22`,
+/// `R80`).
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 /// Static workspace identity returned by the facade composition root.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct WorkspaceInfo {

@@ -1,0 +1,17 @@
+# Bacon live-reload configuration for the optional web service (R69 F339).
+# Overrides bacon's default Unix SIGKILL so `just serve` exercises graceful SIGTERM drain.
+
+[jobs.run-long]
+command = [
+    "cargo",
+    "run",
+    "--features",
+    "web",
+    "--bin",
+    "rslbp-serve",
+]
+need_stdout = false
+allow_warnings = true
+background = false
+on_change_strategy = "kill_then_restart"
+kill = ["kill", "-s", "TERM"]

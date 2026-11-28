@@ -10,6 +10,8 @@ use rs_launch_blueprint_core::{
     ErasedProjectsService, FileCredentialStore, InMemoryProjectsPort, Paths, Project, ProjectsPort,
     ProjectsService, Token, WorkspaceInfo,
 };
+#[cfg(feature = "web")]
+use rs_launch_blueprint_core::{IdempotencyStore, InMemoryIdempotencyStore};
 
 use crate::http_adapter::HttpProjectsPort;
 #[cfg(feature = "keychain")]
@@ -70,8 +72,49 @@ pub fn run_cli(args: &[String]) -> ExitCode {
     rs_launch_blueprint_cli::run(workspace_info(), args)
 }
 
-/// Dispatch the optional web service stub (`web` feature required).
+/// Build a bounded process-local [`IdempotencyStore`] sized from [`rs_launch_blueprint_web::WebSettings`]
+/// (`web` feature required, `R73`).
 #[cfg(feature = "web")]
-pub fn run_web_stub(args: &[String]) -> ExitCode {
-    rs_launch_blueprint_web::serve_stub(workspace_info(), args)
+#[must_use]
+pub fn in_memory_idempotency_store(
+    settings: &rs_launch_blueprint_web::WebSettings,
+) -> Arc<dyn IdempotencyStore> {
+    Arc::new(InMemoryIdempotencyStore::new(
+        settings.idempotency_ttl,
+        settings.idempotency_in_flight,
+        settings.idempotency_max_entries.get(),
+    ))
+}
+
+/// Build a bounded process-local [`rs_launch_blueprint_web::RateLimitStore`] sized from
+/// [`rs_launch_blueprint_web::WebSettings`] (`web` feature required, `R74`).
+#[cfg(feature = "web")]
+#[must_use]
+pub fn in_memory_rate_limit_store(
+    settings: &rs_launch_blueprint_web::WebSettings,
+) -> Arc<dyn rs_launch_blueprint_web::RateLimitStore> {
+    Arc::new(rs_launch_blueprint_web::InMemoryRateLimitStore::new(
+        settings.rate_limit_max_entries.get(),
+    ))
+}
+
+/// Assemble the web service [`rs_launch_blueprint_web::AppState`] at the composition root
+/// (`web` feature required, `R01`, `R69`, `R73`, `R74`, `R80`).
+#[cfg(feature = "web")]
+#[must_use]
+pub fn build_web_app_state(
+    service: ErasedProjectsService,
+    settings: rs_launch_blueprint_web::WebSettings,
+    diagnostics: rs_launch_blueprint_web::DiagnosticsRunner,
+) -> rs_launch_blueprint_web::AppState {
+    let idempotency = in_memory_idempotency_store(&settings);
+    let rate_limit = in_memory_rate_limit_store(&settings);
+    rs_launch_blueprint_web::AppState::new(
+        Arc::new(service),
+        settings,
+        idempotency,
+        rate_limit,
+        rs_launch_blueprint_web::Readiness::new(),
+        diagnostics,
+    )
 }
