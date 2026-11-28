@@ -98,7 +98,7 @@ jobs:
                   patch="$(git diff -U0 "${BASE_SHA}...HEAD" -- "$f")" || return 1
                   hunks="$(grep -E '^[+-]' <<<"$patch" | grep -vE '^(\+\+\+|---) ' || true)"
                   [ -n "$hunks" ] || continue
-                  if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-rs-launch-blueprint-(core|cli|web) = \\{ version = \"${old}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\}|\\+rs-launch-blueprint-(core|cli|web) = \\{ version = \"${new}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
+                  if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-(rs-launch-blueprint-core|rs-launch-blueprint-cli|rs-launch-blueprint-web) = \\{ version = \"${old}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\}|\\+(rs-launch-blueprint-core|rs-launch-blueprint-cli|rs-launch-blueprint-web) = \\{ version = \"${new}\", path = \"(crates/|\\.\\./)(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
                     return 1
                   fi
                   ;;
@@ -238,9 +238,15 @@ jobs:
         run: |
           bash scripts/check-shell.sh
           bash scripts/test-check-shell.sh
-          bash scripts/test-chain-next.sh
-          bash scripts/check-research-tree.sh --require-owner-review
-          bash scripts/test-check-research-tree.sh
+          if [ -f scripts/test-chain-next.sh ]; then
+            bash scripts/test-chain-next.sh
+          fi
+          if [ -f scripts/check-research-tree.sh ]; then
+            bash scripts/check-research-tree.sh --require-owner-review
+          fi
+          if [ -f scripts/test-check-research-tree.sh ]; then
+            bash scripts/test-check-research-tree.sh
+          fi
       - name: Workflow permissions policy check (R08)
         if: ${{ !cancelled() }}
         run: bash scripts/check-workflow-permissions.sh

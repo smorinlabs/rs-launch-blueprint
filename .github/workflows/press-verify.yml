@@ -1,0 +1,37 @@
+# Verify Template Press drift invariants on every PR and push to main (R15).
+# Ships verbatim to stamped child repositories (carries zero source identity literals).
+name: Press Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: press-verify-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  press-verify:
+    name: press-verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up uv and Python 3.13
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          python-version: "3.13"
+      - name: Run template-press verify
+        run: |
+          set -euo pipefail
+          uv venv --python 3.13 .venv
+          uv pip sync --python .venv/bin/python press/requirements.txt
+          .venv/bin/press verify

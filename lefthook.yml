@@ -19,6 +19,8 @@ pre-commit:
         - "docs/handoffs/**"
         - "docs/superpowers/**"
         - "projects/**"
+        - "press/press-receipt.toml"
+        - "press/press-source.toml"
       run: dprint check --allow-no-files {staged_files}
     - name: clippy
       tags: [compiles]

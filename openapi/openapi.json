@@ -3,6 +3,10 @@
   "info": {
     "title": "rs-launch-blueprint",
     "description": "Optional HTTP API service for rs-launch-blueprint.",
+    "contact": {
+      "name": "Steve Morin",
+      "email": "steve.morin@gmail.com"
+    },
     "license": {
       "name": "MIT OR Apache-2.0"
     },

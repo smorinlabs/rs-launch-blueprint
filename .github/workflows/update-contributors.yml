@@ -1,0 +1,70 @@
+# Update CONTRIBUTORS.md via contributors-please-action (R07, R21, R08, R09, R20).
+# Template-only workflow removed in stamped child repositories via press/press-rules.toml.
+name: Update Contributors
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - CONTRIBUTORS.md
+      - .contributors.jsonl
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: update-contributors-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  credential-preflight:
+    name: credential-preflight
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.check.outputs.mode }}
+    steps:
+      - name: Check Contributors Please credentials
+        id: check
+        shell: bash
+        env:
+          APP_ID: ${{ secrets.CONTRIBUTORS_PLEASE_CLIENT_ID }}
+          APP_KEY: ${{ secrets.CONTRIBUTORS_PLEASE_PRIVATE_KEY }}
+          PAT: ${{ secrets.CONTRIBUTORS_PLEASE_PAT }}
+        run: |
+          set -euo pipefail
+          if [ -n "${APP_ID}" ] && [ -n "${APP_KEY}" ]; then
+            echo "mode=app" >> "$GITHUB_OUTPUT"
+          elif [ -n "${PAT}" ]; then
+            echo "mode=pat" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Contributors Please credentials are not configured; skipping contributor roster update."
+            echo "mode=none" >> "$GITHUB_OUTPUT"
+          fi
+
+  update-contributors:
+    name: update-contributors
+    needs: credential-preflight
+    if: ${{ needs.credential-preflight.outputs.mode == 'app' || needs.credential-preflight.outputs.mode == 'pat' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Update contributors roster
+        uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # v1.3.9
+        with:
+          app-id: ${{ secrets.CONTRIBUTORS_PLEASE_CLIENT_ID }}
+          private-key: ${{ secrets.CONTRIBUTORS_PLEASE_PRIVATE_KEY }}
+          pat: ${{ secrets.CONTRIBUTORS_PLEASE_PAT }}
+          output-file: CONTRIBUTORS.md
+          state-file: .contributors.jsonl
+          config-file: .contributors.yml
+          mode: pull-request
+          commit-message: "docs: update contributors"

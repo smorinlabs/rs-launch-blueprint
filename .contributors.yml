@@ -1,0 +1,32 @@
+# contributors-please configuration (F209, R07, R21, R47)
+output_file: CONTRIBUTORS.md
+state_file: .contributors.jsonl
+in_place: true
+start_marker: "<!-- contributors-please:start -->"
+end_marker: "<!-- contributors-please:end -->"
+
+ignore:
+  - "dependabot[bot]"
+  - "github-actions[bot]"
+  - "release-please[bot]"
+  - "contributors-please[bot]"
+  - "claude[bot]"
+
+path_rules:
+  doc:
+    - "docs/**"
+    - "*.md"
+    - ".github/*.md"
+  infra:
+    - ".github/**"
+    - "scripts/check-*"
+    - ".gitleaks.toml"
+    - "Justfile"
+    - "Makefile"
+    - "Dockerfile"
+  test:
+    - "tests/**"
+    - "crates/*/tests/**"
+
+identity_map:
+  "steve.morin@gmail.com": "smorin"
