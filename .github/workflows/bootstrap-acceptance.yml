@@ -57,8 +57,8 @@ jobs:
       - name: Install pinned workspace and hygiene binaries via install-action
         uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
         with:
-          tool: just@1.58.0,cargo-nextest@0.9.146,cargo-deny@0.20.2,dprint@0.57.4,typos@1.50.3,actionlint@1.7.12,zizmor@1.30.1
-      - name: Install checksum-verified tools (ast-grep, ryl, editorconfig-checker, lefthook, shellcheck)
+          tool: just@1.58.0,cargo-nextest@0.9.146,cargo-deny@0.20.2,dprint@0.57.4,typos@1.50.3,zizmor@1.30.1
+      - name: Install checksum-verified tools (actionlint, ast-grep, ryl, editorconfig-checker, lefthook, shellcheck)
         shell: bash
         run: |
           set -euo pipefail
@@ -66,6 +66,13 @@ jobs:
           mkdir -p "$install_dir"
           tmpdir=$(mktemp -d)
           trap 'rm -rf "$tmpdir"' EXIT
+
+          # actionlint 1.7.12 (R09)
+          curl -fsSL "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz" \
+            -o "$tmpdir/actionlint.tar.gz"
+          printf '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  %s\n' "$tmpdir/actionlint.tar.gz" | sha256sum -c -
+          tar -xzf "$tmpdir/actionlint.tar.gz" -C "$tmpdir"
+          install -m 755 "$tmpdir/actionlint" "$install_dir/actionlint"
 
           # ast-grep 0.45.3 (R31)
           curl -fsSL "https://github.com/ast-grep/ast-grep/releases/download/0.45.3/app-x86_64-unknown-linux-gnu.zip" \
