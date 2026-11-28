@@ -16,6 +16,7 @@ lefthook_version := "2.1.14"
 committed_version := "1.1.11"
 openapi_to_rust_version := "0.17.0"
 oasdiff_version := "v1.32.1"
+contributors_runner := "npx --yes contributors-please@1.4.3"
 rustup_components := "rustfmt clippy llvm-tools-preview"
 cargo_tools := "cargo-deny:cargo-deny@0.20.2 cargo-audit:cargo-audit@0.22.2 cargo-nextest:cargo-nextest@0.9.146 cargo-insta:cargo-insta@1.48.0 cargo-llvm-cov:cargo-llvm-cov@0.9.1 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0"
 ubi_tools := "lefthook:ubi:evilmartians/lefthook@v2.1.14 gitleaks:ubi:gitleaks/gitleaks@v8.30.1 editorconfig-checker:ubi:editorconfig-checker/editorconfig-checker@v4.0.2 actionlint:ubi:rhysd/actionlint@v1.7.12 zizmor:ubi:zizmorcore/zizmor@v1.30.1"
@@ -201,6 +202,10 @@ setup:
         bash scripts/install-shellcheck.sh
     fi
     echo "[3/4] Installing git hooks and commit template..."
+    if [ -f PROJECTS.md ] && [ ! -d projects ]; then
+        mkdir -p projects
+        : > projects/.gitkeep
+    fi
     just hooks-install
     echo "[4/4] Verifying tool inventory..."
     just check-deps
@@ -685,6 +690,39 @@ install-blaze mode="":
         echo ""
         echo "Run \`just install-blaze apply\` to execute the installer directly."
     fi
+
+# ================================
+# COMMUNITY & CONTRIBUTORS (R47)
+# ================================
+
+# Update CONTRIBUTORS.md locally via contributors-please (render if state exists, else non-interactive init)
+[group('docs'), group('dev')]
+update-contributors:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -f .contributors.jsonl ]; then
+        {{contributors_runner}} render --config-file .contributors.yml
+    else
+        origin_url=$(git remote get-url origin 2>/dev/null || true)
+        owner_repo=$(printf '%s\n' "$origin_url" | sed -E 's#^(https?://[^/]+/|ssh://git@[^/]+/|git@[^:]+:)##; s#\.git$##')
+        owner="${owner_repo%%/*}"
+        repo="${owner_repo#*/}"
+        if [ -z "$owner" ] || [ -z "$repo" ] || [ "$owner" = "$repo" ]; then
+            owner="smorinlabs"
+            repo="{{package_name}}"
+        fi
+        server_args=()
+        if [ -n "${GITHUB_SERVER_URL:-}" ]; then
+            server_args=(--github-server-url "${GITHUB_SERVER_URL}")
+        fi
+        {{contributors_runner}} init --non-interactive \
+            --owner "$owner" \
+            --repo "$repo" \
+            --config-file .contributors.yml \
+            "${server_args[@]}"
+    fi
+
+alias contributors := update-contributors
 
 # ================================
 # DEBUG & DIAGNOSTICS

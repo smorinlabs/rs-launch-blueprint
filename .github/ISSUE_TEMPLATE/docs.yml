@@ -1,0 +1,27 @@
+name: Documentation Issue
+description: Report unclear, missing, or outdated documentation
+title: "[Docs]: "
+labels: ["documentation", "triage"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: Document or page
+      description: File path or URL of the affected documentation.
+      placeholder: docs/PROJECT_SETUP.md
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What needs improvement?
+      description: Describe what is inaccurate, missing, or confusing.
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested fix
+      description: Optional wording, example, or command correction.
+    validations:
+      required: false

@@ -1,0 +1,50 @@
+name: Bug Report
+description: Report a defect or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please include clear reproduction steps and the output of `just debug-info`.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Concise description of the bug and how it differs from expected behavior.
+      placeholder: Describe what went wrong...
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal commands, inputs, or code snippet to reproduce the issue.
+      placeholder: |
+        1. Run `...`
+        2. Observe `...`
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen instead?
+    validations:
+      required: true
+  - type: textarea
+    id: debug_info
+    attributes:
+      label: Environment (`just debug-info`)
+      description: Paste the output of `just debug-info` (and `make hook-check` if hook-related).
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or error output
+      description: Paste redacted stderr, panic backtraces, or failing `just check` output.
+      render: shell
+    validations:
+      required: false

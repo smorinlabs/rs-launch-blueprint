@@ -1,0 +1,111 @@
+# End-to-end Template Press stamping acceptance workflow (R15, py P07/P12).
+# Stamps a fresh child repository into a temp dir and verifies `just check`,
+# `press verify`, `just check-packaging`, CLI `--version`, and web `/healthz`.
+# Removed automatically in stamped child repositories via press/press-rules.toml.
+name: Bootstrap Acceptance
+
+on:
+  schedule:
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "press/**"
+      - ".claude/skills/new-rust-project/**"
+      - ".agents/skills/new-rust-project/**"
+      - "tests/bootstrap_acceptance.rs"
+      - "tests/press_source.rs"
+      - "tests/community_contract.rs"
+      - ".github/workflows/bootstrap-acceptance.yml"
+      - ".github/workflows/press-verify.yml"
+      - ".github/workflows/template-receipt-guard.yml"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "Justfile"
+      - "crates/**"
+      - "src/**"
+
+permissions: {}
+
+concurrency:
+  group: bootstrap-acceptance-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  bootstrap-acceptance:
+    name: bootstrap-acceptance
+    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'release-please--')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Activate pinned Rust toolchain
+        run: rustc --version
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          cache-on-failure: "true"
+          prefix-key: "v1-bootstrap-acceptance"
+      - name: Set up uv and Python 3.13
+        uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          python-version: "3.13"
+      - name: Install pinned workspace and hygiene binaries via install-action
+        uses: taiki-e/install-action@073e1fd0bc889c9aee68dbaaa927cde1b5653a83 # v2.90.11
+        with:
+          tool: just@1.58.0,cargo-nextest@0.9.146,cargo-deny@0.20.2,dprint@0.57.4,typos@1.50.3,zizmor@1.30.1
+      - name: Install checksum-verified tools (actionlint, ast-grep, ryl, editorconfig-checker, lefthook, shellcheck)
+        shell: bash
+        run: |
+          set -euo pipefail
+          install_dir="${HOME}/.local/bin"
+          mkdir -p "$install_dir"
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+
+          # actionlint 1.7.12 (R09)
+          curl -fsSL "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz" \
+            -o "$tmpdir/actionlint.tar.gz"
+          printf '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  %s\n' "$tmpdir/actionlint.tar.gz" | sha256sum -c -
+          tar -xzf "$tmpdir/actionlint.tar.gz" -C "$tmpdir"
+          install -m 755 "$tmpdir/actionlint" "$install_dir/actionlint"
+
+          # ast-grep 0.45.3 (R31)
+          curl -fsSL "https://github.com/ast-grep/ast-grep/releases/download/0.45.3/app-x86_64-unknown-linux-gnu.zip" \
+            -o "$tmpdir/ast-grep.zip"
+          printf 'f8ac830881339d1edee6b2652f54798c0f4da5a827f2db38a08ee31117783ce8  %s\n' "$tmpdir/ast-grep.zip" | sha256sum -c -
+          unzip -q "$tmpdir/ast-grep.zip" -d "$tmpdir/ast-grep"
+          install -m 755 "$tmpdir/ast-grep/ast-grep" "$install_dir/ast-grep"
+
+          # ryl 0.22.0 (R40)
+          curl -fsSL "https://github.com/owenlamont/ryl/releases/download/v0.22.0/ryl-x86_64-unknown-linux-gnu.tar.gz" \
+            -o "$tmpdir/ryl.tar.gz"
+          printf 'e51be237168ff44c8e28caca87db35c15ac5c943bba5edba0e72465b51add524  %s\n' "$tmpdir/ryl.tar.gz" | sha256sum -c -
+          mkdir -p "$tmpdir/ryl"
+          tar -xzf "$tmpdir/ryl.tar.gz" -C "$tmpdir/ryl"
+          install -m 755 "$(find "$tmpdir/ryl" -type f -name ryl | head -n 1)" "$install_dir/ryl"
+
+          # editorconfig-checker 4.0.2 (R40)
+          curl -fsSL "https://github.com/editorconfig-checker/editorconfig-checker/releases/download/v4.0.2/editorconfig-checker-linux-amd64.tar.gz" \
+            -o "$tmpdir/ec.tar.gz"
+          printf '44efaef3ed14c6ab52eb87481d78e5e5c204796dccf26e2f4598a61ba17f8003  %s\n' "$tmpdir/ec.tar.gz" | sha256sum -c -
+          mkdir -p "$tmpdir/ec"
+          tar -xzf "$tmpdir/ec.tar.gz" -C "$tmpdir/ec"
+          install -m 755 "$tmpdir/ec/editorconfig-checker" "$install_dir/editorconfig-checker"
+
+          # lefthook 2.1.14 (R37)
+          curl -fsSL "https://github.com/evilmartians/lefthook/releases/download/v2.1.14/lefthook_2.1.14_Linux_x86_64.gz" \
+            -o "$tmpdir/lefthook.gz"
+          printf '2be3187101b3a2edd5edf8b546aa2e3820531c517b4cd0216601a9c06f07c42d  %s\n' "$tmpdir/lefthook.gz" | sha256sum -c -
+          gunzip -c "$tmpdir/lefthook.gz" > "$tmpdir/lefthook"
+          install -m 755 "$tmpdir/lefthook" "$install_dir/lefthook"
+
+          # ShellCheck 0.11.0
+          bash scripts/install-shellcheck.sh
+          echo "$install_dir" >> "$GITHUB_PATH"
+      - name: Run Template Press and stamped-child bootstrap acceptance suite
+        run: cargo test --locked --features web --test bootstrap_acceptance -- --ignored --nocapture

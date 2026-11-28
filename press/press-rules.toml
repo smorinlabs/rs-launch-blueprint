@@ -1,0 +1,230 @@
+# Template Press rules for this Cargo workspace blueprint (R15).
+# Comments here stay free of literal source identity tokens: press control files
+# are not rewritten during stamping, so any literal would ship stale into forks.
+
+[rules]
+languages = ["rust"]
+# Keep external GitHub Action references and MIT upstream provenance notices intact.
+keep_names = [
+    "smorinlabs/difftree-action",
+    "smorinlabs/smorinlabs-skills",
+    "smorinlabs/py-launch-blueprint",
+    "smorinlabs/contributors-please-action",
+]
+# The CLI binary name and repo name appear glued inside Cargo env vars
+# (`CARGO_BIN_EXE_<app>`), suffixed targets (`<app>-serve`, `<repo>-client`,
+# `<repo>-${ver}`), and UPPERCASE env prefixes.
+substring_rewrite_fields = ["app_name", "app_name_upper", "repo_name"]
+extra_exclude_files = [
+    "Cargo.lock",
+    "README.md",
+    "docs/POST_INIT.md",
+    "PROJECTS.md",
+    ".release-please-manifest.json",
+    ".claude/skills/new-rust-project/README.md",
+    "docs/README.md",
+    "docs/skills/new-rust-project.md",
+    ".github/SECURITY.md",
+]
+
+[[clean]]
+paths = ["src", "crates", "tests"]
+
+# Cargo.lock is excluded from text rewrites and regenerated offline under the new identity.
+[[regenerate]]
+file = "Cargo.lock"
+command = ["cargo", "update", "--workspace", "--offline"]
+env = ["CARGO_HOME", "RUSTUP_HOME"]
+
+# Template-only workflows, governance state, bootstrap skill, acceptance tests,
+# research artifacts, and serial-chain scripts removed when stamping a child repo.
+
+[[remove]]
+file = ".github/workflows/template-receipt-guard.yml"
+reason = "template-only receipt guard; stamped projects legitimately commit press/press-receipt.toml"
+
+[[remove]]
+file = ".github/workflows/bootstrap-acceptance.yml"
+reason = "template acceptance workflow; its test harness is removed in stamped projects"
+
+[[remove]]
+file = ".github/workflows/update-contributors.yml"
+reason = "secret-gated template maintenance workflow; stamped projects opt in via docs/PROJECT_SETUP.md"
+
+[[remove]]
+file = ".contributors.yml"
+reason = "template contributor automation configuration"
+
+[[remove]]
+file = "CONTRIBUTORS.md"
+reason = "template contributor roster; stamped projects start their own"
+
+[[remove]]
+file = ".claude/skills/new-rust-project/SKILL.md"
+reason = "template bootstrap skill retired after stamping; README explains provenance"
+
+[[remove]]
+file = "tests/bootstrap_acceptance.rs"
+reason = "template bootstrap acceptance suite stamps a child repo and must not recurse"
+
+[[remove]]
+file = "scripts/chain-next.sh"
+reason = "template build-chain runner script"
+
+[[remove]]
+file = "scripts/test-chain-next.sh"
+reason = "unit tests for template build-chain runner script"
+
+[[remove]]
+file = "scripts/check-answer-shape.sh"
+reason = "template research answer-shape validator"
+
+[[remove]]
+file = "scripts/check-area-file.sh"
+reason = "template research area-file validator"
+
+[[remove]]
+file = "scripts/check-research-tree.sh"
+reason = "template research-tree validator"
+
+[[remove]]
+file = "scripts/check-research-tree-core.sh"
+reason = "template research-tree validator library"
+
+[[remove]]
+file = "scripts/test-check-research-tree.sh"
+reason = "unit tests for template research-tree validator"
+
+[[remove]]
+file = "scripts/codex-thread-for.sh"
+reason = "template research helper script"
+
+[[remove]]
+file = "scripts/derive-port-docs.py"
+reason = "template port-documentation generator"
+
+[[remove]]
+file = "scripts/test-derive-port-docs.py"
+reason = "unit tests for template port-documentation generator"
+
+[[remove]]
+file = "scripts/doxa_no_retry.py"
+reason = "template research harness helper"
+
+[[remove]]
+file = "scripts/test-doxa-no-retry.py"
+reason = "unit tests for template research harness helper"
+
+[[remove]]
+file = "scripts/doxa_normalize.py"
+reason = "template research output normalizer"
+
+[[remove]]
+file = "scripts/test-doxa-normalize.py"
+reason = "unit tests for template research output normalizer"
+
+[[remove]]
+file = "scripts/research_cli.py"
+reason = "template research runner CLI"
+
+[[remove]]
+file = "scripts/research_package.py"
+reason = "template research packaging helper"
+
+[[remove]]
+file = "scripts/research_runner.py"
+reason = "template research runner engine"
+
+[[remove]]
+file = "scripts/research_scan.py"
+reason = "template research scanner"
+
+[[remove]]
+file = "scripts/research_validation.py"
+reason = "template research validation engine"
+
+[[remove]]
+file = "scripts/shellcheck-evidence-baseline.txt"
+reason = "template shellcheck migration baseline"
+
+[[remove]]
+file = "scripts/test-research-answer-parser.py"
+reason = "unit tests for template research answer parser"
+
+[[remove]]
+file = "scripts/test-research-package.py"
+reason = "unit tests for template research packager"
+
+[[remove]]
+file = "scripts/test-research-reader-lock.py"
+reason = "unit tests for template research lock helper"
+
+[[remove]]
+file = "scripts/test-research-runner.py"
+reason = "unit tests for template research runner"
+
+[[remove]]
+file = "scripts/test-research-validation.py"
+reason = "unit tests for template research validator"
+
+[[remove]]
+dir = "research"
+reason = "template design-research history; stamped projects start their own"
+
+[[remove]]
+dir = "docs/port"
+reason = "template parity-port tracking docs; stamped projects start their own"
+
+[[remove]]
+dir = "docs/planning"
+reason = "template planning history; stamped projects start their own"
+
+[[remove]]
+dir = "docs/superpowers"
+reason = "template implementation plans and specs; stamped projects start their own"
+
+[[remove]]
+dir = "docs/handoffs"
+reason = "template session handoff notes; stamped projects start their own"
+
+[[remove]]
+dir = "projects"
+reason = "template project history; `just setup` restores an empty projects/ directory"
+
+# Files reset to clean starter content in stamped projects.
+
+[[reset]]
+file = "CHANGELOG.md"
+stub = "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+
+[[reset]]
+file = ".release-please-manifest.json"
+stub = "{}\n"
+
+[[reset]]
+file = "README.md"
+stub_file = "press/stubs/readme.md"
+
+[[reset]]
+file = "docs/POST_INIT.md"
+stub_file = "press/stubs/post-init.md"
+
+[[reset]]
+file = "PROJECTS.md"
+stub_file = "press/stubs/projects.md"
+
+[[reset]]
+file = ".github/SECURITY.md"
+stub_file = "press/stubs/security.md"
+
+[[reset]]
+file = "docs/README.md"
+stub_file = "press/stubs/docs-index.md"
+
+[[reset]]
+file = "docs/skills/new-rust-project.md"
+stub_file = "press/stubs/bootstrap-provenance.md"
+
+[[reset]]
+file = ".claude/skills/new-rust-project/README.md"
+stub_file = "press/stubs/retired-bootstrap.md"

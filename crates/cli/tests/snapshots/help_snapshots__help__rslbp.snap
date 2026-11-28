@@ -4,8 +4,8 @@ expression: help
 ---
 Command-line interface for rs-launch-blueprint.
 
-Commands follow a noun-verb structure (for example `rslbp project list`). Results are written to
-stdout; diagnostics, progress, prompts, and errors go to stderr.
+Commands follow a noun-verb structure (for example `rslbp project list`).
+Results are written to stdout; diagnostics, progress, prompts, and errors go to stderr.
 
 Usage: rslbp [OPTIONS] [COMMAND]
 

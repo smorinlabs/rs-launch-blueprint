@@ -10,7 +10,7 @@
 - **Prior art:** [R21 contributors-bot-credential-source](../research/topics/21-contributors-bot-credential-source/DECISION.md)
 - **Prior art:** [R47 contributors-recipe-mode](../research/topics/47-contributors-recipe-mode/DECISION.md)
 
-**Status:** `[ ]` scoped, not started.
+**Status:** `[x]` completed.
 
 ### Scope
 Deliver the full `template-press` stamping subsystem, global + project-scoped `new-rust-project` bootstrap skill, end-to-end stamped child-project acceptance test, and repository community governance files:
@@ -22,12 +22,12 @@ Deliver the full `template-press` stamping subsystem, global + project-scoped `n
 - Full `mdBook` documentation corpus, `EXAMPLECLI.md`, `EXAMPLEWEB.md`, and final 360-row parity audit (`P13`)
 
 ### Tests & Tasks
-- [ ] [P12-TS01] Add bootstrap & press acceptance tests verifying `template-press verify` passes, stamping a fresh child repo into a temp dir rebrands `rs-launch-blueprint`/`rslbp`, keeps `difftree-pr-comment.yml`, strips template-only dirs, and passes `just check` in the stamped child (`R15`, py `P07`/`#616`/`#618`)
-- [ ] [P12-T01] Author `press/press-source.toml`, `press/press-rules.toml`, and `press/stubs/*` (readme, post-init, projects, security, docs-index, bootstrap-provenance, retired-bootstrap)
-- [ ] [P12-T02] Author `.github/workflows/press-verify.yml`, `template-receipt-guard.yml`, and `bootstrap-acceptance.yml`
-- [ ] [P12-T03] Author global + project-scoped `.claude/skills/new-rust-project/SKILL.md` + `.agents/skills/new-rust-project` symlink, `docs/PROJECT_SETUP.md`, and `docs/POST_INIT.md`
-- [ ] [P12-T04] Author `.github/CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CODEOWNERS`, issue templates, `pull_request_template.md` (`R45`), `.contributors.yml`, `update-contributors.yml` (`R07`, `R21`), and `just update-contributors` (`R47`)
-- [ ] [P12-T05] Verify `press verify`, bootstrap acceptance test (stamped child `just check`), `actionlint`, `zizmor`, and live PR `ci-ok` all pass green
+- [x] [P12-TS01] Add bootstrap & press acceptance tests verifying `template-press verify` passes, stamping a fresh child repo into a temp dir rebrands `rs-launch-blueprint`/`rslbp`, keeps `difftree-pr-comment.yml`, strips template-only dirs, and passes `just check` in the stamped child (`R15`, py `P07`/`#616`/`#618`)
+- [x] [P12-T01] Author `press/press-source.toml`, `press/press-rules.toml`, and `press/stubs/*` (readme, post-init, projects, security, docs-index, bootstrap-provenance, retired-bootstrap)
+- [x] [P12-T02] Author `.github/workflows/press-verify.yml`, `template-receipt-guard.yml`, and `bootstrap-acceptance.yml`
+- [x] [P12-T03] Author global + project-scoped `.claude/skills/new-rust-project/SKILL.md` + `.agents/skills/new-rust-project` symlink, `docs/PROJECT_SETUP.md`, and `docs/POST_INIT.md`
+- [x] [P12-T04] Author `.github/CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CODEOWNERS`, issue templates, `pull_request_template.md` (`R45`), `.contributors.yml`, `update-contributors.yml` (`R07`, `R21`), and `just update-contributors` (`R47`)
+- [x] [P12-T05] Verify `press verify`, bootstrap acceptance test (stamped child `just check`), `actionlint`, `zizmor`, and live PR `ci-ok` all pass green
 
 ### Deliverable
 ```bash

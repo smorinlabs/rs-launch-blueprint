@@ -1,0 +1,33 @@
+# Template-only guard rejecting committed press/press-receipt.toml in the blueprint (R15).
+# Removed automatically in stamped child repositories via press/press-rules.toml.
+name: Template Receipt Guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: template-receipt-guard-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  receipt-guard:
+    name: receipt-guard
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Reject committed press-receipt.toml in blueprint
+        run: |
+          if [ -f press/press-receipt.toml ]; then
+            echo '::error::press-receipt.toml committed in the template — it would disarm every fork'\''s guard. Revert.'
+            exit 1
+          fi

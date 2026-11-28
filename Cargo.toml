@@ -11,6 +11,7 @@ resolver = "3"
 [workspace.package]
 # `version` is declared literally on each member `[package]` rather than inherited here,
 # because release-please rejects `version.workspace = true` (R23 S7c).
+authors = ["Steve Morin <steve.morin@gmail.com>"]
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/smorinlabs/rs-launch-blueprint"
@@ -47,6 +48,7 @@ unwrap_used = "warn"
 [package]
 name = "rs-launch-blueprint"
 version = "0.1.0"
+authors.workspace = true
 autobins = false
 default-run = "rslbp"
 edition.workspace = true

@@ -232,7 +232,7 @@ pub struct GlobalArgs {
     name = "rslbp",
     version = env!("CARGO_PKG_VERSION"),
     about = "Command-line interface for rs-launch-blueprint.",
-    long_about = "Command-line interface for rs-launch-blueprint.\n\nCommands follow a noun-verb structure (for example `rslbp project list`). Results are written to stdout; diagnostics, progress, prompts, and errors go to stderr.",
+    long_about = "Command-line interface for rs-launch-blueprint.\n\nCommands follow a noun-verb structure (for example `rslbp project list`).\nResults are written to stdout; diagnostics, progress, prompts, and errors go to stderr.",
     disable_version_flag = true
 )]
 pub struct Cli {
