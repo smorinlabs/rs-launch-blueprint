@@ -1,7 +1,8 @@
 # Dependency Review Action (F046, R08, R09, R20).
 # Scans dependency manifest changes on PRs targeting main and posts a summary.
-# GitHub Dependency Review requires GitHub Code Security in private repos;
-# the job activates automatically when the repository is public.
+# GitHub Dependency Review requires a public repository (or GitHub Code Security)
+# with Dependency Graph enabled; when Dependency Graph is not yet enabled, the
+# preflight step emits an actionable notice and skips cleanly instead of 403ing.
 name: Dependency review
 
 on:
@@ -20,14 +21,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      contents: read # Check out repository manifests for dependency diff
+      contents: read # Check out repository manifests and probe Dependency Graph availability
       pull-requests: write # Required for comment-summary-in-pr: always
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Check Dependency Graph availability
+        id: graph
+        uses: actions/github-script@v9
+        with:
+          script: |
+            try {
+              await github.request("GET /repos/{owner}/{repo}/dependency-graph/sbom", context.repo);
+              core.setOutput("available", "true");
+            } catch (err) {
+              if (err.status === 403 || err.status === 404) {
+                core.notice(
+                  "GitHub Dependency Graph is not enabled on this repository, so dependency-review was skipped. Enable Dependency Graph under Settings > Code security to activate this check.",
+                  { title: "Dependency review skipped" },
+                );
+                await core.summary
+                  .addHeading("Dependency review skipped — Dependency Graph disabled", 3)
+                  .addRaw(
+                    "GitHub's Dependency Graph API returned HTTP " +
+                      err.status +
+                      ". Enable **Dependency graph** under **Settings → Code security** to activate `actions/dependency-review-action`.\n",
+                  )
+                  .write();
+                core.setOutput("available", "false");
+                return;
+              }
+              throw err;
+            }
       - name: Dependency Review
+        if: steps.graph.outputs.available == 'true'
         uses: actions/dependency-review-action@v5
         with:
           comment-summary-in-pr: always

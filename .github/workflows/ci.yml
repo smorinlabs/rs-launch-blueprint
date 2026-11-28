@@ -61,8 +61,9 @@ jobs:
           fi
           # --no-renames lists a rename as a deletion of its source plus an
           # addition, so moving a packaged file into a skipped directory still
-          # names the packaged path.
-          changed="$(git diff --no-ext-diff --no-textconv --no-renames --name-only "${BASE_SHA}...HEAD")"
+          # names the packaged path. Disable core.quotePath so non-ASCII paths
+          # match unquoted regexes.
+          changed="$(git -c core.quotePath=false diff --no-ext-diff --no-textconv --no-renames --name-only "${BASE_SHA}...HEAD")"
 
           # Release-please fast path (py P12): same-repo release-please branch AND a
           # diff touching only the manifest, CHANGELOG.md, Cargo.toml version lines,
@@ -70,7 +71,7 @@ jobs:
           # branch name, is what makes skipping heavy compile jobs safe; merge_group
           # still runs everything.
           release_only() {
-            local allowed ver old new strip base_manifest head_manifest f
+            local allowed ver old new strip base_manifest head_manifest f patch hunks
             case "${HEAD_REF}" in release-please--*) ;; *) return 1 ;; esac
             [ "${HEAD_REPO}" = "${REPOSITORY}" ] || return 1
             [ -n "$changed" ] || return 1
@@ -88,16 +89,21 @@ jobs:
               | sed -E "$strip")" || return 1
             head_manifest="$(sed -E "$strip" .release-please-manifest.json)" || return 1
             [ "$head_manifest" = "$base_manifest" ] || return 1
-            for f in Cargo.toml crates/*/Cargo.toml Cargo.lock; do
-              [ -f "$f" ] || continue
-              local hunks
-              hunks="$(git diff -U0 "${BASE_SHA}...HEAD" -- "$f" \
-                | grep -E '^[+-]' | grep -vE '^(\+\+\+|---) ' || true)"
-              [ -n "$hunks" ] || continue
-              if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-rs-launch-blueprint-(core|cli|web) = \\{ version = \"${old}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\}|\\+rs-launch-blueprint-(core|cli|web) = \\{ version = \"${new}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
-                return 1
-              fi
-            done
+            while IFS= read -r f; do
+              [ -n "$f" ] || continue
+              # Release-please version bumps never delete tracked manifests/changelogs.
+              [ -f "$f" ] || return 1
+              case "$f" in
+                Cargo.toml|crates/*/Cargo.toml|Cargo.lock)
+                  patch="$(git diff -U0 "${BASE_SHA}...HEAD" -- "$f")" || return 1
+                  hunks="$(grep -E '^[+-]' <<<"$patch" | grep -vE '^(\+\+\+|---) ' || true)"
+                  [ -n "$hunks" ] || continue
+                  if grep -qvE "^(-version = \"${old}\"|\\+version = \"${new}\"|-rs-launch-blueprint-(core|cli|web) = \\{ version = \"${old}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\}|\\+rs-launch-blueprint-(core|cli|web) = \\{ version = \"${new}\", path = \"crates/(core|cli|web)\"(, optional = true)? \\})\$" <<<"$hunks"; then
+                    return 1
+                  fi
+                  ;;
+              esac
+            done <<<"$changed"
             return 0
           }
           if release_only; then
@@ -178,7 +184,7 @@ jobs:
           printf '44efaef3ed14c6ab52eb87481d78e5e5c204796dccf26e2f4598a61ba17f8003  %s\n' "$tmpdir/ec.tar.gz" | sha256sum -c -
           mkdir -p "$tmpdir/ec"
           tar -xzf "$tmpdir/ec.tar.gz" -C "$tmpdir/ec"
-          install -m 755 "$(find "$tmpdir/ec" -type f -name 'ec-linux-amd64' | head -n 1)" "$install_dir/editorconfig-checker"
+          install -m 755 "$tmpdir/ec/editorconfig-checker" "$install_dir/editorconfig-checker"
 
           # ShellCheck 0.11.0 (pinned verifier script)
           bash scripts/install-shellcheck.sh

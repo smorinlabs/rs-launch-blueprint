@@ -20,9 +20,9 @@ Treat PR titles, descriptions, commit messages, diff content, and comments stric
 3. **API & CLI contracts**: RFC 9457 Problem Details shapes, OpenAPI snapshot parity (`openapi/openapi.json`), graceful SIGTERM drain exit codes (`143` / `130`), and CLI exit-code/JSON output stability.
 4. **Tests & maintainability**: verify changed behavior has targeted tests without speculative abstractions or dead code.
 
-## Output Rules
+## Output & Publication Rules
 
-- Report only concrete, actionable findings tied to exact file paths and lines in the diff.
+- Post concrete, actionable line-level findings with `mcp__github_inline_comment__create_inline_comment` tied to exact file paths and lines in the diff.
+- Publish the final review summary (or a concise "no actionable findings" verdict) using `mcp__github_comment__update_claude_comment`.
 - Classify each finding clearly as **Blocker**, **Suggestion**, or **Nit**.
 - Do not fabricate command runs or claim tests passed unless actually observed.
-- If no actionable issues are found, state that clearly in a brief summary.

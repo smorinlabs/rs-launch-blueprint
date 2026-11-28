@@ -91,13 +91,33 @@ jobs:
       - name: Check out the default branch
         uses: actions/checkout@v7
         with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Fetch pull request refs without modifying the trusted working tree
+        id: pr-refs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.resolve.outputs.pr_number }}
+        run: |
+          set -euo pipefail
+          base_sha="$(gh api "repos/${GH_REPO}/pulls/${PR_NUMBER}" --jq '.base.sha')"
+          head_sha="$(gh api "repos/${GH_REPO}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          git fetch --no-tags origin "${base_sha}" "refs/pull/${PR_NUMBER}/head"
+          git update-ref refs/codex/pr-base "${base_sha}"
+          git update-ref refs/codex/pr-head FETCH_HEAD
+          echo "base_sha=${base_sha}" >> "$GITHUB_OUTPUT"
+          echo "head_sha=${head_sha}" >> "$GITHUB_OUTPUT"
       - name: Write the untrusted request packet
         shell: bash
         env:
           REQUEST_BODY: ${{ github.event.comment.body }}
           REQUEST_AUTHOR: ${{ github.event.comment.user.login }}
           PR_NUMBER: ${{ steps.resolve.outputs.pr_number }}
+          BASE_SHA: ${{ steps.pr-refs.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.pr-refs.outputs.head_sha }}
         run: |
           set -euo pipefail
           jq -n \
@@ -105,7 +125,9 @@ jobs:
             --arg body "$REQUEST_BODY" \
             --arg author "$REQUEST_AUTHOR" \
             --arg pr "$PR_NUMBER" \
-            '{warning: $warning, pull_request: $pr, author: $author, request: $body}' \
+            --arg base_sha "$BASE_SHA" \
+            --arg head_sha "$HEAD_SHA" \
+            '{warning: $warning, pull_request: $pr, base_sha: $base_sha, head_sha: $head_sha, author: $author, request: $body}' \
             > .codex-request.json
       - name: Run Codex
         id: codex

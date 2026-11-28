@@ -85,7 +85,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=1 origin "${HEAD_SHA}"
+          git fetch --no-tags origin "${HEAD_SHA}"
           git update-ref refs/codex/pr-head "${HEAD_SHA}"
       - name: Run Codex
         id: codex

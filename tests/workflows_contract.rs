@@ -219,16 +219,29 @@ fn extract_marked_block(text: &str, begin: &str, end: &str) -> String {
         .join("\n")
 }
 
+const INHERITED_GIT_ENV_VARS: &[&str] = &[
+    "GIT_DIR",
+    "GIT_WORK_TREE",
+    "GIT_INDEX_FILE",
+    "GIT_OBJECT_DIRECTORY",
+    "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+    "GIT_COMMON_DIR",
+    "GIT_PREFIX",
+];
+
 fn git_cmd(dir: &Path, args: &[&str]) -> String {
-    let out = Command::new("git")
+    let mut cmd = Command::new("git");
+    cmd.args(["-c", "commit.gpgSign=false"])
         .args(args)
         .current_dir(dir)
         .env("GIT_AUTHOR_NAME", "Test User")
         .env("GIT_AUTHOR_EMAIL", "test@example.com")
         .env("GIT_COMMITTER_NAME", "Test User")
-        .env("GIT_COMMITTER_EMAIL", "test@example.com")
-        .output()
-        .expect("git must execute");
+        .env("GIT_COMMITTER_EMAIL", "test@example.com");
+    for var in INHERITED_GIT_ENV_VARS {
+        cmd.env_remove(var);
+    }
+    let out = cmd.output().expect("git must execute");
     assert!(
         out.status.success(),
         "git {args:?} failed: stdout={} stderr={}",
@@ -251,17 +264,19 @@ fn run_plan_detector(
     let out_file = out_dir.path().join("github-output.tmp");
     fs::write(&out_file, "").expect("init GITHUB_OUTPUT file");
     let script = format!("set -euo pipefail\n{detector_body}\n");
-    let out = Command::new("bash")
-        .args(["-c", &script])
+    let mut cmd = Command::new("bash");
+    cmd.args(["-c", &script])
         .current_dir(repo_dir)
         .env("GITHUB_OUTPUT", &out_file)
         .env("EVENT_NAME", event_name)
         .env("BASE_SHA", base_sha)
         .env("HEAD_REF", head_ref)
         .env("HEAD_REPO", head_repo)
-        .env("REPOSITORY", repository)
-        .output()
-        .expect("run plan detector bash body");
+        .env("REPOSITORY", repository);
+    for var in INHERITED_GIT_ENV_VARS {
+        cmd.env_remove(var);
+    }
+    let out = cmd.output().expect("run plan detector bash body");
     assert!(
         out.status.success(),
         "plan detector failed (event={event_name}, head_ref={head_ref}): stdout={} stderr={}",
@@ -428,18 +443,27 @@ fn workflow_permissions_hardening_r08_and_script_controls() {
     fs::remove_file(wf_dir.join("bad-top.yml")).unwrap();
 
     // Uncommented persist-credentials: true, 'true', True, expression, and flow-style map
-    for (case_name, line) in [
-        ("bare-true", "          persist-credentials: true"),
-        ("quoted-true", "          persist-credentials: 'true'"),
-        ("cap-true", "          persist-credentials: True"),
+    for (case_name, with_block) in [
+        (
+            "bare-true",
+            "        with:\n          persist-credentials: true",
+        ),
+        (
+            "quoted-true",
+            "        with:\n          persist-credentials: 'true'",
+        ),
+        (
+            "cap-true",
+            "        with:\n          persist-credentials: True",
+        ),
         (
             "expr",
-            "          persist-credentials: ${{ inputs.persist }}",
+            "        with:\n          persist-credentials: ${{ inputs.persist }}",
         ),
         ("flow-map", "        with: { persist-credentials: false }"),
     ] {
         let body = format!(
-            "name: Bad\non: push\npermissions: {{}}\njobs:\n  j:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v7\n        with:\n{line}\n"
+            "name: Bad\non: push\npermissions: {{}}\njobs:\n  j:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v7\n{with_block}\n"
         );
         let p = wf_dir.join(format!("{case_name}.yml"));
         fs::write(&p, body).unwrap();
@@ -743,6 +767,11 @@ fn ci_plan_detector_fails_closed_and_supports_release_fast_path_r11() {
     )
     .unwrap();
     fs::write(
+        repo.join("crates/core/Cargo.toml"),
+        "[package]\nname = \"rs-launch-blueprint-core\"\nversion = \"0.1.0\"\n",
+    )
+    .unwrap();
+    fs::write(
         repo.join("Cargo.lock"),
         "[[package]]\nname = \"rs-launch-blueprint\"\nversion = \"0.1.0\"\n",
     )
@@ -866,10 +895,11 @@ fn ci_plan_detector_fails_closed_and_supports_release_fast_path_r11() {
     );
     assert_eq!(rename_out["web"], "true");
 
-    // Case 7: `workflows` matches workflows, local actions, and actionlint config.
+    // Case 7: `workflows` matches workflows, local actions (incl. non-ASCII), and actionlint config.
     for wf_path in [
         ".github/workflows/ci.yml",
         ".github/actions/local/action.yml",
+        ".github/actions/café/action.yml",
         ".github/actionlint.yaml",
     ] {
         let out = test_pr_change("feat/wf", "smorinlabs/rs-launch-blueprint", &|r| {
@@ -984,6 +1014,23 @@ fn ci_plan_detector_fails_closed_and_supports_release_fast_path_r11() {
     );
     assert_eq!(rp_extra_dep["release"], "false");
     assert_eq!(rp_extra_dep["code"], "true");
+
+    // Release-please deleting a tracked workspace member Cargo.toml MUST NOT take the fast-path.
+    let rp_deleted_cargo = test_pr_change(
+        "release-please--branches--main",
+        "smorinlabs/rs-launch-blueprint",
+        &|r| {
+            fs::write(
+                r.join(".release-please-manifest.json"),
+                "{\".\": \"0.2.0\"}\n",
+            )
+            .unwrap();
+            fs::write(r.join("CHANGELOG.md"), "# changelog\n## 0.2.0\n").unwrap();
+            fs::remove_file(r.join("crates/core/Cargo.toml")).unwrap();
+        },
+    );
+    assert_eq!(rp_deleted_cargo["release"], "false");
+    assert_eq!(rp_deleted_cargo["code"], "true");
 }
 
 #[test]
