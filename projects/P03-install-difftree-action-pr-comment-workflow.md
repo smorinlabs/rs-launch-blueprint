@@ -16,7 +16,8 @@
 **TDD: not applicable** — workflow verification runs on the install PR itself after `.github/workflows/difftree-pr-comment.yml` is committed.
 
 ### Tests & Tasks
-- [ ] [P03-T01] Run the `difftree-action-setup` skill on `rs-launch-blueprint` in a fresh worktree (`ci/difftree-pr-comment`) to scaffold `.github/workflows/difftree-pr-comment.yml` from `smorinlabs/difftree-action`'s canonical template
+- [x] [P03-T01] Run the `difftree-action-setup` skill on `rs-launch-blueprint` in a fresh worktree (`ci/difftree-pr-comment`) to scaffold `.github/workflows/difftree-pr-comment.yml` from `smorinlabs/difftree-action`'s canonical template
+      2026-11-27: scaffolded verbatim (3771 bytes, sha256 `ca489e8989c2a32c88448ef9b00c947712ecab32bc3f90ec0972126930eaea4e`) from `smorinlabs/difftree-action@6107bc5f716aa31dce57217e37c95f7aa6969e74` (`examples/difftree-pr-comment.yml`)
 - [ ] [P03-TS01] Verify on the install PR per `difftree-action-setup` §4: `Difftree PR Comment` run passes on install commit, exactly one `<!-- difftree-action -->` comment is posted, an empty re-run commit updates the same comment ID with a strictly later `updated_at`, and all checks/threads clear
 - [ ] [P03-T02] Merge the verified PR, fast-forward `main`, and clean up the worktree/branch
 - [ ] Regression Test Status
