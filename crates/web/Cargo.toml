@@ -9,8 +9,36 @@ rust-version.workspace = true
 description = "Optional web service front end for rs-launch-blueprint."
 
 [dependencies]
+axum = "0.8.9"
+base64 = { version = "0.23.1", default-features = false, features = ["std"] }
+http-body = "1.0.1"
+problem_details = { version = "0.10.0", features = ["axum", "json"] }
 rs-launch-blueprint-core = { version = "0.1.0", path = "../core" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+sha2 = { version = "0.11.0", default-features = false, features = ["alloc"] }
+thiserror = "2.0.20"
+tokio = { version = "1.53.1", features = [
+    "macros",
+    "net",
+    "rt-multi-thread",
+    "signal",
+    "sync",
+    "time",
+] }
+tower-http = { version = "0.7.1", default-features = false, features = [
+    "catch-panic",
+    "cors",
+    "limit",
+    "request-id",
+    "sensitive-headers",
+    "set-header",
+    "timeout",
+] }
 tracing = { version = "0.1.44", default-features = false, features = ["std"] }
+
+[dev-dependencies]
+tower = { version = "0.5.3", features = ["util"] }
 
 [lints]
 workspace = true

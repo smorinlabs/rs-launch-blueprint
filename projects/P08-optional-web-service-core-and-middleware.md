@@ -10,7 +10,7 @@
 - **Prior art:** [R75 http-middleware-stack](../research/topics/75-http-middleware-stack/DECISION.md)
 - **Prior art:** [R80 health-probe-endpoints](../research/topics/80-health-probe-endpoints/DECISION.md)
 
-**Status:** `[ ]` scoped, not started.
+**Status:** `[x]` completed (2026-11-27).
 
 ### Scope
 Implement the optional `crates/web` package and `rslbp-serve` production binary behind the off-by-default `web = ["dep:rs-launch-blueprint-web"]` feature:
@@ -27,12 +27,12 @@ Implement the optional `crates/web` package and `rslbp-serve` production binary 
 - GitHub Actions CI and container publishing workflows (`P10`–`P11`)
 
 ### Tests & Tasks
-- [ ] [P08-TS01] Add `crates/web/tests/` `ServiceExt::oneshot` integration tests covering `/v1/projects` CRUD, RFC 9457 error envelopes, cursor pagination, `Idempotency-Key` replay/conflict, rate limiting, CORS preflight & exposed headers (`OV-08`), `WebSettings::from_env()` validation, `/healthz` & `/readyz` shutdown latch, and feature-off compile isolation (`R69`–`R77`, `R80`)
-- [ ] [P08-T01] Implement `WebSettings::from_env()` (`R77`), `AppState` + `FromRef`, `build_router`, `shutdown_signal`, `serve_until`, and `src/bin/serve.rs` (`R69`)
-- [ ] [P08-T02] Implement RFC 9457 `problem+json` response mapping (`R70`), `/v1/projects` handlers, and `base64` cursor pagination (`R72`)
-- [ ] [P08-T03] Implement `IdempotencyStore` port (`crates/core`) + replay middleware (`R73`), rate-limiting middleware (`R74`), fixed-order `tower-http` middleware stack (`R75`), and CORS layer (`R76`, `OV-08`)
-- [ ] [P08-T04] Implement `/healthz` and `/readyz` probes with shared synchronous diagnostics and readiness latch (`R80`, `OV-05`), plus `just serve` / `bacon.toml` dev recipes
-- [ ] [P08-T05] Verify feature-off default build remains free of `axum`/`tokio`, and both feature-off and `--features web` test suites pass completely
+- [x] [P08-TS01] Add `crates/web/tests/` `ServiceExt::oneshot` integration tests covering `/v1/projects` CRUD, RFC 9457 error envelopes, cursor pagination, `Idempotency-Key` replay/conflict, rate limiting, CORS preflight & exposed headers (`OV-08`), `WebSettings::from_env()` validation, `/healthz` & `/readyz` shutdown latch, and feature-off compile isolation (`R69`–`R77`, `R80`)
+- [x] [P08-T01] Implement `WebSettings::from_env()` (`R77`), `AppState` + `FromRef`, `build_router`, `shutdown_signal`, `serve_until`, and `src/bin/serve.rs` (`R69`)
+- [x] [P08-T02] Implement RFC 9457 `problem+json` response mapping (`R70`), `/v1/projects` handlers, and `base64` cursor pagination (`R72`)
+- [x] [P08-T03] Implement `IdempotencyStore` port (`crates/core`) + replay middleware (`R73`), rate-limiting middleware (`R74`), fixed-order `tower-http` middleware stack (`R75`), and CORS layer (`R76`, `OV-08`)
+- [x] [P08-T04] Implement `/healthz` and `/readyz` probes with shared synchronous diagnostics and readiness latch (`R80`, `OV-05`), plus `just serve` / `bacon.toml` dev recipes
+- [x] [P08-T05] Verify feature-off default build remains free of `axum`/`tokio`, and both feature-off and `--features web` test suites pass completely
 
 ### Deliverable
 ```bash

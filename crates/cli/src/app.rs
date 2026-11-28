@@ -14,11 +14,12 @@ use anstream::{AutoStream, ColorChoice};
 
 use rs_launch_blueprint_core::{
     AuthError, ClipboardPort, ColorPreference, ConfigDiscoveryInputs, CreateProjectInput,
-    CredentialStore, DomainError, ErasedProjectsService, ErrorCode, Exit, FileCredentialStore,
-    LogLevel, OutputFormat, Paths, PortError, ProjectQuery, ProjectsPort, ProjectsService,
-    RecordingClipboard, ResolvedToken, TOKEN_ENV_VAR, Token, TokenResolutionInputs, WRITABLE_KEYS,
-    WorkspaceInfo, get_config_value, load_config, read_config_file_key, resolve_token,
-    set_config_value, validate_config_assignment,
+    CredentialStore, DiagnosticsContext, DomainError, ErasedProjectsService, ErrorCode, Exit,
+    FileCredentialStore, LogLevel, OutputFormat, Paths, PortError, ProjectQuery, ProjectsPort,
+    ProjectsService, RecordingClipboard, ResolvedToken, TOKEN_ENV_VAR, Token,
+    TokenResolutionInputs, WRITABLE_KEYS, WorkspaceInfo, get_config_value, load_config,
+    read_config_file_key, resolve_token, run_diagnostics, set_config_value,
+    validate_config_assignment,
 };
 
 use crate::args::{
@@ -904,65 +905,26 @@ fn handle_diagnostics(
     let cfg_exists = cfg_path.exists();
 
     let token_result = resolve_cli_token(rt, global);
-    let (token_present, token_source, token_check) = match token_result {
-        Ok(Some(resolved)) => {
-            let src = resolved.source.as_str().to_owned();
-            let check = DiagnosticCheck {
-                name: "token".to_owned(),
-                status: "ok",
-                detail: format!("present (source: {src})"),
-            };
-            (true, Some(src), check)
-        }
-        Ok(None) => (
-            false,
-            None,
-            DiagnosticCheck {
-                name: "token".to_owned(),
-                status: "warn",
-                detail: format!(
-                    "not set (supply via --token-file or ${TOKEN_ENV_VAR}; never stored in config)"
-                ),
-            },
-        ),
-        Err(err) => (
-            false,
-            None,
-            DiagnosticCheck {
-                name: "token".to_owned(),
-                status: "error",
-                detail: err.to_string(),
-            },
-        ),
+    let (token_present, token_source, token_error) = match token_result {
+        Ok(Some(resolved)) => (true, Some(resolved.source.as_str().to_owned()), None),
+        Ok(None) => (false, None, None),
+        Err(err) => (false, None, Some(err.to_string())),
     };
 
-    let checks = vec![
-        DiagnosticCheck {
-            name: "version".to_owned(),
-            status: "ok",
-            detail: info.version.to_owned(),
-        },
-        DiagnosticCheck {
-            name: "target".to_owned(),
-            status: "ok",
-            detail: info.target.to_owned(),
-        },
-        DiagnosticCheck {
-            name: "rustc".to_owned(),
-            status: "ok",
-            detail: info.rustc.to_owned(),
-        },
-        DiagnosticCheck {
-            name: "config-file".to_owned(),
-            status: if cfg_exists { "ok" } else { "warn" },
-            detail: format!(
-                "{} ({})",
-                cfg_path.display(),
-                if cfg_exists { "found" } else { "not found" }
-            ),
-        },
-        token_check,
-    ];
+    let core_diag = run_diagnostics(&DiagnosticsContext {
+        config_path: &cfg_path,
+        token_source: token_source.as_deref(),
+        token_error: token_error.as_deref(),
+    });
+    let checks: Vec<DiagnosticCheck> = core_diag
+        .checks
+        .into_iter()
+        .map(|c| DiagnosticCheck {
+            name: c.name.to_owned(),
+            status: c.status.as_str(),
+            detail: c.detail,
+        })
+        .collect();
 
     let report = DiagnosticsReportView { checks };
     let has_error = report.has_error();

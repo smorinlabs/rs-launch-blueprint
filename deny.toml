@@ -37,7 +37,11 @@ wildcards = "deny"
 deny = [
     { crate = "axum", wrappers = [
         "rs-launch-blueprint-web",
+        "problem_details",
     ], reason = "core and the CLI are framework-agnostic (F008)" },
+    { crate = "problem_details", wrappers = [
+        "rs-launch-blueprint-web",
+    ], reason = "RFC 9457 problem_details is contained to crates/web/src/problems.rs (R70)" },
     { crate = "clap", wrappers = [
         "rs-launch-blueprint-cli",
         "rs-launch-blueprint",

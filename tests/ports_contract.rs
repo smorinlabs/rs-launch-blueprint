@@ -256,15 +256,13 @@ fn port_doubles_service_helpers_and_composition_helpers_work() {
 
         #[cfg(feature = "web")]
         {
-            let info = rs_launch_blueprint::workspace_info();
-            assert_eq!(
-                rs_launch_blueprint_web::serve_stub(info, &[]),
-                std::process::ExitCode::SUCCESS
-            );
-            assert_eq!(
-                rs_launch_blueprint_web::serve_stub(info, &["--bad".to_owned()]),
-                std::process::ExitCode::from(2)
-            );
+            let web_svc = in_memory_service([]);
+            let settings = rs_launch_blueprint_web::WebSettings::default();
+            let diag: rs_launch_blueprint_web::DiagnosticsRunner =
+                Arc::new(|| rs_launch_blueprint::Diagnostics { checks: Vec::new() });
+            let state = rs_launch_blueprint::build_web_app_state(web_svc, settings, diag);
+            assert!(state.readiness.is_ready());
+            let _router = rs_launch_blueprint_web::build_router(state);
         }
     });
 }
