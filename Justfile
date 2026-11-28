@@ -17,8 +17,8 @@ committed_version := "1.1.11"
 openapi_to_rust_version := "0.17.0"
 oasdiff_version := "v1.32.1"
 rustup_components := "rustfmt clippy llvm-tools-preview"
-cargo_tools := "cargo-deny:cargo-deny@0.20.2 cargo-nextest:cargo-nextest@0.9.146 cargo-insta:cargo-insta@1.48.0 cargo-llvm-cov:cargo-llvm-cov@0.9.1 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0"
-ubi_tools := "lefthook:ubi:evilmartians/lefthook@v2.1.14 gitleaks:ubi:gitleaks/gitleaks@v8.30.1 editorconfig-checker:ubi:editorconfig-checker/editorconfig-checker@v4.0.2 actionlint:ubi:rhysd/actionlint@v1.7.12"
+cargo_tools := "cargo-deny:cargo-deny@0.20.2 cargo-audit:cargo-audit@0.22.2 cargo-nextest:cargo-nextest@0.9.146 cargo-insta:cargo-insta@1.48.0 cargo-llvm-cov:cargo-llvm-cov@0.9.1 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0"
+ubi_tools := "lefthook:ubi:evilmartians/lefthook@v2.1.14 gitleaks:ubi:gitleaks/gitleaks@v8.30.1 editorconfig-checker:ubi:editorconfig-checker/editorconfig-checker@v4.0.2 actionlint:ubi:rhysd/actionlint@v1.7.12 zizmor:ubi:zizmorcore/zizmor@v1.30.1"
 
 # Coverage floors (LLVM metrics). The ONLY place the threshold values live (R35).
 coverage_fail_under := "--fail-under-lines 95 --fail-under-functions 95 --fail-under-regions 90"
@@ -420,10 +420,23 @@ install-check mode="":
 deny:
     cargo deny --all-features check
 
+# Run RustSec advisory audit against Cargo.lock with warnings denied (R13)
+[group('dev')]
+audit:
+    cargo audit --deny warnings
+
 # Check every tracked shell script with ShellCheck
 [group('dev')]
 check-shell:
     bash scripts/check-shell.sh
+
+# Validate GitHub Actions workflows with actionlint, zizmor, R08 permissions, and R20 SHA-pin comments
+[group('dev')]
+check-workflows:
+    actionlint
+    zizmor .github/
+    bash scripts/check-workflow-permissions.sh
+    bash scripts/check-action-pin-comments.sh
 
 # Run all read-only workspace quality gates in parallel (py P11; format-check then check-files first per R27/R29)
 [group('test'), group('dev'), group('quick start')]
@@ -693,6 +706,7 @@ debug-info:
     echo "- clippy: $(cargo clippy --version 2>/dev/null || echo 'not found')"
     echo "- rustfmt: $(cargo fmt --version 2>/dev/null || echo 'not found')"
     echo "- cargo-deny: $(cargo deny --version 2>/dev/null || echo 'not found')"
+    echo "- cargo-audit: $(cargo audit --version 2>/dev/null || echo 'not found')"
     echo "- cargo-nextest: $(cargo nextest --version 2>/dev/null | head -n 1 || echo 'not found')"
     echo "- cargo-insta: $(cargo insta --version 2>/dev/null || echo 'not found')"
     echo "- cargo-llvm-cov: $(cargo llvm-cov --version 2>/dev/null || echo 'not found')"
@@ -706,6 +720,7 @@ debug-info:
     echo "- ryl: $(ryl --version 2>/dev/null || echo 'not found')"
     echo "- typos: $(typos --version 2>/dev/null || echo 'not found')"
     echo "- actionlint: $(actionlint --version 2>/dev/null | head -n 1 || echo 'not found')"
+    echo "- zizmor: $(zizmor --version 2>/dev/null || echo 'not found')"
     echo "- shellcheck: $(shellcheck --version 2>/dev/null | sed -n '2p' || echo 'not found')"
     echo "- blaze (optional): $(blaze --version 2>/dev/null || echo 'not installed')"
     echo ""

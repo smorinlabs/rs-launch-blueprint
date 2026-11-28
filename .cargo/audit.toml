@@ -1,0 +1,12 @@
+# RustSec advisory exceptions for `cargo audit --deny warnings` (R13).
+# Created only because active upstream notices exist; mirrors `deny.toml` [advisories].
+# Review and remove once `secret-service` adopts zbus 6.
+[advisories]
+ignore = [
+    # 2026-11-27: zvariant merged into zbus 6; optional keychain Linux dep still on zbus 5.
+    "RUSTSEC-2026-0370",
+    # 2026-11-27: zbus_names merged into zbus 6; optional keychain Linux dep still on zbus 5.
+    "RUSTSEC-2026-0371",
+    # 2026-11-27: zvariant_derive merged into zbus 6; optional keychain Linux dep still on zbus 5.
+    "RUSTSEC-2026-0372",
+]

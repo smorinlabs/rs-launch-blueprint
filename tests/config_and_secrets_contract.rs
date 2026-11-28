@@ -724,7 +724,11 @@ fn keychain_credential_store_round_trips_using_keyring_core_mock() {
     use rs_launch_blueprint::KeychainCredentialStore;
 
     let backend = keyring_core::mock::Store::new().expect("mock keyring store");
-    let store = KeychainCredentialStore::with_store(backend, "rslbp-test", "default");
+    let store = KeychainCredentialStore::with_store(
+        std::sync::Arc::clone(&backend),
+        "rslbp-test",
+        "default",
+    );
 
     assert!(store.load().expect("empty load").0.is_none());
     store
@@ -740,6 +744,79 @@ fn keychain_credential_store_round_trips_using_keyring_core_mock() {
     assert!(store.load().expect("after delete").0.is_none());
     assert!(!store.delete().expect("delete absent keychain"));
     assert!(format!("{store:?}").contains("KeychainCredentialStore"));
+
+    // Verify backend failures surface cleanly as AuthError::StoreUnavailable across
+    // load, save, and delete (via keyring_core::mock::Cred::set_error).
+    let erased: std::sync::Arc<keyring_core::CredentialStore> = backend.clone();
+    let entry = keyring_core::Entry::new_in_store(&erased, "rslbp-test", "default")
+        .expect("entry in mock store");
+    let mock_cred = entry
+        .as_any()
+        .downcast_ref::<keyring_core::mock::Cred>()
+        .expect("downcast mock cred");
+    mock_cred.set_error(keyring_core::Error::Invalid(
+        "backend".to_owned(),
+        "load failed".to_owned(),
+    ));
+    assert!(matches!(
+        store.load(),
+        Err(AuthError::StoreUnavailable { .. })
+    ));
+
+    mock_cred.set_error(keyring_core::Error::Invalid(
+        "backend".to_owned(),
+        "save failed".to_owned(),
+    ));
+    assert!(matches!(
+        store.save(&Token::new("sk_live_FAIL")),
+        Err(AuthError::StoreUnavailable { .. })
+    ));
+
+    mock_cred.set_error(keyring_core::Error::Invalid(
+        "backend".to_owned(),
+        "delete failed".to_owned(),
+    ));
+    assert!(matches!(
+        store.delete(),
+        Err(AuthError::StoreUnavailable { .. })
+    ));
+
+    // Exercise KeychainCredentialStore::native constructor across platforms without requiring
+    // an unlocked secret service on headless Linux runners.
+    match KeychainCredentialStore::native("rslbp-test", "default") {
+        Ok(native) => assert!(format!("{native:?}").contains("KeychainCredentialStore")),
+        Err(err) => assert!(matches!(err, AuthError::StoreUnavailable { .. })),
+    }
+}
+
+#[cfg(all(feature = "clipboard", target_os = "linux"))]
+#[test]
+fn linux_headless_clipboard_fails_fast_and_daemon_exits_cleanly() {
+    use rs_launch_blueprint::{ArboardClipboard, ClipboardPort};
+    use std::process::{Command, Stdio};
+
+    if std::env::var_os("DISPLAY").is_some() || std::env::var_os("WAYLAND_DISPLAY").is_some() {
+        return;
+    }
+    let err = ArboardClipboard::new()
+        .set_text("headless-probe")
+        .expect_err("headless Linux without display server must fail fast");
+    assert!(
+        err.to_string().contains("Linux display server"),
+        "unexpected clipboard error: {err}"
+    );
+
+    let status = Command::new(env!("CARGO_BIN_EXE_rslbp"))
+        .arg("--clipboard-daemon")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .expect("spawn rslbp --clipboard-daemon");
+    assert!(
+        !status.success(),
+        "clipboard daemon without Linux display server must exit non-zero"
+    );
 }
 
 #[test]

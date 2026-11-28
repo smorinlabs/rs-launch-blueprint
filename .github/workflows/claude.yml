@@ -1,0 +1,124 @@
+# Interactive @claude Assistant (R18 rev 6, R08, R09, R20).
+#
+# Credential-presence gating (no enable variable):
+# - Runs when an OWNER, MEMBER, or COLLABORATOR human (never a bot) mentions
+#   `@claude` and either a static credential (`ANTHROPIC_API_KEY` /
+#   `CLAUDE_CODE_OAUTH_TOKEN`) or Anthropic workload identity federation
+#   (`ANTHROPIC_FEDERATION_RULE_ID` + `ANTHROPIC_ORGANIZATION_ID`) is configured.
+# - Skips cleanly without failing when no credential is configured.
+# - To opt out permanently, delete `.github/workflows/claude.yml`.
+#
+# What an adopter accepts by installing a credential on a public repository:
+# 1. On a public repository, this write-capable lane is reachable from text
+#    written by an OWNER, MEMBER, or COLLABORATOR, who may quote untrusted
+#    content (issue bodies, fork diffs, stack traces). Neither the prefilter nor
+#    action-side checks separate trusted words from quoted untrusted text.
+# 2. The action exchanges OIDC for a write-capable Claude GitHub App token
+#    before internal actor checks return; the `author_association` and bot
+#    guards on `credential-preflight` are the only pre-job actor controls.
+# 3. `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is inactive here.
+# 4. If `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` already exists for an
+#    unrelated purpose, this lane activates automatically; delete this file to
+#    opt out.
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+permissions: {}
+
+jobs:
+  credential-preflight:
+    if: |
+      github.event.sender.type != 'Bot' &&
+      ((github.event_name == 'issue_comment' && github.event.comment.user.type != 'Bot' &&
+        contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+       (github.event_name == 'pull_request_review_comment' && github.event.comment.user.type != 'Bot' &&
+        contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+       (github.event_name == 'pull_request_review' && github.event.review.user.type != 'Bot' &&
+        contains(github.event.review.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+       (github.event_name == 'issues' && github.event.issue.user.type != 'Bot' &&
+        (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      credential: ${{ steps.detect.outputs.credential }}
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+    steps:
+      - name: Detect which Claude credential shape is configured
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${ANTHROPIC_API_KEY:-}" ] || [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+            shape=static
+          elif [ -n "${ANTHROPIC_FEDERATION_RULE_ID:-}" ] && [ -n "${ANTHROPIC_ORGANIZATION_ID:-}" ]; then
+            shape=federation
+          else
+            shape=none
+          fi
+          echo "credential=${shape}" >> "${GITHUB_OUTPUT}"
+          if [ "${shape}" = none ]; then
+            echo "::notice title=Claude assistant not configured::No Claude credential is set, so the assistant job is skipped. This is not an error."
+            {
+              echo "### Claude assistant skipped — no credential configured"
+              echo
+              echo "The assistant job did not run because no Claude credential is set."
+              echo "Set **one** of the two shapes, not both:"
+              echo
+              echo "- Static credential: repository secret \`ANTHROPIC_API_KEY\`, or \`CLAUDE_CODE_OAUTH_TOKEN\` from \`claude setup-token\`."
+              echo "- Workload identity federation: repository variables \`ANTHROPIC_FEDERATION_RULE_ID\` and \`ANTHROPIC_ORGANIZATION_ID\` (and optionally \`ANTHROPIC_SERVICE_ACCOUNT_ID\`)."
+              echo
+              echo "If you do not want an AI assistant on this repository, delete \`.github/workflows/claude.yml\`."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "Claude credential shape detected: ${shape}."
+            echo "Delete .github/workflows/claude.yml to opt out of this lane."
+          fi
+
+  claude:
+    needs: credential-preflight
+    if: >-
+      needs.credential-preflight.outputs.credential == 'static'
+      || needs.credential-preflight.outputs.credential == 'federation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write # Allow interactive assistant to push requested branch fixes
+      pull-requests: write # Post comments and review replies on pull requests
+      issues: write # Reply to @claude mentions on issues
+      id-token: write # Required by anthropics/claude-code-action OIDC exchange
+      actions: read # Read CI job logs when diagnosing failures
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@19dda84776b3518d98b8798e591daee763049ed3 # v1.0.220
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          additional_permissions: |
+            actions: read

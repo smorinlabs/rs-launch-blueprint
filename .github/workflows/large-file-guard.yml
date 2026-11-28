@@ -1,0 +1,46 @@
+# Large-file CI guard (R14).
+# Single source of truth: delegates threshold and .gitattributes `large-file-ok`
+# enforcement to scripts/check-large-files.sh across every commit in the range.
+name: large-file-guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: large-file-guard-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  guard:
+    name: reject-large-files
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read # Check out git history to inspect introduced blob sizes
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check introduced blobs via scripts/check-large-files.sh
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          MG_BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          case "${EVENT_NAME}" in
+            pull_request) base_sha="${PR_BASE_SHA}" ;;
+            merge_group) base_sha="${MG_BASE_SHA}" ;;
+            push) base_sha="${PUSH_BEFORE}" ;;
+            *) base_sha="" ;;
+          esac
+          sh scripts/check-large-files.sh --range "${base_sha}" HEAD

@@ -609,4 +609,43 @@ mod otel_enabled {
             "parent: None event must omit trace_id/span_id: {ev_none}"
         );
     }
+
+    #[test]
+    fn otel_exporter_lifecycle_debug_and_active_otlp_init() {
+        let mut redacting = RedactingSpanExporter::new(InMemoryExporter::default());
+        let resource = opentelemetry_sdk::Resource::builder()
+            .with_service_name("rslbp-test")
+            .build();
+        redacting.set_resource(&resource);
+        redacting.force_flush().expect("force_flush delegates");
+        redacting.shutdown().expect("shutdown delegates");
+
+        let disabled = OtelInit::Disabled;
+        assert_eq!(format!("{disabled:?}"), "OtelInit::Disabled");
+        let unavailable = OtelInit::Unavailable {
+            reason: "bad endpoint".to_owned(),
+        };
+        assert!(format!("{unavailable:?}").contains("bad endpoint"));
+
+        let cfg = OtelConfig {
+            enabled: true,
+            sdk_disabled: false,
+            service_name: "rslbp-web-test".to_owned(),
+            shutdown_timeout: Duration::from_millis(50),
+            endpoint_override: Some("http://127.0.0.1:1/v1/traces".to_owned()),
+        };
+        let init = init_otel_from_config(&cfg);
+        let debug_repr = format!("{init:?}");
+        assert!(
+            debug_repr.contains("OtelInit::Active") && debug_repr.contains("OtelGuard"),
+            "expected Active OtelInit debug representation, got: {debug_repr}"
+        );
+        match init {
+            OtelInit::Active { guard, .. } => {
+                // Bounded shutdown on a blocking/main OS thread (R78 point 7).
+                let _ = guard.shutdown_blocking();
+            }
+            other => panic!("expected OtelInit::Active, got {other:?}"),
+        }
+    }
 }

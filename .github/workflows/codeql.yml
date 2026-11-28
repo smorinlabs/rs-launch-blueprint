@@ -1,0 +1,122 @@
+# CodeQL static analysis for Rust (R16, F027, F045).
+# Advanced setup: this workflow + .github/codeql/codeql-config.yml ARE the
+# CodeQL config. The repository's "default setup" (Settings > Code security >
+# Code scanning) must stay disabled, or SARIF upload fails with a configuration
+# error. The visibility preflight checks both public visibility and whether
+# GitHub's dynamic CodeQL default-setup workflow is active on the current commit
+# so repos/forks that have not yet disabled default setup skip cleanly with an
+# actionable notice instead of failing SARIF upload.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 4 * * 0" # weekly, Sunday 04:00 UTC
+  public:
+
+permissions: {}
+
+concurrency:
+  group: codeql-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  repository-visibility:
+    name: inspect repository visibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read # Inspect repository visibility via GitHub REST API
+      actions: read # Check whether GitHub's dynamic CodeQL default-setup workflow is active
+    outputs:
+      is-public: ${{ steps.visibility.outputs.is_public }}
+      can-analyze: ${{ steps.visibility.outputs.can_analyze }}
+    steps:
+      - name: Inspect repository visibility and Code Scanning setup mode
+        id: visibility
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { data: repository } = await github.rest.repos.get(context.repo);
+            const isPublic = repository.visibility === "public";
+            let defaultSetupActive = false;
+
+            const hasDynamicCodeqlRun = async (sha) => {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                ...context.repo,
+                head_sha: sha,
+                per_page: 100,
+              });
+              return (data.workflow_runs || []).some(
+                (run) => run.path === "dynamic/github-code-scanning/codeql",
+              );
+            };
+
+            if (isPublic) {
+              try {
+                let targetSha = context.payload.pull_request?.head?.sha || context.sha;
+                if (context.eventName === "schedule" || context.eventName === "public") {
+                  const { data: commit } = await github.rest.repos.getCommit({
+                    ...context.repo,
+                    ref: repository.default_branch,
+                  });
+                  targetSha = commit.sha;
+                }
+                defaultSetupActive = await hasDynamicCodeqlRun(targetSha);
+                if (!defaultSetupActive && (context.eventName === "pull_request" || context.eventName === "push")) {
+                  await new Promise((resolve) => setTimeout(resolve, 5000));
+                  defaultSetupActive = await hasDynamicCodeqlRun(targetSha);
+                }
+              } catch (err) {
+                core.info(`Could not inspect dynamic CodeQL runs (${err.status || err.message}); proceeding.`);
+              }
+            }
+
+            const canAnalyze = isPublic && !defaultSetupActive;
+            if (isPublic && defaultSetupActive) {
+              core.notice(
+                "Code Scanning Default Setup is active on this repository, which conflicts with advanced CodeQL SARIF upload. Disable Default Setup under Settings > Code security > Code scanning to activate .github/workflows/codeql.yml.",
+                { title: "CodeQL advanced setup deferred" },
+              );
+              await core.summary
+                .addHeading("CodeQL advanced setup skipped — Default Setup is active", 3)
+                .addRaw(
+                  "GitHub Code Scanning **Default Setup** (`dynamic/github-code-scanning/codeql`) is currently active on this repository. " +
+                    "Advanced setup SARIF uploads fail while Default Setup is enabled.\n\n" +
+                    "To activate `.github/workflows/codeql.yml` (with `.github/codeql/codeql-config.yml` `security-extended`), " +
+                    "disable Default Setup in **Settings → Code security → Code scanning**.\n",
+                )
+                .write();
+            }
+            core.setOutput("is_public", String(isPublic));
+            core.setOutput("can_analyze", String(canAnalyze));
+
+  analyze:
+    needs: repository-visibility
+    if: ${{ needs.repository-visibility.outputs.can-analyze == 'true' }}
+    name: analyze (rust)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read # Check out repository sources for CodeQL extraction
+      security-events: write # Upload CodeQL SARIF analysis results
+      actions: read # Required by github/codeql-action for workflow metadata
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Init CodeQL
+        uses: github/codeql-action/init@v4.37.9
+        with:
+          languages: rust
+          build-mode: none
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4.37.9
+        with:
+          category: "/language:rust"

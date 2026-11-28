@@ -1,0 +1,41 @@
+# Conventional Commits CI enforcement (R38 F156/F157).
+# Re-validates every PR commit against committed.toml (humans) or
+# committed.bot.toml (dependabot[bot], relaxing widths while keeping grammar
+# and the 11-type vocabulary enforced). Keyed on PR author login, not github.actor.
+name: commitlint
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: commitlint-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  commit-lint:
+    name: commit-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read # Check out full PR commit history for commitlint
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: commit-lint (humans)
+        if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
+        uses: crate-ci/committed@faeed42f2e10c244533a01525f13c4d8b6ce383f # v1.1.11
+        with:
+          args: -vv --no-merge-commit
+          commits: HEAD~..HEAD^2
+      - name: commit-lint (dependabot; widths relaxed, grammar and types enforced)
+        if: github.event_name == 'pull_request' && github.event.pull_request.user.login == 'dependabot[bot]'
+        uses: crate-ci/committed@faeed42f2e10c244533a01525f13c4d8b6ce383f # v1.1.11
+        with:
+          args: -vv --no-merge-commit --config committed.bot.toml
+          commits: HEAD~..HEAD^2
