@@ -1,8 +1,7 @@
 # Post-Initialization Checklist
 
 This repository was stamped from the Rust launch blueprint and verified by
-Template Press. Record of the stamping run lives in
-[press/press-receipt.toml](../press/press-receipt.toml).
+Template Press. Record of the stamping run lives in `press/press-receipt.toml`.
 
 Complete the remaining human-only repository configuration in
 [PROJECT_SETUP.md](PROJECT_SETUP.md):
@@ -14,5 +13,5 @@ Complete the remaining human-only repository configuration in
    runs without conflicts.
 4. Configure branch rulesets on `main` requiring `ci-ok` and `press-verify`,
    with squash merges disabled (`allow_squash_merge=false`).
-5. Replace the starter [README.md](../README.md), [PROJECTS.md](../PROJECTS.md),
-   and [.github/SECURITY.md](../.github/SECURITY.md) with project-specific details.
+5. Replace the starter `README.md`, `PROJECTS.md`, and `.github/SECURITY.md`
+   with project-specific details.

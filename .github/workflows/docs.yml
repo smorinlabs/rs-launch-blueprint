@@ -1,0 +1,95 @@
+# Build the mdBook documentation corpus on every PR/push and deploy to GitHub Pages
+# from the upstream default branch once GitHub Pages (Source: GitHub Actions) is enabled (R81).
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pages-${{ github.event.pull_request.number || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  docs-build:
+    name: docs-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      pages-enabled: ${{ steps.pages-preflight.outputs.enabled }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Install checksum-verified mdBook 0.5.4 (R81)
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmpdir=$(mktemp -d)
+          trap 'rm -rf "$tmpdir"' EXIT
+          curl -fsSL "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz" \
+            -o "$tmpdir/mdbook.tar.gz"
+          printf '3f28de05dafca9d0f2eab99c662116b0e37b89b1d96a08f8f430b9eeae958cd7  %s\n' "$tmpdir/mdbook.tar.gz" | sha256sum -c -
+          tar -xzf "$tmpdir/mdbook.tar.gz" -C "$tmpdir"
+          mkdir -p "${HOME}/.local/bin"
+          install -m 755 "$tmpdir/mdbook" "${HOME}/.local/bin/mdbook"
+          echo "${HOME}/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Build mdBook documentation site
+        run: mdbook build
+
+      - name: Check whether GitHub Pages deployment is enabled
+        id: pages-preflight
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.repository == 'smorinlabs/rs-launch-blueprint' }}
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const { data: repository } = await github.rest.repos.get(context.repo);
+            const enabled = Boolean(repository.has_pages);
+            if (!enabled) {
+              core.notice(
+                "GitHub Pages is not enabled on this repository yet. Set Settings -> Pages -> Source to 'GitHub Actions' (see docs/PROJECT_SETUP.md) to publish the mdBook site.",
+                { title: "GitHub Pages deploy deferred" },
+              );
+              await core.summary
+                .addHeading("GitHub Pages deployment skipped — Pages not yet enabled", 3)
+                .addRaw(
+                  "`mdbook build` succeeded, but GitHub Pages is not enabled on this repository (`has_pages: false`). " +
+                    "Enable **Settings -> Pages -> Source: GitHub Actions** per `docs/PROJECT_SETUP.md` to publish automatically on pushes to `main`.\n",
+                )
+                .write();
+            }
+            core.setOutput("enabled", String(enabled));
+
+      - name: Configure GitHub Pages
+        if: ${{ steps.pages-preflight.outputs.enabled == 'true' }}
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        if: ${{ steps.pages-preflight.outputs.enabled == 'true' }}
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: book
+
+  docs-deploy:
+    name: docs-deploy
+    needs: docs-build
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && github.repository == 'smorinlabs/rs-launch-blueprint' && needs.docs-build.outputs.pages-enabled == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

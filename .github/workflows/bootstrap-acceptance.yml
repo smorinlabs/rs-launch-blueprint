@@ -104,6 +104,21 @@ jobs:
           gunzip -c "$tmpdir/lefthook.gz" > "$tmpdir/lefthook"
           install -m 755 "$tmpdir/lefthook" "$install_dir/lefthook"
 
+          # mdBook 0.5.4 (R81)
+          curl -fsSL "https://github.com/rust-lang/mdBook/releases/download/v0.5.4/mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz" \
+            -o "$tmpdir/mdbook.tar.gz"
+          printf '3f28de05dafca9d0f2eab99c662116b0e37b89b1d96a08f8f430b9eeae958cd7  %s\n' "$tmpdir/mdbook.tar.gz" | sha256sum -c -
+          tar -xzf "$tmpdir/mdbook.tar.gz" -C "$tmpdir"
+          install -m 755 "$tmpdir/mdbook" "$install_dir/mdbook"
+
+          # lychee 0.24.2 (R82)
+          curl -fsSL "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/lychee-x86_64-unknown-linux-gnu.tar.gz" \
+            -o "$tmpdir/lychee.tar.gz"
+          printf '1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a  %s\n' "$tmpdir/lychee.tar.gz" | sha256sum -c -
+          mkdir -p "$tmpdir/lychee"
+          tar -xzf "$tmpdir/lychee.tar.gz" -C "$tmpdir/lychee"
+          install -m 755 "$(find "$tmpdir/lychee" -type f -name lychee | head -n 1)" "$install_dir/lychee"
+
           # ShellCheck 0.11.0
           bash scripts/install-shellcheck.sh
           echo "$install_dir" >> "$GITHUB_PATH"

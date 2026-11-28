@@ -40,6 +40,122 @@ pub const REQUEST_ID: HeaderName = HeaderName::from_static("request-id");
 /// W3C Trace Context inbound header name (`R75` L3b).
 pub const TRACEPARENT: HeaderName = HeaderName::from_static("traceparent");
 
+/// RFC 9745 route deprecation header name (`F309`).
+pub const DEPRECATION_HEADER: HeaderName = HeaderName::from_static("deprecation");
+
+/// RFC 8594 route sunset header name (`F309`).
+pub const SUNSET_HEADER: HeaderName = HeaderName::from_static("sunset");
+
+/// Validate an RFC 9110 §5.6.7 `IMF-fixdate` (`Day, DD Mon YYYY HH:MM:SS GMT`) string.
+fn is_valid_imf_fixdate(value: &str) -> bool {
+    let b = value.as_bytes();
+    if b.len() != 29 || !value.is_ascii() {
+        return false;
+    }
+    if b[3] != b','
+        || b[4] != b' '
+        || b[7] != b' '
+        || b[11] != b' '
+        || b[16] != b' '
+        || b[19] != b':'
+        || b[22] != b':'
+        || b[25] != b' '
+        || &value[26..29] != "GMT"
+    {
+        return false;
+    }
+
+    let Some(weekday) = (match &value[0..3] {
+        "Sun" => Some(0u32),
+        "Mon" => Some(1),
+        "Tue" => Some(2),
+        "Wed" => Some(3),
+        "Thu" => Some(4),
+        "Fri" => Some(5),
+        "Sat" => Some(6),
+        _ => None,
+    }) else {
+        return false;
+    };
+
+    let Some(month) = (match &value[8..11] {
+        "Jan" => Some(1u32),
+        "Feb" => Some(2),
+        "Mar" => Some(3),
+        "Apr" => Some(4),
+        "May" => Some(5),
+        "Jun" => Some(6),
+        "Jul" => Some(7),
+        "Aug" => Some(8),
+        "Sep" => Some(9),
+        "Oct" => Some(10),
+        "Nov" => Some(11),
+        "Dec" => Some(12),
+        _ => None,
+    }) else {
+        return false;
+    };
+
+    let (Ok(day), Ok(year), Ok(hour), Ok(minute), Ok(second)) = (
+        value[5..7].parse::<u32>(),
+        value[12..16].parse::<u32>(),
+        value[17..19].parse::<u32>(),
+        value[20..22].parse::<u32>(),
+        value[23..25].parse::<u32>(),
+    ) else {
+        return false;
+    };
+
+    if year == 0 || hour > 23 || minute > 59 || second > 60 {
+        return false;
+    }
+
+    let is_leap = (year.is_multiple_of(4) && !year.is_multiple_of(100)) || year.is_multiple_of(400);
+    let max_day = match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 if is_leap => 29,
+        2 => 28,
+        _ => return false,
+    };
+    if day == 0 || day > max_day {
+        return false;
+    }
+
+    // Verify Gregorian day-of-week matches the calendar date (Sakamoto's algorithm).
+    const OFFSETS: [u32; 12] = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+    let adj_year = if month < 3 { year - 1 } else { year };
+    let expected_weekday = (adj_year + adj_year / 4 - adj_year / 100
+        + adj_year / 400
+        + OFFSETS[(month - 1) as usize]
+        + day)
+        % 7;
+    weekday == expected_weekday
+}
+
+/// Build RFC 9745 `Deprecation` (`@<unix-timestamp>`) and optional RFC 8594 `Sunset` response
+/// headers for deprecated HTTP routes (`F309`).
+///
+/// The optional `sunset_http_date` is validated as an RFC 9110 `IMF-fixdate` (`GMT`) and omitted
+/// if malformed.
+#[must_use]
+pub fn deprecation_headers(
+    deprecated_at_unix: i64,
+    sunset_http_date: Option<&str>,
+) -> Vec<(HeaderName, HeaderValue)> {
+    let mut headers = Vec::with_capacity(2);
+    if let Ok(val) = HeaderValue::from_str(&format!("@{deprecated_at_unix}")) {
+        headers.push((DEPRECATION_HEADER, val));
+    }
+    if let Some(sunset) = sunset_http_date
+        && is_valid_imf_fixdate(sunset)
+        && let Ok(val) = HeaderValue::from_str(sunset)
+    {
+        headers.push((SUNSET_HEADER, val));
+    }
+    headers
+}
+
 /// Matched route templates excluded from routine access logs (`R75` F320).
 ///
 /// Unmatched paths such as `/healthz/` produce no `MatchedPath` and are therefore logged.
@@ -342,4 +458,65 @@ pub fn apply_middleware(
 
     // L1 (outermost): Generate or preserve request-id header on incoming requests.
     router.layer(SetRequestIdLayer::new(REQUEST_ID, MakeRequestUuid))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{DEPRECATION_HEADER, SUNSET_HEADER, deprecation_headers};
+
+    #[test]
+    fn deprecation_headers_emit_rfc9745_date_and_optional_sunset() {
+        let only_dep = deprecation_headers(1_767_225_600, None);
+        assert_eq!(only_dep.len(), 1);
+        assert_eq!(only_dep[0].0, DEPRECATION_HEADER);
+        assert_eq!(only_dep[0].1, "@1767225600");
+
+        let with_sunset = deprecation_headers(1_767_225_600, Some("Thu, 31 Dec 2026 23:59:59 GMT"));
+        assert_eq!(with_sunset.len(), 2);
+        assert_eq!(with_sunset[0].0, DEPRECATION_HEADER);
+        assert_eq!(with_sunset[0].1, "@1767225600");
+        assert_eq!(with_sunset[1].0, SUNSET_HEADER);
+        assert_eq!(with_sunset[1].1, "Thu, 31 Dec 2026 23:59:59 GMT");
+
+        let bad_sunset = deprecation_headers(1_767_225_600, Some("invalid\r\nheader"));
+        assert_eq!(bad_sunset.len(), 1);
+        assert_eq!(bad_sunset[0].0, DEPRECATION_HEADER);
+
+        let printable_invalid = deprecation_headers(1_767_225_600, Some("not-a-date"));
+        assert_eq!(printable_invalid.len(), 1);
+        assert_eq!(printable_invalid[0].0, DEPRECATION_HEADER);
+
+        let bad_calendar =
+            deprecation_headers(1_767_225_600, Some("Sun, 31 Feb 2026 00:00:00 GMT"));
+        assert_eq!(bad_calendar.len(), 1);
+
+        let wrong_weekday =
+            deprecation_headers(1_767_225_600, Some("Mon, 31 Dec 2026 23:59:59 GMT"));
+        assert_eq!(wrong_weekday.len(), 1);
+
+        let bad_time = deprecation_headers(1_767_225_600, Some("Thu, 31 Dec 2026 25:00:00 GMT"));
+        assert_eq!(bad_time.len(), 1);
+
+        let bad_sep = deprecation_headers(1_767_225_600, Some("Thu- 31 Dec 2026 23:59:59 GMT"));
+        assert_eq!(bad_sep.len(), 1);
+
+        let bad_weekday_token =
+            deprecation_headers(1_767_225_600, Some("Xxx, 31 Dec 2026 23:59:59 GMT"));
+        assert_eq!(bad_weekday_token.len(), 1);
+
+        let bad_month_token =
+            deprecation_headers(1_767_225_600, Some("Thu, 31 Xxx 2026 23:59:59 GMT"));
+        assert_eq!(bad_month_token.len(), 1);
+
+        let bad_digits = deprecation_headers(1_767_225_600, Some("Thu, AA Dec 2026 23:59:59 GMT"));
+        assert_eq!(bad_digits.len(), 1);
+
+        // Valid leap day (2024-02-29 is a Thursday) and 30-day month (2026-04-30 is a Thursday)
+        let leap_day = deprecation_headers(1_709_164_800, Some("Thu, 29 Feb 2024 00:00:00 GMT"));
+        assert_eq!(leap_day.len(), 2);
+        let non_leap = deprecation_headers(1_740_700_800, Some("Fri, 28 Feb 2025 00:00:00 GMT"));
+        assert_eq!(non_leap.len(), 2);
+        let april_30 = deprecation_headers(1_777_507_200, Some("Thu, 30 Apr 2026 00:00:00 GMT"));
+        assert_eq!(april_30.len(), 2);
+    }
 }

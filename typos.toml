@@ -6,6 +6,7 @@ ignore-hidden = false
 # (stripped in stamped child repos by Template Press).
 extend-exclude = [
     ".git/",
+    "book/",
     "research/",
     "docs/planning/p02/",
     "docs/port/",

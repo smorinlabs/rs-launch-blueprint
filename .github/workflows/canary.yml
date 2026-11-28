@@ -105,7 +105,7 @@ jobs:
 
   report:
     name: report scheduled failure
-    needs: [canary]
+    needs: [canary, docs-external-links]
     if: failure() && github.event_name == 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -132,3 +132,39 @@ jobs:
               --label canary \
               --body "${body}"
           fi
+
+  docs-external-links:
+    name: docs external links (R82)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read # Check out Markdown corpus for scheduled external URL checks
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Restore lychee cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+      - name: External link check (R82)
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: >-
+            --cache --max-cache-age 1d
+            --cache-exclude-status '429, 500..'
+            --max-retries 3 --retry-wait-time 2 --timeout 20
+            --accept '100..=103, 200..=299, 429'
+            --no-progress
+            --root-dir "$(pwd)"
+            .
+          fail: true
+      - name: Save lychee cache
+        if: ${{ !cancelled() }}
+        uses: actions/cache/save@v6
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}

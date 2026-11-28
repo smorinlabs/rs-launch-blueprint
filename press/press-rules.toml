@@ -9,6 +9,7 @@ keep_names = [
     "smorinlabs/difftree-action",
     "smorinlabs/smorinlabs-skills",
     "smorinlabs/py-launch-blueprint",
+    "smorinlabs/ts-launch-blueprint",
     "smorinlabs/contributors-please-action",
 ]
 # The CLI binary name and repo name appear glued inside Cargo env vars
@@ -60,12 +61,24 @@ file = "CONTRIBUTORS.md"
 reason = "template contributor roster; stamped projects start their own"
 
 [[remove]]
+file = ".github/FUNDING.yml"
+reason = "template funding target; stamped projects declare their own"
+
+[[remove]]
 file = ".claude/skills/new-rust-project/SKILL.md"
 reason = "template bootstrap skill retired after stamping; README explains provenance"
 
 [[remove]]
 file = "tests/bootstrap_acceptance.rs"
 reason = "template bootstrap acceptance suite stamps a child repo and must not recurse"
+
+[[remove]]
+file = "tests/parity_audit.rs"
+reason = "template parity-audit integration test; validates template-only docs/port/ ledger"
+
+[[remove]]
+file = "scripts/check-parity-audit.py"
+reason = "template parity-audit checker; validates template-only docs/port/ ledger"
 
 [[remove]]
 file = "scripts/chain-next.sh"

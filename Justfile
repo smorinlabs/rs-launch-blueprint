@@ -18,8 +18,8 @@ openapi_to_rust_version := "0.17.0"
 oasdiff_version := "v1.32.1"
 contributors_runner := "npx --yes contributors-please@1.4.3"
 rustup_components := "rustfmt clippy llvm-tools-preview"
-cargo_tools := "cargo-deny:cargo-deny@0.20.2 cargo-audit:cargo-audit@0.22.2 cargo-nextest:cargo-nextest@0.9.146 cargo-insta:cargo-insta@1.48.0 cargo-llvm-cov:cargo-llvm-cov@0.9.1 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0"
-ubi_tools := "lefthook:ubi:evilmartians/lefthook@v2.1.14 gitleaks:ubi:gitleaks/gitleaks@v8.30.1 editorconfig-checker:ubi:editorconfig-checker/editorconfig-checker@v4.0.2 actionlint:ubi:rhysd/actionlint@v1.7.12 zizmor:ubi:zizmorcore/zizmor@v1.30.1"
+cargo_tools := "cargo-deny:cargo-deny@0.20.2 cargo-audit:cargo-audit@0.22.2 cargo-nextest:cargo-nextest@0.9.146 cargo-insta:cargo-insta@1.48.0 cargo-llvm-cov:cargo-llvm-cov@0.9.1 dprint:dprint@0.57.4 ast-grep:ast-grep@0.45.3 committed:committed@1.1.11 typos:typos-cli@1.50.3 ryl:ryl@0.22.0 mdbook:mdbook@0.5.4"
+ubi_tools := "lefthook:ubi:evilmartians/lefthook@v2.1.14 gitleaks:ubi:gitleaks/gitleaks@v8.30.1 editorconfig-checker:ubi:editorconfig-checker/editorconfig-checker@v4.0.2 actionlint:ubi:rhysd/actionlint@v1.7.12 zizmor:ubi:zizmorcore/zizmor@v1.30.1 lychee:ubi:lycheeverse/lychee@lychee-v0.24.2"
 
 # Coverage floors (LLVM metrics). The ONLY place the threshold values live (R35).
 coverage_fail_under := "--fail-under-lines 95 --fail-under-functions 95 --fail-under-regions 90"
@@ -425,6 +425,43 @@ install-check mode="":
 check-packaging *args:
     bash scripts/check-packed-artifacts.sh --allow-dirty --no-verify --offline {{args}}
 
+# Print the compiled CLI binary version (F080)
+[group('releases'), group('debug')]
+version:
+    cargo run --quiet --locked --bin {{app_name}} -- --version
+
+# Inspect version lockstep across workspace Cargo.toml manifests, release-please manifest, and latest v* tag (F079)
+[group('releases'), group('debug')]
+release-status:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    meta=$(cargo metadata --no-deps --format-version 1 --offline --locked)
+    python3 - "$meta" <<'PY'
+    import json, pathlib, subprocess, sys
+    meta = json.loads(sys.argv[1])
+    pkgs = {p["name"]: p["version"] for p in meta["packages"]}
+    manifest = json.loads(pathlib.Path(".release-please-manifest.json").read_text(encoding="utf-8"))
+    manifest_ver = manifest.get(".")
+    tag = subprocess.run(
+        ["git", "describe", "--tags", "--abbrev=0", "--match", "v*"],
+        capture_output=True, text=True, check=False,
+    ).stdout.strip() or "(none)"
+    print("Workspace versions:")
+    for name in sorted(pkgs):
+        print(f"  {name}: {pkgs[name]}")
+    print(f"Release-Please manifest (.): {manifest_ver or '(unreleased / {})'}")
+    print(f"Latest v* git tag:           {tag}")
+    unique = set(pkgs.values())
+    if len(unique) != 1:
+        print(f"ERROR: workspace package versions diverged: {sorted(unique)}", file=sys.stderr)
+        sys.exit(1)
+    root_ver = next(iter(unique))
+    if manifest_ver is not None and manifest_ver != root_ver:
+        print(f"ERROR: .release-please-manifest.json ({manifest_ver}) != Cargo.toml ({root_ver})", file=sys.stderr)
+        sys.exit(1)
+    print(f"OK: workspace manifests are in lockstep at {root_ver}")
+    PY
+
 # Enforce workspace dependency bans, advisories, licenses, and sources across all features (R02)
 [group('dev')]
 deny:
@@ -692,6 +729,40 @@ install-blaze mode="":
     fi
 
 # ================================
+# DOCUMENTATION & API DOCS (R81, R82)
+# ================================
+
+# Build the mdBook documentation site into book/ (R81)
+[group('docs')]
+docs-build:
+    mdbook build
+
+# Serve the mdBook documentation locally with live reload (R81 F351)
+[group('docs')]
+docs-dev:
+    mdbook serve --open
+
+# Initialize a new mdBook scaffold (new-book-only; never pass --theme per R81 F352)
+[group('docs')]
+docs-init:
+    mdbook init
+
+# Remove generated mdBook output under book/ (R81)
+[group('docs')]
+docs-clean:
+    mdbook clean
+
+# Verify offline internal Markdown links across the repository with lychee (R82 F349)
+[group('docs'), group('dev')]
+docs-check:
+    lychee --offline --no-progress --root-dir "$(pwd)" .
+
+# Build workspace rustdoc API reference across all features with warnings denied (R82 F353)
+[group('docs'), group('dev')]
+docs-api:
+    RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps --all-features --document-private-items
+
+# ================================
 # COMMUNITY & CONTRIBUTORS (R47)
 # ================================
 
@@ -765,6 +836,8 @@ debug-info:
     echo "- actionlint: $(actionlint --version 2>/dev/null | head -n 1 || echo 'not found')"
     echo "- zizmor: $(zizmor --version 2>/dev/null || echo 'not found')"
     echo "- shellcheck: $(shellcheck --version 2>/dev/null | sed -n '2p' || echo 'not found')"
+    echo "- mdbook: $(mdbook --version 2>/dev/null || echo 'not found')"
+    echo "- lychee: $(lychee --version 2>/dev/null || echo 'not found')"
     echo "- blaze (optional): $(blaze --version 2>/dev/null || echo 'not installed')"
     echo ""
     echo "### Workspace Manifest"

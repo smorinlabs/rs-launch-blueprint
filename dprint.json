@@ -5,6 +5,7 @@
   },
   "excludes": [
     "**/target",
+    "book/**",
     "CHANGELOG.md",
     ".release-please-manifest.json",
     "openapi/openapi.json",
